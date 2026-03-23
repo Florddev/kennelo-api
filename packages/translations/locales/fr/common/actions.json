@@ -17,8 +17,11 @@
     "close": "Fermer",
     "refresh": "Actualiser",
     "loading": "Chargement...",
-    "becomePro": "Devenez un pro",
+    "becomeHost": "Devenir hôte",
+    "myEstablishments": "Mes établissements",
     "update": "Mettre à jour",
+    "hostSpace": "Espace hôte",
+    "bookOnline": "Réserver en ligne",
     "yes": "Oui",
     "no": "Non",
     "features": {

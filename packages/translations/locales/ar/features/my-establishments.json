@@ -1,0 +1,66 @@
+{
+    "title": "مؤسساتي",
+    "description": "إدارة مؤسسات إيواء الحيوانات الأليفة الخاصة بك",
+    "addNew": "إضافة مؤسسة",
+    "status": {
+        "active": "نشط",
+        "inactive": "غير نشط"
+    },
+    "empty": {
+        "title": "لا توجد مؤسسات بعد",
+        "description": "أنشئ أول مؤسسة لك وابدأ في استقبال الحيوانات الأليفة!"
+    },
+    "detail": {
+        "sections": {
+            "details": "تفاصيل المؤسسة",
+            "contact": "معلومات الاتصال",
+            "address": "العنوان",
+            "business": "معلومات تجارية"
+        },
+        "empty": {
+            "phone": "لا يوجد هاتف",
+            "email": "لا يوجد بريد إلكتروني",
+            "website": "لا يوجد موقع إلكتروني",
+            "siret": "لا يوجد رقم SIRET",
+            "description": "لا يوجد وصف"
+        },
+        "notFound": "المؤسسة غير موجودة",
+        "notFoundDescription": "هذه المؤسسة غير موجودة أو ليس لديك صلاحية الوصول إليها.",
+        "editTitle": "تعديل المؤسسة",
+        "editDescription": "قم بتحديث تفاصيل مؤسستك",
+        "updateSuccess": "تم تحديث المؤسسة بنجاح",
+        "deleteTitle": "حذف المؤسسة",
+        "deleteDescription": "هل أنت متأكد أنك تريد حذف هذه المؤسسة؟ لا يمكن التراجع عن هذا الإجراء.",
+        "deleteSuccess": "تم حذف المؤسسة بنجاح"
+    },
+    "dashboard": {
+        "title": "لوحة التحكم",
+        "totalCapacity": "السعة الإجمالية",
+        "occupiedSpots": "الأماكن المشغولة",
+        "availableSpots": "الأماكن المتاحة",
+        "todayStatus": "حالة اليوم",
+        "occupancyByAnimal": "الإشغال حسب نوع الحيوان",
+        "occupancyRate": "معدل الإشغال",
+        "noCapacities": "لم يتم تكوين أي سعات بعد"
+    },
+    "capacities": {
+        "title": "السعات",
+        "addCapacity": "إضافة سعة",
+        "editCapacity": "تعديل السعة",
+        "deleteCapacity": "حذف السعة",
+        "deleteConfirmation": "هل أنت متأكد أنك تريد حذف هذه السعة؟",
+        "empty": "لم يتم تكوين أي سعات. أضف أنواع الحيوانات وسعتها.",
+        "spots": "{count} أماكن",
+        "perNight": "{price} / ليلة"
+    },
+    "availabilities": {
+        "title": "التوافر",
+        "open": "مفتوح",
+        "closed": "مغلق",
+        "addAvailability": "إضافة توافر",
+        "deleteConfirmation": "هل أنت متأكد أنك تريد حذف هذا التوافر؟",
+        "empty": "لا يوجد توافر محدد لهذه الفترة.",
+        "dateRange": "نطاق التاريخ",
+        "bulkUpdate": "تحديث جماعي"
+    }
+}

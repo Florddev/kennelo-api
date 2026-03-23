@@ -1,0 +1,64 @@
+{
+    "title": "Devenir Hôte",
+    "description": "Référencez votre établissement d'accueil pour animaux sur Kennelo",
+    "steps": {
+        "welcome": {
+            "title": "Bienvenue",
+            "subtitle": "Configurons votre établissement",
+            "description": "En quelques étapes, vous serez prêt à accueillir des animaux dans votre établissement. Nous vous guidons tout au long de la configuration.",
+            "cta": "C'est parti"
+        },
+        "hostType": {
+            "title": "Votre profil",
+            "subtitle": "Quel type d'hébergeur êtes-vous ?",
+            "professional": "Professionnel",
+            "professionalDescription": "Pension, élevage, garderie, refuge ou autre structure avec un numéro SIRET",
+            "individual": "Particulier",
+            "individualDescription": "Pet-sitter, garde à domicile ou hébergement occasionnel",
+            "error": "Veuillez sélectionner un type de profil"
+        },
+        "establishmentType": {
+            "title": "Type d'établissement",
+            "subtitle": "Quel type de structure gérez-vous ?",
+            "pension": "Pension",
+            "pensionDescription": "Hébergement et soins pour animaux en séjour",
+            "breeding": "Élevage",
+            "breedingDescription": "Élevage professionnel d'animaux",
+            "daycare": "Garderie",
+            "daycareDescription": "Garde d'animaux à la journée",
+            "shelter": "Refuge",
+            "shelterDescription": "Accueil et adoption d'animaux",
+            "other": "Autre",
+            "otherDescription": "Autre type de structure animalière",
+            "error": "Veuillez sélectionner un type d'établissement"
+        },
+        "establishmentInfo": {
+            "title": "Votre établissement",
+            "subtitle": "Parlez-nous de votre lieu"
+        },
+        "contactDetails": {
+            "title": "Coordonnées",
+            "subtitle": "Comment les propriétaires peuvent-ils vous joindre ?"
+        },
+        "address": {
+            "title": "Localisation",
+            "subtitle": "Où se trouve votre établissement ?"
+        },
+        "businessInfo": {
+            "title": "Informations légales",
+            "subtitle": "Détails juridiques optionnels"
+        },
+        "review": {
+            "title": "Vérification & confirmation",
+            "subtitle": "Assurez-vous que tout est correct",
+            "submitButton": "Créer mon établissement",
+            "submitting": "Création...",
+            "autoFilledFromProfile": "Renseigné depuis votre profil"
+        }
+    },
+    "success": {
+        "title": "Félicitations !",
+        "description": "Votre établissement a été créé avec succès. Vous pouvez maintenant commencer à accueillir des animaux !",
+        "cta": "Voir mon établissement"
+    }
+}

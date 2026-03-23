@@ -1,0 +1,64 @@
+{
+    "title": "Become a Host",
+    "description": "List your pet boarding establishment on Kennelo",
+    "steps": {
+        "welcome": {
+            "title": "Welcome",
+            "subtitle": "Let's get your establishment set up",
+            "description": "In just a few steps, you'll be ready to welcome pets into your establishment. We'll guide you through setting up your profile.",
+            "cta": "Get started"
+        },
+        "hostType": {
+            "title": "Your profile",
+            "subtitle": "What type of host are you?",
+            "professional": "Professional",
+            "professionalDescription": "Boarding, breeding, daycare, shelter or other business with a SIRET number",
+            "individual": "Individual",
+            "individualDescription": "Pet-sitter, home boarding or occasional hosting",
+            "error": "Please select a profile type"
+        },
+        "establishmentType": {
+            "title": "Establishment type",
+            "subtitle": "What type of facility do you manage?",
+            "pension": "Boarding",
+            "pensionDescription": "Accommodation and care for pets during stays",
+            "breeding": "Breeding",
+            "breedingDescription": "Professional animal breeding",
+            "daycare": "Daycare",
+            "daycareDescription": "Daytime pet care services",
+            "shelter": "Shelter",
+            "shelterDescription": "Animal rescue and adoption",
+            "other": "Other",
+            "otherDescription": "Other type of animal facility",
+            "error": "Please select an establishment type"
+        },
+        "establishmentInfo": {
+            "title": "Your establishment",
+            "subtitle": "Tell us about your place"
+        },
+        "contactDetails": {
+            "title": "Contact details",
+            "subtitle": "How can pet owners reach you?"
+        },
+        "address": {
+            "title": "Location",
+            "subtitle": "Where is your establishment located?"
+        },
+        "businessInfo": {
+            "title": "Business information",
+            "subtitle": "Optional legal details"
+        },
+        "review": {
+            "title": "Review & confirm",
+            "subtitle": "Make sure everything looks good",
+            "submitButton": "Create my establishment",
+            "submitting": "Creating...",
+            "autoFilledFromProfile": "Auto-filled from your profile"
+        }
+    },
+    "success": {
+        "title": "Congratulations!",
+        "description": "Your establishment has been created successfully. You can now start welcoming pets!",
+        "cta": "View my establishment"
+    }
+}

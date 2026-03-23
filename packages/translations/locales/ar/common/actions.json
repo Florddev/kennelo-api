@@ -17,8 +17,12 @@
     "close": "إغلاق",
     "refresh": "تحديث",
     "loading": "جاري التحميل...",
-    "becomePro": "كن محترفًا",
+    "becomeHost": "كن مضيفًا",
+    "myEstablishments": "مؤسساتي",
     "update": "للتحديث",
+    "hostSpace": "مساحة المضيف",
+    "bookOnline": "احجز عبر الإنترنت",
+    "becomePro": "كن محترفًا",
     "yes": "نعم",
     "no": "لا"
 }

@@ -4,6 +4,10 @@
 
 import { buildRoute } from "./config/routes.config";
 
+type BecomeHostParams = {
+    locale?: string | number;
+};
+
 type HostDetailsParams = {
     locale?: string | number;
     uuid: string;
@@ -19,6 +23,15 @@ type LoginParams = {
 
 type RegisterParams = {
     locale?: string | number;
+};
+
+type MyEstablishmentsParams = {
+    locale?: string | number;
+};
+
+type EstablishmentDetailParams = {
+    locale?: string | number;
+    id: string | number;
 };
 
 type MyPetsParams = {
@@ -50,6 +63,10 @@ function RootPage(): string {
     return "/";
 }
 
+function BecomeHost(params?: BecomeHostParams): string {
+    return buildRoute("/[locale]/become-host", params);
+}
+
 function HostDetails(params: HostDetailsParams): string {
     return buildRoute("/[locale]/host/[uuid]", params);
 }
@@ -64,6 +81,14 @@ function Login(params?: LoginParams): string {
 
 function Register(params?: RegisterParams): string {
     return buildRoute("/[locale]/s/accounts/register", params);
+}
+
+function MyEstablishments(params?: MyEstablishmentsParams): string {
+    return buildRoute("/[locale]/s/app/establishments", params);
+}
+
+function EstablishmentDetail(params: EstablishmentDetailParams): string {
+    return buildRoute("/[locale]/s/app/establishments/[id]", params);
 }
 
 function MyPets(params?: MyPetsParams): string {
@@ -92,10 +117,13 @@ function MyProfilePreferencesNotification(params?: MyProfilePreferencesNotificat
 
 export const routes = {
     RootPage,
+    BecomeHost,
     HostDetails,
     Home,
     Login,
     Register,
+    MyEstablishments,
+    EstablishmentDetail,
     MyPets,
     PetDetails,
     MyProfileAbout,

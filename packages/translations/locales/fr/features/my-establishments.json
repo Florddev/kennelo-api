@@ -1,0 +1,66 @@
+{
+    "title": "Mes Établissements",
+    "description": "Gérez vos établissements d'accueil pour animaux",
+    "addNew": "Ajouter un établissement",
+    "status": {
+        "active": "Actif",
+        "inactive": "Inactif"
+    },
+    "empty": {
+        "title": "Aucun établissement",
+        "description": "Créez votre premier établissement et commencez à accueillir des animaux !"
+    },
+    "detail": {
+        "sections": {
+            "details": "Détails de l'établissement",
+            "contact": "Coordonnées",
+            "address": "Adresse",
+            "business": "Informations légales"
+        },
+        "empty": {
+            "phone": "Aucun téléphone",
+            "email": "Aucun e-mail",
+            "website": "Aucun site web",
+            "siret": "Aucun numéro SIRET",
+            "description": "Aucune description"
+        },
+        "notFound": "Établissement introuvable",
+        "notFoundDescription": "Cet établissement n'existe pas ou vous n'y avez pas accès.",
+        "editTitle": "Modifier l'établissement",
+        "editDescription": "Mettez à jour les informations de votre établissement",
+        "updateSuccess": "Établissement mis à jour avec succès",
+        "deleteTitle": "Supprimer l'établissement",
+        "deleteDescription": "Êtes-vous sûr de vouloir supprimer cet établissement ? Cette action est irréversible.",
+        "deleteSuccess": "Établissement supprimé avec succès"
+    },
+    "dashboard": {
+        "title": "Tableau de bord",
+        "totalCapacity": "Capacité totale",
+        "occupiedSpots": "Places occupées",
+        "availableSpots": "Places disponibles",
+        "todayStatus": "Statut du jour",
+        "occupancyByAnimal": "Occupation par type d'animal",
+        "occupancyRate": "Taux d'occupation",
+        "noCapacities": "Aucune capacité configurée"
+    },
+    "capacities": {
+        "title": "Capacités",
+        "addCapacity": "Ajouter une capacité",
+        "editCapacity": "Modifier la capacité",
+        "deleteCapacity": "Supprimer la capacité",
+        "deleteConfirmation": "Êtes-vous sûr de vouloir supprimer cette capacité ?",
+        "empty": "Aucune capacité configurée. Ajoutez des types d'animaux et leur capacité.",
+        "spots": "{count} places",
+        "perNight": "{price} / nuit"
+    },
+    "availabilities": {
+        "title": "Disponibilités",
+        "open": "Ouvert",
+        "closed": "Fermé",
+        "addAvailability": "Ajouter une disponibilité",
+        "deleteConfirmation": "Êtes-vous sûr de vouloir supprimer cette disponibilité ?",
+        "empty": "Aucune disponibilité définie pour cette période.",
+        "dateRange": "Plage de dates",
+        "bulkUpdate": "Mise à jour groupée"
+    }
+}

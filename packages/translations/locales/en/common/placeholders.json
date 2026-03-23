@@ -9,5 +9,20 @@
     "phone": "+1 234 567 8900",
     "search-for-a-pension": "Search for a pension",
     "passwordConfirmation": "Confirm your password",
-    "newPassword": "Your new password"
+    "newPassword": "Your new password",
+    "establishmentName": "My pet boarding",
+    "description": "Describe your establishment...",
+    "website": "https://www.example.com",
+    "siret": "123 456 789 00012",
+    "addressLine1": "123 Main Street",
+    "addressLine2": "Apartment, suite, etc.",
+    "city": "Paris",
+    "postalCode": "75001",
+    "region": "Ile-de-France",
+    "country": "France",
+    "maxCapacity": "e.g.: 10",
+    "pricePerNight": "e.g.: 25.00",
+    "note": "Optional note...",
+    "selectAnimalType": "Select an animal type",
+    "selectStatus": "Select a status"
 }

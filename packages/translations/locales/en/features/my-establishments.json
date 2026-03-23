@@ -1,0 +1,66 @@
+{
+    "title": "My Establishments",
+    "description": "Manage your pet boarding establishments",
+    "addNew": "Add an establishment",
+    "status": {
+        "active": "Active",
+        "inactive": "Inactive"
+    },
+    "empty": {
+        "title": "No establishments yet",
+        "description": "Create your first establishment and start welcoming pets!"
+    },
+    "detail": {
+        "sections": {
+            "details": "Establishment details",
+            "contact": "Contact information",
+            "address": "Address",
+            "business": "Business information"
+        },
+        "empty": {
+            "phone": "No phone number",
+            "email": "No email address",
+            "website": "No website",
+            "siret": "No SIRET number",
+            "description": "No description provided"
+        },
+        "notFound": "Establishment not found",
+        "notFoundDescription": "This establishment does not exist or you don't have access to it.",
+        "editTitle": "Edit establishment",
+        "editDescription": "Update the details of your establishment",
+        "updateSuccess": "Establishment updated successfully",
+        "deleteTitle": "Delete establishment",
+        "deleteDescription": "Are you sure you want to delete this establishment? This action cannot be undone.",
+        "deleteSuccess": "Establishment deleted successfully"
+    },
+    "dashboard": {
+        "title": "Dashboard",
+        "totalCapacity": "Total capacity",
+        "occupiedSpots": "Occupied spots",
+        "availableSpots": "Available spots",
+        "todayStatus": "Today's status",
+        "occupancyByAnimal": "Occupancy by animal type",
+        "occupancyRate": "Occupancy rate",
+        "noCapacities": "No capacities configured yet"
+    },
+    "capacities": {
+        "title": "Capacities",
+        "addCapacity": "Add capacity",
+        "editCapacity": "Edit capacity",
+        "deleteCapacity": "Delete capacity",
+        "deleteConfirmation": "Are you sure you want to delete this capacity?",
+        "empty": "No capacities configured. Add animal types and their capacity.",
+        "spots": "{count} spots",
+        "perNight": "{price} / night"
+    },
+    "availabilities": {
+        "title": "Availabilities",
+        "open": "Open",
+        "closed": "Closed",
+        "addAvailability": "Add availability",
+        "deleteConfirmation": "Are you sure you want to delete this availability?",
+        "empty": "No availabilities set for this period.",
+        "dateRange": "Date range",
+        "bulkUpdate": "Bulk update"
+    }
+}

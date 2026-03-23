@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { UserModel } from "@workspace/modules/users";
 import { getCurrentUser, logoutUser, authService } from "@workspace/modules/users";
+import { getEstablishments, EstablishmentModel } from "@workspace/modules/establishments";
 import { api } from "@workspace/common";
 import { useRouter } from "next/navigation";
 import { logger } from "@/lib/logger";
@@ -11,9 +12,11 @@ import { getAppStorage } from "@/lib/storage";
 
 interface AuthContextValue {
     user: UserModel | null;
+    establishments: EstablishmentModel[];
     isLoading: boolean;
     isLoaded: boolean;
     isAuthenticated: boolean;
+    hasEstablishment: boolean;
     logout: () => Promise<void>;
     refreshUser: () => Promise<UserModel | null>;
 }
@@ -28,6 +31,7 @@ export function AuthProvider({
     initialIsAuthenticated?: boolean;
 }) {
     const [user, setUser] = useState<UserModel | null>(null);
+    const [establishments, setEstablishments] = useState<EstablishmentModel[]>([]);
     const [isLoading, setIsLoading] = useState(initialIsAuthenticated);
     const [isAuthenticated, setIsAuthenticated] = useState(initialIsAuthenticated);
     const router = useRouter();
@@ -41,6 +45,7 @@ export function AuthProvider({
         if (!(await authService.isAuthenticated())) {
             setIsAuthenticated(false);
             setUser(null);
+            setEstablishments([]);
             setIsLoading(false);
             return null;
         }
@@ -48,13 +53,18 @@ export function AuthProvider({
         setIsAuthenticated(true);
 
         try {
-            const currentUser = await getCurrentUser();
+            const [currentUser, userEstablishments] = await Promise.all([
+                getCurrentUser(),
+                getEstablishments().catch(() => []),
+            ]);
             setUser(currentUser);
+            setEstablishments(userEstablishments);
             return currentUser;
         } catch (error) {
             logger.error("Failed to load user:", error);
             setIsAuthenticated(false);
             setUser(null);
+            setEstablishments([]);
             await authService.clearTokens();
             return null;
         } finally {
@@ -74,6 +84,7 @@ export function AuthProvider({
         } finally {
             setIsAuthenticated(false);
             setUser(null);
+            setEstablishments([]);
             router.push(routes.Login());
         }
     };
@@ -82,9 +93,11 @@ export function AuthProvider({
 
     const value: AuthContextValue = {
         user,
+        establishments,
         isLoading,
         isLoaded: !isLoading && !!user,
         isAuthenticated,
+        hasEstablishment: establishments.length > 0,
         logout,
         refreshUser,
     };
