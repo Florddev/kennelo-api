@@ -4,63 +4,80 @@
 
 import { buildRoute } from "./config/routes.config";
 
+type RootPageParams = {
+    search_params?: Record<string, string | number | boolean>;
+};
+
 type BecomeHostParams = {
     locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
 };
 
 type HostDetailsParams = {
     locale?: string | number;
     uuid: string;
+    search_params?: Record<string, string | number | boolean>;
 };
 
 type HomeParams = {
     locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
 };
 
 type LoginParams = {
     locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
 };
 
 type RegisterParams = {
     locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
 };
 
 type MyEstablishmentsParams = {
     locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
 };
 
 type EstablishmentDetailParams = {
     locale?: string | number;
     id: string | number;
+    search_params?: Record<string, string | number | boolean>;
 };
 
 type MyPetsParams = {
     locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
 };
 
 type PetDetailsParams = {
     locale?: string | number;
     id: string | number;
+    search_params?: Record<string, string | number | boolean>;
 };
 
 type MyProfileAboutParams = {
     locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
 };
 
 type MyProfileChangePasswordParams = {
     locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
 };
 
 type MyProfileEmailPreferencesParams = {
     locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
 };
 
 type MyProfilePreferencesNotificationParams = {
     locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
 };
 
-function RootPage(): string {
-    return "/";
+function RootPage(params?: RootPageParams): string {
+    return buildRoute("/", params);
 }
 
 function BecomeHost(params?: BecomeHostParams): string {

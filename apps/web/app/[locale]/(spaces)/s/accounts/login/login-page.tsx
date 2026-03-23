@@ -7,10 +7,14 @@ import { useTranslations } from "next-intl";
 import { FieldDescription, FieldGroup } from "@workspace/ui/components/field";
 
 export default function LoginPage() {
-    const { routes, router } = useNavigation();
+    const { routes, router, params } = useNavigation<{ redirect_url?: string }>();
     const t = useTranslations();
 
     const handleSuccess = (locale: string) => {
+        if (params.redirect_url) {
+            router.push(params.redirect_url as string);
+            return;
+        }
         router.push(routes.Home({ locale }));
     };
 
@@ -25,12 +29,18 @@ export default function LoginPage() {
                                 {t("features.auth.login.description")}
                             </p>
                         </div>
-
                         <LoginForm onSuccess={handleSuccess} />
                     </FieldGroup>
                     <FieldDescription className="px-6 text-center">
                         {t("features.auth.noAccount")}{" "}
-                        <Link href={routes.Register()} className="text-primary hover:underline">
+                        <Link
+                            href={routes.Register(
+                                params?.redirect_url
+                                    ? { search_params: { redirect_url: params.redirect_url } }
+                                    : {},
+                            )}
+                            className="text-primary hover:underline"
+                        >
                             {t("features.auth.register.here")}
                         </Link>
                     </FieldDescription>

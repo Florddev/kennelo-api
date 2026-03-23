@@ -6,6 +6,14 @@ import { cn } from "@workspace/ui/lib/utils";
 import { Button } from "@workspace/ui/components/button";
 import type { KIcon } from "@workspace/ui/components/icons";
 
+export interface NavigationItem {
+    icon: KIcon;
+    text: string;
+    active: boolean;
+    href: string;
+    special?: boolean;
+}
+
 interface NavItemProps {
     children?: React.ReactNode;
     href?: string;

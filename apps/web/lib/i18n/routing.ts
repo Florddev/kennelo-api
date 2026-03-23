@@ -9,7 +9,7 @@ export const routing = defineRouting({
         {
             domain: "www.kennelo.com",
             defaultLocale: "en",
-            locales: ["en"],
+            locales: ["en", "ar"],
         },
         {
             domain: "www.kennelo.fr",
