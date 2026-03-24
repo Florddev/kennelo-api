@@ -7,6 +7,7 @@ import { Button } from "@workspace/ui/components/button";
 import type { CreateEstablishmentInput } from "@workspace/modules/establishments";
 import { useStepper } from "rhf-stepper";
 import type { FormStepDefinition } from "@/components/forms/stepper/stepper-types";
+import { StepShell } from "./step-shell";
 
 type HostType = "professional" | "individual";
 
@@ -88,96 +89,95 @@ export function ReviewStep({ control, hostType, error, steps }: ReviewStepProps)
     };
 
     return (
-        <div className="flex flex-col gap-8">
-            <div className="flex flex-col gap-2">
-                <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
-                    {t("features.become-host.steps.review.title")}
-                </h1>
-                <p className="text-lg text-muted-foreground">
-                    {t("features.become-host.steps.review.subtitle")}
-                </p>
-            </div>
-
-            {error && (
-                <div className="flex items-start gap-3 rounded-2xl border border-destructive/30 bg-destructive/5 p-4">
-                    <AlertCircle className="size-5 text-destructive shrink-0 mt-0.5" />
-                    <p className="text-sm text-destructive font-medium">{error}</p>
-                </div>
-            )}
-
-            <div className="flex flex-col gap-4">
-                {isIndividual ? (
-                    <div className="flex items-start gap-3 rounded-2xl border border-primary/30 bg-primary/5 p-4">
-                        <Info className="size-5 text-primary shrink-0 mt-0.5" />
-                        <div className="flex flex-col gap-1">
-                            <p className="text-sm font-medium">
-                                {t("features.become-host.steps.review.autoFilledFromProfile")}
-                            </p>
-                            <p className="text-sm text-muted-foreground">{values.name}</p>
-                        </div>
+        <StepShell
+            title={t("features.become-host.steps.review.title")}
+            subtitle={t("features.become-host.steps.review.subtitle")}
+        >
+            <div className="flex flex-col gap-8">
+                {error && (
+                    <div className="flex items-start gap-3 rounded-2xl border border-destructive/30 bg-destructive/5 p-4">
+                        <AlertCircle className="size-5 text-destructive shrink-0 mt-0.5" />
+                        <p className="text-sm text-destructive font-medium">{error}</p>
                     </div>
-                ) : (
-                    <ReviewSection
-                        title={t("features.become-host.steps.establishmentInfo.title")}
-                        icon={Building2}
-                        onEdit={() => goTo("establishment-info")}
-                    >
-                        <ReviewItem
-                            label={t("common.fields.establishmentName")}
-                            value={values.name}
-                        />
-                        <ReviewItem
-                            label={t("common.fields.description")}
-                            value={values.description}
-                        />
-                    </ReviewSection>
                 )}
 
-                <ReviewSection
-                    title={t("features.become-host.steps.contactDetails.title")}
-                    icon={Phone}
-                    onEdit={() => goTo("contact-details")}
-                >
-                    <ReviewItem label={t("common.fields.phone")} value={values.phone} />
-                    <ReviewItem label={t("common.fields.email")} value={values.email} />
-                    <ReviewItem label={t("common.fields.website")} value={values.website} />
-                </ReviewSection>
+                <div className="flex flex-col gap-4">
+                    {isIndividual ? (
+                        <div className="flex items-start gap-3 rounded-2xl border border-primary/30 bg-primary/5 p-4">
+                            <Info className="size-5 text-primary shrink-0 mt-0.5" />
+                            <div className="flex flex-col gap-1">
+                                <p className="text-sm font-medium">
+                                    {t("features.become-host.steps.review.autoFilledFromProfile")}
+                                </p>
+                                <p className="text-sm text-muted-foreground">{values.name}</p>
+                            </div>
+                        </div>
+                    ) : (
+                        <ReviewSection
+                            title={t("features.become-host.steps.establishmentInfo.title")}
+                            icon={Building2}
+                            onEdit={() => goTo("establishment-info")}
+                        >
+                            <ReviewItem
+                                label={t("common.fields.establishmentName")}
+                                value={values.name}
+                            />
+                            <ReviewItem
+                                label={t("common.fields.description")}
+                                value={values.description}
+                            />
+                        </ReviewSection>
+                    )}
 
-                <ReviewSection
-                    title={t("features.become-host.steps.address.title")}
-                    icon={MapPin}
-                    onEdit={() => goTo("address")}
-                >
-                    <ReviewItem
-                        label={t("common.fields.addressLine1")}
-                        value={values.address?.line1}
-                    />
-                    <ReviewItem
-                        label={t("common.fields.addressLine2")}
-                        value={values.address?.line2}
-                    />
-                    <ReviewItem label={t("common.fields.city")} value={values.address?.city} />
-                    <ReviewItem
-                        label={t("common.fields.postalCode")}
-                        value={values.address?.postalCode}
-                    />
-                    <ReviewItem label={t("common.fields.region")} value={values.address?.region} />
-                    <ReviewItem
-                        label={t("common.fields.country")}
-                        value={values.address?.country}
-                    />
-                </ReviewSection>
-
-                {!isIndividual && (
                     <ReviewSection
-                        title={t("features.become-host.steps.businessInfo.title")}
-                        icon={FileText}
-                        onEdit={() => goTo("business-info")}
+                        title={t("features.become-host.steps.contactDetails.title")}
+                        icon={Phone}
+                        onEdit={() => goTo("contact-details")}
                     >
-                        <ReviewItem label={t("common.fields.siret")} value={values.siret} />
+                        <ReviewItem label={t("common.fields.phone")} value={values.phone} />
+                        <ReviewItem label={t("common.fields.email")} value={values.email} />
+                        <ReviewItem label={t("common.fields.website")} value={values.website} />
                     </ReviewSection>
-                )}
+
+                    <ReviewSection
+                        title={t("features.become-host.steps.address.title")}
+                        icon={MapPin}
+                        onEdit={() => goTo("address")}
+                    >
+                        <ReviewItem
+                            label={t("common.fields.addressLine1")}
+                            value={values.address?.line1}
+                        />
+                        <ReviewItem
+                            label={t("common.fields.addressLine2")}
+                            value={values.address?.line2}
+                        />
+                        <ReviewItem label={t("common.fields.city")} value={values.address?.city} />
+                        <ReviewItem
+                            label={t("common.fields.postalCode")}
+                            value={values.address?.postalCode}
+                        />
+                        <ReviewItem
+                            label={t("common.fields.region")}
+                            value={values.address?.region}
+                        />
+                        <ReviewItem
+                            label={t("common.fields.country")}
+                            value={values.address?.country}
+                        />
+                    </ReviewSection>
+
+                    {!isIndividual && (
+                        <ReviewSection
+                            title={t("features.become-host.steps.businessInfo.title")}
+                            icon={FileText}
+                            onEdit={() => goTo("business-info")}
+                        >
+                            <ReviewItem label={t("common.fields.siret")} value={values.siret} />
+                        </ReviewSection>
+                    )}
+                </div>
             </div>
-        </div>
+        </StepShell>
     );
 }

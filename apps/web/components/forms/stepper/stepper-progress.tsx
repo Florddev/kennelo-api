@@ -30,13 +30,10 @@ export function StepperProgress({
                     const progression = groupProgression![groupId] ?? 0;
 
                     return (
-                        <div
-                            key={groupId}
-                            className="flex-1 h-1 rounded-full overflow-hidden bg-muted"
-                        >
+                        <div key={groupId} className="flex-1 h-1.5 overflow-hidden bg-stone-200">
                             <div
                                 className={cn(
-                                    "h-full rounded-full bg-primary transition-all duration-300 ease-out",
+                                    "h-full bg-primary transition-all duration-300 ease-out",
                                 )}
                                 style={{ width: `${progression * 100}%` }}
                             />

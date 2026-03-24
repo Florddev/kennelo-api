@@ -3,8 +3,8 @@
     "description": "Référencez votre établissement d'accueil pour animaux sur Kennelo",
     "steps": {
         "welcome": {
-            "title": "Bienvenue",
-            "subtitle": "Configurons votre établissement",
+            "title": "Etape 1",
+            "subtitle": "Parlez-nous de votre activité",
             "description": "En quelques étapes, vous serez prêt à accueillir des animaux dans votre établissement. Nous vous guidons tout au long de la configuration.",
             "cta": "C'est parti"
         },

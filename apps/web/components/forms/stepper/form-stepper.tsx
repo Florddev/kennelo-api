@@ -10,6 +10,9 @@ import { StepperProgress } from "./stepper-progress";
 import { StepperStep, type StepTransitionDirection } from "./stepper-step";
 import type { FormStepperProps, FormStepDefinition } from "./stepper-types";
 import { Button } from "@workspace/ui/components/button";
+import Link from "next/link";
+import Image from "next/image";
+import { useNavigation } from "@/hooks/use-navigation";
 
 const STEP_EXIT_DURATION_MS = 50;
 
@@ -76,6 +79,8 @@ export function FormStepper<TFieldValues extends FieldValues>({
     groups,
     renderProgress,
 }: FormStepperProps<TFieldValues>) {
+    const { routes } = useNavigation();
+
     const form = useForm<TFieldValues>({
         resolver: zodResolver(schema as never),
         defaultValues,
@@ -121,10 +126,21 @@ export function FormStepper<TFieldValues extends FieldValues>({
                 onSubmit={form.handleSubmit(onSubmit)}
                 className={cn("space-y-6", className)}
             >
-                <div className="fixed top-0 left-0 w-screen h-screen bg-background z-100">
-                    <div className="flex flex-col h-full justify-between">
-                        <div className="fixed w-full h-16 px-8 flex items-center justify-between">
-                            <div>logo</div>
+                <div className="fixed top-0 left-0 w-screen h-screen bg-card z-100">
+                    <div className="flex flex-col h-full justify-between overflow-auto">
+                        <div className={cn("w-full h-18 px-8 flex items-center justify-between")}>
+                            <Link
+                                href={routes.Home()}
+                                className="relative h-full flex justify-center items-center font-semibold text-lg"
+                            >
+                                <Image
+                                    className="object-cover max-h-full h-7 w-auto"
+                                    src="/logo_type.svg"
+                                    height={120}
+                                    width={30}
+                                    alt="Kennelo logo"
+                                />
+                            </Link>
                             <div className="flex gap-2">
                                 <Button variant="outline" className="bg-transparent">
                                     Des question ?
@@ -137,79 +153,83 @@ export function FormStepper<TFieldValues extends FieldValues>({
                         <Stepper>
                             {({ activeStep }) => (
                                 <>
-                                    <div className="container mx-auto relative h-full w-full overflow-auto">
-                                        {steps.map((step, index) => {
-                                            const isVisible = visibleIndices.includes(index);
+                                    <div className="relative h-full w-full overflow-auto">
+                                        <div className="container mx-auto h-full px-4">
+                                            {steps.map((step, index) => {
+                                                const isVisible = visibleIndices.includes(index);
 
-                                            return (
-                                                <StepperStep
-                                                    key={step.id}
-                                                    index={index}
-                                                    activeStep={activeStep}
-                                                    isHidden={!isVisible}
-                                                    direction={direction}
-                                                    leavingStepIndex={leavingStepIndex}
-                                                >
-                                                    {isVisible &&
-                                                        step.component({
-                                                            control: form.control,
-                                                            isLoading,
-                                                        })}
-                                                </StepperStep>
-                                            );
-                                        })}
+                                                return (
+                                                    <StepperStep
+                                                        key={step.id}
+                                                        index={index}
+                                                        activeStep={activeStep}
+                                                        isHidden={!isVisible}
+                                                        direction={direction}
+                                                        leavingStepIndex={leavingStepIndex}
+                                                    >
+                                                        {isVisible &&
+                                                            step.component({
+                                                                control: form.control,
+                                                                isLoading,
+                                                            })}
+                                                    </StepperStep>
+                                                );
+                                            })}
+                                        </div>
                                     </div>
 
-                                    {(() => {
-                                        const activeVisibleStep =
-                                            visibleIndices.indexOf(activeStep);
+                                    <div className="w-full bg-background">
+                                        {(() => {
+                                            const activeVisibleStep =
+                                                visibleIndices.indexOf(activeStep);
 
-                                        return typeof renderProgress === "function" ? (
-                                            renderProgress({
-                                                activeStep,
-                                                stepCount: visibleIndices.length,
-                                                isLoading,
-                                                groups,
-                                                groupProgression:
-                                                    groups && groups.length > 0
-                                                        ? calculateGroupProgression(
-                                                              groups,
-                                                              steps,
-                                                              values,
-                                                              visibleIndices,
-                                                              activeVisibleStep,
-                                                          )
-                                                        : undefined,
-                                            })
-                                        ) : (
-                                            <StepperProgress
-                                                activeStep={activeStep}
-                                                stepCount={visibleIndices.length}
-                                                groups={groups}
-                                                groupProgression={
-                                                    groups && groups.length > 0
-                                                        ? calculateGroupProgression(
-                                                              groups,
-                                                              steps,
-                                                              values,
-                                                              visibleIndices,
-                                                              activeVisibleStep,
-                                                          )
-                                                        : undefined
-                                                }
+                                            return typeof renderProgress === "function" ? (
+                                                renderProgress({
+                                                    activeStep,
+                                                    stepCount: visibleIndices.length,
+                                                    isLoading,
+                                                    groups,
+                                                    groupProgression:
+                                                        groups && groups.length > 0
+                                                            ? calculateGroupProgression(
+                                                                  groups,
+                                                                  steps,
+                                                                  values,
+                                                                  visibleIndices,
+                                                                  activeVisibleStep,
+                                                              )
+                                                            : undefined,
+                                                })
+                                            ) : (
+                                                <StepperProgress
+                                                    activeStep={activeStep}
+                                                    stepCount={visibleIndices.length}
+                                                    groups={groups}
+                                                    groupProgression={
+                                                        groups && groups.length > 0
+                                                            ? calculateGroupProgression(
+                                                                  groups,
+                                                                  steps,
+                                                                  values,
+                                                                  visibleIndices,
+                                                                  activeVisibleStep,
+                                                              )
+                                                            : undefined
+                                                    }
+                                                />
+                                            );
+                                        })()}
+
+                                        <div className="px-8 py-4 bg-card">
+                                            <StepperNavigation
+                                                steps={steps}
+                                                visibleIndices={visibleIndices}
+                                                labels={labels}
+                                                isLoading={isLoading}
+                                                formId={id}
+                                                onBeforeStepChange={handleBeforeStepChange}
                                             />
-                                        );
-                                    })()}
-
-                                    <div className="px-8 py-4">
-                                        <StepperNavigation
-                                            steps={steps}
-                                            visibleIndices={visibleIndices}
-                                            labels={labels}
-                                            isLoading={isLoading}
-                                            formId={id}
-                                            onBeforeStepChange={handleBeforeStepChange}
-                                        />
+                                        </div>
                                     </div>
                                 </>
                             )}

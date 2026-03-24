@@ -95,7 +95,7 @@ export default function MyEstablishmentsPage() {
                     </p>
                 </div>
                 <Button asChild className="rounded-4xl gap-2">
-                    <Link href={routes.BecomeHost()}>
+                    <Link href={routes.BecomeHostV2()}>
                         <Plus className="size-4" />
                         {t("features.my-establishments.addNew")}
                     </Link>

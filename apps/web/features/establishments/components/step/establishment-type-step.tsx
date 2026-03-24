@@ -29,31 +29,26 @@ export function EstablishmentTypeStep({ value, onChange, error }: EstablishmentT
             value: "pension",
             icon: Home,
             label: t("features.become-host.steps.establishmentType.pension"),
-            description: t("features.become-host.steps.establishmentType.pensionDescription"),
         },
         {
             value: "breeding",
             icon: Heart,
             label: t("features.become-host.steps.establishmentType.breeding"),
-            description: t("features.become-host.steps.establishmentType.breedingDescription"),
         },
         {
             value: "daycare",
             icon: Sun,
             label: t("features.become-host.steps.establishmentType.daycare"),
-            description: t("features.become-host.steps.establishmentType.daycareDescription"),
         },
         {
             value: "shelter",
             icon: Shield,
             label: t("features.become-host.steps.establishmentType.shelter"),
-            description: t("features.become-host.steps.establishmentType.shelterDescription"),
         },
         {
             value: "other",
             icon: MoreHorizontal,
             label: t("features.become-host.steps.establishmentType.other"),
-            description: t("features.become-host.steps.establishmentType.otherDescription"),
             className: "col-span-2",
         },
     ];
@@ -67,11 +62,12 @@ export function EstablishmentTypeStep({ value, onChange, error }: EstablishmentT
                 mode="single"
                 options={options}
                 value={value}
+                optionsClassName="grid-cols-3"
                 render={(option, isSelected) => (
                     <ChoiceCardContainer
                         isSelected={isSelected}
                         disabled={option.disabled}
-                        className="flex-col"
+                        className="flex-col h-full justify-between"
                     >
                         {option.icon && (
                             <ChoiceCardIcon icon={option.icon} isSelected={isSelected} />

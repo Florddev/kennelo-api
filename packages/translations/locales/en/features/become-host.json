@@ -3,8 +3,8 @@
     "description": "List your pet boarding establishment on Kennelo",
     "steps": {
         "welcome": {
-            "title": "Welcome",
-            "subtitle": "Let's get your establishment set up",
+            "title": "Step 1",
+            "subtitle": "Tell us about your business",
             "description": "In just a few steps, you'll be ready to welcome pets into your establishment. We'll guide you through setting up your profile.",
             "cta": "Get started"
         },

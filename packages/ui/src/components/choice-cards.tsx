@@ -43,11 +43,9 @@ export type ChoiceCardsProps<TValue extends string> =
 
 function optionCardClass(isSelected: boolean, disabled?: boolean, className?: string) {
     return cn(
-        "group/choice-card flex justify-between rounded-2xl border p-5 text-start transition-all",
+        "group/choice-card flex justify-between rounded-lg border py-4 px-5 text-start transition-all gap-1",
         "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:outline-none focus-visible:ring-[3px]",
-        isSelected
-            ? "border-primary bg-primary/5"
-            : "border-border hover:border-primary/40 hover:bg-muted/50",
+        isSelected ? "ring-2 ring-primary bg-primary/5" : "border-stone-200",
         disabled && "pointer-events-none opacity-50",
         className,
     );
@@ -107,7 +105,6 @@ export function ChoiceCardDescription({
 
 export function ChoiceCardIcon({
     icon: Icon,
-    isSelected,
     className,
 }: {
     icon: React.ComponentType<{ className?: string }>;
@@ -115,13 +112,8 @@ export function ChoiceCardIcon({
     className?: string;
 }) {
     return (
-        <div
-            className={cn(
-                "flex items-center justify-center size-12 rounded-2xl shrink-0",
-                className,
-            )}
-        >
-            <Icon className={cn("size-8", isSelected ? "text-primary" : "text-muted-foreground")} />
+        <div className={cn("flex", className)}>
+            <Icon className={cn("size-8 text-primary")} {...{ strokeWidth: 1.5 }} />
         </div>
     );
 }

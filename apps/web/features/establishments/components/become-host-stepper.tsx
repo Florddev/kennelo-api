@@ -19,6 +19,7 @@ import { HostTypeStep, type HostType } from "./step/host-type-step";
 import { ReviewStep } from "./step/review-step";
 import { WelcomeStep } from "./step/welcome-step";
 import { FormStepper } from "@/components/forms/stepper/form-stepper";
+import { useNavigation } from "@/hooks/use-navigation";
 
 enum StepGroup {
     HOST_SELECTION = "host-selection",
@@ -39,6 +40,7 @@ enum Step {
 
 export function BecomeHostStepper() {
     const t = useTranslations();
+    const { routes, router } = useNavigation();
     const { execute, isLoading } = useAsyncState();
     const { refreshUser, user } = useAuth();
     const [formKey, setFormKey] = useState(0);
@@ -51,9 +53,7 @@ export function BecomeHostStepper() {
             id: Step.WELCOME,
             fields: [],
             groupId: StepGroup.HOST_SELECTION,
-            component: ({ control, isLoading: loading }) => (
-                <WelcomeStep control={control} isLoading={loading} />
-            ),
+            component: () => <WelcomeStep />,
         },
         {
             id: Step.HOST_TYPE,
@@ -176,6 +176,8 @@ export function BecomeHostStepper() {
         if (result) {
             await refreshUser();
             setFormKey((prev) => prev + 1);
+
+            router.push(routes.MyEstablishments());
         }
     };
 
