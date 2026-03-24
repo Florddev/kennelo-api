@@ -36,7 +36,7 @@ type InputFieldProps = Omit<InputControllerProps<FieldValues>, "name" | "control
 
 type TextInputSectionProps = {
     field: ControllerRenderProps<FieldValues, string>;
-    fieldState: ControllerFieldState;
+    showError: boolean;
     type?: string;
     placeholder?: string;
     isLoading?: boolean;
@@ -47,7 +47,7 @@ type TextInputSectionProps = {
 
 function TextInputSection({
     field,
-    fieldState,
+    showError,
     type,
     placeholder,
     isLoading,
@@ -70,7 +70,7 @@ function TextInputSection({
                 {...field}
                 id={fieldId}
                 type={inputType}
-                aria-invalid={fieldState.invalid}
+                aria-invalid={showError}
                 placeholder={placeholder}
                 disabled={isLoading}
                 autoComplete={autoComplete ?? "new-password"}
@@ -93,6 +93,10 @@ function TextInputSection({
     );
 }
 
+function shouldShowError(fieldState: ControllerFieldState) {
+    return fieldState.invalid && (fieldState.isTouched || fieldState.isDirty);
+}
+
 function InputField({
     field,
     fieldState,
@@ -108,15 +112,17 @@ function InputField({
     const isPassword = type === "password";
     const isPhone = type === "phone";
     const fieldId = field.name;
+    const showError = shouldShowError(fieldState);
 
     return (
-        <Field data-invalid={fieldState.invalid} className="gap-1.5 group">
+        <Field data-invalid={showError} className="gap-1.5 group">
             {label && <FieldLabel htmlFor={fieldId}>{label}</FieldLabel>}
 
             {isPhone ? (
                 <PhoneInput
                     {...field}
                     id={fieldId}
+                    aria-invalid={showError}
                     value={field.value || ""}
                     onChange={field.onChange}
                     disabled={isLoading}
@@ -125,7 +131,7 @@ function InputField({
             ) : (
                 <TextInputSection
                     field={field}
-                    fieldState={fieldState}
+                    showError={showError}
                     type={type}
                     placeholder={placeholder}
                     isLoading={isLoading}
@@ -135,7 +141,7 @@ function InputField({
                 />
             )}
 
-            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            {showError && <FieldError errors={[fieldState.error]} />}
             {description && <FieldDescription>{description}</FieldDescription>}
             {isPassword && showPasswordIndicator && (
                 <PasswordStrengthIndicator value={field.value} />

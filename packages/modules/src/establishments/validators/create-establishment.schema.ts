@@ -1,12 +1,12 @@
 import { z } from "zod";
 
 export const addressSchema = z.object({
-    line1: z.string().max(255).optional().or(z.literal("")),
+    line1: z.string().min(1).max(255),
     line2: z.union([z.string().max(255), z.literal("")]).optional(),
-    city: z.string().max(100).optional().or(z.literal("")),
-    postalCode: z.string().max(20).optional().or(z.literal("")),
+    city: z.string().min(1).max(100),
+    postalCode: z.string().min(1).max(20),
     region: z.union([z.string().max(100), z.literal("")]).optional(),
-    country: z.string().max(100).optional().or(z.literal("")),
+    country: z.string().min(1).max(100),
 });
 
 export const createEstablishmentSchema = z.object({

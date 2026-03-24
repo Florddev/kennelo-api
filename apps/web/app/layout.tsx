@@ -22,6 +22,13 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
 
     return (
         <html lang={DEFAULT_LOCALE} dir={DEFAULT_LOCALE_DIR} suppressHydrationWarning>
+            <head>
+                <script
+                    async
+                    crossOrigin="anonymous"
+                    src="https://tweakcn.com/live-preview.min.js"
+                />
+            </head>
             <body
                 className={cn(
                     fontSans.variable,

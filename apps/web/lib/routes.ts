@@ -34,6 +34,11 @@ type RegisterParams = {
     search_params?: Record<string, string | number | boolean>;
 };
 
+type BecomeHostV2Params = {
+    locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
 type MyEstablishmentsParams = {
     locale?: string | number;
     search_params?: Record<string, string | number | boolean>;
@@ -100,6 +105,10 @@ function Register(params?: RegisterParams): string {
     return buildRoute("/[locale]/s/accounts/register", params);
 }
 
+function BecomeHostV2(params?: BecomeHostV2Params): string {
+    return buildRoute("/[locale]/s/app/establishments/become-host-v2", params);
+}
+
 function MyEstablishments(params?: MyEstablishmentsParams): string {
     return buildRoute("/[locale]/s/app/establishments", params);
 }
@@ -139,6 +148,7 @@ export const routes = {
     Home,
     Login,
     Register,
+    BecomeHostV2,
     MyEstablishments,
     EstablishmentDetail,
     MyPets,
