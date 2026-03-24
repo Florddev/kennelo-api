@@ -7,6 +7,15 @@ import { Middleware } from ".";
 
 export class I18nMiddleware implements Middleware {
     handle(request: NextRequest) {
+        const host = request.headers.get("host")?.split(":")[0] ?? "";
+        const domainConfig = routing.domains?.find((d) => d.domain === host) as
+            | { domain: string; defaultLocale: string; locales: readonly string[] }
+            | undefined;
+
+        if (domainConfig) {
+            return createMiddleware(routing)(request);
+        }
+
         const acceptLanguage = request.headers.get("accept-language");
         const browserLocale = acceptLanguage?.split(",")[0]?.split("-")[0]?.trim() ?? "en";
 

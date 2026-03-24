@@ -6,12 +6,22 @@ function extractSubdomain(request: NextRequest): string | null {
     const hostname = (request.headers.get("host") ?? "").split(":")[0]!;
     const segments = hostname.split(".");
     const first = segments[0]!;
+    const second = segments[1];
 
     const isLocalhost = segments[segments.length - 1] === "localhost";
     const isSubdomain =
         first !== "www" && (isLocalhost ? segments.length > 1 : segments.length > 2);
 
-    return isSubdomain ? first : null;
+    if (isSubdomain) {
+        return first;
+    }
+
+    const isWwwPrefixedSubdomain =
+        first === "www" &&
+        second !== undefined &&
+        (isLocalhost ? segments.length > 2 : segments.length > 3);
+
+    return isWwwPrefixedSubdomain ? second : null;
 }
 
 function resolveLocale(
@@ -54,6 +64,9 @@ export class SubdomainMiddleware implements Middleware {
                 ? `/${locale}/s/${subdomain}`
                 : `/${locale}/s/${subdomain}${cleanPathname}`;
 
-        return NextResponse.rewrite(new URL(targetPath, request.url));
+        const targetUrl = request.nextUrl.clone();
+        targetUrl.pathname = targetPath;
+
+        return NextResponse.rewrite(targetUrl);
     }
 }
