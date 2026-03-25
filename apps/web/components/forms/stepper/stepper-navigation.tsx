@@ -86,7 +86,8 @@ export function StepperNavigation<TFieldValues extends FieldValues>({
             <Button
                 type="button"
                 variant="link"
-                className="px-0"
+                className="px-0 text-base cursor-pointer"
+                size="lg"
                 onClick={() => {
                     void handlePrev();
                 }}
@@ -98,7 +99,8 @@ export function StepperNavigation<TFieldValues extends FieldValues>({
             {!isLastVisibleStep ? (
                 <Button
                     type="button"
-                    className="rounded-4xl px-8 py-6 text-base"
+                    className="rounded-4xl text-base cursor-pointer"
+                    size="lg"
                     onClick={() => {
                         void handleNext();
                     }}
@@ -110,7 +112,8 @@ export function StepperNavigation<TFieldValues extends FieldValues>({
                 <Button
                     type="submit"
                     form={formId}
-                    className="rounded-4xl px-8 py-6 text-base"
+                    className="rounded-4xl text-base cursor-pointer"
+                    size="lg"
                     disabled={isLoading}
                 >
                     {labels.submit}

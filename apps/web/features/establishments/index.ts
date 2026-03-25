@@ -11,7 +11,6 @@ export * from "./components/step/business-info-step";
 export * from "./components/step/contact-details-step";
 export * from "./components/step/establishment-info-step";
 export * from "./components/step/establishment-type-step";
-export * from "./components/step/host-type-step";
 export * from "./components/step/review-step";
 export * from "./components/step/step-shell";
 export * from "./components/step/welcome-step";

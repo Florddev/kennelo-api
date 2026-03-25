@@ -19,6 +19,7 @@ export class AuthModel {
             UserModel.from({
                 ...dto.user,
                 avatar_url: null,
+                address: null,
                 status: "active",
                 created_at: new Date().toISOString(),
                 updated_at: new Date().toISOString(),

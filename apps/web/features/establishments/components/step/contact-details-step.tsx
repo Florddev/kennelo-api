@@ -4,6 +4,7 @@ import { Control } from "react-hook-form";
 import { useTranslations } from "next-intl";
 import { InputController } from "@/components/forms/input-controller";
 import type { CreateEstablishmentInput } from "@workspace/modules/establishments";
+import { usePhoneCountryCode } from "@/hooks/use-phone-country-code";
 import { StepShell } from "./step-shell";
 
 type ContactDetailsStepProps = {
@@ -13,6 +14,7 @@ type ContactDetailsStepProps = {
 
 export function ContactDetailsStep({ control, isLoading }: ContactDetailsStepProps) {
     const t = useTranslations();
+    const phoneCountryCode = usePhoneCountryCode();
 
     return (
         <StepShell
@@ -26,6 +28,7 @@ export function ContactDetailsStep({ control, isLoading }: ContactDetailsStepPro
                 placeholder={t("common.placeholders.phone")}
                 isLoading={isLoading}
                 type="phone"
+                defaultCountry={phoneCountryCode}
             />
             <InputController
                 name="email"

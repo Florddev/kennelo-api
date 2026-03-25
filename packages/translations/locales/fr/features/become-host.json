@@ -18,7 +18,7 @@
             "error": "Veuillez sélectionner un type de profil"
         },
         "establishmentType": {
-            "title": "Type d'établissement",
+            "title": "Parmi les propositions suivantes, laquelle décrit le mieux votre activité ?",
             "subtitle": "Quel type de structure gérez-vous ?",
             "pension": "Pension",
             "pensionDescription": "Hébergement et soins pour animaux en séjour",
@@ -30,7 +30,11 @@
             "shelterDescription": "Accueil et adoption d'animaux",
             "other": "Autre",
             "otherDescription": "Autre type de structure animalière",
-            "error": "Veuillez sélectionner un type d'établissement"
+            "error": "Veuillez sélectionner un type d'établissement",
+            "pet-sitter": "Pet-sitter indépendant",
+            "home-care": "Garde à domicile",
+            "host-family": "Famille d’accueil",
+            "mobile-boarding": "Garde itinérante"
         },
         "establishmentInfo": {
             "title": "Votre établissement",

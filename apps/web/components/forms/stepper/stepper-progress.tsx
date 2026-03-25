@@ -25,12 +25,15 @@ export function StepperProgress({
 
     if (hasGroups) {
         return (
-            <div className={cn("flex gap-1.5", className)}>
+            <div className={cn("flex gap-2", className)}>
                 {groups!.map((groupId) => {
                     const progression = groupProgression![groupId] ?? 0;
 
                     return (
-                        <div key={groupId} className="flex-1 h-1.5 overflow-hidden bg-stone-200">
+                        <div
+                            key={groupId}
+                            className="flex-1 h-1.5 overflow-hidden rounded-full bg-muted"
+                        >
                             <div
                                 className={cn(
                                     "h-full bg-primary transition-all duration-300 ease-out",

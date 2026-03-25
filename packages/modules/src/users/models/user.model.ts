@@ -1,3 +1,4 @@
+import { AddressModel } from "../../address/models/address.model";
 import { UserDto } from "./dtos/user.dto";
 
 export class UserModel {
@@ -11,6 +12,7 @@ export class UserModel {
         public readonly isIdVerified: boolean,
         public readonly status: string,
         public readonly locale: string,
+        public readonly address: AddressModel | null,
         public readonly emailVerifiedAt: string | null,
         public readonly createdAt: string,
         public readonly updatedAt: string,
@@ -27,6 +29,7 @@ export class UserModel {
             dto.is_id_verified,
             dto.status,
             dto.locale,
+            dto.address ? AddressModel.from(dto.address) : null,
             dto.email_verified_at,
             dto.created_at,
             dto.updated_at,

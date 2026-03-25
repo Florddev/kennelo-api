@@ -106,16 +106,12 @@ export function ChoiceCardDescription({
 export function ChoiceCardIcon({
     icon: Icon,
     className,
+    ...rest
 }: {
     icon: React.ComponentType<{ className?: string }>;
-    isSelected: boolean;
     className?: string;
 }) {
-    return (
-        <div className={cn("flex", className)}>
-            <Icon className={cn("size-8 text-primary")} {...{ strokeWidth: 1.5 }} />
-        </div>
-    );
+    return <Icon className={cn("size-10 stroke-1 text-primary", className)} {...rest} />;
 }
 
 function DefaultChoiceCardContent<TValue extends string>({
@@ -141,7 +137,7 @@ function DefaultChoiceCardContent<TValue extends string>({
                     <ChoiceCardDescription>{option.description}</ChoiceCardDescription>
                 )}
             </ChoiceCardContent>
-            {Icon && <ChoiceCardIcon icon={Icon} isSelected={isSelected} />}
+            {Icon && <ChoiceCardIcon icon={Icon} />}
         </ChoiceCardContainer>
     );
 }

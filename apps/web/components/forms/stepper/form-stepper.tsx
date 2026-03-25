@@ -13,6 +13,7 @@ import { Button } from "@workspace/ui/components/button";
 import Link from "next/link";
 import Image from "next/image";
 import { useNavigation } from "@/hooks/use-navigation";
+import { useTranslations } from "next-intl";
 
 const STEP_EXIT_DURATION_MS = 50;
 
@@ -80,6 +81,7 @@ export function FormStepper<TFieldValues extends FieldValues>({
     renderProgress,
 }: FormStepperProps<TFieldValues>) {
     const { routes } = useNavigation();
+    const t = useTranslations();
 
     const form = useForm<TFieldValues>({
         resolver: zodResolver(schema as never),
@@ -126,12 +128,16 @@ export function FormStepper<TFieldValues extends FieldValues>({
                 onSubmit={form.handleSubmit(onSubmit)}
                 className={cn("space-y-6", className)}
             >
-                <div className="fixed top-0 left-0 w-screen h-screen bg-card z-100">
+                <div className="fixed top-0 left-0 w-screen h-screen bg-card z-20">
                     <div className="flex flex-col h-full justify-between overflow-auto">
-                        <div className={cn("w-full h-18 px-8 flex items-center justify-between")}>
+                        <div
+                            className={cn(
+                                "w-full h-18 px-4 md:px-8 flex items-center justify-between",
+                            )}
+                        >
                             <Link
                                 href={routes.Home()}
-                                className="relative h-full flex justify-center items-center font-semibold text-lg"
+                                className="hidden md:flex relative h-full justify-center items-center font-semibold text-lg"
                             >
                                 <Image
                                     className="object-cover max-h-full h-7 w-auto"
@@ -142,11 +148,11 @@ export function FormStepper<TFieldValues extends FieldValues>({
                                 />
                             </Link>
                             <div className="flex gap-2">
-                                <Button variant="outline" className="bg-transparent">
-                                    Des question ?
+                                <Button variant="outline" size="sm" className="bg-transparent">
+                                    {t("common.actions.help")}
                                 </Button>
-                                <Button variant="outline" className="bg-transparent">
-                                    Enregistrer et quitter
+                                <Button variant="outline" size="sm" className="bg-transparent">
+                                    {t("common.actions.save-and-quit")}
                                 </Button>
                             </div>
                         </div>
@@ -220,7 +226,7 @@ export function FormStepper<TFieldValues extends FieldValues>({
                                             );
                                         })()}
 
-                                        <div className="px-8 py-4 bg-card">
+                                        <div className="px-4 md:px-8 py-4 bg-card">
                                             <StepperNavigation
                                                 steps={steps}
                                                 visibleIndices={visibleIndices}

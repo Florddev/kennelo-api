@@ -1,3 +1,5 @@
+import { AddressDto } from "../../../address/models/dtos/address.dto";
+
 export type UserDto = {
     id: string;
     first_name: string;
@@ -8,6 +10,7 @@ export type UserDto = {
     is_id_verified: boolean;
     status: string;
     locale: string;
+    address: AddressDto | null;
     email_verified_at: string | null;
     roles: string[];
     created_at: string;

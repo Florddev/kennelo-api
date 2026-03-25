@@ -28,7 +28,7 @@ import {
     AlertDialogTrigger,
 } from "@workspace/ui/components/alert-dialog";
 import { Progress } from "@workspace/ui/components/progress";
-import { KHeart } from "@workspace/ui/components/icons";
+import { KHeart } from "@workspace/ui/icons";
 import {
     getCapacities,
     createCapacity,

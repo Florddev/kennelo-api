@@ -1,18 +1,5 @@
+import { AddressDto } from "../../../address/models/dtos/address.dto";
 import { UserDto } from "../../../users/models/dtos/user.dto";
-
-export type AddressDto = {
-    id: string;
-    line1: string;
-    line2: string | null;
-    postal_code: string;
-    city: string;
-    region: string | null;
-    country: string;
-    latitude: number | null;
-    longitude: number | null;
-    created_at: string;
-    updated_at: string;
-};
 
 export type EstablishmentDto = {
     id: string;

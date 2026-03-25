@@ -9,7 +9,7 @@ import {
 } from "@workspace/modules/users";
 import { Button } from "@workspace/ui/components/button";
 import { useTranslations } from "next-intl";
-import { KLocked2 } from "@workspace/ui/components/icons";
+import { KLocked2 } from "@workspace/ui/icons";
 import { useAsyncState } from "@/hooks/use-async-state";
 import { InputController } from "@/components/forms/input-controller";
 

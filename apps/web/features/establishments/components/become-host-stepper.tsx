@@ -15,7 +15,6 @@ import { BusinessInfoStep } from "./step/business-info-step";
 import { ContactDetailsStep } from "./step/contact-details-step";
 import { EstablishmentInfoStep } from "./step/establishment-info-step";
 import { EstablishmentTypeStep, type EstablishmentType } from "./step/establishment-type-step";
-import { HostTypeStep, type HostType } from "./step/host-type-step";
 import { ReviewStep } from "./step/review-step";
 import { WelcomeStep } from "./step/welcome-step";
 import { FormStepper } from "@/components/forms/stepper/form-stepper";
@@ -29,7 +28,6 @@ enum StepGroup {
 
 enum Step {
     WELCOME = "welcome",
-    HOST_TYPE = "host-type",
     ESTABLISHMENT_TYPE = "establishment-type",
     ESTABLISHMENT_INFO = "establishment-info",
     CONTACT_DETAILS = "contact-details",
@@ -44,7 +42,6 @@ export function BecomeHostStepper() {
     const { execute, isLoading } = useAsyncState();
     const { refreshUser, user } = useAuth();
     const [formKey, setFormKey] = useState(0);
-    const [hostType, setHostType] = useState<HostType | null>(null);
     const [establishmentType, setEstablishmentType] = useState<EstablishmentType | null>(null);
     const [selectionError, setSelectionError] = useState<string | undefined>();
 
@@ -56,48 +53,24 @@ export function BecomeHostStepper() {
             component: () => <WelcomeStep />,
         },
         {
-            id: Step.HOST_TYPE,
-            fields: [],
-            groupId: StepGroup.HOST_SELECTION,
-            canProceed: async (form) => {
-                if (!hostType) {
-                    setSelectionError(t("features.become-host.steps.hostType.error"));
-                    return false;
-                }
-
-                setSelectionError(undefined);
-
-                if (hostType === "individual" && user) {
-                    form.setValue("name", user.getFullName());
-                    form.setValue("phone", user.phone ?? "");
-                    form.setValue("email", user.email ?? "");
-                }
-
-                return true;
-            },
-            component: () => (
-                <HostTypeStep
-                    value={hostType}
-                    onChange={(value) => {
-                        setHostType(value);
-                        setSelectionError(undefined);
-                    }}
-                    error={selectionError}
-                />
-            ),
-        },
-        {
             id: Step.ESTABLISHMENT_TYPE,
             fields: [],
             groupId: StepGroup.HOST_SELECTION,
-            isVisible: () => hostType === "professional",
-            canProceed: () => {
+            // isVisible: () => hostType === "professional",
+            canProceed: async (form) => {
                 if (!establishmentType) {
                     setSelectionError(t("features.become-host.steps.establishmentType.error"));
                     return false;
                 }
 
                 setSelectionError(undefined);
+
+                if (establishmentType === "pet-sitter" && user) {
+                    form.setValue("name", user.getFullName());
+                    form.setValue("phone", user.phone ?? "");
+                    form.setValue("email", user.email ?? "");
+                }
+
                 return true;
             },
             component: () => (
@@ -115,7 +88,7 @@ export function BecomeHostStepper() {
             id: Step.ESTABLISHMENT_INFO,
             fields: ["name", "description"],
             groupId: StepGroup.HOST_DETAILS,
-            isVisible: () => hostType === "professional",
+            // isVisible: () => hostType === "professional",
             component: ({ control, isLoading: loading }) => (
                 <EstablishmentInfoStep control={control} isLoading={loading} />
             ),
@@ -147,7 +120,7 @@ export function BecomeHostStepper() {
             id: Step.BUSINESS_INFO,
             fields: ["siret"],
             groupId: StepGroup.HOST_DETAILS,
-            isVisible: () => hostType === "professional",
+            // isVisible: () => hostType === "professional",
             component: ({ control, isLoading: loading }) => (
                 <BusinessInfoStep control={control} isLoading={loading} />
             ),
@@ -157,13 +130,7 @@ export function BecomeHostStepper() {
             fields: [],
             groupId: StepGroup.REVIEW,
             component: ({ control, isLoading: loading }) => (
-                <ReviewStep
-                    control={control}
-                    isLoading={loading}
-                    hostType={hostType}
-                    error={undefined}
-                    steps={steps}
-                />
+                <ReviewStep control={control} isLoading={loading} error={undefined} steps={steps} />
             ),
         },
     ];

@@ -2,7 +2,7 @@
 
 import { cn } from "@workspace/ui/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { KHome, KCompass, KMessage, KHeart } from "@workspace/ui/components/icons";
+import { KHome, KCompass, KMessage, KHeart } from "@workspace/ui/icons";
 import { NavigationItem } from "@/components/navigation/nav-item";
 import Image from "next/image";
 import { useTranslations } from "next-intl";

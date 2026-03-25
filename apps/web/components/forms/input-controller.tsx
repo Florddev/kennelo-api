@@ -12,7 +12,7 @@ import { Field, FieldLabel, FieldError, FieldDescription } from "@workspace/ui/c
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@workspace/ui/components/input-group";
 import { PasswordStrengthIndicator } from "./password-strength-indicator";
 import { PhoneInput } from "@workspace/ui/components/phone-input";
-import { KIcon } from "@workspace/ui/components/icons";
+import { KIcon } from "@workspace/ui/icons";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 
@@ -27,11 +27,13 @@ type InputControllerProps<TFieldValues extends FieldValues> = {
     showPasswordIndicator?: boolean;
     type?: string;
     Icon?: KIcon;
+    defaultCountry?: string;
 };
 
 type InputFieldProps = Omit<InputControllerProps<FieldValues>, "name" | "control"> & {
     field: ControllerRenderProps<FieldValues, string>;
     fieldState: ControllerFieldState;
+    defaultCountry?: string;
 };
 
 type TextInputSectionProps = {
@@ -108,6 +110,7 @@ function InputField({
     label,
     description,
     showPasswordIndicator,
+    defaultCountry,
 }: InputFieldProps) {
     const isPassword = type === "password";
     const isPhone = type === "phone";
@@ -127,6 +130,7 @@ function InputField({
                     onChange={field.onChange}
                     disabled={isLoading}
                     autoComplete={autoComplete ?? "tel"}
+                    defaultCountry={defaultCountry as never}
                 />
             ) : (
                 <TextInputSection

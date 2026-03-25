@@ -1,4 +1,4 @@
-import { AddressDto } from "./dtos/establishment.dto";
+import { AddressDto } from "./dtos/address.dto";
 
 export class AddressModel {
     private constructor(

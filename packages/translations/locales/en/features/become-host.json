@@ -18,7 +18,7 @@
             "error": "Please select a profile type"
         },
         "establishmentType": {
-            "title": "Establishment type",
+            "title": "Which of the following best describes your business?",
             "subtitle": "What type of facility do you manage?",
             "pension": "Boarding",
             "pensionDescription": "Accommodation and care for pets during stays",
@@ -30,7 +30,11 @@
             "shelterDescription": "Animal rescue and adoption",
             "other": "Other",
             "otherDescription": "Other type of animal facility",
-            "error": "Please select an establishment type"
+            "error": "Please select an establishment type",
+            "pet-sitter": "Independent pet sitter",
+            "home-care": "Home care",
+            "host-family": "Host family",
+            "mobile-boarding": "Traveling guard"
         },
         "establishmentInfo": {
             "title": "Your establishment",

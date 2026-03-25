@@ -13,10 +13,12 @@ import { useTranslations } from "next-intl";
 import { useAsyncState } from "@/hooks/use-async-state";
 import { InputController } from "@/components/forms/input-controller";
 import { useAuth } from "@/features/auth";
+import { usePhoneCountryCode } from "@/hooks/use-phone-country-code";
 
 export function UpdateProfileForm() {
     const { user, refreshUser } = useAuth();
     const { isLoading, execute } = useAsyncState();
+    const phoneCountryCode = usePhoneCountryCode();
     const t = useTranslations();
 
     const { handleSubmit, control, setError, reset } = useForm<UpdateProfileInput>({
@@ -73,6 +75,7 @@ export function UpdateProfileForm() {
                 control={control}
                 label={t("common.fields.phone")}
                 isLoading={isLoading}
+                defaultCountry={phoneCountryCode}
             />
             <Button type="submit" disabled={isLoading}>
                 {t("common.actions.update")}

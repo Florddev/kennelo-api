@@ -2,14 +2,12 @@
 
 import { useWatch, Control } from "react-hook-form";
 import { useTranslations } from "next-intl";
-import { Pencil, Building2, Phone, MapPin, FileText, AlertCircle, Info } from "lucide-react";
+import { Pencil, Building2, Phone, MapPin, FileText, AlertCircle } from "lucide-react";
 import { Button } from "@workspace/ui/components/button";
 import type { CreateEstablishmentInput } from "@workspace/modules/establishments";
 import { useStepper } from "rhf-stepper";
 import type { FormStepDefinition } from "@/components/forms/stepper/stepper-types";
 import { StepShell } from "./step-shell";
-
-type HostType = "professional" | "individual";
 
 type ReviewSectionProps = {
     title: string;
@@ -61,12 +59,11 @@ function ReviewItem({ label, value }: { label: string; value: string | undefined
 type ReviewStepProps = {
     control: Control<CreateEstablishmentInput>;
     isLoading: boolean;
-    hostType: HostType | null;
     error?: string;
     steps: FormStepDefinition<CreateEstablishmentInput>[];
 };
 
-export function ReviewStep({ control, hostType, error, steps }: ReviewStepProps) {
+export function ReviewStep({ control, error, steps }: ReviewStepProps) {
     const t = useTranslations();
     const { jumpTo } = useStepper<CreateEstablishmentInput>();
     const values = useWatch({ control });
@@ -78,8 +75,6 @@ export function ReviewStep({ control, hostType, error, steps }: ReviewStepProps)
             )
             .map((step, index) => [step.id, index]),
     ) as Record<string, number>;
-
-    const isIndividual = hostType === "individual";
 
     const goTo = (stepId: string) => {
         const index = stepIndexById[stepId];
@@ -102,32 +97,20 @@ export function ReviewStep({ control, hostType, error, steps }: ReviewStepProps)
                 )}
 
                 <div className="flex flex-col gap-4">
-                    {isIndividual ? (
-                        <div className="flex items-start gap-3 rounded-2xl border border-primary/30 bg-primary/5 p-4">
-                            <Info className="size-5 text-primary shrink-0 mt-0.5" />
-                            <div className="flex flex-col gap-1">
-                                <p className="text-sm font-medium">
-                                    {t("features.become-host.steps.review.autoFilledFromProfile")}
-                                </p>
-                                <p className="text-sm text-muted-foreground">{values.name}</p>
-                            </div>
-                        </div>
-                    ) : (
-                        <ReviewSection
-                            title={t("features.become-host.steps.establishmentInfo.title")}
-                            icon={Building2}
-                            onEdit={() => goTo("establishment-info")}
-                        >
-                            <ReviewItem
-                                label={t("common.fields.establishmentName")}
-                                value={values.name}
-                            />
-                            <ReviewItem
-                                label={t("common.fields.description")}
-                                value={values.description}
-                            />
-                        </ReviewSection>
-                    )}
+                    <ReviewSection
+                        title={t("features.become-host.steps.establishmentInfo.title")}
+                        icon={Building2}
+                        onEdit={() => goTo("establishment-info")}
+                    >
+                        <ReviewItem
+                            label={t("common.fields.establishmentName")}
+                            value={values.name}
+                        />
+                        <ReviewItem
+                            label={t("common.fields.description")}
+                            value={values.description}
+                        />
+                    </ReviewSection>
 
                     <ReviewSection
                         title={t("features.become-host.steps.contactDetails.title")}
@@ -167,15 +150,13 @@ export function ReviewStep({ control, hostType, error, steps }: ReviewStepProps)
                         />
                     </ReviewSection>
 
-                    {!isIndividual && (
-                        <ReviewSection
-                            title={t("features.become-host.steps.businessInfo.title")}
-                            icon={FileText}
-                            onEdit={() => goTo("business-info")}
-                        >
-                            <ReviewItem label={t("common.fields.siret")} value={values.siret} />
-                        </ReviewSection>
-                    )}
+                    <ReviewSection
+                        title={t("features.become-host.steps.businessInfo.title")}
+                        icon={FileText}
+                        onEdit={() => goTo("business-info")}
+                    >
+                        <ReviewItem label={t("common.fields.siret")} value={values.siret} />
+                    </ReviewSection>
                 </div>
             </div>
         </StepShell>

@@ -1,5 +1,5 @@
 import { UserModel } from "../../users/models/user.model";
-import { AddressModel } from "./address.model";
+import { AddressModel } from "../../address/models/address.model";
 import { EstablishmentDto } from "./dtos/establishment.dto";
 
 export class EstablishmentModel {

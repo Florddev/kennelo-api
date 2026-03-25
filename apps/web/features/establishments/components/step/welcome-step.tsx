@@ -11,7 +11,7 @@ export function WelcomeStep() {
                 <span className="text-base font-semibold text-primary">
                     {t("features.become-host.steps.welcome.title")}
                 </span>
-                <h1 className="text-4xl md:text-5xl font-semibold tracking-tight max-w-md">
+                <h1 className="text-4xl md:text-5xl font-semibold font-heading tracking-tight max-w-md">
                     {t("features.become-host.steps.welcome.subtitle")}
                 </h1>
                 <p className="text-lg text-muted-foreground max-w-xl">
