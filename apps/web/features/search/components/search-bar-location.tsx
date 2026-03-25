@@ -50,7 +50,7 @@ export function SearchBarLocation({
             data-slot="search-bar-location"
             onClick={handleFocus}
             className={cn(
-                "flex-1 min-w-0 text-start px-6 py-4 rounded-full transition-all duration-150 cursor-text",
+                "flex-1 min-w-0 text-start px-6 py-2 rounded-full transition-all duration-150 cursor-text",
                 activeClass,
             )}
         >

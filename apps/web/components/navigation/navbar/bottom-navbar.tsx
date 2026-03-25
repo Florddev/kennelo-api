@@ -5,29 +5,35 @@ import NavItem, { NavigationItem } from "../nav-item";
 import UserMenu from "../user-menu";
 import { useTranslations } from "next-intl";
 import { cn } from "@workspace/ui/lib/utils";
+import { usePlatform } from "@/hooks/use-platform";
 
 export function BottomNavbar({ navigationItems }: { navigationItems: NavigationItem[] }) {
     const { user, isAuthenticated, logout } = useAuth();
+    const { isCapacitorApp } = usePlatform();
     const t = useTranslations();
 
     return (
-        <nav className="fixed bottom-0 w-full h-16 bg-background border-t border-primary/10 flex items-center z-10 pb-3">
-            <div className="container mx-auto h-full flex justify-between items-center px-4 sm:px-6">
+        <nav
+            className={cn(
+                "fixed bottom-0 w-full bg-background border-t border-primary/10 flex items-center z-10",
+                isCapacitorApp ? "pb-3 h-16" : "pb-1 h-13",
+            )}
+        >
+            <div className="container mx-auto h-full flex justify-around w-full items-center">
                 {navigationItems.map((item) => (
                     <NavItem
                         key={item.href}
                         Icon={item.icon}
-                        iconSize={item.special ? 24 : 28}
+                        iconSize={32}
                         active={item.active}
                         iconSecondaryOpacity={item.active ? 1 : undefined}
                         href={item.href}
                         className={cn(
                             "mt-1 text-xs text-muted-foreground",
-                            item.special &&
-                                "mt-0 px-0 bg-primary text-primary-foreground rounded-full aspect-square h-10",
+                            item.active ? "text-primary" : "text-muted-foreground",
                         )}
                     >
-                        {!item.special && item.text}
+                        {item.text}
                     </NavItem>
                 ))}
                 {isAuthenticated && (

@@ -12,13 +12,7 @@ export async function Providers({
     initialIsAuthenticated: boolean;
 }) {
     return (
-        <NextThemesProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-            enableColorScheme
-        >
+        <NextThemesProvider attribute="class" defaultTheme="light" enableSystem enableColorScheme>
             <TooltipProvider>
                 <AuthProvider initialIsAuthenticated={initialIsAuthenticated}>
                     {children}

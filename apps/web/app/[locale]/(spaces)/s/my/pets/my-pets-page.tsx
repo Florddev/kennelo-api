@@ -1,8 +1,7 @@
 "use client";
 
-import { Plus, PawPrint } from "lucide-react";
+import { Plus, PawPrint, PlusIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import type React from "react";
 import { Button } from "@workspace/ui/components/button";
 import {
     Empty,
@@ -15,6 +14,73 @@ import { usePets } from "@/features/pets/hooks/use-pets";
 import { usePetsFilters } from "@/features/pets/hooks/use-pets-filters";
 import { PetCard, PetCardSkeleton } from "@/features/pets/components/pet-card";
 import { PetsFilterBar } from "@/features/pets/components/pets-filter-bar";
+import { KHeart } from "@workspace/ui/icons";
+import { useScrolled } from "@/hooks/use-scrolled";
+import { cn } from "@workspace/ui/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { ShapeMedia } from "@/components/media/shape-media";
+
+type PetsContentProps = {
+    isLoading: boolean;
+    pets: ReturnType<typeof usePets>["pets"];
+    filteredPets: ReturnType<typeof usePetsFilters>["filteredPets"];
+    t: ReturnType<typeof useTranslations>;
+};
+
+function PetsContent({ isLoading, pets, filteredPets, t }: PetsContentProps) {
+    if (isLoading) {
+        return (
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {Array.from({ length: 8 }).map((_, i) => (
+                    <PetCardSkeleton key={i} />
+                ))}
+            </div>
+        );
+    }
+
+    if (pets.length === 0) {
+        return (
+            <Empty className="border">
+                <EmptyMedia variant="icon">
+                    <PawPrint />
+                </EmptyMedia>
+                <EmptyHeader>
+                    <EmptyTitle>{t("features.pets.noPets")}</EmptyTitle>
+                    <EmptyDescription>{t("features.pets.noPetsDescription")}</EmptyDescription>
+                </EmptyHeader>
+            </Empty>
+        );
+    }
+
+    if (filteredPets.length === 0) {
+        return (
+            <Empty className="border">
+                <EmptyMedia variant="icon">
+                    <PawPrint />
+                </EmptyMedia>
+                <EmptyHeader>
+                    <EmptyTitle>{t("features.pets.filters.resultsCount", { count: 0 })}</EmptyTitle>
+                    <EmptyDescription>{t("features.pets.noPetsDescription")}</EmptyDescription>
+                </EmptyHeader>
+            </Empty>
+        );
+    }
+
+    return (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 xl:gap-8 xl:gap-y-8">
+            {filteredPets.map((pet) => (
+                <PetCard key={pet.id} pet={pet} />
+            ))}
+            <div className="flex gap-4 items-center cursor-pointer">
+                <ShapeMedia emptyIcon={PlusIcon} shapeClassName="lg:size-38 xl:size-56" />
+                <div className="flex flex-col gap-2">
+                    <h1 className="text-2xl font-semibold">Ajouter</h1>
+                    <span className="text-sm text-muted-foreground">Créer un nouvel animal</span>
+                </div>
+            </div>
+        </div>
+    );
+}
 
 export default function MyPetsPage() {
     const t = useTranslations();
@@ -31,65 +97,44 @@ export default function MyPetsPage() {
         hasActiveFilters,
         clearFilters,
     } = usePetsFilters(pets);
-
-    let petsContent: React.ReactNode;
-    if (isLoading) {
-        petsContent = (
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                {Array.from({ length: 8 }).map((_, i) => (
-                    <PetCardSkeleton key={i} />
-                ))}
-            </div>
-        );
-    } else if (pets.length === 0) {
-        petsContent = (
-            <Empty className="border">
-                <EmptyMedia variant="icon">
-                    <PawPrint />
-                </EmptyMedia>
-                <EmptyHeader>
-                    <EmptyTitle>{t("features.pets.noPets")}</EmptyTitle>
-                    <EmptyDescription>{t("features.pets.noPetsDescription")}</EmptyDescription>
-                </EmptyHeader>
-            </Empty>
-        );
-    } else if (filteredPets.length === 0) {
-        petsContent = (
-            <Empty className="border">
-                <EmptyMedia variant="icon">
-                    <PawPrint />
-                </EmptyMedia>
-                <EmptyHeader>
-                    <EmptyTitle>{t("features.pets.filters.resultsCount", { count: 0 })}</EmptyTitle>
-                    <EmptyDescription>{t("features.pets.noPetsDescription")}</EmptyDescription>
-                </EmptyHeader>
-            </Empty>
-        );
-    } else {
-        petsContent = (
-            <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 gap-4">
-                {filteredPets.map((pet) => (
-                    <PetCard key={pet.id} pet={pet} />
-                ))}
-            </div>
-        );
-    }
+    const scrolled = useScrolled(100);
+    const isMobile = useIsMobile();
 
     return (
         <div className="min-h-screen bg-card">
-            <div className="h-18 flex items-center">
-                <div className="flex items-center justify-between w-full">
-                    <h1 className="text-3xl font-semibold tracking-tight">
+            <div
+                className={cn(
+                    "sticky top-0 bg-card flex items-center z-10",
+                    scrolled && "border-b",
+                )}
+            >
+                <div className="flex md:justify-between sm:items-center w-full py-2 p-4 sm:pt-6">
+                    <h1
+                        className={cn(
+                            scrolled ? "text-xl" : "text-3xl mt-12",
+                            "flex gap-1.5 items-center font-bold tracking-tight transition-all sm:mt-0",
+                        )}
+                    >
+                        <KHeart
+                            className={cn("size-12 -ml-1.5 transition-all", scrolled && "size-9")}
+                            filled
+                            secondaryOpacity={1}
+                            secondary="text-secondary"
+                        />
                         {t("features.pets.title")}
                     </h1>
-                    <Button className="rounded-4xl gap-2">
+                    <Button
+                        className="ml-auto gap-2"
+                        variant="outline"
+                        size={isMobile ? "icon" : "default"}
+                    >
                         <Plus className="size-4" />
-                        {t("features.pets.addPet")}
+                        {!isMobile && t("features.pets.addPet")}
                     </Button>
                 </div>
             </div>
 
-            <div className="pb-6 space-y-6">
+            <div className="pb-6 space-y-6 px-4">
                 {!isLoading && pets.length > 0 && (
                     <PetsFilterBar
                         search={search}
@@ -104,7 +149,7 @@ export default function MyPetsPage() {
                         resultsCount={filteredPets.length}
                     />
                 )}
-                {petsContent}
+                <PetsContent isLoading={isLoading} pets={pets} filteredPets={filteredPets} t={t} />
             </div>
         </div>
     );

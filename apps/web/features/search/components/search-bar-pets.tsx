@@ -48,7 +48,7 @@ export function SearchBarPets({
             data-slot="search-bar-pets"
             onClick={handleClick}
             className={cn(
-                "flex-[0.9] min-w-0 text-start px-6 py-4 rounded-full transition-all duration-150 outline-none",
+                "flex-[0.9] min-w-0 text-start px-6 py-2 rounded-full transition-all duration-150 outline-none",
                 activeClass,
             )}
         >

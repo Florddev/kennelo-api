@@ -44,7 +44,7 @@ export function SearchBarDates({
             data-slot="search-bar-dates"
             onClick={handleClick}
             className={cn(
-                "flex-1 min-w-0 text-start px-6 py-4 rounded-full transition-all duration-150 outline-none",
+                "flex-1 min-w-0 text-start px-6 py-2 rounded-full transition-all duration-150 outline-none",
                 activeClass,
             )}
         >

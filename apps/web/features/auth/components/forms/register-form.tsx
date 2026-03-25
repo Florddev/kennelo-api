@@ -112,7 +112,12 @@ export function RegisterForm({ onSuccess }: { onSuccess?: () => void }) {
                 autoComplete="new-password"
                 Icon={KLocked2}
             />
-            <Button type="submit" className="w-full p-6 font-medium text-md" disabled={isLoading}>
+            <Button
+                type="submit"
+                size="lg"
+                className="w-full font-medium text-md"
+                disabled={isLoading}
+            >
                 {isLoading
                     ? t("features.auth.register.loading")
                     : t("features.auth.create-account")}

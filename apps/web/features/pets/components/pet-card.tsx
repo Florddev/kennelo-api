@@ -1,23 +1,41 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Card } from "@workspace/ui/components/card";
 import { Skeleton } from "@workspace/ui/components/skeleton";
 import type { PetModel } from "@workspace/modules/pets";
 import { useNavigation } from "@/hooks/use-navigation";
 import { getAge } from "@/features/pets/lib/pet-age";
-import { PetCardMedia } from "@/features/pets/components/pet-card-media";
-import { PetCardStats } from "@/features/pets/components/pet-card-stats";
+import { Badge } from "@workspace/ui/components/badge";
+import { CircleSlash, Mars, Star, Venus } from "lucide-react";
+import { ShapeMedia } from "@/components/media/shape-media";
 
 type PetCardProps = {
     pet: PetModel;
 };
 
+const sexUiByKey = {
+    female: {
+        icon: Venus,
+        badgeCircleClassName: "text-pink-100",
+        badgeIconClassName: "text-pink-400",
+    },
+    male: {
+        icon: Mars,
+        badgeCircleClassName: "text-sky-100",
+        badgeIconClassName: "text-sky-400",
+    },
+    unknown: {
+        icon: CircleSlash,
+        badgeCircleClassName: "text-muted",
+        badgeIconClassName: "text-muted-foreground/50",
+    },
+} as const;
+
 export function PetCard({ pet }: PetCardProps) {
     const t = useTranslations();
     const { routes, push } = useNavigation();
-
-    const typeCode = pet.animalType?.code?.toLowerCase() ?? "";
+    const normalizedSex = pet.sex === "female" || pet.sex === "male" ? pet.sex : "unknown";
+    const sexUi = sexUiByKey[normalizedSex];
 
     const ageDisplay = pet.birthDate
         ? (() => {
@@ -27,20 +45,39 @@ export function PetCard({ pet }: PetCardProps) {
           })()
         : null;
 
+    const sexLabel = pet.sex !== "unknown" ? `${pet.sex}, ` : "";
+    const ageLabel = ageDisplay ?? "—";
+    const weightLabel = pet.weight ? `${pet.weight} kg` : "—";
+
     return (
-        <Card
+        <div
             data-slot="pet-card"
-            className="cursor-pointer hover:shadow-md transition-all overflow-hidden rounded-2xl group py-0 gap-0"
+            className="flex gap-4 items-center cursor-pointer"
             onClick={() => push(routes.PetDetails({ id: pet.id }))}
         >
-            <PetCardMedia
-                avatarUrl={pet.avatarUrl}
-                typeCode={typeCode}
-                animalType={pet.animalType}
-                isSterilized={pet.isSterilized}
+            <ShapeMedia
+                imageUrl={pet.getAvatarUrl()}
+                badgeIcon={sexUi.icon}
+                badgeCircleClassName={`${sexUi.badgeCircleClassName} lg:size-8 xl:size-10`}
+                badgeIconClassName={`${sexUi.badgeIconClassName} lg:size-5`}
+                shapeClassName="lg:size-38 xl:size-56"
             />
-            <PetCardStats pet={pet} ageDisplay={ageDisplay} />
-        </Card>
+            <div className="flex flex-col gap-2 w-full">
+                <div className="flex justify-between items-center w-full">
+                    <h1 className="text-2xl font-semibold">{pet.name}</h1>
+                </div>
+                <div className="flex flex-col">
+                    <span className="text-sm text-muted-foreground">{pet.breed}</span>
+                    <span className="text-sm text-muted-foreground">
+                        {`${sexLabel}${ageLabel}, ${weightLabel}`}
+                    </span>
+                </div>
+                <Badge variant="outline" className="text-amber-500 bg-amber-100 border-0">
+                    <Star className="size-4" />
+                    4.4
+                </Badge>
+            </div>
+        </div>
     );
 }
 

@@ -62,7 +62,12 @@ export function LoginForm({ onSuccess }: { onSuccess?: (locale: Locale) => void 
                     <AlertDescription>{error}</AlertDescription>
                 </Alert>
             )}
-            <Button type="submit" className="w-full p-6 font-medium text-md" disabled={isLoading}>
+            <Button
+                type="submit"
+                size="lg"
+                className="w-full font-medium text-md"
+                disabled={isLoading}
+            >
                 {isLoading ? t("features.auth.login.loading") : t("features.auth.login.title")}
             </Button>
         </form>

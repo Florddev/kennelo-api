@@ -1,3 +1,5 @@
+"use client";
+
 import { useSyncExternalStore } from "react";
 import { getPlatform, isNative, isAndroid, isIos, isCapacitorApp, isBrowser } from "@/lib/platform";
 
@@ -11,17 +13,7 @@ interface PlatformInfo {
     isReady: boolean;
 }
 
-const getSnapshot = (): PlatformInfo => ({
-    platform: getPlatform() as "web" | "android" | "ios" | "server",
-    isNative: isNative(),
-    isAndroid: isAndroid(),
-    isIos: isIos(),
-    isCapacitorApp: isCapacitorApp(),
-    isBrowser: isBrowser(),
-    isReady: true,
-});
-
-const getServerSnapshot = (): PlatformInfo => ({
+const SERVER_SNAPSHOT: PlatformInfo = {
     platform: "server",
     isNative: false,
     isAndroid: false,
@@ -29,8 +21,32 @@ const getServerSnapshot = (): PlatformInfo => ({
     isCapacitorApp: false,
     isBrowser: false,
     isReady: false,
-});
+};
+
+const subscribe = () => () => {};
+
+let clientSnapshot: PlatformInfo | null = null;
+
+const getSnapshot = (): PlatformInfo => {
+    if (clientSnapshot) {
+        return clientSnapshot;
+    }
+
+    clientSnapshot = {
+        platform: getPlatform() as "web" | "android" | "ios" | "server",
+        isNative: isNative(),
+        isAndroid: isAndroid(),
+        isIos: isIos(),
+        isCapacitorApp: isCapacitorApp(),
+        isBrowser: isBrowser(),
+        isReady: true,
+    };
+
+    return clientSnapshot;
+};
+
+const getServerSnapshot = (): PlatformInfo => SERVER_SNAPSHOT;
 
 export function usePlatform(): PlatformInfo {
-    return useSyncExternalStore(() => () => {}, getSnapshot, getServerSnapshot);
+    return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 }

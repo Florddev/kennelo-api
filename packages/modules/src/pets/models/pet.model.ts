@@ -51,4 +51,14 @@ export class PetModel {
             dto.updated_at,
         );
     }
+
+    getAvatarUrl(): string | undefined {
+        if (this.avatarUrl) {
+            return this.avatarUrl;
+        }
+        if (this.images[0] != null) {
+            return this.images[0].url;
+        }
+        return undefined;
+    }
 }
