@@ -23,7 +23,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@workspace/ui/components/alert-dialog";
-import { KHome, KCompass, KCalendar, KHeart } from "@workspace/ui/components/icons";
+import { KHome, KCompass, KCalendar, KHeart } from "@workspace/ui/icons";
 import {
     getEstablishment,
     updateEstablishment,

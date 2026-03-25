@@ -37,5 +37,7 @@
             "dangerZoneDescription": "Ces actions sont irréversibles. Procédez avec précaution.",
             "dangerZoneConfirmation": "La suppression de votre compte est définitive et entraîne la perte de toutes vos données."
         }
-    }
+    },
+    "save-and-quit": "Enregistrer et quitter",
+    "help": "Des question ?"
 }

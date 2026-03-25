@@ -17,7 +17,6 @@ export * from "./actions/queries/get-capacities";
 export * from "./actions/queries/get-dashboard";
 export * from "./actions/queries/get-establishment";
 export * from "./actions/queries/get-establishments";
-export * from "./models/address.model";
 export * from "./models/availability.model";
 export * from "./models/capacity.model";
 export * from "./models/dashboard.model";

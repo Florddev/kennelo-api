@@ -27,22 +27,27 @@ export function TextareaController<TFieldValues extends FieldValues>({
         <Controller
             name={name}
             control={control}
-            render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid} className="gap-1.5 group">
-                    {label && <FieldLabel htmlFor={field.name}>{label}</FieldLabel>}
-                    <Textarea
-                        {...field}
-                        id={field.name}
-                        aria-invalid={fieldState.invalid}
-                        placeholder={placeholder}
-                        disabled={isLoading}
-                        rows={rows}
-                        className="bg-card rounded-2xl"
-                    />
-                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                    {description && <FieldDescription>{description}</FieldDescription>}
-                </Field>
-            )}
+            render={({ field, fieldState }) => {
+                const showError =
+                    fieldState.invalid && (fieldState.isTouched || fieldState.isDirty);
+
+                return (
+                    <Field data-invalid={showError} className="gap-1.5 group">
+                        {label && <FieldLabel htmlFor={field.name}>{label}</FieldLabel>}
+                        <Textarea
+                            {...field}
+                            id={field.name}
+                            aria-invalid={showError}
+                            placeholder={placeholder}
+                            disabled={isLoading}
+                            rows={rows}
+                            className="bg-card rounded-2xl"
+                        />
+                        {showError && <FieldError errors={[fieldState.error]} />}
+                        {description && <FieldDescription>{description}</FieldDescription>}
+                    </Field>
+                );
+            }}
         />
     );
 }

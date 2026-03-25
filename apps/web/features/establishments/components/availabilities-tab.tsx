@@ -28,7 +28,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@workspace/ui/components/alert-dialog";
-import { KCalendar } from "@workspace/ui/components/icons";
+import { KCalendar } from "@workspace/ui/icons";
 import {
     getAvailabilities,
     createAvailability,

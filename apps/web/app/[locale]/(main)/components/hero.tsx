@@ -17,7 +17,7 @@ export default function HomeHero() {
                                 {t("features.home.badge")}
                             </span>
                         </div>
-                        <h1 className="text-5xl lg:text-6xl font-bold leading-[1.1] tracking-tight">
+                        <h1 className="text-5xl lg:text-6xl font-bold font-heading leading-[1.1] tracking-tight">
                             {t("features.home.title")}
                             <br />
                             <span>{t("features.home.title-accent")}</span>

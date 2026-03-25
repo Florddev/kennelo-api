@@ -31,6 +31,8 @@ import { useLocale, useTranslations } from "next-intl";
 import type { Locale } from "@/dictionaries";
 import { LanguageSelectorItems } from "../i18n/language-selector";
 import { routes } from "@/lib/routes";
+import { useNavigation } from "@/hooks/use-navigation";
+import { useAuth } from "@/features/auth";
 
 interface UserMenuProps {
     user?: {
@@ -40,18 +42,24 @@ interface UserMenuProps {
         email?: string | null;
     };
     hasEstablishment?: boolean;
-    hostSpaceHref?: string;
     onLogout?: () => void;
 }
 
-export default function UserMenu({
-    user,
-    hasEstablishment,
-    hostSpaceHref,
-    onLogout,
-}: UserMenuProps) {
+function useHostSpaceHref() {
+    const { routes } = useNavigation();
+    const { establishments, hasEstablishment } = useAuth();
+
+    if (!hasEstablishment) return undefined;
+    if (establishments.length === 1) {
+        return routes.EstablishmentDetail({ id: establishments[0]!.id });
+    }
+    return routes.MyEstablishments();
+}
+
+export default function UserMenu({ user, hasEstablishment, onLogout }: UserMenuProps) {
     const { theme, setTheme } = useTheme();
     const locale = useLocale() as Locale;
+    const hostSpaceHref = useHostSpaceHref();
     const t = useTranslations();
 
     const themeOptions = [

@@ -3,8 +3,8 @@
     "description": "Référencez votre établissement d'accueil pour animaux sur Kennelo",
     "steps": {
         "welcome": {
-            "title": "Bienvenue",
-            "subtitle": "Configurons votre établissement",
+            "title": "Etape 1",
+            "subtitle": "Parlez-nous de votre activité",
             "description": "En quelques étapes, vous serez prêt à accueillir des animaux dans votre établissement. Nous vous guidons tout au long de la configuration.",
             "cta": "C'est parti"
         },
@@ -18,7 +18,7 @@
             "error": "Veuillez sélectionner un type de profil"
         },
         "establishmentType": {
-            "title": "Type d'établissement",
+            "title": "Parmi les propositions suivantes, laquelle décrit le mieux votre activité ?",
             "subtitle": "Quel type de structure gérez-vous ?",
             "pension": "Pension",
             "pensionDescription": "Hébergement et soins pour animaux en séjour",
@@ -30,7 +30,11 @@
             "shelterDescription": "Accueil et adoption d'animaux",
             "other": "Autre",
             "otherDescription": "Autre type de structure animalière",
-            "error": "Veuillez sélectionner un type d'établissement"
+            "error": "Veuillez sélectionner un type d'établissement",
+            "pet-sitter": "Pet-sitter indépendant",
+            "home-care": "Garde à domicile",
+            "host-family": "Famille d’accueil",
+            "mobile-boarding": "Garde itinérante"
         },
         "establishmentInfo": {
             "title": "Votre établissement",

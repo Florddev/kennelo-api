@@ -6,7 +6,7 @@ import { loginUserSchema, type LoginUserInput, loginUser } from "@workspace/modu
 import { Button } from "@workspace/ui/components/button";
 import { Alert, AlertDescription } from "@workspace/ui/components/alert";
 import { useTranslations } from "next-intl";
-import { KEnvelope1, KLocked2 } from "@workspace/ui/components/icons";
+import { KEnvelope1, KLocked2 } from "@workspace/ui/icons";
 import { useAsyncState } from "@/hooks/use-async-state";
 import { InputController } from "@/components/forms/input-controller";
 import { useAuth } from "@/features/auth/hooks/use-auth";

@@ -143,15 +143,14 @@ function generateHeader() {
 function generateTypeDefinitions(routes) {
     let content = "";
     for (const [name, { params, types }] of Object.entries(routes)) {
-        if (params.length > 0) {
-            content += `type ${name}Params = {\n`;
-            params.forEach(param => {
-                const type = types[param] || "string | number";
-                const isLocale = param === "locale";
-                content += `  ${param}${isLocale ? "?" : ""}: ${type};\n`;
-            });
-            content += `};\n\n`;
-        }
+        content += `type ${name}Params = {\n`;
+        params.forEach(param => {
+            const type = types[param] || "string | number";
+            const isLocale = param === "locale";
+            content += `  ${param}${isLocale ? "?" : ""}: ${type};\n`;
+        });
+        content += `  search_params?: Record<string, string | number | boolean>;\n`;
+        content += `};\n\n`;
     }
     return content;
 }
@@ -159,20 +158,13 @@ function generateTypeDefinitions(routes) {
 function generateRouteFunctions(routes) {
     let content = "";
     for (const [name, { path, params }] of Object.entries(routes)) {
-        const hasParams = params.length > 0;
-        const paramsType = hasParams ? `${name}Params` : "";
-        const isOnlyLocale = params.every(p => p === "locale");
-        const paramOptional = isOnlyLocale ? "?" : "";
-        const paramsArg = hasParams ? `params${paramOptional}: ${paramsType}` : "";
+        const paramsType = `${name}Params`;
+        const hasRequiredParams = params.some(p => p !== "locale");
+        const paramOptional = hasRequiredParams ? "" : "?";
+        const paramsArg = `params${paramOptional}: ${paramsType}`;
 
         content += `function ${name}(${paramsArg}): string {\n`;
-
-        if (hasParams) {
-            content += `  return buildRoute("${path}", params);\n`;
-        } else {
-            content += `  return "${path}";\n`;
-        }
-
+        content += `  return buildRoute("${path}", params);\n`;
         content += `}\n\n`;
     }
     return content;

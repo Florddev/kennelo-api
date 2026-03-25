@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { changeEmailSchema, type ChangeEmailInput, changeEmail } from "@workspace/modules/users";
 import { Button } from "@workspace/ui/components/button";
 import { useTranslations } from "next-intl";
-import { KEnvelope1, KLocked2 } from "@workspace/ui/components/icons";
+import { KEnvelope1, KLocked2 } from "@workspace/ui/icons";
 import { useAsyncState } from "@/hooks/use-async-state";
 import { InputController } from "@/components/forms/input-controller";
 import { useAuth } from "@/features/auth";

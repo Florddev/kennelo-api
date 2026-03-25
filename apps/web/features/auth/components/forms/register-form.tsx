@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { registerUserSchema, type RegisterUserInput, registerUser } from "@workspace/modules/users";
 import { Button } from "@workspace/ui/components/button";
 import { useLocale, useTranslations } from "next-intl";
-import { KEnvelope1, KLocked2 } from "@workspace/ui/components/icons";
+import { KEnvelope1, KLocked2 } from "@workspace/ui/icons";
 import { useAsyncState } from "@/hooks/use-async-state";
 import { InputController } from "@/components/forms/input-controller";
 

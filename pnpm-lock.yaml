@@ -122,6 +122,9 @@ importers:
       recharts:
         specifier: ^3.7.0
         version: 3.7.0(@types/react@19.2.13)(react-dom@19.2.4(react@19.2.4))(react-is@18.3.1)(react@19.2.4)(redux@5.0.1)
+      rhf-stepper:
+        specifier: ^1.0.2
+        version: 1.0.2(react-hook-form@7.71.2(react@19.2.4))(react@19.2.4)
       sonner:
         specifier: ^2.0.7
         version: 2.0.7(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -4396,6 +4399,12 @@ packages:
   reusify@1.1.0:
     resolution: {integrity: sha512-g6QUff04oZpHs0eG5p83rFLhHeV00ug/Yf9nZM6fLeUrPguBTkTQOdpAWWspMh55TZfVQDPaN3NQJfbVRAxdIw==}
     engines: {iojs: '>=1.0.0', node: '>=0.10.0'}
+
+  rhf-stepper@1.0.2:
+    resolution: {integrity: sha512-43Ad8J1I2KcaaRsL4dKHD14BUQZBZ9pdGOuuGWA7J5nh7mbpGhcMNvzGCQsQl914s3im4RYxJweu5F+q5ZqB2g==}
+    peerDependencies:
+      react: '>=17.0.0'
+      react-hook-form: '>=7.0.0'
 
   rimraf@3.0.2:
     resolution: {integrity: sha512-JZkJMZkAGFFPP2YqXZXPbMlMBgsxzE8ILs4lMIX/2o0L9UBw9O/Y3o6wFw/i9YLapcUJWwqbi3kdxIPdC62TIA==}
@@ -9655,6 +9664,11 @@ snapshots:
       signal-exit: 3.0.7
 
   reusify@1.1.0: {}
+
+  rhf-stepper@1.0.2(react-hook-form@7.71.2(react@19.2.4))(react@19.2.4):
+    dependencies:
+      react: 19.2.4
+      react-hook-form: 7.71.2(react@19.2.4)
 
   rimraf@3.0.2:
     dependencies:

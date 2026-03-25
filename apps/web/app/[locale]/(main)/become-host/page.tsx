@@ -1,5 +1,5 @@
+import { BecomeHostStepper } from "@/features/establishments";
 import { getTranslations } from "next-intl/server";
-import BecomeHostPage from "./become-host-page";
 
 export async function generateMetadata({ params }: { params: { locale: string } }) {
     const { locale } = await params;
@@ -12,5 +12,5 @@ export async function generateMetadata({ params }: { params: { locale: string } 
 }
 
 export default function BecomeHost() {
-    return <BecomeHostPage />;
+    return <BecomeHostStepper />;
 }

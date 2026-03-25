@@ -14,7 +14,7 @@ import {
     TableHeader,
     TableRow,
 } from "@workspace/ui/components/table";
-import { KHeart, KCalendar, KCompass, KHome } from "@workspace/ui/components/icons";
+import { KHeart, KCalendar, KCompass, KHome } from "@workspace/ui/icons";
 import { getEstablishmentDashboard, DashboardModel } from "@workspace/modules/establishments";
 
 export function DashboardTab({ establishmentId }: { establishmentId: string }) {
