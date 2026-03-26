@@ -1,10 +1,11 @@
 "use client";
 
-import { Plus, PawPrint, PlusIcon } from "lucide-react";
+import { Plus, PawPrint, PlusIcon, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@workspace/ui/components/button";
 import {
     Empty,
+    EmptyContent,
     EmptyDescription,
     EmptyHeader,
     EmptyMedia,
@@ -38,30 +39,28 @@ function PetsContent({ isLoading, pets, filteredPets, t }: PetsContentProps) {
         );
     }
 
-    if (pets.length === 0) {
+    if (pets.length === 0 || filteredPets.length === 0) {
         return (
             <Empty className="border">
                 <EmptyMedia variant="icon">
                     <PawPrint />
                 </EmptyMedia>
                 <EmptyHeader>
-                    <EmptyTitle>{t("features.pets.noPets")}</EmptyTitle>
+                    <EmptyTitle>
+                        {filteredPets.length === 0
+                            ? t("features.pets.filters.resultsCount", { count: 0 })
+                            : t("features.pets.noPets")}
+                    </EmptyTitle>
                     <EmptyDescription>{t("features.pets.noPetsDescription")}</EmptyDescription>
                 </EmptyHeader>
-            </Empty>
-        );
-    }
-
-    if (filteredPets.length === 0) {
-        return (
-            <Empty className="border">
-                <EmptyMedia variant="icon">
-                    <PawPrint />
-                </EmptyMedia>
-                <EmptyHeader>
-                    <EmptyTitle>{t("features.pets.filters.resultsCount", { count: 0 })}</EmptyTitle>
-                    <EmptyDescription>{t("features.pets.noPetsDescription")}</EmptyDescription>
-                </EmptyHeader>
+                {pets.length === 0 && (
+                    <EmptyContent>
+                        <Button className="mx-auto gap-2">
+                            <Plus className="size-4" />
+                            {t("features.pets.addPet")}
+                        </Button>
+                    </EmptyContent>
+                )}
             </Empty>
         );
     }
@@ -102,7 +101,7 @@ export default function MyPetsPage() {
 
     return (
         <div className="min-h-screen bg-card">
-            <div
+            {/* <div 
                 className={cn(
                     "sticky top-0 bg-card flex items-center z-10",
                     scrolled && "border-b",
@@ -123,14 +122,65 @@ export default function MyPetsPage() {
                         />
                         {t("features.pets.title")}
                     </h1>
-                    <Button
-                        className="ml-auto gap-2"
-                        variant="outline"
-                        size={isMobile ? "icon" : "default"}
+                    <div className="ml-auto flex gap-1">
+                        <Button
+                            className="bg-muted gap-2"
+                            variant="secondary"
+                            size={isMobile ? "icon-sm" : "default"}
+                        >
+                            <Plus className="size-4" />
+                            {!isMobile && t("features.pets.addPet")}
+                        </Button>
+                        <Button
+                            className="bg-muted gap-2"
+                            variant="secondary"
+                            size={isMobile ? "icon-sm" : "default"}
+                        >
+                            <Search className="size-4" />
+                            {!isMobile && t('common.actions.search')}
+                        </Button>
+                    </div>
+                </div>
+            </div> */}
+            <div
+                className={cn(
+                    "sticky top-0 bg-card flex items-center z-10",
+                    scrolled && "border-b",
+                )}
+            >
+                <div className="flex flex-col-reverse md:flex-row md:justify-between sm:items-center w-full py-2 p-4 sm:pt-6">
+                    <h1
+                        className={cn(
+                            "flex gap-1.5 items-center font-bold tracking-tight transition-all sm:mt-0 h-8",
+                            scrolled ? "text-xl -mt-8" : "text-3xl mt-4",
+                        )}
                     >
-                        <Plus className="size-4" />
-                        {!isMobile && t("features.pets.addPet")}
-                    </Button>
+                        <KHeart
+                            className={cn("size-12 -ml-1.5 transition-all", scrolled && "size-9")}
+                            filled
+                            secondaryOpacity={1}
+                            secondary="text-secondary"
+                        />
+                        {t("features.pets.title")}
+                    </h1>
+                    <div className="ml-auto h-8 flex gap-1 items-center">
+                        <Button
+                            className="bg-muted gap-2"
+                            variant="secondary"
+                            size={isMobile ? "icon-sm" : "default"}
+                        >
+                            <Plus className="size-4" />
+                            {!isMobile && t("features.pets.addPet")}
+                        </Button>
+                        <Button
+                            className="bg-muted gap-2"
+                            variant="secondary"
+                            size={isMobile ? "icon-sm" : "default"}
+                        >
+                            <Search className="size-4" />
+                            {!isMobile && t("common.actions.search")}
+                        </Button>
+                    </div>
                 </div>
             </div>
 

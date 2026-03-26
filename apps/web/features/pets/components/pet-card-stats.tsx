@@ -32,7 +32,7 @@ function SexBadge({ sex }: { sex: "male" | "female" }) {
     return (
         <div
             className={cn(
-                "size-6 rounded-lg flex items-center justify-center text-sm font-bold shrink-0 size-8",
+                "rounded-lg flex items-center justify-center text-sm font-bold shrink-0 size-8",
                 sex === "male"
                     ? "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"
                     : "bg-pink-100 dark:bg-pink-900/30 text-pink-500 dark:text-pink-400",
