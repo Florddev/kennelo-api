@@ -24,4 +24,10 @@ export class PetAttributeModel {
             dto.attribute_option ? AttributeOptionModel.from(dto.attribute_option) : null,
         );
     }
+
+    displayValue(yesText: string, noText: string): string {
+        if (this.attributeOption?.label) return this.attributeOption.label;
+        if (typeof this.value === "boolean") return this.value ? yesText : noText;
+        return String(this.value ?? "—");
+    }
 }

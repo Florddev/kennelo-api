@@ -32,3 +32,5 @@ export * from "./user-star";
 export * from "./family-heart";
 export * from "./nurse-hat-1";
 export * from "./caravan-3";
+export * from "./info-circle";
+export * from "./heart-beat";

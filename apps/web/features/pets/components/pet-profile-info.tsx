@@ -1,60 +1,29 @@
 "use client";
 
-import { HeartPulse, Leaf, Star, Zap } from "lucide-react";
+import { Image, Star, Zap } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { PetAttributeModel, PetModel } from "@workspace/modules/pets";
 import { PetGallery } from "@/features/pets/components/pet-gallery";
 import { PetBadgesStrip } from "@/features/pets/components/pet-badges-strip";
-import { PetSectionHeader } from "@/features/pets/components/pet-section-header";
-import {
-    PetAttributeBehaviorCard,
-    PetAttributeCareCard,
-} from "@/features/pets/components/pet-attribute-card";
-import { PetHealthSection } from "@/features/pets/components/pet-health-section";
 import { PetTypeIllustration } from "./pet-type-illustration";
 import { Badge } from "@workspace/ui/components/badge";
-import { KHeart } from "@workspace/ui/icons";
+import { KHeartBeat, KInfoCircle } from "@workspace/ui/icons";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@workspace/ui/components/tabs";
+import { PetProfileReviews } from "./pet-profile-reviews";
+import { PetAttributeCategory } from "../../../../../packages/modules/src/pets/types/attributes-categories.type";
+import { cn } from "@workspace/ui/lib/utils";
 
 type PetProfileInfoProps = {
     pet: PetModel;
     ageDisplay: string | null;
 };
 
-function isBooleanAttr(attr: PetAttributeModel): boolean {
-    return typeof attr.value === "boolean";
-}
-
-function isNonBooleanAttr(attr: PetAttributeModel): boolean {
-    return typeof attr.value !== "boolean";
-}
+const YES_ACTION_KEY = "common.actions.yes";
+const NO_ACTION_KEY = "common.actions.no";
 
 function PetIdentityHeader({ pet }: { pet: PetModel }) {
     return (
         <div className="flex gap-2 items-center">
-            {/* <PetTypeIllustration
-                code={pet.animalType?.code || ""}
-                name={pet.name}
-                className="size-12"
-            />
-            <div className="flex justify-between items-start w-full">
-                <div className="flex flex-col">
-                    <h1 className="text-3xl font-bold tracking-tight">{pet.name}</h1>
-                    <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                        {pet.animalType && <span>{pet.animalType.name}</span>}
-                        {pet.breed && (
-                            <>
-                                {pet.animalType && <span>·</span>}
-                                <span>{pet.breed}</span>
-                            </>
-                        )}
-                    </div>
-                </div>
-                <Badge variant="outline" className="text-amber-500 bg-amber-100 border-0">
-                    <Star className="size-4" />
-                    4.4
-                </Badge>
-            </div> */}
-
             <div className="flex flex-col w-full">
                 <div className="flex gap-2 items-center">
                     <h1 className="text-3xl font-bold tracking-tight">{pet.name}</h1>
@@ -82,47 +51,82 @@ function PetIdentityHeader({ pet }: { pet: PetModel }) {
     );
 }
 
-function PetBehaviorsSection({ attrs, label }: { attrs: PetModel["attributes"]; label: string }) {
-    if (!attrs || attrs.length === 0) return null;
+export function PetAttributeItem({ label, value }: { label: string; value: string }) {
     return (
-        <div className="space-y-4">
-            <PetSectionHeader
-                icon={<HeartPulse className="size-4 text-amber-600 dark:text-amber-400" />}
-                title={label}
-                count={attrs.length}
-            />
-            <div className="grid grid-cols-2 gap-3">
-                {attrs.map((attr) => (
-                    <PetAttributeBehaviorCard key={attr.id} attr={attr} />
-                ))}
+        <div className="flex gap-2">
+            <div className="size-6 rounded flex justify-center items-center bg-amber-50">
+                <Zap className="size-4 text-amber-400" />
+            </div>
+            <div className="flex flex-col">
+                <span className="text-xs text-primary font-medium">{label}</span>
+                <span className="text-xs text-muted-foreground">{value}</span>
             </div>
         </div>
     );
 }
 
-function PetCareSection({ attrs, label }: { attrs: PetModel["attributes"]; label: string }) {
+export function PetGroupedAttributesList({
+    pet,
+    title,
+    categories,
+    children,
+}: {
+    pet: PetModel;
+    title?: string | null;
+    categories?: PetAttributeCategory[] | null;
+    children?: React.ReactNode;
+}) {
+    const t = useTranslations();
+    const yesText = t(YES_ACTION_KEY);
+    const noText = t(NO_ACTION_KEY);
+    const attrs = pet.groupAttributesByCategory(categories);
+
     if (!attrs || attrs.length === 0) return null;
+
     return (
-        <div className="space-y-4">
-            <PetSectionHeader
-                icon={<Leaf className="size-4 text-amber-600 dark:text-amber-400" />}
-                title={label}
-                count={attrs.length}
-            />
-            <div className="grid grid-cols-2 gap-3">
-                {attrs.map((attr) => (
-                    <PetAttributeCareCard key={attr.id} attr={attr} />
-                ))}
+        <div className="flex flex-col gap-3">
+            {title && <h3 className="text-md font-medium">{title}</h3>}
+            <div className="grid grid-cols-2 gap-2">
+                {attrs.map(({ attributes }) =>
+                    attributes.map((attr: PetAttributeModel) => (
+                        <PetAttributeItem
+                            key={attr.id}
+                            label={attr.attributeDefinition?.label || ""}
+                            value={attr.displayValue(yesText, noText)}
+                        />
+                    )),
+                )}
+                {children}
             </div>
+        </div>
+    );
+}
+
+export function PetDetailsSection({
+    title,
+    children,
+    className,
+    Icon,
+}: {
+    title: string;
+    children: React.ReactNode;
+    className?: string;
+    Icon?: React.ComponentType<{ className?: string; filled?: boolean }>;
+}) {
+    return (
+        <div className={cn("flex flex-col gap-2", className)}>
+            <div className="flex gap-1 items-center pb-0">
+                {Icon && <Icon className="size-8 text-amber-600" filled />}
+                <h2 className="text-lg font-semibold">{title}</h2>
+            </div>
+
+            <div className="flex flex-col gap-3 px-1.5">{children}</div>
         </div>
     );
 }
 
 export function PetProfileInfo({ pet, ageDisplay }: PetProfileInfoProps) {
     const t = useTranslations();
-
-    const booleanAttrs = pet.attributes?.filter(isBooleanAttr) ?? [];
-    const careAttrs = pet.attributes?.filter(isNonBooleanAttr) ?? [];
 
     return (
         <div className="space-y-6">
@@ -144,59 +148,107 @@ export function PetProfileInfo({ pet, ageDisplay }: PetProfileInfoProps) {
                             <PetBadgesStrip pet={pet} ageDisplay={ageDisplay} />
                         </div>
 
-                        <div className="flex flex-col gap-3">
-                            <div className="flex justify-between">
-                                <div className="flex flex-col items-center gap-1 w-1/3">
-                                    <span className="text-sm font-bold text-primary">Overview</span>
-                                    <span className="h-[3px] bg-primary w-4 rounded-full" />
-                                </div>
-                                <div className="flex flex-col items-center w-1/3">
-                                    <span className="text-sm font-medium text-muted-foreground">
-                                        Gallery
+                        <Tabs defaultValue="overview" className="flex flex-col gap-2">
+                            <TabsList variant="line" className="flex justify-between w-full">
+                                <TabsTrigger value="overview" className="w-1/3 hover:text-red-500">
+                                    <span data-slot="tab-label">
+                                        {t("common.messages.overview")}
                                     </span>
-                                </div>
-                                <div className="flex flex-col items-center w-1/3">
-                                    <span className="text-sm font-medium text-muted-foreground">
-                                        Reviews
+                                    <span data-slot="tab-indicator" />
+                                </TabsTrigger>
+                                <TabsTrigger value="gallery" className="w-1/3">
+                                    <span data-slot="tab-label">
+                                        {t("common.messages.gallery")}
                                     </span>
-                                </div>
-                            </div>
+                                    <span data-slot="tab-indicator" />
+                                </TabsTrigger>
+                                <TabsTrigger value="reviews" className="w-1/3">
+                                    <span data-slot="tab-label">
+                                        {t("common.messages.reviews")}
+                                    </span>
+                                    <span data-slot="tab-indicator" />
+                                </TabsTrigger>
+                            </TabsList>
+                            <TabsContent value="overview" className="flex flex-col gap-4">
+                                <PetDetailsSection
+                                    title={t("common.messages.summary")}
+                                    Icon={KInfoCircle}
+                                    className="bg-amber-100 rounded-2xl p-2"
+                                >
+                                    <PetGroupedAttributesList
+                                        pet={pet}
+                                        title={t("common.messages.socialization")}
+                                        categories={["social"]}
+                                    />
+                                    <PetGroupedAttributesList
+                                        pet={pet}
+                                        title={t("common.messages.boarding")}
+                                        categories={["behavior", "habitat", "hygiene", "care"]}
+                                    />
+                                    <PetGroupedAttributesList
+                                        pet={pet}
+                                        title={t("common.messages.otherInformation")}
+                                        categories={["diet", "info"]}
+                                    />
+                                </PetDetailsSection>
 
-                            <div className="rounded-2xl bg-amber-100 p-3 flex flex-col gap-4">
-                                <div className="flex gap-1 items-center">
-                                    <KHeart className="size-8 text-amber-600" filled />
-                                    <h2 className="text-lg font-semibold">
-                                        {t("features.pets.profile.behaviors")}
-                                    </h2>
-                                </div>
-                                <div className="grid grid-cols-2">
-                                    <div className="flex gap-2">
-                                        <div className="size-6 rounded flex justify-center items-center bg-amber-50">
-                                            <Zap className="size-4 text-muted-foreground" />
+                                <PetDetailsSection
+                                    title={t("common.messages.health")}
+                                    Icon={KHeartBeat}
+                                >
+                                    <PetGroupedAttributesList pet={pet} categories={["health"]}>
+                                        {pet.isSterilized !== null && (
+                                            <PetAttributeItem
+                                                label={t("features.pets.fields.sterilized")}
+                                                value={
+                                                    pet.isSterilized
+                                                        ? t(YES_ACTION_KEY)
+                                                        : t(NO_ACTION_KEY)
+                                                }
+                                            />
+                                        )}
+
+                                        <PetAttributeItem
+                                            label={t("features.pets.fields.microchip")}
+                                            value={
+                                                pet.hasMicrochip
+                                                    ? (pet.microchipNumber ?? t(YES_ACTION_KEY))
+                                                    : t(NO_ACTION_KEY)
+                                            }
+                                        />
+                                    </PetGroupedAttributesList>
+
+                                    {pet.healthNotes && (
+                                        <div className="space-y-2.5">
+                                            <p className="text-md font-medium">
+                                                {t("features.pets.profile.medicalNotes")}
+                                            </p>
+                                            <div className="rounded-2xl border border-amber-200 bg-amber-50 dark:border-amber-900/50 dark:bg-amber-900/10 p-4">
+                                                <p className="text-sm text-amber-800/80 dark:text-amber-300/80 leading-relaxed">
+                                                    {pet.healthNotes}
+                                                </p>
+                                            </div>
                                         </div>
-                                        <div className="flex flex-col">
-                                            <span className="text-sm text-primary font-medium">
-                                                {"Niveau d'énergie"}
-                                            </span>
-                                            <span className="text-xs text-muted-foreground">
-                                                Faible
-                                            </span>
-                                        </div>
+                                    )}
+                                </PetDetailsSection>
+                            </TabsContent>
+                            <TabsContent value="gallery">
+                                <div className="rounded-2xl border bg-muted/30 p-10 flex flex-col items-center gap-3 text-center">
+                                    <Image className="size-10 text-muted-foreground opacity-20" />
+                                    <div className="space-y-1">
+                                        <p className="font-medium text-sm">
+                                            {t("common.messages.galleryEmpty")}
+                                        </p>
+                                        <p className="text-xs text-muted-foreground">
+                                            {t("common.messages.galleryEmptyDescription")}
+                                        </p>
                                     </div>
                                 </div>
-                            </div>
-
-                            <PetBehaviorsSection
-                                attrs={booleanAttrs}
-                                label={t("features.pets.profile.behaviors")}
-                            />
-
-                            <PetCareSection
-                                attrs={careAttrs}
-                                label={t("features.pets.profile.care")}
-                            />
-                            <PetHealthSection pet={pet} />
-                        </div>
+                            </TabsContent>
+                            <TabsContent value="reviews">
+                                <PetProfileReviews />
+                            </TabsContent>
+                        </Tabs>
                     </div>
                 </div>
             </div>

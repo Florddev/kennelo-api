@@ -4,8 +4,6 @@
 
 export * from "./components/pet-attribute-card";
 export * from "./components/pet-badges-strip";
-export * from "./components/pet-card-media";
-export * from "./components/pet-card-stats";
 export * from "./components/pet-card";
 export * from "./components/pet-gallery";
 export * from "./components/pet-health-section";

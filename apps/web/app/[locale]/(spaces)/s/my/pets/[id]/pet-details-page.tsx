@@ -1,13 +1,11 @@
 "use client";
 
-import { ArrowLeft, Bookmark, Pencil } from "lucide-react";
+import { ArrowLeft, Pencil } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@workspace/ui/components/button";
 import { Skeleton } from "@workspace/ui/components/skeleton";
 import { usePet } from "@/features/pets/hooks/use-pet";
 import { PetProfileInfo } from "@/features/pets/components/pet-profile-info";
-import { PetProfileOwner } from "@/features/pets/components/pet-profile-owner";
-import { PetProfileReviews } from "@/features/pets/components/pet-profile-reviews";
 import { useAuth } from "@/features/auth";
 import { useNavigation } from "@/hooks/use-navigation";
 import { getAge } from "@/features/pets/lib/pet-age";
@@ -83,10 +81,6 @@ export default function PetDetailsPage() {
                             <Pencil className="size-3.5" />
                             {t("features.pets.profile.edit")}
                         </Button>
-                        <Button variant="outline" size="sm" className="gap-2 rounded-4xl">
-                            <Bookmark className="size-3.5" />
-                            {t("features.pets.profile.save")}
-                        </Button>
                     </div>
                 )}
             </div>
@@ -95,14 +89,14 @@ export default function PetDetailsPage() {
                 <div className="flex flex-col lg:flex-row gap-8">
                     <div className="flex-1 min-w-0 space-y-8">
                         <PetProfileInfo pet={pet} ageDisplay={ageDisplay} />
-                        <PetProfileReviews />
+                        {/* <PetProfileReviews /> */}
                     </div>
 
-                    <div className="lg:w-80 shrink-0">
+                    {/* <div className="lg:w-80 shrink-0">
                         <div className="lg:sticky lg:top-22">
                             <PetProfileOwner pet={pet} currentUser={user} ageDisplay={ageDisplay} />
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             </div>
         </div>

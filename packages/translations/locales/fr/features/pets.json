@@ -42,7 +42,12 @@
         "nextVaccine": "Prochain vaccin",
         "lastVetVisit": "Dernière visite",
         "hostsReviews": "Avis des hosts",
-        "viewProfile": "Voir le profil"
+        "viewProfile": "Voir le profil",
+        "overview": "Aperçu",
+        "summary": "Récapitulatif",
+        "socialization": "Socialisation",
+        "boarding": "Garde",
+        "otherInformation": "Autres informations"
     },
     "fields": {
         "breed": "Race",
@@ -89,5 +94,15 @@
         "resultsCount": "{count, plural, =0 {Aucun résultat} =1 {1 animal} other {# animaux}}",
         "allTypes": "Tous les types",
         "clearFilters": "Réinitialiser les filtres"
+    },
+    "categories": {
+        "info": "Informations",
+        "behavior": "Comportement",
+        "social": "Socialisation",
+        "hygiene": "Propreté",
+        "care": "Soins",
+        "health": "Santé",
+        "habitat": "Habitat",
+        "diet": "Régime alimentaire"
     }
 }

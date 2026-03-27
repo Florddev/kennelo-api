@@ -42,7 +42,12 @@
         "nextVaccine": "Next vaccine",
         "lastVetVisit": "Last visit",
         "hostsReviews": "Host reviews",
-        "viewProfile": "View profile"
+        "viewProfile": "View profile",
+        "overview": "Overview",
+        "summary": "Summary",
+        "socialization": "Socialization",
+        "boarding": "Boarding",
+        "otherInformation": "Other information"
     },
     "fields": {
         "breed": "Breed",
@@ -89,5 +94,15 @@
         "resultsCount": "{count, plural, =0 {No results} =1 {1 pet} other {# pets}}",
         "allTypes": "All types",
         "clearFilters": "Clear filters"
+    },
+    "categories": {
+        "info": "Information",
+        "behavior": "Behavior",
+        "social": "Social Skills",
+        "hygiene": "Hygiene",
+        "care": "Care",
+        "health": "Health",
+        "habitat": "Habitat",
+        "diet": "Diet"
     }
 }

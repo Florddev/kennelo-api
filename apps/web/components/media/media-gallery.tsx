@@ -270,7 +270,7 @@ function MobileGallery({
         <>
             <div className="relative w-full h-[45vh] overflow-hidden">
                 <div ref={emblaRef} className="overflow-hidden h-full">
-                    <div className="flex h-full">
+                    <div className="flex h-full bg-muted">
                         {images.map((image, index) => (
                             <div
                                 key={`${image}-${index}`}

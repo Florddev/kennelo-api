@@ -25,6 +25,7 @@ export * from "./models/dtos/attribute-option.dto";
 export * from "./models/dtos/pet-attribute.dto";
 export * from "./models/dtos/pet-image.dto";
 export * from "./models/dtos/pet.dto";
+export * from "./types/attributes-categories.type";
 export * from "./validators/create-pet.schema";
 export * from "./validators/update-pet.schema";
 export * from "./validators/upsert-pet-attributes.schema";

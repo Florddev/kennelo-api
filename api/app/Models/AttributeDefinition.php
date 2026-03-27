@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\AnimalAttributeCategory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -16,6 +17,7 @@ class AttributeDefinition extends Model
     protected $fillable = [
         'code',
         'label',
+        'category',
         'value_type',
         'has_predefined_options',
         'is_required',
@@ -23,6 +25,7 @@ class AttributeDefinition extends Model
     ];
 
     protected $casts = [
+        'category' => AnimalAttributeCategory::class,
         'has_predefined_options' => 'boolean',
         'is_required' => 'boolean',
     ];
