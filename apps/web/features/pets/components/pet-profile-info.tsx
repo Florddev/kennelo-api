@@ -1,6 +1,20 @@
 "use client";
 
-import { Image, Star, Zap } from "lucide-react";
+import {
+    Activity,
+    Cpu,
+    Droplets,
+    Heart,
+    Home,
+    Image,
+    Info,
+    LucideIcon,
+    Scissors,
+    SlidersHorizontal,
+    Star,
+    Users,
+    UtensilsCrossed,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { PetAttributeModel, PetModel } from "@workspace/modules/pets";
 import { PetGallery } from "@/features/pets/components/pet-gallery";
@@ -12,10 +26,25 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@workspace/ui/componen
 import { PetProfileReviews } from "./pet-profile-reviews";
 import { PetAttributeCategory } from "../../../../../packages/modules/src/pets/types/attributes-categories.type";
 import { cn } from "@workspace/ui/lib/utils";
+import { SectionShapeSvg } from "@/components/svg/section-shape";
 
 type PetProfileInfoProps = {
     pet: PetModel;
     ageDisplay: string | null;
+};
+
+const categoriesIcons: Record<
+    PetAttributeCategory,
+    React.ComponentType<React.SVGProps<SVGSVGElement>>
+> = {
+    info: Info,
+    behavior: SlidersHorizontal,
+    social: Users,
+    hygiene: Droplets,
+    care: Heart,
+    health: Activity,
+    habitat: Home,
+    diet: UtensilsCrossed,
 };
 
 const YES_ACTION_KEY = "common.actions.yes";
@@ -51,11 +80,24 @@ function PetIdentityHeader({ pet }: { pet: PetModel }) {
     );
 }
 
-export function PetAttributeItem({ label, value }: { label: string; value: string }) {
+export function PetAttributeItem({
+    label,
+    value,
+    category,
+    Icon,
+}: {
+    label: string;
+    value: string;
+    category?: PetAttributeCategory;
+    Icon?: LucideIcon;
+}) {
+    const IconComponent =
+        Icon || (category && categoriesIcons[category] ? categoriesIcons[category] : Info);
+
     return (
         <div className="flex gap-2">
-            <div className="size-6 rounded flex justify-center items-center bg-amber-50">
-                <Zap className="size-4 text-amber-400" />
+            <div className="size-6 rounded-[8px] flex justify-center items-center bg-card">
+                <IconComponent className="size-3.5 text-muted-foreground/80" />
             </div>
             <div className="flex flex-col">
                 <span className="text-xs text-primary font-medium">{label}</span>
@@ -85,7 +127,7 @@ export function PetGroupedAttributesList({
 
     return (
         <div className="flex flex-col gap-3">
-            {title && <h3 className="text-md font-medium">{title}</h3>}
+            {title && <h3 className="text-md font-semibold">{title}</h3>}
             <div className="grid grid-cols-2 gap-2">
                 {attrs.map(({ attributes }) =>
                     attributes.map((attr: PetAttributeModel) => (
@@ -93,6 +135,7 @@ export function PetGroupedAttributesList({
                             key={attr.id}
                             label={attr.attributeDefinition?.label || ""}
                             value={attr.displayValue(yesText, noText)}
+                            category={attr.attributeDefinition?.category}
                         />
                     )),
                 )}
@@ -114,9 +157,9 @@ export function PetDetailsSection({
     Icon?: React.ComponentType<{ className?: string; filled?: boolean }>;
 }) {
     return (
-        <div className={cn("flex flex-col gap-2", className)}>
-            <div className="flex gap-1 items-center pb-0">
-                {Icon && <Icon className="size-8 text-amber-600" filled />}
+        <div className={cn("flex flex-col gap-4", className)}>
+            <div className="flex gap-1 items-center pb-0 z-10">
+                {Icon && <Icon className="size-6 text-primary/70" filled />}
                 <h2 className="text-lg font-semibold">{title}</h2>
             </div>
 
@@ -169,12 +212,14 @@ export function PetProfileInfo({ pet, ageDisplay }: PetProfileInfoProps) {
                                     <span data-slot="tab-indicator" />
                                 </TabsTrigger>
                             </TabsList>
-                            <TabsContent value="overview" className="flex flex-col gap-4">
+                            <TabsContent value="overview" className="flex flex-col gap-6">
                                 <PetDetailsSection
                                     title={t("common.messages.summary")}
                                     Icon={KInfoCircle}
-                                    className="bg-amber-100 rounded-2xl p-2"
+                                    className="bg-amber-100 rounded-3xl py-2.5 px-3 relative overflow-hidden"
                                 >
+                                    <SectionShapeSvg className="text-amber-400 absolute top-0 left-0" />
+
                                     <PetGroupedAttributesList
                                         pet={pet}
                                         title={t("common.messages.socialization")}
@@ -205,6 +250,7 @@ export function PetProfileInfo({ pet, ageDisplay }: PetProfileInfoProps) {
                                                         ? t(YES_ACTION_KEY)
                                                         : t(NO_ACTION_KEY)
                                                 }
+                                                Icon={Scissors}
                                             />
                                         )}
 
@@ -215,6 +261,7 @@ export function PetProfileInfo({ pet, ageDisplay }: PetProfileInfoProps) {
                                                     ? (pet.microchipNumber ?? t(YES_ACTION_KEY))
                                                     : t(NO_ACTION_KEY)
                                             }
+                                            Icon={Cpu}
                                         />
                                     </PetGroupedAttributesList>
 

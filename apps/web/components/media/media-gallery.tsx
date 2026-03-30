@@ -268,7 +268,7 @@ function MobileGallery({
 
     return (
         <>
-            <div className="relative w-full h-[45vh] overflow-hidden">
+            <div className="relative w-full h-[50vh] overflow-hidden">
                 <div ref={emblaRef} className="overflow-hidden h-full">
                     <div className="flex h-full bg-muted">
                         {images.map((image, index) => (
