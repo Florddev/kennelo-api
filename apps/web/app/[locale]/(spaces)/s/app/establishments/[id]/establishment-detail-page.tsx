@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Building2, Phone, Mail, Globe, MapPin, FileText, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@workspace/ui/components/button";
 import { cn } from "@workspace/ui/lib/utils";
@@ -533,7 +534,11 @@ export default function EstablishmentDetailPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [notFound, setNotFound] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
-    const { execute: executeDelete, isLoading: isDeleting } = useAsyncState();
+    const queryClient = useQueryClient();
+
+    const { mutateAsync: deleteEstablishmentMutation, isPending: isDeleting } = useMutation({
+        mutationFn: (id: string) => deleteEstablishment(id),
+    });
 
     useEffect(() => {
         if (isLoaded && !isAuthenticated) {
@@ -558,11 +563,11 @@ export default function EstablishmentDetailPage() {
 
     const handleDelete = async () => {
         if (!establishment) return;
-        const result = await executeDelete(() => deleteEstablishment(establishment.id));
-        if (result !== undefined) {
-            await refreshUser();
-            router.push(routes.MyEstablishments());
-        }
+        await deleteEstablishmentMutation(establishment.id);
+        await queryClient.invalidateQueries({ queryKey: ["establishments", "list"] });
+        await queryClient.invalidateQueries({ queryKey: ["user", "current"] });
+        await refreshUser();
+        router.push(routes.MyEstablishments());
     };
 
     if (!isLoaded || !isAuthenticated || isLoading) {
