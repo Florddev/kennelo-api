@@ -42,7 +42,12 @@
         "nextVaccine": "اللقاح القادم",
         "lastVetVisit": "آخر زيارة",
         "hostsReviews": "تقييمات المضيفين",
-        "viewProfile": "عرض الملف الشخصي"
+        "viewProfile": "عرض الملف الشخصي",
+        "overview": "نظرة عامة",
+        "summary": "ملخص",
+        "socialization": "التنشئة الاجتماعية",
+        "boarding": "الإقامة",
+        "otherInformation": "معلومات أخرى"
     },
     "fields": {
         "breed": "السلالة",
@@ -89,5 +94,15 @@
         "resultsCount": "{count, plural, =0 {لا نتائج} =1 {حيوان واحد} other {# حيوانات}}",
         "allTypes": "جميع الأنواع",
         "clearFilters": "إعادة تعيين الفلاتر"
+    },
+    "categories": {
+        "info": "معلومات",
+        "behavior": "السلوك",
+        "social": "المهارات الاجتماعية",
+        "hygiene": "النظافة",
+        "care": "الرعاية",
+        "health": "الصحة",
+        "habitat": "سكن",
+        "diet": "النظام الغذائي"
     }
 }

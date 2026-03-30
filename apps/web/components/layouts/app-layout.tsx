@@ -5,7 +5,8 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { KHome, KCompass, KMessage, KHeart } from "@workspace/ui/icons";
 import { NavigationItem } from "@/components/navigation/nav-item";
 import Image from "next/image";
-import { useTranslations } from "next-intl";
+import { usePathname } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
 import { useNavigation } from "@/hooks/use-navigation";
 import { BottomNavbar } from "../navigation/navbar/bottom-navbar";
 import { MainNavbar } from "../navigation/navbar/main-navbar";
@@ -17,33 +18,64 @@ interface AppLayoutProps {
 
 export default function AppLayout({ children, className }: AppLayoutProps) {
     const isMobile = useIsMobile();
+    const pathname = usePathname();
+    const locale = useLocale();
     const { routes } = useNavigation();
     const t = useTranslations();
+
+    const normalizePath = (path: string) => {
+        const withoutQuery = path.split("?")[0] ?? "";
+        const cleanPath = withoutQuery.split("#")[0] || "/";
+        const localePrefix = `/${locale}`;
+        const hasLocalePrefix =
+            cleanPath === localePrefix || cleanPath.startsWith(`${localePrefix}/`);
+        const noLocalePath = hasLocalePrefix
+            ? cleanPath.slice(localePrefix.length) || "/"
+            : cleanPath;
+
+        let noTrailingSlash = noLocalePath;
+        while (noTrailingSlash.length > 1 && noTrailingSlash.endsWith("/")) {
+            noTrailingSlash = noTrailingSlash.slice(0, -1);
+        }
+
+        return noTrailingSlash;
+    };
+
+    const isActivePath = (href: string) => {
+        const currentPath = normalizePath(pathname);
+        const targetPath = normalizePath(href);
+
+        if (targetPath === "/") {
+            return currentPath === "/";
+        }
+
+        return currentPath === targetPath || currentPath.startsWith(`${targetPath}/`);
+    };
 
     const navigationItems: NavigationItem[] = [
         {
             icon: KHome,
             text: t("ui.navigation.home"),
-            active: true,
-            href: "/",
+            href: routes.Home(),
+            active: isActivePath(routes.Home()),
         },
         {
             icon: KCompass,
             text: t("ui.navigation.explore"),
-            active: false,
             href: "/explore",
+            active: isActivePath("/explore"),
         },
         {
             icon: KHeart,
             text: t("ui.navigation.pets"),
-            active: false,
             href: routes.MyPets(),
+            active: isActivePath(routes.MyPets()),
         },
         {
             icon: KMessage,
             text: t("ui.navigation.messages"),
-            active: false,
             href: "/messages",
+            active: isActivePath("/messages"),
         },
     ];
 

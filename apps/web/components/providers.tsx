@@ -1,28 +1,40 @@
+"use client";
+
 import * as React from "react";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
-import { AuthProvider } from "@/features/auth/hooks/use-auth";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { TooltipProvider } from "@workspace/ui/components/tooltip";
 import { Toaster } from "@workspace/ui/components/sonner";
+import { AuthProvider } from "@/features/auth/hooks/use-auth";
 
-export async function Providers({
+export function Providers({
     children,
     initialIsAuthenticated,
 }: {
     children: React.ReactNode;
     initialIsAuthenticated: boolean;
 }) {
+    const [queryClient] = React.useState(
+        () =>
+            new QueryClient({
+                defaultOptions: {
+                    queries: {
+                        staleTime: 5 * 60 * 1000,
+                        gcTime: 30 * 60 * 1000,
+                        refetchOnWindowFocus: false,
+                    },
+                },
+            }),
+    );
+
     return (
-        <NextThemesProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-            enableColorScheme
-        >
+        <NextThemesProvider attribute="class" defaultTheme="light" enableSystem enableColorScheme>
             <TooltipProvider>
-                <AuthProvider initialIsAuthenticated={initialIsAuthenticated}>
-                    {children}
-                </AuthProvider>
+                <QueryClientProvider client={queryClient}>
+                    <AuthProvider initialIsAuthenticated={initialIsAuthenticated}>
+                        {children}
+                    </AuthProvider>
+                </QueryClientProvider>
             </TooltipProvider>
             <Toaster />
         </NextThemesProvider>

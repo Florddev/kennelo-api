@@ -75,14 +75,14 @@ export function MainNavbar({ navigationItems }: { navigationItems: NavigationIte
                                     </NavButton>
                                 </Link>
                             )}
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-1.5">
                                 {navigationItems.map((item) => (
                                     <NavItem
                                         key={item.href}
                                         Icon={item.icon}
-                                        iconSize={24}
+                                        iconSize={28}
                                         active={item.active}
-                                        iconSecondaryOpacity={1}
+                                        iconSecondaryOpacity={item.active ? 1 : 0.8}
                                         href={item.href}
                                         className="mt-1"
                                     >

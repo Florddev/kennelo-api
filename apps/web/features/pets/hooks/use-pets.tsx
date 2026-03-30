@@ -1,20 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { getPets } from "@workspace/modules/pets";
-import type { PetModel } from "@workspace/modules/pets";
-import { useAsyncState } from "@/hooks/use-async-state";
 
 export function usePets() {
-    const [pets, setPets] = useState<PetModel[]>([]);
-    const { execute, isLoading, error } = useAsyncState();
+    const { data, isLoading, error } = useQuery({
+        queryKey: ["pets", "list"],
+        queryFn: getPets,
+    });
 
-    useEffect(() => {
-        void execute(async () => {
-            const data = await getPets();
-            setPets(data);
-        });
-    }, [execute]);
-
-    return { pets, isLoading, error };
+    return { pets: data ?? [], isLoading, error };
 }

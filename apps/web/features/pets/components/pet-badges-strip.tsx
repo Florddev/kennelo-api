@@ -14,7 +14,7 @@ export function PetBadgesStrip({ pet, ageDisplay }: PetBadgesStripProps) {
     const t = useTranslations();
 
     return (
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-1">
             {pet.isSterilized && (
                 <Badge variant="outline" className="rounded-4xl gap-1.5 py-1 ps-2">
                     <Scissors className="size-3" />

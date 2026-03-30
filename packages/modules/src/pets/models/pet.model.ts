@@ -2,6 +2,12 @@ import type { PetDto } from "./dtos/pet.dto";
 import { AnimalTypeModel } from "./animal-type.model";
 import { PetAttributeModel } from "./pet-attribute.model";
 import { PetImageModel } from "./pet-image.model";
+import type { PetAttributeCategory } from "../types/attributes-categories.type";
+
+type PetAttributeByCategory = {
+    category: PetAttributeCategory;
+    attributes: PetAttributeModel[];
+};
 
 export class PetModel {
     private constructor(
@@ -50,5 +56,62 @@ export class PetModel {
             dto.created_at,
             dto.updated_at,
         );
+    }
+
+    getAvatarUrl(): string | undefined {
+        if (this.avatarUrl) {
+            return this.avatarUrl;
+        }
+        if (this.images[0] != null) {
+            return this.images[0].url;
+        }
+        return undefined;
+    }
+
+    groupAttributesByCategory(
+        categories: PetAttributeCategory | PetAttributeCategory[] | null = null,
+    ): PetAttributeByCategory[] {
+        const attrs = this.attributes;
+        if (!attrs) return [];
+
+        const requestedOrder =
+            categories === null ? null : Array.isArray(categories) ? categories : [categories];
+
+        const selectedCategories =
+            categories === null
+                ? null
+                : new Set(Array.isArray(categories) ? categories : [categories]);
+
+        const grouped = new Map<PetAttributeCategory, PetAttributeModel[]>();
+        attrs.forEach((attr) => {
+            const category = attr.attributeDefinition?.category ?? "info";
+            if (selectedCategories && !selectedCategories.has(category)) {
+                return;
+            }
+            if (!grouped.has(category)) {
+                grouped.set(category, []);
+            }
+            grouped.get(category)!.push(attr);
+        });
+
+        if (requestedOrder) {
+            const seen = new Set<PetAttributeCategory>();
+
+            return requestedOrder
+                .filter((category) => {
+                    if (seen.has(category)) return false;
+                    seen.add(category);
+                    return grouped.has(category);
+                })
+                .map((category) => ({
+                    category,
+                    attributes: grouped.get(category) ?? [],
+                }));
+        }
+
+        return Array.from(grouped.entries()).map(([category, attributes]) => ({
+            category,
+            attributes,
+        }));
     }
 }

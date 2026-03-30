@@ -36,6 +36,7 @@
         "@formatjs/intl-localematcher": "^0.8.1",
         "@hookform/resolvers": "^5.2.2",
         "@stepperize/react": "^6.1.0",
+        "@tanstack/react-query": "^5.95.2",
         "@workspace/common": "workspace:*",
         "@workspace/modules": "workspace:*",
         "@workspace/translations": "workspace:*",

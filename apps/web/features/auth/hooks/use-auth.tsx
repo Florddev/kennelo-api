@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { UserModel } from "@workspace/modules/users";
 import { getCurrentUser, logoutUser, authService } from "@workspace/modules/users";
 import { getEstablishments, EstablishmentModel } from "@workspace/modules/establishments";
@@ -34,6 +35,7 @@ export function AuthProvider({
     const [establishments, setEstablishments] = useState<EstablishmentModel[]>([]);
     const [isLoading, setIsLoading] = useState(initialIsAuthenticated);
     const [isAuthenticated, setIsAuthenticated] = useState(initialIsAuthenticated);
+    const queryClient = useQueryClient();
     const router = useRouter();
 
     useState(() => {
@@ -82,6 +84,7 @@ export function AuthProvider({
         } catch (error) {
             logger.error("Logout error:", error);
         } finally {
+            queryClient.clear();
             setIsAuthenticated(false);
             setUser(null);
             setEstablishments([]);

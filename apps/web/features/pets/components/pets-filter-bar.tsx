@@ -62,18 +62,8 @@ export function PetsFilterBar({
     const selectedType = availableTypes.find((type) => type.id === typeFilter);
 
     return (
-        <div className="space-y-3">
-            <div className="flex items-center gap-3">
-                <div className="relative flex-1 max-w-xs">
-                    <Search className="absolute start-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
-                    <Input
-                        className="ps-9 rounded-4xl"
-                        placeholder={t("features.pets.searchPlaceholder")}
-                        value={search}
-                        onChange={(e) => onSearchChange(e.target.value)}
-                    />
-                </div>
-
+        <div className="space-y-3 pt-1">
+            <div className="flex items-center gap-1.5">
                 {availableTypes.length > 1 && (
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -164,6 +154,16 @@ export function PetsFilterBar({
                         </DropdownMenuRadioGroup>
                     </DropdownMenuContent>
                 </DropdownMenu>
+
+                <div className="relative flex-1 max-w-xs">
+                    <Search className="absolute start-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
+                    <Input
+                        className="ps-9 rounded-4xl"
+                        placeholder={t("features.pets.searchPlaceholder")}
+                        value={search}
+                        onChange={(e) => onSearchChange(e.target.value)}
+                    />
+                </div>
 
                 {hasActiveFilters && (
                     <Button

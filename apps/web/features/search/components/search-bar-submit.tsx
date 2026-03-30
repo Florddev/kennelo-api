@@ -19,7 +19,7 @@ export function SearchBarSubmit({ isExpanded }: SearchBarSubmitProps) {
                 data-slot="search-bar-submit"
                 className={cn(
                     "rounded-full transition-all duration-200 shadow-sm",
-                    isExpanded ? "px-6 gap-2 h-14" : "size-14 p-0",
+                    isExpanded ? "px-6 gap-2 h-10" : "size-10 p-0",
                 )}
                 size={isExpanded ? "default" : "icon"}
             >

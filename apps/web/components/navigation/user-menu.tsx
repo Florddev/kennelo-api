@@ -72,7 +72,7 @@ export default function UserMenu({ user, hasEstablishment, onLogout }: UserMenuP
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <button className="relative rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
-                    <Avatar className="cursor-pointer size-7">
+                    <Avatar className={"cursor-pointer size-[32px]"}>
                         <AvatarImage
                             src={user?.avatarUrl || undefined}
                             alt={user?.getFullName() || "User profile"}
@@ -86,26 +86,26 @@ export default function UserMenu({ user, hasEstablishment, onLogout }: UserMenuP
                 <DropdownMenuGroup>
                     <DropdownMenuItem asChild>
                         <Link href={`/${locale}/profile`} className="cursor-pointer">
-                            <UserCircle className="me-2 h-4 w-4" />
+                            <UserCircle className="h-4 w-4" />
                             <span>{t("ui.navigation.my-profile")}</span>
                         </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
                         <Link href={`/${locale}/notifications`} className="cursor-pointer">
-                            <Bell className="me-2 h-4 w-4" />
+                            <Bell className="h-4 w-4" />
                             <span>{t("ui.navigation.notifications")}</span>
                         </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
                         <Link href={routes.MyProfileAbout()} className="cursor-pointer">
-                            <Settings className="me-2 h-4 w-4" />
+                            <Settings className="h-4 w-4" />
                             <span>{t("ui.navigation.settings")}</span>
                         </Link>
                     </DropdownMenuItem>
                     {hasEstablishment && hostSpaceHref && (
                         <DropdownMenuItem asChild>
                             <Link href={hostSpaceHref} className="cursor-pointer">
-                                <Building2 className="me-2 h-4 w-4" />
+                                <Building2 className="h-4 w-4" />
                                 <span>{t("common.actions.hostSpace")}</span>
                             </Link>
                         </DropdownMenuItem>
@@ -119,7 +119,7 @@ export default function UserMenu({ user, hasEstablishment, onLogout }: UserMenuP
                 </DropdownMenuLabel>
                 <DropdownMenuSub>
                     <DropdownMenuSubTrigger>
-                        <Monitor className="me-2 h-4 w-4" />
+                        <Monitor className="h-4 w-4" />
                         <span>{t("ui.navigation.theme")}</span>
                     </DropdownMenuSubTrigger>
                     <DropdownMenuSubContent>
@@ -135,7 +135,7 @@ export default function UserMenu({ user, hasEstablishment, onLogout }: UserMenuP
                                         key={option.value}
                                         onClick={() => setTheme(option.value)}
                                     >
-                                        <Icon className="me-2 h-4 w-4" />
+                                        <Icon className="h-4 w-4" />
                                         <span className="flex-1">{option.label}</span>
                                         {isActive && <CheckIcon className="h-4 w-4 ms-auto" />}
                                     </DropdownMenuItem>
@@ -147,7 +147,7 @@ export default function UserMenu({ user, hasEstablishment, onLogout }: UserMenuP
 
                 <DropdownMenuSub>
                     <DropdownMenuSubTrigger>
-                        <Languages className="me-2 h-4 w-4" />
+                        <Languages className="h-4 w-4" />
                         <span>{t("ui.navigation.language")}</span>
                     </DropdownMenuSubTrigger>
                     <DropdownMenuSubContent>
@@ -158,7 +158,7 @@ export default function UserMenu({ user, hasEstablishment, onLogout }: UserMenuP
                 <DropdownMenuSeparator />
 
                 <DropdownMenuItem variant="destructive" onClick={onLogout}>
-                    <LogOut className="me-2 h-4 w-4" />
+                    <LogOut className="h-4 w-4" />
                     <span>{t("features.auth.logout")}</span>
                 </DropdownMenuItem>
             </DropdownMenuContent>
