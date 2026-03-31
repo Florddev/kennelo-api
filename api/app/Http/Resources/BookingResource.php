@@ -1,0 +1,51 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Http\Resources;
+
+use App\Models\Booking;
+use App\Models\Pet;
+use App\Models\Service;
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+/** @mixin Booking */
+class BookingResource extends JsonResource
+{
+    public function toArray(Request $request): array
+    {
+        return [
+            'id' => $this->id,
+            'user_id' => $this->user_id,
+            'establishment_id' => $this->establishment_id,
+            'check_in_date' => $this->check_in_date->toDateString(),
+            'check_out_date' => $this->check_out_date->toDateString(),
+            'total_price' => $this->total_price,
+            'platform_fee' => $this->platform_fee,
+            'establishment_amount' => $this->establishment_amount,
+            'status' => $this->status->value,
+            'payment_status' => $this->payment_status,
+            'special_requests' => $this->special_requests,
+            'paid_at' => $this->paid_at ? human_date($this->paid_at) : null,
+            'user' => new UserResource($this->whenLoaded('user')),
+            'establishment' => new EstablishmentResource($this->whenLoaded('establishment')),
+            'pets' => $this->whenLoaded('pets', fn () => $this->pets->map(fn (Pet $pet) => [
+                'id' => $pet->id,
+                'name' => $pet->name,
+                'price_per_night' => $pet->booking_pet->price_per_night,
+                'number_of_nights' => $pet->booking_pet->number_of_nights,
+                'subtotal' => $pet->booking_pet->subtotal,
+            ])),
+            'services' => $this->whenLoaded('services', fn () => $this->services->map(fn (Service $service) => [
+                'id' => $service->id,
+                'name' => $service->name,
+                'quantity' => $service->booking_service->quantity,
+                'unit_price' => $service->booking_service->unit_price,
+                'subtotal' => $service->booking_service->subtotal,
+            ])),
+            'created_at' => human_date($this->created_at),
+            'updated_at' => human_date($this->updated_at),
+        ];
+    }
+}

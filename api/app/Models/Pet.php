@@ -14,6 +14,9 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
+/**
+ * @property-read BookingPet $booking_pet
+ */
 class Pet extends Model implements HasMedia
 {
     use HasUuids, InteractsWithMedia;

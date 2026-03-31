@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Booking\BookingController;
+use App\Http\Controllers\Booking\EstablishmentBookingController;
 use App\Http\Controllers\Establishment\EstablishmentAvailabilityController;
 use App\Http\Controllers\Establishment\EstablishmentCapacityController;
 use App\Http\Controllers\Establishment\EstablishmentController;
@@ -32,6 +34,16 @@ Route::middleware(['auth.jwt'])->group(function () {
     Route::post('/establishments/{establishment}/capacities', [EstablishmentCapacityController::class, 'store']);
     Route::put('/establishments/{establishment}/capacities/{capacity}', [EstablishmentCapacityController::class, 'update']);
     Route::delete('/establishments/{establishment}/capacities/{capacity}', [EstablishmentCapacityController::class, 'destroy']);
+
+    // Bookings (user)
+    Route::apiResource('bookings', BookingController::class)->only(['index', 'show', 'store']);
+    Route::put('/bookings/{booking}/cancel', [BookingController::class, 'cancel']);
+
+    // Bookings (establishment)
+    Route::get('/establishments/{establishment}/bookings', [EstablishmentBookingController::class, 'index']);
+    Route::put('/establishments/{establishment}/bookings/{booking}/confirm', [EstablishmentBookingController::class, 'confirm']);
+    Route::put('/establishments/{establishment}/bookings/{booking}/cancel', [EstablishmentBookingController::class, 'cancel']);
+    Route::put('/establishments/{establishment}/bookings/{booking}/complete', [EstablishmentBookingController::class, 'complete']);
 
     // Pets
     Route::apiResource('pets', PetController::class);

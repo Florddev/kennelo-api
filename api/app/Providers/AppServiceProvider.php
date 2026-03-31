@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Models\Booking;
 use App\Models\Establishment;
 use App\Models\Pet;
 use App\Models\User;
+use App\Policies\BookingPolicy;
 use App\Policies\EstablishmentPolicy;
 use App\Policies\PetPolicy;
 use App\Policies\UserPolicy;
@@ -28,6 +30,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(User::class, UserPolicy::class);
         Gate::policy(Establishment::class, EstablishmentPolicy::class);
         Gate::policy(Pet::class, PetPolicy::class);
+        Gate::policy(Booking::class, BookingPolicy::class);
 
         Route::bind('media', fn (string $value) => Media::where('uuid', $value)->firstOrFail());
 
