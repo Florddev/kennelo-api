@@ -123,11 +123,7 @@ export function FormStepper<TFieldValues extends FieldValues>({
 
     return (
         <FormProvider {...form}>
-            <form
-                id={id}
-                onSubmit={form.handleSubmit(onSubmit)}
-                className={cn("space-y-6", className)}
-            >
+            <form id={id} className={cn("space-y-6", className)}>
                 <div className="fixed top-0 left-0 w-screen h-screen bg-card z-20">
                     <div className="flex flex-col h-full justify-between overflow-auto">
                         <div
@@ -188,6 +184,16 @@ export function FormStepper<TFieldValues extends FieldValues>({
                                         {(() => {
                                             const activeVisibleStep =
                                                 visibleIndices.indexOf(activeStep);
+                                            const groupProgression =
+                                                groups && groups.length > 0
+                                                    ? calculateGroupProgression(
+                                                          groups,
+                                                          steps,
+                                                          values,
+                                                          visibleIndices,
+                                                          activeVisibleStep,
+                                                      )
+                                                    : undefined;
 
                                             return typeof renderProgress === "function" ? (
                                                 renderProgress({
@@ -195,33 +201,14 @@ export function FormStepper<TFieldValues extends FieldValues>({
                                                     stepCount: visibleIndices.length,
                                                     isLoading,
                                                     groups,
-                                                    groupProgression:
-                                                        groups && groups.length > 0
-                                                            ? calculateGroupProgression(
-                                                                  groups,
-                                                                  steps,
-                                                                  values,
-                                                                  visibleIndices,
-                                                                  activeVisibleStep,
-                                                              )
-                                                            : undefined,
+                                                    groupProgression,
                                                 })
                                             ) : (
                                                 <StepperProgress
                                                     activeStep={activeStep}
                                                     stepCount={visibleIndices.length}
                                                     groups={groups}
-                                                    groupProgression={
-                                                        groups && groups.length > 0
-                                                            ? calculateGroupProgression(
-                                                                  groups,
-                                                                  steps,
-                                                                  values,
-                                                                  visibleIndices,
-                                                                  activeVisibleStep,
-                                                              )
-                                                            : undefined
-                                                    }
+                                                    groupProgression={groupProgression}
                                                 />
                                             );
                                         })()}
@@ -232,8 +219,12 @@ export function FormStepper<TFieldValues extends FieldValues>({
                                                 visibleIndices={visibleIndices}
                                                 labels={labels}
                                                 isLoading={isLoading}
-                                                formId={id}
                                                 onBeforeStepChange={handleBeforeStepChange}
+                                                onFinalStepSubmit={() =>
+                                                    onSubmit(form.getValues(), (field, error) =>
+                                                        form.setError(field, error),
+                                                    )
+                                                }
                                             />
                                         </div>
                                     </div>

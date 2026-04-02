@@ -3,6 +3,7 @@
  */
 
 export * from "./actions/commands/add-pet-image";
+export * from "./actions/commands/add-pet-images";
 export * from "./actions/commands/create-pet";
 export * from "./actions/commands/delete-pet-image";
 export * from "./actions/commands/delete-pet";

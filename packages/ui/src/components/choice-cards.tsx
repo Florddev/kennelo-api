@@ -45,7 +45,7 @@ function optionCardClass(isSelected: boolean, disabled?: boolean, className?: st
     return cn(
         "group/choice-card flex justify-between rounded-lg border py-4 px-5 text-start transition-all gap-1",
         "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:outline-none focus-visible:ring-[3px]",
-        isSelected ? "ring-2 ring-primary bg-primary/5" : "border-stone-200",
+        isSelected ? "ring-2 ring-primary bg-primary/5" : "border-input",
         disabled && "pointer-events-none opacity-50",
         className,
     );
@@ -154,6 +154,8 @@ function ChoiceCardsSingle<TValue extends string>({
 }: Omit<ChoiceCardsSingleProps<TValue>, "mode" | "error"> & {
     render?: (option: ChoiceCardOption<TValue>, isSelected: boolean) => React.ReactNode;
 }) {
+    const instanceId = React.useId();
+
     return (
         <RadioGroup
             data-slot="choice-cards"
@@ -166,7 +168,7 @@ function ChoiceCardsSingle<TValue extends string>({
                 className={optionsLayoutClass(layout, optionsClassName)}
             >
                 {options.map((option) => {
-                    const id = `choice-${option.value}`;
+                    const id = `${instanceId}-choice-${option.value}`;
                     const isSelected = value === option.value;
 
                     return (
@@ -207,6 +209,7 @@ function ChoiceCardsMultiple<TValue extends string>({
 }: Omit<ChoiceCardsMultipleProps<TValue>, "mode" | "error"> & {
     render?: (option: ChoiceCardOption<TValue>, isSelected: boolean) => React.ReactNode;
 }) {
+    const instanceId = React.useId();
     const selectedValues = new Set(value);
 
     const toggleValue = (optionValue: TValue) => {
@@ -225,7 +228,7 @@ function ChoiceCardsMultiple<TValue extends string>({
                 className={optionsLayoutClass(layout, optionsClassName)}
             >
                 {options.map((option) => {
-                    const id = `choice-${option.value}`;
+                    const id = `${instanceId}-choice-${option.value}`;
                     const isSelected = selectedValues.has(option.value);
 
                     return (

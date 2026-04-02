@@ -15,6 +15,10 @@ import { PhoneInput } from "@workspace/ui/components/phone-input";
 import { KIcon } from "@workspace/ui/icons";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { Button } from "@workspace/ui/components/button";
+import { Calendar } from "@workspace/ui/components/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@workspace/ui/components/popover";
+import { Calendar as CalendarIcon } from "lucide-react";
 
 type InputControllerProps<TFieldValues extends FieldValues> = {
     name: Path<TFieldValues>;
@@ -44,6 +48,22 @@ type TextInputSectionProps = {
     isLoading?: boolean;
     autoComplete?: string;
     Icon?: KIcon;
+    fieldId: string;
+};
+
+type NumberInputSectionProps = {
+    field: ControllerRenderProps<FieldValues, string>;
+    showError: boolean;
+    placeholder?: string;
+    isLoading?: boolean;
+    fieldId: string;
+};
+
+type DateInputSectionProps = {
+    field: ControllerRenderProps<FieldValues, string>;
+    showError: boolean;
+    placeholder?: string;
+    isLoading?: boolean;
     fieldId: string;
 };
 
@@ -95,8 +115,155 @@ function TextInputSection({
     );
 }
 
+function NumberInputSection({
+    field,
+    showError,
+    placeholder,
+    isLoading,
+    fieldId,
+}: NumberInputSectionProps) {
+    return (
+        <InputGroup className="bg-card py-6 px-0.5 rounded-2xl gap-1">
+            <InputGroupInput
+                {...field}
+                id={fieldId}
+                type="number"
+                step="0.1"
+                min="0"
+                aria-invalid={showError}
+                placeholder={placeholder}
+                disabled={isLoading}
+                value={typeof field.value === "number" ? field.value : ""}
+                onChange={(event) => {
+                    const nextValue = event.target.value;
+                    field.onChange(nextValue === "" ? null : Number(nextValue));
+                }}
+            />
+        </InputGroup>
+    );
+}
+
+function DateInputSection({
+    field,
+    showError,
+    placeholder,
+    isLoading,
+    fieldId,
+}: DateInputSectionProps) {
+    const selectedDate = field.value ? new Date(`${field.value}T00:00:00`) : undefined;
+
+    return (
+        <Popover>
+            <PopoverTrigger asChild>
+                <Button
+                    id={fieldId}
+                    type="button"
+                    variant="outline"
+                    disabled={isLoading}
+                    aria-invalid={showError}
+                    className="justify-between rounded-2xl bg-card w-full py-6"
+                >
+                    {selectedDate
+                        ? new Intl.DateTimeFormat(undefined, {
+                              year: "numeric",
+                              month: "long",
+                              day: "numeric",
+                          }).format(selectedDate)
+                        : placeholder}
+                    <CalendarIcon className="size-4 text-muted-foreground" />
+                </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-fit p-0">
+                <Calendar
+                    mode="single"
+                    captionLayout="dropdown"
+                    startMonth={new Date(1950, 0)}
+                    endMonth={new Date()}
+                    selected={selectedDate}
+                    onSelect={(date) => {
+                        if (!date) {
+                            field.onChange("");
+                            return;
+                        }
+
+                        const formatted = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+                        field.onChange(formatted);
+                    }}
+                    disabled={{ after: new Date() }}
+                />
+            </PopoverContent>
+        </Popover>
+    );
+}
+
 function shouldShowError(fieldState: ControllerFieldState) {
     return fieldState.invalid && (fieldState.isTouched || fieldState.isDirty);
+}
+
+function InputControl({
+    field,
+    fieldState,
+    type,
+    placeholder,
+    isLoading,
+    autoComplete,
+    Icon,
+    defaultCountry,
+}: Omit<InputFieldProps, "label" | "description" | "showPasswordIndicator">) {
+    const fieldId = field.name;
+    const showError = shouldShowError(fieldState);
+
+    if (type === "phone") {
+        return (
+            <PhoneInput
+                {...field}
+                id={fieldId}
+                aria-invalid={showError}
+                value={field.value || ""}
+                onChange={field.onChange}
+                disabled={isLoading}
+                autoComplete={autoComplete ?? "tel"}
+                defaultCountry={defaultCountry as never}
+            />
+        );
+    }
+
+    if (type === "number") {
+        return (
+            <NumberInputSection
+                field={field}
+                showError={showError}
+                placeholder={placeholder}
+                isLoading={isLoading}
+                fieldId={fieldId}
+            />
+        );
+    }
+
+    if (type === "date") {
+        return (
+            <DateInputSection
+                field={field}
+                showError={showError}
+                placeholder={placeholder}
+                isLoading={isLoading}
+                fieldId={fieldId}
+            />
+        );
+    }
+
+    return (
+        <TextInputSection
+            field={field}
+            showError={showError}
+            type={type}
+            placeholder={placeholder}
+            isLoading={isLoading}
+            autoComplete={autoComplete}
+            Icon={Icon}
+            fieldId={fieldId}
+        />
+    );
 }
 
 function InputField({
@@ -113,7 +280,6 @@ function InputField({
     defaultCountry,
 }: InputFieldProps) {
     const isPassword = type === "password";
-    const isPhone = type === "phone";
     const fieldId = field.name;
     const showError = shouldShowError(fieldState);
 
@@ -121,29 +287,16 @@ function InputField({
         <Field data-invalid={showError} className="gap-1.5 group">
             {label && <FieldLabel htmlFor={fieldId}>{label}</FieldLabel>}
 
-            {isPhone ? (
-                <PhoneInput
-                    {...field}
-                    id={fieldId}
-                    aria-invalid={showError}
-                    value={field.value || ""}
-                    onChange={field.onChange}
-                    disabled={isLoading}
-                    autoComplete={autoComplete ?? "tel"}
-                    defaultCountry={defaultCountry as never}
-                />
-            ) : (
-                <TextInputSection
-                    field={field}
-                    showError={showError}
-                    type={type}
-                    placeholder={placeholder}
-                    isLoading={isLoading}
-                    autoComplete={autoComplete}
-                    Icon={Icon}
-                    fieldId={fieldId}
-                />
-            )}
+            <InputControl
+                field={field}
+                fieldState={fieldState}
+                type={type}
+                placeholder={placeholder}
+                isLoading={isLoading}
+                autoComplete={autoComplete}
+                Icon={Icon}
+                defaultCountry={defaultCountry}
+            />
 
             {showError && <FieldError errors={[fieldState.error]} />}
             {description && <FieldDescription>{description}</FieldDescription>}

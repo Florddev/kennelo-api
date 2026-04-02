@@ -13,7 +13,8 @@ update: ## Update/install dependencies Back/Front
 	pnpm install
 
 start: ## Start API and Web
-	cd api && php artisan serve &
+	cd api && php -d upload_max_filesize=8M -d post_max_size=12M artisan serve &
+	cd api && php artisan queue:work --queue=default --tries=1 --memory=1024 --timeout=180 &
 	pnpm dev &
 
 larastan: ## Run larastan

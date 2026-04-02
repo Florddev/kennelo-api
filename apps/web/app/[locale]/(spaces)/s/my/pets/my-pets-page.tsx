@@ -20,15 +20,17 @@ import { useScrolled } from "@/hooks/use-scrolled";
 import { cn } from "@workspace/ui/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ShapeMedia } from "@/components/media/shape-media";
+import { useNavigation } from "@/hooks/use-navigation";
 
 type PetsContentProps = {
     isLoading: boolean;
     pets: ReturnType<typeof usePets>["pets"];
     filteredPets: ReturnType<typeof usePetsFilters>["filteredPets"];
     t: ReturnType<typeof useTranslations>;
+    onCreatePet: () => void;
 };
 
-function PetsContent({ isLoading, pets, filteredPets, t }: PetsContentProps) {
+function PetsContent({ isLoading, pets, filteredPets, t, onCreatePet }: PetsContentProps) {
     if (isLoading) {
         return (
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -55,7 +57,7 @@ function PetsContent({ isLoading, pets, filteredPets, t }: PetsContentProps) {
                 </EmptyHeader>
                 {pets.length === 0 && (
                     <EmptyContent>
-                        <Button className="mx-auto gap-2">
+                        <Button className="mx-auto gap-2" onClick={onCreatePet}>
                             <Plus className="size-4" />
                             {t("features.pets.addPet")}
                         </Button>
@@ -70,11 +72,15 @@ function PetsContent({ isLoading, pets, filteredPets, t }: PetsContentProps) {
             {filteredPets.map((pet) => (
                 <PetCard key={pet.id} pet={pet} />
             ))}
-            <div className="flex gap-4 items-center cursor-pointer">
-                <ShapeMedia emptyIcon={PlusIcon} shapeClassName="lg:size-38 xl:size-56" />
+            <div className="flex gap-4 items-center cursor-pointer" onClick={onCreatePet}>
+                <ShapeMedia emptyIcon={PlusIcon} shapeClassName="lg:size-28 xl:size-38" />
                 <div className="flex flex-col gap-2">
-                    <h1 className="text-2xl font-semibold">Ajouter</h1>
-                    <span className="text-sm text-muted-foreground">Créer un nouvel animal</span>
+                    <h1 className="text-2xl font-semibold">
+                        {t("features.pets.create.quickTitle")}
+                    </h1>
+                    <span className="text-sm text-muted-foreground">
+                        {t("features.pets.create.quickDescription")}
+                    </span>
                 </div>
             </div>
         </div>
@@ -83,6 +89,7 @@ function PetsContent({ isLoading, pets, filteredPets, t }: PetsContentProps) {
 
 export default function MyPetsPage() {
     const t = useTranslations();
+    const { routes, push } = useNavigation();
     const { pets, isLoading } = usePets();
     const {
         search,
@@ -98,50 +105,10 @@ export default function MyPetsPage() {
     } = usePetsFilters(pets);
     const scrolled = useScrolled(100);
     const isMobile = useIsMobile();
+    const handleCreatePet = () => push(`${routes.MyPets()}/new`);
 
     return (
         <div className="min-h-screen bg-card">
-            {/* <div 
-                className={cn(
-                    "sticky top-0 bg-card flex items-center z-10",
-                    scrolled && "border-b",
-                )}
-            >
-                <div className="flex md:justify-between sm:items-center w-full py-2 p-4 sm:pt-6">
-                    <h1
-                        className={cn(
-                            scrolled ? "text-xl" : "text-3xl mt-12",
-                            "flex gap-1.5 items-center font-bold tracking-tight transition-all sm:mt-0",
-                        )}
-                    >
-                        <KHeart
-                            className={cn("size-12 -ml-1.5 transition-all", scrolled && "size-9")}
-                            filled
-                            secondaryOpacity={1}
-                            secondary="text-secondary"
-                        />
-                        {t("features.pets.title")}
-                    </h1>
-                    <div className="ml-auto flex gap-1">
-                        <Button
-                            className="bg-muted gap-2"
-                            variant="secondary"
-                            size={isMobile ? "icon-sm" : "default"}
-                        >
-                            <Plus className="size-4" />
-                            {!isMobile && t("features.pets.addPet")}
-                        </Button>
-                        <Button
-                            className="bg-muted gap-2"
-                            variant="secondary"
-                            size={isMobile ? "icon-sm" : "default"}
-                        >
-                            <Search className="size-4" />
-                            {!isMobile && t('common.actions.search')}
-                        </Button>
-                    </div>
-                </div>
-            </div> */}
             <div
                 className={cn(
                     "sticky top-0 bg-card flex items-center z-10",
@@ -168,6 +135,7 @@ export default function MyPetsPage() {
                             className="bg-muted gap-2"
                             variant="secondary"
                             size={isMobile ? "icon-sm" : "default"}
+                            onClick={handleCreatePet}
                         >
                             <Plus className="size-4" />
                             {!isMobile && t("features.pets.addPet")}
@@ -199,7 +167,13 @@ export default function MyPetsPage() {
                         resultsCount={filteredPets.length}
                     />
                 )}
-                <PetsContent isLoading={isLoading} pets={pets} filteredPets={filteredPets} t={t} />
+                <PetsContent
+                    isLoading={isLoading}
+                    pets={pets}
+                    filteredPets={filteredPets}
+                    t={t}
+                    onCreatePet={handleCreatePet}
+                />
             </div>
         </div>
     );

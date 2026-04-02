@@ -26,7 +26,10 @@ export type FormStepperProps<TFieldValues extends FieldValues> = {
     defaultValues: DefaultValues<TFieldValues>;
     steps: FormStepDefinition<TFieldValues>[];
     labels: FormStepperLabels;
-    onSubmit: (values: TFieldValues) => Promise<void> | void;
+    onSubmit: (
+        values: TFieldValues,
+        setFieldError?: (field: FieldPath<TFieldValues>, error: { message: string }) => void,
+    ) => Promise<void> | void;
     isLoading?: boolean;
     formId?: string;
     className?: string;
@@ -38,4 +41,14 @@ export type FormStepperProps<TFieldValues extends FieldValues> = {
         groups?: string[];
         groupProgression?: Record<string, number>;
     }) => ReactNode;
+};
+
+export type StepperNavigationProps<TFieldValues extends FieldValues> = {
+    steps: FormStepDefinition<TFieldValues>[];
+    visibleIndices: number[];
+    labels: FormStepperLabels;
+    isLoading: boolean;
+    formId?: string;
+    onBeforeStepChange: (from: number, direction: "forward" | "backward") => Promise<void>;
+    onFinalStepSubmit: () => Promise<void> | void;
 };

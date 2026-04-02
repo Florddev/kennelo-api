@@ -13,6 +13,7 @@ type StepperNavigationProps<TFieldValues extends FieldValues> = {
     isLoading: boolean;
     formId?: string;
     onBeforeStepChange: (from: number, direction: StepTransitionDirection) => Promise<void>;
+    onFinalStepSubmit: () => Promise<void> | void;
 };
 
 export function StepperNavigation<TFieldValues extends FieldValues>({
@@ -20,8 +21,8 @@ export function StepperNavigation<TFieldValues extends FieldValues>({
     visibleIndices,
     labels,
     isLoading,
-    formId,
     onBeforeStepChange,
+    onFinalStepSubmit,
 }: StepperNavigationProps<TFieldValues>) {
     const form = useFormContext<TFieldValues>();
     const { activeStep, jumpTo } = useStepper<TFieldValues>();
@@ -33,13 +34,6 @@ export function StepperNavigation<TFieldValues extends FieldValues>({
 
     const handleNext = async () => {
         const activeStepDefinition = steps[activeStep];
-
-        if (activeStepDefinition?.canProceed) {
-            const canProceed = await activeStepDefinition.canProceed(form);
-            if (!canProceed) {
-                return;
-            }
-        }
 
         const fields = activeStepDefinition?.fields ?? [];
 
@@ -60,6 +54,13 @@ export function StepperNavigation<TFieldValues extends FieldValues>({
             }
         }
 
+        if (activeStepDefinition?.canProceed) {
+            const canProceed = await activeStepDefinition.canProceed(form);
+            if (!canProceed) {
+                return;
+            }
+        }
+
         const nextVisibleStepIndex = visibleIndices[currentVisibleIndex + 1];
 
         if (nextVisibleStepIndex === undefined) {
@@ -68,6 +69,37 @@ export function StepperNavigation<TFieldValues extends FieldValues>({
 
         await onBeforeStepChange(activeStep, "forward");
         await jumpTo(nextVisibleStepIndex);
+    };
+
+    const handleFinalSubmit = async () => {
+        const activeStepDefinition = steps[activeStep];
+        const fields = activeStepDefinition?.fields ?? [];
+
+        if (fields.length > 0) {
+            for (const field of fields) {
+                const value = form.getValues(field);
+                form.setValue(field, value, {
+                    shouldTouch: true,
+                    shouldDirty: false,
+                    shouldValidate: false,
+                });
+            }
+
+            const isValid = await form.trigger(fields, { shouldFocus: true });
+
+            if (!isValid) {
+                return;
+            }
+        }
+
+        if (activeStepDefinition?.canProceed) {
+            const canProceed = await activeStepDefinition.canProceed(form);
+            if (!canProceed) {
+                return;
+            }
+        }
+
+        await onFinalStepSubmit();
     };
 
     const handlePrev = async () => {
@@ -110,11 +142,13 @@ export function StepperNavigation<TFieldValues extends FieldValues>({
                 </Button>
             ) : (
                 <Button
-                    type="submit"
-                    form={formId}
+                    type="button"
                     className="rounded-4xl text-base cursor-pointer"
                     size="lg"
                     disabled={isLoading}
+                    onClick={() => {
+                        void handleFinalSubmit();
+                    }}
                 >
                     {labels.submit}
                 </Button>
