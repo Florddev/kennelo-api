@@ -19,7 +19,7 @@ class StorePetImageRequest extends FormRequest
 
         if ($pet instanceof Pet && $pet->getMedia(MediaService::COLLECTION_IMAGES)->count() >= 15) {
             throw ValidationException::withMessages([
-                'image' => ['This pet has reached the maximum number of images (5).'],
+                'image' => ['This pet has reached the maximum number of images (15).'],
             ]);
         }
 

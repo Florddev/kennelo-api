@@ -30,7 +30,6 @@ class UploadAvatarRequest extends FormRequest
                 'image',
                 'mimetypes:image/jpeg,image/jpg,image/png,image/gif,image/webp',
                 // 'max:8192',
-                // 'dimensions:min_width=100,min_height=100,max_width=2000,max_height=2000',
             ],
         ];
     }
