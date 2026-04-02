@@ -101,6 +101,11 @@ class User extends Authenticatable implements HasMedia, JWTSubject, MustVerifyEm
         return $this->belongsToMany(Establishment::class, 'establishment_collaborators', 'user_id', 'establishment_id');
     }
 
+    public function conversations(): HasMany
+    {
+        return $this->hasMany(Conversation::class);
+    }
+
     public function getJWTIdentifier(): mixed
     {
         return $this->getKey();

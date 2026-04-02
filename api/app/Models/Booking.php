@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * @property Carbon $check_in_date
@@ -81,5 +82,10 @@ class Booking extends Model
             ->as('booking_service')
             ->withPivot(['quantity', 'unit_price', 'subtotal'])
             ->withTimestamps();
+    }
+
+    public function bookingThread(): HasOne
+    {
+        return $this->hasOne(BookingThread::class);
     }
 }

@@ -4,14 +4,25 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
+/**
+ * @property string $user_id
+ * @property string $establishment_id
+ * @property Carbon|null $last_message_at
+ * @property-read User|null $user
+ * @property-read Establishment|null $establishment
+ * @property-read Message|null $latestMessage
+ */
 class Conversation extends Model
 {
-    use HasUuids;
+    use HasFactory, HasUuids;
 
     protected $fillable = [
         'user_id',
@@ -19,9 +30,12 @@ class Conversation extends Model
         'last_message_at',
     ];
 
-    protected $casts = [
-        'last_message_at' => 'datetime',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'last_message_at' => 'datetime',
+        ];
+    }
 
     public function user(): BelongsTo
     {
@@ -36,5 +50,15 @@ class Conversation extends Model
     public function messages(): HasMany
     {
         return $this->hasMany(Message::class);
+    }
+
+    public function bookingThreads(): HasMany
+    {
+        return $this->hasMany(BookingThread::class);
+    }
+
+    public function latestMessage(): HasOne
+    {
+        return $this->hasOne(Message::class)->latestOfMany();
     }
 }

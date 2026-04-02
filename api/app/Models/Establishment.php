@@ -73,6 +73,11 @@ class Establishment extends Model
         return $this->hasMany(Booking::class);
     }
 
+    public function conversations(): HasMany
+    {
+        return $this->hasMany(Conversation::class);
+    }
+
     public function collaboratorHasPermission(User $user, EstablishmentPermission $permission): bool
     {
         if (! $this->collaborators()->where('users.id', $user->id)->exists()) {
