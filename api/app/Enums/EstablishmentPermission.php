@@ -9,6 +9,7 @@ enum EstablishmentPermission: string
     case UPDATE_ESTABLISHMENT = 'update_establishment';
     case MANAGE_CAPACITIES = 'manage_capacities';
     case MANAGE_AVAILABILITIES = 'manage_availabilities';
+    case MANAGE_BOOKINGS = 'manage_bookings';
 
     public static function values(): array
     {
