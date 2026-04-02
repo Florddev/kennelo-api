@@ -61,12 +61,12 @@ it('owner can add an image to their pet', function () {
     expect($pet->fresh()->getMedia(MediaService::COLLECTION_IMAGES))->toHaveCount(1);
 });
 
-it('owner cannot add more than 5 images to a pet', function () {
+it('owner cannot add more than 15 images to a pet', function () {
     Storage::fake('public');
     $user = User::factory()->create();
     $animalType = AnimalType::create(['code' => 'dog', 'name' => 'Chien', 'category' => 'mammals']);
     $pet = Pet::create(['user_id' => $user->id, 'animal_type_id' => $animalType->id, 'name' => 'Rex']);
-    for ($i = 1; $i <= 5; $i++) {
+    for ($i = 1; $i <= 15; $i++) {
         $pet->addMedia(UploadedFile::fake()->image("photo{$i}.jpg", 300, 300))->toMediaCollection(MediaService::COLLECTION_IMAGES);
     }
     $this->withHeaders(asUser($user))->postJson("/api/pets/{$pet->id}/images", ['image' => UploadedFile::fake()->image('sixth.jpg', 300, 300)])->assertUnprocessable();
