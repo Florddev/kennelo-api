@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Pet;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Log;
 
 class UploadPetAvatarRequest extends FormRequest
 {
@@ -19,10 +21,24 @@ class UploadPetAvatarRequest extends FormRequest
             'avatar' => [
                 'required',
                 'image',
-                'mimetypes:image/jpeg,image/png,image/gif,image/webp',
-                'max:2048',
-                'dimensions:min_width=100,min_height=100,max_width=2000,max_height=2000',
+                'mimetypes:image/jpeg,image/jpg,image/png,image/gif,image/webp',
+                // 'max:8192',
+                // 'dimensions:min_width=100,min_height=100,max_width=2000,max_height=2000',
             ],
         ];
+    }
+
+    protected function failedValidation(Validator $validator): void
+    {
+        Log::warning('pet_avatar_upload.validation_failed', [
+            'pet_id' => $this->route('pet')?->id,
+            'user_id' => $this->user()?->id,
+            'errors' => $validator->errors()->toArray(),
+            'uploaded_size_bytes' => $this->file('avatar')?->getSize(),
+            'uploaded_mime' => $this->file('avatar')?->getMimeType(),
+            'uploaded_original_name' => $this->file('avatar')?->getClientOriginalName(),
+        ]);
+
+        parent::failedValidation($validator);
     }
 }

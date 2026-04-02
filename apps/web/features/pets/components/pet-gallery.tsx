@@ -20,7 +20,7 @@ function buildAllImages(avatarUrl: string | null, images: { url: string }[]): st
 function PetGalleryEmpty({ typeCode, altName }: { typeCode: string; altName: string }) {
     if (isIllustratedType(typeCode)) {
         return (
-            <div className="relative aspect-[16/10] rounded-2xl overflow-hidden bg-muted">
+            <div className="relative aspect-[16/6] rounded-2xl overflow-hidden bg-muted">
                 <Image
                     src={`/illustrations/pets/${typeCode}.svg`}
                     alt={altName}
@@ -31,7 +31,7 @@ function PetGalleryEmpty({ typeCode, altName }: { typeCode: string; altName: str
         );
     }
     return (
-        <div className="relative aspect-[16/10] rounded-2xl overflow-hidden bg-muted">
+        <div className="relative aspect-[16/6] rounded-2xl overflow-hidden bg-muted">
             <div className="absolute inset-0 flex items-center justify-center">
                 <PawPrint className="size-20 text-muted-foreground/15" />
             </div>

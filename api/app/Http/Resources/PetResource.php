@@ -28,7 +28,9 @@ class PetResource extends JsonResource
             'microchip_number' => $this->microchip_number,
             'adoption_date' => $this->adoption_date?->toDateString(),
             'about' => $this->about,
-            'avatar_url' => $this->getFirstMediaUrl(MediaService::COLLECTION_AVATAR, MediaService::CONVERSION_WEBP) ?: null,
+            'avatar_url' => $this->getFirstMediaUrl(MediaService::COLLECTION_AVATAR, MediaService::CONVERSION_AVATAR_WEBP)
+                ?: $this->getFirstMediaUrl(MediaService::COLLECTION_AVATAR)
+                ?: null,
             'health_notes' => $this->health_notes,
             'animal_type' => new AnimalTypeResource($this->whenLoaded('animalType')),
             'attributes' => PetAttributeResource::collection($this->whenLoaded('petAttributes')),

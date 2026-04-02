@@ -58,9 +58,9 @@ export function PetCard({ pet }: PetCardProps) {
             <ShapeMedia
                 imageUrl={pet.getAvatarUrl()}
                 badgeIcon={sexUi.icon}
-                badgeCircleClassName={`${sexUi.badgeCircleClassName} lg:size-8 xl:size-10`}
+                badgeCircleClassName={`${sexUi.badgeCircleClassName} lg:size-8 xl:size-9`}
                 badgeIconClassName={`${sexUi.badgeIconClassName} lg:size-5`}
-                shapeClassName="lg:size-38 xl:size-56"
+                shapeClassName="lg:size-28 xl:size-38"
             />
             <div className="flex flex-col gap-2 w-full">
                 <div className="flex justify-between items-center w-full">

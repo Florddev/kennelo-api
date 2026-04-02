@@ -50,11 +50,14 @@
         "otherInformation": "Autres informations"
     },
     "fields": {
+        "name": "Nom",
         "breed": "Race",
         "birthDate": "Date de naissance",
         "age": "Âge",
+        "ageYears": "Années",
+        "ageMonths": "Mois (optionnel)",
         "sex": "Sexe",
-        "weight": "Poids",
+        "weight": "Poids (kg)",
         "sterilized": "Stérilisé·e",
         "microchip": "Micropuce",
         "microchipNumber": "Numéro de micropuce",
@@ -62,6 +65,126 @@
         "about": "À propos",
         "healthNotes": "Notes de santé",
         "animalType": "Type d'animal"
+    },
+    "create": {
+        "pageTitle": "Créer un nouvel animal",
+        "pageDescription": "Complétez le profil de votre animal en quelques étapes guidées",
+        "quickTitle": "Ajouter",
+        "quickDescription": "Créer un nouvel animal",
+        "placeholders": {
+            "name": "Luna",
+            "breed": "Golden Retriever",
+            "birthDate": "Choisir une date de naissance",
+            "ageYears": "ex : 3",
+            "ageMonths": "0 – 11",
+            "weight": "ex: 12.5",
+            "microchipNumber": "Saisissez le numéro de micropuce",
+            "about": "Parlez-nous de votre animal",
+            "healthNotes": "Partagez les informations de santé importantes"
+        },
+        "attributes": {
+            "fallbackQuestion": "Parlons de {label}.",
+            "defaultPetName": "votre animal",
+            "freeTextPlaceholder": "Écrivez votre réponse",
+            "medicationsPlaceholder": "Ajouter un médicament et appuyer sur Entrée"
+        },
+        "steps": {
+            "generalIntro": {
+                "label": "Votre animal",
+                "title": "Commençons par les informations essentielles de votre animal.",
+                "description": "Nous allons d'abord renseigner les éléments clés pour personnaliser la suite du formulaire."
+            },
+            "type": {
+                "title": "Parmi les propositions suivantes, quel type correspond le mieux à votre animal ?",
+                "subtitle": "Choisissez le type qui représente le mieux votre animal.",
+                "error": "Veuillez choisir un type d'animal avant de continuer."
+            },
+            "identity": {
+                "title": "Comment s'appelle votre animal ?"
+            },
+            "identityDetails": {
+                "title": "Dites-nous en un peu plus sur votre animal.",
+                "ageModeApproximate": "Âge approximatif",
+                "approximateAgeHint": "Une date de naissance approximative sera calculée.",
+                "switchToApproximate": "Je ne connais pas la date exacte",
+                "switchToDate": "Je connais la date exacte"
+            },
+            "profile": {
+                "title": "Ajoutons quelques détails pratiques sur votre animal.",
+                "subtitle": "Ces informations aident les hôtes à mieux comprendre votre animal.",
+                "microchipHint": "Si votre animal est pucé, renseignez le numéro exact de la micropuce."
+            },
+            "attributesIntro": {
+                "label": "Habitudes & Préférences",
+                "title": "Passons aux habitudes et préférences de votre animal.",
+                "description": "Nous allons vous poser quelques questions par catégorie selon le type sélectionné."
+            },
+            "attributesCategory": {
+                "title": "Parlons de {category}.",
+                "subtitle": "Sélectionnez les options qui décrivent le mieux votre animal."
+            },
+            "attributesCategoryTitles": {
+                "info": "Commençons par les informations de base de votre animal.",
+                "behavior": "Décrivons maintenant le comportement quotidien de votre animal.",
+                "social": "Voyons comment votre animal interagit avec les autres.",
+                "hygiene": "Parlons des habitudes de propreté de votre animal.",
+                "care": "Précisons les besoins de soin de votre animal.",
+                "health": "Ajoutons les informations de santé importantes pour votre animal.",
+                "habitat": "Décrivons l'environnement idéal de votre animal.",
+                "diet": "Terminons avec l'alimentation de votre animal."
+            },
+            "attributesRecap": {
+                "title": "Voici le récapitulatif des attributs sélectionnés.",
+                "subtitle": "Vous avez sélectionné {count} attributs.",
+                "empty": "Aucun attribut sélectionné pour le moment."
+            },
+            "completionIntro": {
+                "label": "On y est presque",
+                "title": "Terminons avec les informations complémentaires.",
+                "description": "Vous pouvez enrichir le profil maintenant et compléter le reste plus tard."
+            },
+            "health": {
+                "title": "Parlons des informations de santé et de contexte.",
+                "subtitle": "Ces notes aident les hôtes à prendre soin de votre animal dans les meilleures conditions."
+            },
+            "media": {
+                "title": "Ajoutons les photos pour le profil de votre animal.",
+                "subtitle": "Choisissez un avatar et ajoutez des photos supplémentaires si besoin.",
+                "avatarLabel": "Photo de profil",
+                "imagesLabel": "Photos supplémentaires",
+                "pickAvatar": "Choisir un avatar",
+                "pickImages": "Choisir des photos"
+            },
+            "avatar": {
+                "title": "Choisissons une photo de profil pour votre animal.",
+                "subtitle": "Un avatar clair met votre animal en valeur.",
+                "pick": "Choisir un avatar",
+                "ready": "Avatar prêt"
+            },
+            "images": {
+                "title": "Ajoutons quelques photos supplémentaires.",
+                "subtitle": "Plus de photos permettent aux hôtes de mieux connaître votre animal.",
+                "pick": "Choisir des photos"
+            },
+            "final": {
+                "title": "Tout est prêt, validons le profil de votre animal.",
+                "subtitle": "Vérifiez le récapitulatif et confirmez quand vous êtes prêt.",
+                "attributesCount": "Attributs sélectionnés : {count}",
+                "imagesCount": "Photos sélectionnées : {count}",
+                "submit": "Créer le profil de mon animal",
+                "submitting": "Création du profil en cours..."
+            }
+        },
+        "upload": {
+            "initializing": "Préparation des images en cours...",
+            "compressing": "Compression des images ({current}/{total})...",
+            "uploading": "Téléchargement du lot {current}/{total}...",
+            "success": "Images téléchargées avec succès",
+            "error": "Échec du téléchargement des images"
+        },
+        "validation": {
+            "microchipRequired": "Veuillez saisir le numéro de micropuce pour continuer."
+        }
     },
     "sex": {
         "male": "Mâle",
@@ -104,5 +227,283 @@
         "health": "Santé",
         "habitat": "Habitat",
         "diet": "Régime alimentaire"
+    },
+    "attributes": {
+        "questions": {}
+    },
+    "attributes_definitions": {
+        "energy_level": {
+            "question": "Quel est le niveau d'énergie de {petName} ?",
+            "options": {
+                "low": "Plutôt calme",
+                "medium": "Énergie équilibrée",
+                "high": "Très énergique"
+            }
+        },
+        "potty_trained": {
+            "question": "Quel est le niveau de propreté de {petName} ?",
+            "options": {
+                "trained": "Propre au quotidien",
+                "learning": "Encore en apprentissage",
+                "to_determine": "Je ne sais pas encore"
+            }
+        },
+        "litter_trained": {
+            "question": "Est-ce que {petName} utilise bien sa litière ?",
+            "options": {
+                "trained": "Utilise bien sa litière",
+                "learning": "Apprend encore",
+                "to_determine": "Je ne sais pas encore"
+            }
+        },
+        "friendly_with_kids": {
+            "question": "Comment {petName} se comporte avec les enfants ?",
+            "options": {
+                "yes": "S'entend bien avec les enfants",
+                "no": "Ne s'entend pas avec les enfants",
+                "unknown": "Je ne sais pas"
+            }
+        },
+        "friendly_with_dogs": {
+            "question": "Comment {petName} se comporte avec les chiens ?",
+            "options": {
+                "yes": "S'entend bien avec les chiens",
+                "no": "Ne s'entend pas avec les chiens",
+                "unknown": "Je ne sais pas"
+            }
+        },
+        "friendly_with_cats": {
+            "question": "Comment {petName} se comporte avec les chats ?",
+            "options": {
+                "yes": "S'entend bien avec les chats",
+                "no": "Ne s'entend pas avec les chats",
+                "unknown": "Je ne sais pas"
+            }
+        },
+        "potty_break": {
+            "question": "À quelle fréquence {petName} a-t-il besoin d'une pause pipi ?",
+            "options": {
+                "2h": "Environ toutes les 2 heures",
+                "4h": "Environ toutes les 4 heures",
+                "6h_plus": "Peut attendre 6 heures ou plus"
+            }
+        },
+        "meal_schedule": {
+            "question": "Quel est le rythme des repas de {petName} ?",
+            "options": {
+                "morning": "Un repas le matin",
+                "evening": "Un repas le soir",
+                "morning_evening": "Deux repas matin et soir",
+                "free_feeding": "Nourriture en libre-service"
+            }
+        },
+        "can_be_left_alone": {
+            "question": "Combien de temps {petName} peut-il rester seul ?",
+            "options": {
+                "1h": "Maximum 1 heure",
+                "4h": "Jusqu'à 4 heures",
+                "8h_plus": "8 heures ou plus",
+                "never": "Ne peut pas rester seul"
+            }
+        },
+        "medications": {
+            "question": "{petName} prend-il des médicaments particuliers ?"
+        },
+        "indoor_outdoor": {
+            "question": "{petName} vit-il en intérieur, en extérieur, ou les deux ?",
+            "options": {
+                "indoor_only": "Intérieur uniquement",
+                "outdoor_access": "Intérieur avec accès extérieur",
+                "outdoor": "Extérieur principalement"
+            }
+        },
+        "declawed": {
+            "question": "Est-ce que {petName} a les griffes retirées ?"
+        },
+        "cage_type": {
+            "question": "Quel type de cage ou d'enclos convient à {petName} ?",
+            "options": {
+                "small": "Petite cage",
+                "medium": "Cage moyenne",
+                "large": "Grande cage",
+                "enclosure": "Enclos",
+                "aviary": "Volière"
+            }
+        },
+        "is_nocturnal": {
+            "question": "Est-ce que {petName} est plutôt nocturne ?"
+        },
+        "can_be_handled": {
+            "question": "Dans quelle mesure {petName} peut-il être manipulé ?",
+            "options": {
+                "yes_easily": "Se laisse manipuler facilement",
+                "yes_with_care": "Manipulation possible avec précaution",
+                "no_fearful": "N'aime pas être manipulé"
+            }
+        },
+        "bites_scratches": {
+            "question": "Est-ce que {petName} mord ou griffe ?",
+            "options": {
+                "never": "Jamais",
+                "rarely": "Rarement",
+                "often": "Souvent"
+            }
+        },
+        "friendly_with_same_species": {
+            "question": "Comment {petName} se comporte avec ses congénères ?",
+            "options": {
+                "yes": "S'entend bien avec ses congénères",
+                "no": "Ne s'entend pas avec ses congénères",
+                "unknown": "Je ne sais pas"
+            }
+        },
+        "diet_specifics": {
+            "question": "Y a-t-il un régime alimentaire spécifique pour {petName} ?"
+        },
+        "bird_species": {
+            "question": "Quelle est l'espèce exacte de {petName} ?"
+        },
+        "can_fly": {
+            "question": "Est-ce que {petName} peut voler ?",
+            "options": {
+                "yes": "Vole librement",
+                "no_clipped": "Ne vole pas car ailes coupées",
+                "limited": "Vol limité"
+            }
+        },
+        "wings_clipped": {
+            "question": "Est-ce que les ailes de {petName} sont coupées ?"
+        },
+        "noise_level": {
+            "question": "Quel est le niveau sonore de {petName} ?",
+            "options": {
+                "quiet": "Plutôt silencieux",
+                "moderate": "Modérément bruyant",
+                "loud": "Bruyant",
+                "very_loud": "Très bruyant"
+            }
+        },
+        "can_talk": {
+            "question": "Est-ce que {petName} peut parler ?"
+        },
+        "friendly_with_other_birds": {
+            "question": "Comment {petName} se comporte avec les autres oiseaux ?",
+            "options": {
+                "yes": "S'entend bien avec les autres oiseaux",
+                "no": "Ne s'entend pas avec les autres oiseaux",
+                "unknown": "Je ne sais pas"
+            }
+        },
+        "water_type": {
+            "question": "Dans quel type d'eau vit {petName} ?",
+            "options": {
+                "freshwater": "Eau douce",
+                "saltwater": "Eau salée",
+                "brackish": "Eau saumâtre"
+            }
+        },
+        "tank_size_liters": {
+            "question": "Quelle taille d'aquarium (en litres) faut-il pour {petName} ?"
+        },
+        "water_temperature": {
+            "question": "Quelle température d'eau est idéale pour {petName} ?"
+        },
+        "compatible_with_other_fish": {
+            "question": "{petName} est-il compatible avec d'autres poissons ?",
+            "options": {
+                "yes": "Compatible avec la plupart des poissons",
+                "certain_types": "Compatible avec certains types uniquement",
+                "no_aggressive": "Plutôt agressif avec les autres poissons"
+            }
+        },
+        "equipment_needed": {
+            "question": "Quel équipement est nécessaire pour {petName} ?"
+        },
+        "feeding_frequency": {
+            "question": "À quelle fréquence faut-il nourrir {petName} ?",
+            "options": {
+                "once_daily": "Une fois par jour",
+                "twice_daily": "Deux fois par jour",
+                "every_2_days": "Tous les 2 jours",
+                "twice_weekly": "Deux à trois fois par semaine",
+                "weekly": "Une fois par semaine",
+                "biweekly": "Une fois toutes les deux semaines"
+            }
+        },
+        "reptile_species": {
+            "question": "Quelle est l'espèce de reptile de {petName} ?"
+        },
+        "terrarium_type": {
+            "question": "Quel type de terrarium convient à {petName} ?",
+            "options": {
+                "desert": "Terrarium désertique",
+                "tropical": "Terrarium tropical",
+                "aqua_terrarium": "Aqua-terrarium"
+            }
+        },
+        "temperature_range": {
+            "question": "Quelle plage de température convient à {petName} ?"
+        },
+        "humidity_level": {
+            "question": "Quel niveau d'humidité convient à {petName} ?",
+            "options": {
+                "low": "Faible humidité (30-40%)",
+                "medium": "Humidité moyenne (50-60%)",
+                "high": "Humidité élevée (70-80%)"
+            }
+        },
+        "is_venomous": {
+            "question": "Est-ce que {petName} est venimeux ?"
+        },
+        "diet_type": {
+            "question": "Quel type d'alimentation convient à {petName} ?",
+            "options": {
+                "insects": "Se nourrit d'insectes",
+                "rodents": "Se nourrit de rongeurs",
+                "vegetarian": "Régime végétarien",
+                "omnivore": "Régime omnivore",
+                "carnivore": "Régime carnivore",
+                "worms": "Se nourrit de vers",
+                "detritivore": "Se nourrit de détritus organiques"
+            }
+        },
+        "requires_live_food": {
+            "question": "{petName} a-t-il besoin de nourriture vivante ?"
+        },
+        "uv_light_needed": {
+            "question": "{petName} a-t-il besoin d'une lampe UV ?"
+        },
+        "amphibian_species": {
+            "question": "Quelle est l'espèce d'amphibien de {petName} ?"
+        },
+        "habitat_type": {
+            "question": "Quel type d'habitat convient à {petName} ?",
+            "options": {
+                "aquatic": "Habitat aquatique",
+                "semi_aquatic": "Habitat semi-aquatique",
+                "terrestrial": "Habitat terrestre",
+                "dry_terrarium": "Terrarium sec",
+                "humid_terrarium": "Terrarium humide",
+                "aquarium": "Aquarium"
+            }
+        },
+        "is_aquatic": {
+            "question": "Est-ce que {petName} est aquatique ?"
+        },
+        "water_quality_requirements": {
+            "question": "Quelles sont les exigences de qualité d'eau pour {petName} ?"
+        },
+        "spider_species": {
+            "question": "Quelle est l'espèce d'araignée de {petName} ?"
+        },
+        "molting_frequency": {
+            "question": "À quelle fréquence {petName} mue-t-il ?",
+            "options": {
+                "never": "Ne mue pas",
+                "annual": "Mue annuelle",
+                "monthly": "Mue mensuelle",
+                "weekly": "Mue hebdomadaire"
+            }
+        }
     }
 }

@@ -8,5 +8,14 @@
     "removeFile": "Supprimer le fichier",
     "selectOption": "Sélectionnez une option",
     "noOptions": "Aucune option disponible",
-    "search": "Rechercher..."
+    "search": "Rechercher...",
+    "imagePicker": {
+        "title": "Ajouter des photos",
+        "noFiles": "Aucune photo ajoutée",
+        "filesCount": "{count, plural, =1 {1 photo ajoutée} other {# photos ajoutées}}",
+        "dropZone": "Glissez vos photos ici",
+        "dropZoneActive": "Déposez vos photos",
+        "browse": "Parcourir",
+        "import": "Importer"
+    }
 }

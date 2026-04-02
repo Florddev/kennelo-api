@@ -64,6 +64,12 @@ class PetService
             ->toMediaCollection(MediaService::COLLECTION_IMAGES);
     }
 
+    public function addImages(Pet $pet, array $images): Collection
+    {
+        return collect($images)
+            ->map(fn (UploadedFile $image): Media => $this->addImage($pet, $image));
+    }
+
     public function deleteImage(Pet $pet, Media $media): void
     {
         $media->delete();

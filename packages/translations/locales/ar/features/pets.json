@@ -50,11 +50,14 @@
         "otherInformation": "معلومات أخرى"
     },
     "fields": {
+        "name": "الاسم",
         "breed": "السلالة",
         "birthDate": "تاريخ الميلاد",
         "age": "العمر",
+        "ageYears": "سنوات",
+        "ageMonths": "أشهر (اختياري)",
         "sex": "الجنس",
-        "weight": "الوزن",
+        "weight": "الوزن (كجم)",
         "sterilized": "معقم",
         "microchip": "الشريحة الإلكترونية",
         "microchipNumber": "رقم الشريحة الإلكترونية",
@@ -62,6 +65,126 @@
         "about": "حول",
         "healthNotes": "ملاحظات صحية",
         "animalType": "نوع الحيوان"
+    },
+    "create": {
+        "pageTitle": "إنشاء حيوان جديد",
+        "pageDescription": "أكمل ملف حيوانك الأليف عبر خطوات موجهة",
+        "quickTitle": "إضافة",
+        "quickDescription": "إنشاء حيوان جديد",
+        "placeholders": {
+            "name": "لونا",
+            "breed": "جولدن ريتريفر",
+            "birthDate": "اختر تاريخ الميلاد",
+            "ageYears": "مثال: 3",
+            "ageMonths": "0 – 11",
+            "weight": "مثال: 12.5",
+            "microchipNumber": "أدخل رقم الشريحة",
+            "about": "حدثنا عن حيوانك الأليف",
+            "healthNotes": "شارك أي ملاحظات صحية مهمة"
+        },
+        "attributes": {
+            "fallbackQuestion": "دعنا نتحدث عن {label}.",
+            "defaultPetName": "حيوانك الأليف",
+            "freeTextPlaceholder": "اكتب إجابتك",
+            "medicationsPlaceholder": "أضف دواءً واضغط Enter"
+        },
+        "steps": {
+            "generalIntro": {
+                "label": "حيوانك الأليف",
+                "title": "لنبدأ بالمعلومات الأساسية عن حيوانك الأليف.",
+                "description": "سنقوم أولاً بتسجيل البيانات المهمة لتخصيص بقية النموذج."
+            },
+            "type": {
+                "title": "من بين الخيارات التالية، ما النوع الأنسب لحيوانك الأليف؟",
+                "subtitle": "اختر النوع الذي يطابق حيوانك بشكل أفضل.",
+                "error": "يرجى اختيار نوع الحيوان قبل المتابعة."
+            },
+            "identity": {
+                "title": "ما هو اسم حيوانك الأليف؟"
+            },
+            "identityDetails": {
+                "title": "أخبرنا بمزيد من التفاصيل عن حيوانك الأليف.",
+                "ageModeApproximate": "عمر تقريبي",
+                "approximateAgeHint": "سيتم احتساب تاريخ ميلاد تقريبي.",
+                "switchToApproximate": "لا أعرف التاريخ الدقيق",
+                "switchToDate": "أعرف التاريخ الدقيق"
+            },
+            "profile": {
+                "title": "دعنا نضيف تفاصيل عملية عن حيوانك الأليف.",
+                "subtitle": "هذه التفاصيل تساعد المضيفين على فهم حيوانك بسرعة.",
+                "microchipHint": "إذا كان حيوانك مزودًا بشريحة، يُرجى إدخال رقم الشريحة بدقة."
+            },
+            "attributesIntro": {
+                "label": "العادات والتفضيلات",
+                "title": "الآن دعنا نضبط العادات والتفضيلات.",
+                "description": "سنطرح عليك أسئلة مركزة حسب الفئة بناءً على النوع المختار."
+            },
+            "attributesCategory": {
+                "title": "دعنا نتحدث عن {category}.",
+                "subtitle": "اختر الخيارات التي تصف حيوانك بشكل أفضل."
+            },
+            "attributesCategoryTitles": {
+                "info": "لنبدأ بالمعلومات الأساسية عن حيوانك الأليف.",
+                "behavior": "الآن لنصف سلوك حيوانك الأليف اليومي.",
+                "social": "دعنا نرى كيف يتفاعل حيوانك الأليف مع الآخرين.",
+                "hygiene": "دعنا نتحدث عن عادات النظافة لدى حيوانك الأليف.",
+                "care": "دعنا نحدد احتياجات الرعاية الخاصة بحيوانك الأليف.",
+                "health": "دعنا نضيف المعلومات الصحية المهمة لحيوانك الأليف.",
+                "habitat": "دعنا نصف البيئة المناسبة لحيوانك الأليف.",
+                "diet": "لننهي بمعلومات النظام الغذائي لحيوانك الأليف."
+            },
+            "attributesRecap": {
+                "title": "إليك ملخص السمات التي قمت باختيارها.",
+                "subtitle": "لقد اخترت {count} سمة.",
+                "empty": "لم يتم اختيار أي سمة بعد."
+            },
+            "completionIntro": {
+                "label": "اقتربنا من النهاية",
+                "title": "لننهي الملف بالتفاصيل المتبقية.",
+                "description": "يمكنك إكمال الملف الآن أو العودة لاحقًا لإضافة المزيد."
+            },
+            "health": {
+                "title": "دعنا نضيف معلومات الصحة والخلفية.",
+                "subtitle": "هذه الملاحظات تساعد المضيفين على تقديم أفضل رعاية."
+            },
+            "media": {
+                "title": "دعنا نضيف صور ملف حيوانك الأليف.",
+                "subtitle": "اختر صورة ملف شخصية واحدة وأضف صورًا إضافية عند الحاجة.",
+                "avatarLabel": "صورة الملف الشخصي",
+                "imagesLabel": "صور إضافية",
+                "pickAvatar": "اختر صورة ملف شخصي",
+                "pickImages": "اختر صورًا"
+            },
+            "avatar": {
+                "title": "دعنا نختار صورة ملف شخصية لحيوانك الأليف.",
+                "subtitle": "صورة واضحة تجعل ملف حيوانك أكثر جاذبية.",
+                "pick": "اختر صورة ملف شخصي",
+                "ready": "الصورة جاهزة"
+            },
+            "images": {
+                "title": "دعنا نضيف بعض الصور الإضافية.",
+                "subtitle": "المزيد من الصور يساعد المضيفين على التعرف على حيوانك بشكل أفضل.",
+                "pick": "اختر صورًا"
+            },
+            "final": {
+                "title": "كل شيء جاهز، دعنا نؤكد ملف الحيوان الجديد.",
+                "subtitle": "راجع الملخص ثم أكّد عندما تكون جاهزًا.",
+                "attributesCount": "السمات المختارة: {count}",
+                "imagesCount": "الصور المختارة: {count}",
+                "submit": "إنشاء ملف حيواني الأليف",
+                "submitting": "جارٍ إنشاء ملف الحيوان..."
+            }
+        },
+        "upload": {
+            "initializing": "جارٍ تحضير الصور...",
+            "compressing": "جارٍ ضغط الصور ({current}/{total})...",
+            "uploading": "جارٍ تحميل الدفعة {current}/{total}...",
+            "success": "تم تحميل الصور بنجاح",
+            "error": "فشل تحميل الصور"
+        },
+        "validation": {
+            "microchipRequired": "يرجى إدخال رقم الشريحة للمتابعة."
+        }
     },
     "sex": {
         "male": "ذكر",
@@ -104,5 +227,283 @@
         "health": "الصحة",
         "habitat": "سكن",
         "diet": "النظام الغذائي"
+    },
+    "attributes": {
+        "questions": {}
+    },
+    "attributes_definitions": {
+        "energy_level": {
+            "question": "ما مستوى طاقة {petName}؟",
+            "options": {
+                "low": "هادئ ومنخفض النشاط",
+                "medium": "طاقة متوازنة",
+                "high": "نشيط جدًا"
+            }
+        },
+        "potty_trained": {
+            "question": "ما مدى تدريب {petName} على قضاء الحاجة؟",
+            "options": {
+                "trained": "مدرّب جيدًا",
+                "learning": "لا يزال يتعلم",
+                "to_determine": "لست متأكدًا بعد"
+            }
+        },
+        "litter_trained": {
+            "question": "ما مدى التزام {petName} باستخدام صندوق الفضلات؟",
+            "options": {
+                "trained": "يستخدم الصندوق بشكل منتظم",
+                "learning": "لا يزال يتعلم",
+                "to_determine": "لست متأكدًا بعد"
+            }
+        },
+        "friendly_with_kids": {
+            "question": "كيف يتصرف {petName} مع الأطفال؟",
+            "options": {
+                "yes": "ينسجم جيدًا مع الأطفال",
+                "no": "لا ينسجم مع الأطفال",
+                "unknown": "لا أعرف"
+            }
+        },
+        "friendly_with_dogs": {
+            "question": "كيف يتصرف {petName} مع الكلاب؟",
+            "options": {
+                "yes": "ينسجم جيدًا مع الكلاب",
+                "no": "لا ينسجم مع الكلاب",
+                "unknown": "لا أعرف"
+            }
+        },
+        "friendly_with_cats": {
+            "question": "كيف يتصرف {petName} مع القطط؟",
+            "options": {
+                "yes": "ينسجم جيدًا مع القطط",
+                "no": "لا ينسجم مع القطط",
+                "unknown": "لا أعرف"
+            }
+        },
+        "potty_break": {
+            "question": "كم مرة يحتاج {petName} إلى الخروج لقضاء الحاجة؟",
+            "options": {
+                "2h": "كل ساعتين تقريبًا",
+                "4h": "كل أربع ساعات تقريبًا",
+                "6h_plus": "يمكنه الانتظار 6 ساعات أو أكثر"
+            }
+        },
+        "meal_schedule": {
+            "question": "ما جدول وجبات {petName}؟",
+            "options": {
+                "morning": "وجبة واحدة صباحًا",
+                "evening": "وجبة واحدة مساءً",
+                "morning_evening": "وجبتان صباحًا ومساءً",
+                "free_feeding": "طعام متاح طوال الوقت"
+            }
+        },
+        "can_be_left_alone": {
+            "question": "كم من الوقت يمكن ترك {petName} بمفرده؟",
+            "options": {
+                "1h": "حتى ساعة واحدة",
+                "4h": "حتى 4 ساعات",
+                "8h_plus": "8 ساعات أو أكثر",
+                "never": "لا يجب تركه بمفرده"
+            }
+        },
+        "medications": {
+            "question": "هل يحتاج {petName} إلى أدوية معينة؟"
+        },
+        "indoor_outdoor": {
+            "question": "هل يعيش {petName} داخل المنزل أم خارجه أم كلاهما؟",
+            "options": {
+                "indoor_only": "داخل المنزل فقط",
+                "outdoor_access": "داخل المنزل مع إمكانية الخروج",
+                "outdoor": "في الخارج غالبًا"
+            }
+        },
+        "declawed": {
+            "question": "هل تم نزع مخالب {petName}؟"
+        },
+        "cage_type": {
+            "question": "ما نوع القفص أو الحظيرة المناسب لـ {petName}؟",
+            "options": {
+                "small": "قفص صغير",
+                "medium": "قفص متوسط",
+                "large": "قفص كبير",
+                "enclosure": "حظيرة",
+                "aviary": "قفص طيور كبير"
+            }
+        },
+        "is_nocturnal": {
+            "question": "هل {petName} ليليّ النشاط؟"
+        },
+        "can_be_handled": {
+            "question": "إلى أي مدى يمكن التعامل مع {petName} باليد؟",
+            "options": {
+                "yes_easily": "يمكن التعامل معه بسهولة",
+                "yes_with_care": "يمكن التعامل معه بحذر",
+                "no_fearful": "لا يحب التعامل المباشر"
+            }
+        },
+        "bites_scratches": {
+            "question": "هل يقوم {petName} بالعض أو الخدش؟",
+            "options": {
+                "never": "أبدًا",
+                "rarely": "نادرًا",
+                "often": "غالبًا"
+            }
+        },
+        "friendly_with_same_species": {
+            "question": "كيف يتصرف {petName} مع نفس النوع؟",
+            "options": {
+                "yes": "ينسجم مع نفس النوع",
+                "no": "لا ينسجم مع نفس النوع",
+                "unknown": "لا أعرف"
+            }
+        },
+        "diet_specifics": {
+            "question": "هل لدى {petName} نظام غذائي خاص؟"
+        },
+        "bird_species": {
+            "question": "ما نوع الطائر الخاص بـ {petName}؟"
+        },
+        "can_fly": {
+            "question": "هل يستطيع {petName} الطيران؟",
+            "options": {
+                "yes": "يستطيع الطيران",
+                "no_clipped": "لا يستطيع الطيران بسبب قص الأجنحة",
+                "limited": "قدرته على الطيران محدودة"
+            }
+        },
+        "wings_clipped": {
+            "question": "هل أجنحة {petName} مقصوصة؟"
+        },
+        "noise_level": {
+            "question": "ما مستوى صوت {petName}؟",
+            "options": {
+                "quiet": "هادئ غالبًا",
+                "moderate": "ضجيج متوسط",
+                "loud": "صاخب",
+                "very_loud": "صاخب جدًا"
+            }
+        },
+        "can_talk": {
+            "question": "هل يستطيع {petName} التحدث؟"
+        },
+        "friendly_with_other_birds": {
+            "question": "كيف يتصرف {petName} مع الطيور الأخرى؟",
+            "options": {
+                "yes": "ينسجم مع الطيور الأخرى",
+                "no": "لا ينسجم مع الطيور الأخرى",
+                "unknown": "لا أعرف"
+            }
+        },
+        "water_type": {
+            "question": "ما نوع الماء المناسب لـ {petName}؟",
+            "options": {
+                "freshwater": "ماء عذب",
+                "saltwater": "ماء مالح",
+                "brackish": "ماء شروب"
+            }
+        },
+        "tank_size_liters": {
+            "question": "ما حجم الحوض باللترات المناسب لـ {petName}؟"
+        },
+        "water_temperature": {
+            "question": "ما درجة حرارة الماء المناسبة لـ {petName}؟"
+        },
+        "compatible_with_other_fish": {
+            "question": "هل يتوافق {petName} مع الأسماك الأخرى؟",
+            "options": {
+                "yes": "متوافق مع معظم الأسماك",
+                "certain_types": "متوافق مع أنواع معينة فقط",
+                "no_aggressive": "عدواني تجاه الأسماك الأخرى"
+            }
+        },
+        "equipment_needed": {
+            "question": "ما المعدات اللازمة لـ {petName}؟"
+        },
+        "feeding_frequency": {
+            "question": "كم مرة يجب إطعام {petName}؟",
+            "options": {
+                "once_daily": "مرة واحدة يوميًا",
+                "twice_daily": "مرتان يوميًا",
+                "every_2_days": "كل يومين",
+                "twice_weekly": "مرتان إلى ثلاث مرات أسبوعيًا",
+                "weekly": "مرة واحدة أسبوعيًا",
+                "biweekly": "مرة كل أسبوعين"
+            }
+        },
+        "reptile_species": {
+            "question": "ما نوع الزاحف الخاص بـ {petName}؟"
+        },
+        "terrarium_type": {
+            "question": "ما نوع الحوض الزجاجي المناسب لـ {petName}؟",
+            "options": {
+                "desert": "حوض صحراوي",
+                "tropical": "حوض استوائي",
+                "aqua_terrarium": "حوض مائي-أرضي"
+            }
+        },
+        "temperature_range": {
+            "question": "ما نطاق الحرارة المناسب لـ {petName}؟"
+        },
+        "humidity_level": {
+            "question": "ما مستوى الرطوبة المناسب لـ {petName}؟",
+            "options": {
+                "low": "رطوبة منخفضة (30-40%)",
+                "medium": "رطوبة متوسطة (50-60%)",
+                "high": "رطوبة مرتفعة (70-80%)"
+            }
+        },
+        "is_venomous": {
+            "question": "هل {petName} سام؟"
+        },
+        "diet_type": {
+            "question": "ما نوع النظام الغذائي المناسب لـ {petName}؟",
+            "options": {
+                "insects": "يعتمد على الحشرات",
+                "rodents": "يعتمد على القوارض",
+                "vegetarian": "نظام نباتي",
+                "omnivore": "نظام قارت",
+                "carnivore": "نظام لاحم",
+                "worms": "يعتمد على الديدان",
+                "detritivore": "يتغذى على المواد العضوية المتحللة"
+            }
+        },
+        "requires_live_food": {
+            "question": "هل يحتاج {petName} إلى طعام حي؟"
+        },
+        "uv_light_needed": {
+            "question": "هل يحتاج {petName} إلى إضاءة UV؟"
+        },
+        "amphibian_species": {
+            "question": "ما نوع البرمائي الخاص بـ {petName}؟"
+        },
+        "habitat_type": {
+            "question": "ما نوع الموطن المناسب لـ {petName}؟",
+            "options": {
+                "aquatic": "موطن مائي",
+                "semi_aquatic": "موطن شبه مائي",
+                "terrestrial": "موطن بري",
+                "dry_terrarium": "حوض جاف",
+                "humid_terrarium": "حوض رطب",
+                "aquarium": "حوض أسماك"
+            }
+        },
+        "is_aquatic": {
+            "question": "هل {petName} مائي؟"
+        },
+        "water_quality_requirements": {
+            "question": "ما متطلبات جودة الماء الخاصة بـ {petName}؟"
+        },
+        "spider_species": {
+            "question": "ما نوع العنكبوت الخاص بـ {petName}؟"
+        },
+        "molting_frequency": {
+            "question": "كم مرة يبدّل {petName} جلده؟",
+            "options": {
+                "never": "لا يبدّل الجلد",
+                "annual": "مرة سنويًا",
+                "monthly": "مرة شهريًا",
+                "weekly": "مرة أسبوعيًا"
+            }
+        }
     }
 }

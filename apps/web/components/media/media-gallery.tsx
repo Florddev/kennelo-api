@@ -159,7 +159,7 @@ function DesktopGallery({
         return (
             <>
                 <div
-                    className="relative aspect-[16/10] rounded-2xl overflow-hidden cursor-pointer"
+                    className="relative aspect-[16/6] rounded-2xl overflow-hidden cursor-pointer"
                     onClick={() => setLightboxIndex(0)}
                 >
                     <Image src={images[0]!} alt={altPrefix} fill className="object-cover" />
@@ -184,7 +184,7 @@ function DesktopGallery({
 
     return (
         <>
-            <div className="relative aspect-[16/10] rounded-2xl overflow-hidden">
+            <div className="relative aspect-[16/6] rounded-2xl overflow-hidden">
                 <div className="grid h-full" style={{ gridTemplateColumns: "3fr 2fr", gap: "3px" }}>
                     <div
                         className="relative overflow-hidden cursor-pointer"

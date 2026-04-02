@@ -45,6 +45,11 @@ type EstablishmentDetailParams = {
     search_params?: Record<string, string | number | boolean>;
 };
 
+type NewPetParams = {
+    locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
 type MyPetsParams = {
     locale?: string | number;
     search_params?: Record<string, string | number | boolean>;
@@ -108,6 +113,10 @@ function EstablishmentDetail(params: EstablishmentDetailParams): string {
     return buildRoute("/[locale]/s/app/establishments/[id]", params);
 }
 
+function NewPet(params?: NewPetParams): string {
+    return buildRoute("/[locale]/s/my/pets/new", params);
+}
+
 function MyPets(params?: MyPetsParams): string {
     return buildRoute("/[locale]/s/my/pets", params);
 }
@@ -141,6 +150,7 @@ export const routes = {
     Register,
     MyEstablishments,
     EstablishmentDetail,
+    NewPet,
     MyPets,
     PetDetails,
     MyProfileAbout,

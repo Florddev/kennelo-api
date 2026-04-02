@@ -96,7 +96,7 @@ export function PetAttributeItem({
 
     return (
         <div className="flex gap-2">
-            <div className="size-6 rounded-[8px] flex justify-center items-center bg-card">
+            <div className="size-6 aspect-square rounded-[8px] flex justify-center items-center bg-card">
                 <IconComponent className="size-3.5 text-muted-foreground/80" />
             </div>
             <div className="flex flex-col">
@@ -193,19 +193,19 @@ export function PetProfileInfo({ pet, ageDisplay }: PetProfileInfoProps) {
 
                         <Tabs defaultValue="overview" className="flex flex-col gap-2">
                             <TabsList variant="line" className="flex justify-between w-full">
-                                <TabsTrigger value="overview" className="w-1/3 hover:text-red-500">
+                                <TabsTrigger value="overview" className="w-fit hover:text-red-500">
                                     <span data-slot="tab-label">
                                         {t("common.messages.overview")}
                                     </span>
                                     <span data-slot="tab-indicator" />
                                 </TabsTrigger>
-                                <TabsTrigger value="gallery" className="w-1/3">
+                                <TabsTrigger value="gallery" className="w-fit">
                                     <span data-slot="tab-label">
                                         {t("common.messages.gallery")}
                                     </span>
                                     <span data-slot="tab-indicator" />
                                 </TabsTrigger>
-                                <TabsTrigger value="reviews" className="w-1/3">
+                                <TabsTrigger value="reviews" className="w-fit">
                                     <span data-slot="tab-label">
                                         {t("common.messages.reviews")}
                                     </span>

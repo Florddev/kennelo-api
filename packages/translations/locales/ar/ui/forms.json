@@ -8,5 +8,14 @@
     "removeFile": "إزالة الملف",
     "selectOption": "اختر خياراً",
     "noOptions": "لا توجد خيارات متاحة",
-    "search": "بحث..."
+    "search": "بحث...",
+    "imagePicker": {
+        "title": "إضافة صور",
+        "noFiles": "لم تتم إضافة أي صور",
+        "filesCount": "{count, plural, =1 {صورة واحدة مضافة} other {# صور مضافة}}",
+        "dropZone": "اسحب وأفلت صورك هنا",
+        "dropZoneActive": "أفلت صورك هنا",
+        "browse": "تصفح",
+        "import": "استيراد"
+    }
 }

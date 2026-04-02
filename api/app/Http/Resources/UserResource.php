@@ -21,7 +21,9 @@ class UserResource extends JsonResource
             'email' => $this->email,
             'phone' => $this->phone,
             'locale' => $this->locale,
-            'avatar_url' => $this->getFirstMediaUrl(MediaService::COLLECTION_AVATAR, MediaService::CONVERSION_WEBP) ?: null,
+            'avatar_url' => $this->getFirstMediaUrl(MediaService::COLLECTION_AVATAR, MediaService::CONVERSION_AVATAR_WEBP)
+                ?: $this->getFirstMediaUrl(MediaService::COLLECTION_AVATAR)
+                ?: null,
             'is_id_verified' => $this->is_id_verified,
             'email_verified_at' => $this->email_verified_at
                 ? human_date($this->email_verified_at)

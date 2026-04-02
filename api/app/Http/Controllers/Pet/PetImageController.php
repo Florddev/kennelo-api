@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Pet;
 use App\Enums\ApiStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Pet\StorePetImageRequest;
+use App\Http\Requests\Pet\StorePetImagesRequest;
 use App\Http\Requests\Pet\UploadPetAvatarRequest;
 use App\Http\Resources\PetImageResource;
 use App\Http\Resources\PetResource;
@@ -63,6 +64,22 @@ class PetImageController extends Controller
         return (new PetImageResource($media))
             ->additional([
                 'message' => 'Image added successfully',
+                'status' => ApiStatus::SUCCESS,
+                'timestamp' => human_date(now()),
+            ])
+            ->response()
+            ->setStatusCode(201);
+    }
+
+    public function storeBulk(StorePetImagesRequest $request, Pet $pet): JsonResponse
+    {
+        $this->authorize('update', $pet);
+
+        $mediaItems = $this->petService->addImages($pet, $request->file('images', []));
+
+        return PetImageResource::collection($mediaItems)
+            ->additional([
+                'message' => 'Images added successfully',
                 'status' => ApiStatus::SUCCESS,
                 'timestamp' => human_date(now()),
             ])

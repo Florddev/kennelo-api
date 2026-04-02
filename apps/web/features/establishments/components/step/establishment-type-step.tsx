@@ -1,16 +1,11 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { ChoiceCardIcon } from "@workspace/ui/components/choice-cards";
 import {
-    ChoiceCardContainer,
-    ChoiceCardContent,
-    ChoiceCardDescription,
-    ChoiceCardIcon,
-    ChoiceCardLabel,
-    ChoiceCards,
-    type ChoiceCardOption,
-} from "@workspace/ui/components/choice-cards";
-import { StepShell } from "./step-shell";
+    SingleChoiceCardsStep,
+    type SingleChoiceCardStepOption,
+} from "@/components/forms/stepper/single-choice-cards-step";
 import {
     KApartment5,
     KCaravan3,
@@ -42,45 +37,45 @@ type EstablishmentTypeStepProps = {
 export function EstablishmentTypeStep({ value, onChange, error }: EstablishmentTypeStepProps) {
     const t = useTranslations();
 
-    const options: ChoiceCardOption<EstablishmentType>[] = [
+    const options: SingleChoiceCardStepOption<EstablishmentType>[] = [
         {
             value: "boarding",
-            icon: KFence2,
+            visual: <ChoiceCardIcon icon={KFence2} />,
             label: t("features.become-host.steps.establishmentType.pension"),
         },
         {
             value: "daycare",
-            icon: KHomeHeart,
+            visual: <ChoiceCardIcon icon={KHomeHeart} />,
             label: t("features.become-host.steps.establishmentType.daycare"),
         },
         {
             value: "breeding",
-            icon: KDna3,
+            visual: <ChoiceCardIcon icon={KDna3} />,
             label: t("features.become-host.steps.establishmentType.breeding"),
         },
         {
             value: "pet-sitter",
-            icon: KUserStar,
+            visual: <ChoiceCardIcon icon={KUserStar} />,
             label: t("features.become-host.steps.establishmentType.pet-sitter"),
         },
         {
             value: "home-care",
-            icon: KApartment5,
+            visual: <ChoiceCardIcon icon={KApartment5} />,
             label: t("features.become-host.steps.establishmentType.home-care"),
         },
         {
             value: "host-family",
-            icon: KFamilyHeart,
+            visual: <ChoiceCardIcon icon={KFamilyHeart} />,
             label: t("features.become-host.steps.establishmentType.host-family"),
         },
         {
             value: "mobile-boarding",
-            icon: KCaravan3,
+            visual: <ChoiceCardIcon icon={KCaravan3} />,
             label: t("features.become-host.steps.establishmentType.mobile-boarding"),
         },
         {
             value: "shelter",
-            icon: KHandTakingHeart,
+            visual: <ChoiceCardIcon icon={KHandTakingHeart} />,
             label: t("features.become-host.steps.establishmentType.shelter"),
         },
         // {
@@ -92,36 +87,12 @@ export function EstablishmentTypeStep({ value, onChange, error }: EstablishmentT
     ];
 
     return (
-        <StepShell
+        <SingleChoiceCardsStep
             title={t("features.become-host.steps.establishmentType.title")}
-            // subtitle={t("features.become-host.steps.establishmentType.subtitle")}
-        >
-            <ChoiceCards
-                mode="single"
-                options={options}
-                value={value}
-                optionsClassName="md:grid-cols-3"
-                render={(option, isSelected) => (
-                    <ChoiceCardContainer
-                        isSelected={isSelected}
-                        disabled={option.disabled}
-                        className="flex-col h-full justify-between"
-                    >
-                        {option.icon && (
-                            <ChoiceCardIcon icon={option.icon} {...{ secondaryOpacity: 1 }} />
-                        )}
-                        <ChoiceCardContent>
-                            <ChoiceCardLabel>{option.label}</ChoiceCardLabel>
-                            {option.description && (
-                                <ChoiceCardDescription>{option.description}</ChoiceCardDescription>
-                            )}
-                        </ChoiceCardContent>
-                    </ChoiceCardContainer>
-                )}
-                onValueChange={onChange}
-                error={error}
-                layout="grid"
-            />
-        </StepShell>
+            value={value}
+            onChange={onChange}
+            options={options}
+            error={error}
+        />
     );
 }
