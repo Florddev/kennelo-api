@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Booking\BookingController;
 use App\Http\Controllers\Booking\EstablishmentBookingController;
+use App\Http\Controllers\Conversation\ConversationController;
+use App\Http\Controllers\Conversation\EstablishmentConversationController;
+use App\Http\Controllers\Conversation\MessageController;
 use App\Http\Controllers\Establishment\EstablishmentAvailabilityController;
 use App\Http\Controllers\Establishment\EstablishmentCapacityController;
 use App\Http\Controllers\Establishment\EstablishmentController;
@@ -60,6 +63,20 @@ Route::middleware(['auth.jwt'])->group(function () {
     Route::delete('/users/{id}/roles/{role}', [UserController::class, 'removeRole']);
     Route::put('/users/{id}/identity-verification', [UserController::class, 'reviewIdentityVerification']);
     Route::delete('/users/{id}', [UserController::class, 'adminDestroy']);
+
+    // Conversations (user)
+    Route::get('/conversations', [ConversationController::class, 'index']);
+    Route::get('/conversations/unread-count', [ConversationController::class, 'unreadCount']);
+    Route::get('/conversations/{conversation}', [ConversationController::class, 'show']);
+    Route::post('/bookings/{booking}/conversation', [ConversationController::class, 'storeForBooking']);
+
+    // Conversations (establishment)
+    Route::get('/establishments/{establishment}/conversations', [EstablishmentConversationController::class, 'index']);
+
+    // Messages
+    Route::get('/conversations/{conversation}/messages', [MessageController::class, 'index']);
+    Route::post('/conversations/{conversation}/messages', [MessageController::class, 'store']);
+    Route::put('/conversations/{conversation}/messages/read', [MessageController::class, 'markAsRead']);
 
     // Current user
     Route::get('/user', [UserController::class, 'getCurrentUser']);
