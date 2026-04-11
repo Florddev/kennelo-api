@@ -14,7 +14,11 @@ export default function ProfileSettingsLayout({ children }: { children: React.Re
     const t = useTranslations();
 
     const settingsNav = [
-        { label: t("ui.navigation.editProfile"), href: "/s/my/profile/about", commingSoon: false },
+        {
+            label: t("ui.navigation.editProfile"),
+            href: routes.MyProfileAbout(),
+            commingSoon: false,
+        },
         {
             label: t("ui.navigation.emailPreferences"),
             href: routes.MyProfileEmailPreferences(),

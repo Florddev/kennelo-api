@@ -1,6 +1,6 @@
 "use client";
 
-import HomeHero from "./components/hero";
+import HomeHero from "./sections/hero";
 import Image from "next/image";
 
 export default function Home() {

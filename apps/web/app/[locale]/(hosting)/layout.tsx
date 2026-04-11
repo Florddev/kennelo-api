@@ -1,7 +1,7 @@
 import AppLayout from "@/components/layouts/app-layout";
 import { Separator } from "@workspace/ui/components/separator";
 
-export default async function MainAppLayout({ children }: { children: React.ReactNode }) {
+export default async function Layout({ children }: { children: React.ReactNode }) {
     return (
         <AppLayout>
             <Separator />
