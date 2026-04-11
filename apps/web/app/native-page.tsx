@@ -21,12 +21,6 @@ export function NativePage({ platform }: { platform: string }) {
             <span>Platform: {platform}</span>
 
             <Button asChild>
-                <Link href={routes.HostDetails({ locale: lang, uuid: "My custom uuid" })}>
-                    Host details
-                </Link>
-            </Button>
-
-            <Button asChild>
                 <Link href={routes.Home({ locale: lang })}>Home</Link>
             </Button>
 

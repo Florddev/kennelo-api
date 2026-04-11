@@ -8,28 +8,17 @@ type RootPageParams = {
     search_params?: Record<string, string | number | boolean>;
 };
 
-type BecomeHostParams = {
-    locale?: string | number;
-    search_params?: Record<string, string | number | boolean>;
-};
-
-type HostDetailsParams = {
-    locale?: string | number;
-    uuid: string;
-    search_params?: Record<string, string | number | boolean>;
-};
-
-type HomeParams = {
-    locale?: string | number;
-    search_params?: Record<string, string | number | boolean>;
-};
-
 type LoginParams = {
     locale?: string | number;
     search_params?: Record<string, string | number | boolean>;
 };
 
 type RegisterParams = {
+    locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type HomeParams = {
     locale?: string | number;
     search_params?: Record<string, string | number | boolean>;
 };
@@ -41,7 +30,12 @@ type MyEstablishmentsParams = {
 
 type EstablishmentDetailParams = {
     locale?: string | number;
-    id: string | number;
+    id: string;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type BecomeHostParams = {
+    locale?: string | number;
     search_params?: Record<string, string | number | boolean>;
 };
 
@@ -57,7 +51,7 @@ type MyPetsParams = {
 
 type PetDetailsParams = {
     locale?: string | number;
-    id: string | number;
+    id: string;
     search_params?: Record<string, string | number | boolean>;
 };
 
@@ -85,71 +79,66 @@ function RootPage(params?: RootPageParams): string {
     return buildRoute("/", params);
 }
 
-function BecomeHost(params?: BecomeHostParams): string {
-    return buildRoute("/[locale]/become-host", params);
+function Login(params?: LoginParams): string {
+    return buildRoute("/[locale]/login", params);
 }
 
-function HostDetails(params: HostDetailsParams): string {
-    return buildRoute("/[locale]/host/[uuid]", params);
+function Register(params?: RegisterParams): string {
+    return buildRoute("/[locale]/register", params);
 }
 
 function Home(params?: HomeParams): string {
     return buildRoute("/[locale]", params);
 }
 
-function Login(params?: LoginParams): string {
-    return buildRoute("/[locale]/s/accounts/login", params);
-}
-
-function Register(params?: RegisterParams): string {
-    return buildRoute("/[locale]/s/accounts/register", params);
-}
-
 function MyEstablishments(params?: MyEstablishmentsParams): string {
-    return buildRoute("/[locale]/s/app/establishments", params);
+    return buildRoute("/[locale]/hosting/host", params);
 }
 
 function EstablishmentDetail(params: EstablishmentDetailParams): string {
-    return buildRoute("/[locale]/s/app/establishments/[id]", params);
+    return buildRoute("/[locale]/hosting/host/[id]", params);
+}
+
+function BecomeHost(params?: BecomeHostParams): string {
+    return buildRoute("/[locale]/become-host", params);
 }
 
 function NewPet(params?: NewPetParams): string {
-    return buildRoute("/[locale]/s/my/pets/new", params);
+    return buildRoute("/[locale]/pets/new", params);
 }
 
 function MyPets(params?: MyPetsParams): string {
-    return buildRoute("/[locale]/s/my/pets", params);
+    return buildRoute("/[locale]/pets", params);
 }
 
 function PetDetails(params: PetDetailsParams): string {
-    return buildRoute("/[locale]/s/my/pets/[id]", params);
+    return buildRoute("/[locale]/pets/[id]", params);
 }
 
 function MyProfileAbout(params?: MyProfileAboutParams): string {
-    return buildRoute("/[locale]/s/my/profile/about", params);
+    return buildRoute("/[locale]/settings/about", params);
 }
 
 function MyProfileChangePassword(params?: MyProfileChangePasswordParams): string {
-    return buildRoute("/[locale]/s/my/profile/change-password", params);
+    return buildRoute("/[locale]/settings/change-password", params);
 }
 
 function MyProfileEmailPreferences(params?: MyProfileEmailPreferencesParams): string {
-    return buildRoute("/[locale]/s/my/profile/preferences-email", params);
+    return buildRoute("/[locale]/settings/preferences-email", params);
 }
 
 function MyProfilePreferencesNotification(params?: MyProfilePreferencesNotificationParams): string {
-    return buildRoute("/[locale]/s/my/profile/preferences-notification", params);
+    return buildRoute("/[locale]/settings/preferences-notification", params);
 }
 
 export const routes = {
     RootPage,
-    BecomeHost,
-    HostDetails,
-    Home,
     Login,
     Register,
+    Home,
     MyEstablishments,
     EstablishmentDetail,
+    BecomeHost,
     NewPet,
     MyPets,
     PetDetails,
