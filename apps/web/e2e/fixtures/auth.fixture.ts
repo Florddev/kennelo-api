@@ -1,9 +1,10 @@
+import { routes } from "@/lib/routes";
 import { test as setup, expect } from "@playwright/test";
 
 const AUTH_FILE = "e2e/fixtures/.auth/user.json";
 
 setup("authenticate as user", async ({ page }) => {
-    await page.goto("/s/accounts/login");
+    await page.goto(routes.Login());
 
     await page.getByPlaceholder("Your email").fill("user@orus.com");
     await page.getByPlaceholder("Your password").fill("user");

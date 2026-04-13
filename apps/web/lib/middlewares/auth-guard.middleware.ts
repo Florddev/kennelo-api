@@ -3,6 +3,7 @@ import { jwtHelper } from "@workspace/common";
 
 import { routing } from "@/lib/i18n/routing";
 import { Middleware } from ".";
+import { routes } from "../routes";
 
 interface RoleRule {
     roles: string[];
@@ -85,7 +86,7 @@ export class AuthGuardMiddleware implements Middleware {
 
     constructor(private readonly config: AuthGuardConfig) {
         this.ifAuthenticated = config.redirects?.ifAuthenticated ?? "/";
-        this.ifUnauthenticated = config.redirects?.ifUnauthenticated ?? "/s/accounts/login";
+        this.ifUnauthenticated = config.redirects?.ifUnauthenticated ?? routes.Login();
         this.ifForbidden = config.redirects?.ifForbidden ?? "/";
     }
 
