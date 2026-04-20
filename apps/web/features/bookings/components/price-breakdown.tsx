@@ -1,10 +1,10 @@
 import { useTranslations } from "next-intl";
 import { Separator } from "@workspace/ui/components/separator";
 
-import type { PriceBreakdown as PriceBreakdownType } from "../lib/pricing";
+import type { PriceBreakdownData } from "../lib/pricing";
 
 type PriceBreakdownProps = {
-    breakdown: PriceBreakdownType;
+    breakdown: PriceBreakdownData;
 };
 
 export function PriceBreakdown({ breakdown }: PriceBreakdownProps) {

@@ -5,7 +5,7 @@ export function computeNightsBetween(from: Date, to: Date): number {
     return Math.max(0, Math.round((to.getTime() - from.getTime()) / msPerDay));
 }
 
-export type PriceBreakdown = {
+export type PriceBreakdownData = {
     nights: number;
     pricePerNight: number;
     subtotal: number;
@@ -13,7 +13,7 @@ export type PriceBreakdown = {
     total: number;
 };
 
-export function computePriceBreakdown(pricePerNight: number, nights: number): PriceBreakdown {
+export function computePriceBreakdown(pricePerNight: number, nights: number): PriceBreakdownData {
     const subtotal = pricePerNight * nights;
     const serviceFee = Math.round(subtotal * SERVICE_FEE_RATE);
     return {
