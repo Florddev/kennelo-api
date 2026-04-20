@@ -1,0 +1,26 @@
+{
+    "checkout": {
+        "title": "Demande de réservation",
+        "back": "Retour",
+        "tripSection": "Votre voyage",
+        "datesLabel": "Dates",
+        "datesValue": "{from} - {to}",
+        "petsLabel": "Animaux",
+        "petsCount": "{count, plural, =0 {Aucun animal} =1 {# animal} other {# animaux}}",
+        "selectPets": "Sélectionnez vos animaux",
+        "noPets": "Vous n'avez pas encore d'animaux. Ajoutez-en un pour pouvoir réserver.",
+        "goToPets": "Gérer mes animaux",
+        "priceSection": "Détails du prix",
+        "priceNights": "{price} € × {count, plural, =1 {# nuit} other {# nuits}}",
+        "serviceFee": "Frais de service Kennelo",
+        "total": "Total",
+        "totalCurrency": "Total (EUR)",
+        "messageSection": "Message à l'hôte",
+        "messagePlaceholder": "Présentez-vous, expliquez ce qui vous amène et parlez à l'hôte de votre animal.",
+        "messageOptional": "Optionnel",
+        "confirmCta": "Réserver",
+        "confirmFooterTotal": "Total : {amount} €",
+        "successTitle": "Demande de réservation envoyée !",
+        "successDescription": "L'hôte va vous répondre rapidement."
+    }
+}
