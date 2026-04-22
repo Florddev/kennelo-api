@@ -1,11 +1,6 @@
 import { useTranslations } from "next-intl";
 import { PawPrint } from "lucide-react";
-import {
-    Empty,
-    EmptyHeader,
-    EmptyMedia,
-    EmptyTitle,
-} from "@workspace/ui/components/empty";
+import { Empty, EmptyHeader, EmptyMedia, EmptyTitle } from "@workspace/ui/components/empty";
 import type { CapacityModel } from "@workspace/modules/establishments";
 
 import { PetTypeIllustration } from "@/features/pets/components/pet-type-illustration";
@@ -31,10 +26,7 @@ export function HostSpeciesList({ capacities }: HostSpeciesListProps) {
     }
 
     return (
-        <div
-            data-slot="host-species-list"
-            className="flex flex-wrap items-center gap-x-6 gap-y-4"
-        >
+        <div data-slot="host-species-list" className="flex flex-wrap items-center gap-x-6 gap-y-4">
             {capacities.map((capacity) => (
                 <div key={capacity.id} className="flex items-center gap-3">
                     <PetTypeIllustration

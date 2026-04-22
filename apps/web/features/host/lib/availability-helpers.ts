@@ -9,14 +9,10 @@ export function buildAvailableDateSet(availabilities: AvailabilityModel[]): Set<
     );
 }
 
-export function isDateAvailable(
-    date: Date,
-    availabilities: AvailabilityModel[],
-): boolean {
+export function isDateAvailable(date: Date, availabilities: AvailabilityModel[]): boolean {
     return availabilities.some(
         (availability) =>
-            availability.status === "open" &&
-            isSameDay(fromApiDate(availability.date), date),
+            availability.status === "open" && isSameDay(fromApiDate(availability.date), date),
     );
 }
 

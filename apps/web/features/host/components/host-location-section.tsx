@@ -1,11 +1,6 @@
 import { useTranslations } from "next-intl";
 import { MapPin } from "lucide-react";
-import {
-    Empty,
-    EmptyHeader,
-    EmptyMedia,
-    EmptyTitle,
-} from "@workspace/ui/components/empty";
+import { Empty, EmptyHeader, EmptyMedia, EmptyTitle } from "@workspace/ui/components/empty";
 import type { AddressModel } from "@workspace/modules/address";
 
 type HostLocationSectionProps = {

@@ -12,12 +12,7 @@ type BookingFooterProps = {
     onSubmit: () => void;
 };
 
-export function BookingFooter({
-    total,
-    canSubmit,
-    isSubmitting,
-    onSubmit,
-}: BookingFooterProps) {
+export function BookingFooter({ total, canSubmit, isSubmitting, onSubmit }: BookingFooterProps) {
     const t = useTranslations();
 
     return (

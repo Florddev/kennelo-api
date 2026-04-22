@@ -2,12 +2,7 @@
 
 import { ArrowLeft, Image as ImageIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import {
-    Empty,
-    EmptyHeader,
-    EmptyMedia,
-    EmptyTitle,
-} from "@workspace/ui/components/empty";
+import { Empty, EmptyHeader, EmptyMedia, EmptyTitle } from "@workspace/ui/components/empty";
 import { MediaGallery } from "@/components/media/media-gallery";
 
 type HostHeroSectionProps = {

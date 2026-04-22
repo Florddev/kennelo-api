@@ -10,11 +10,7 @@ type EstablishmentCardProps = {
     className?: string;
 };
 
-export function EstablishmentCard({
-    establishment,
-    href,
-    className,
-}: EstablishmentCardProps) {
+export function EstablishmentCard({ establishment, href, className }: EstablishmentCardProps) {
     const t = useTranslations();
     const address = establishment.address;
     const subtitle = address ? `${address.city}, ${address.country}` : "";
@@ -31,9 +27,7 @@ export function EstablishmentCard({
             <div className="relative flex h-64 w-full items-center justify-center overflow-hidden rounded-3xl bg-muted">
                 <div className="flex flex-col items-center gap-2 text-muted-foreground">
                     <ImageIcon className="size-10" />
-                    <span className="text-xs">
-                        {t("features.explore.noImageAvailable")}
-                    </span>
+                    <span className="text-xs">{t("features.explore.noImageAvailable")}</span>
                 </div>
             </div>
             <div className="flex flex-col gap-2 px-3 py-4">

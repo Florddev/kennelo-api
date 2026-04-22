@@ -13,12 +13,7 @@ type HostBookingBarProps = {
     onBook: () => void;
 };
 
-export function HostBookingBar({
-    pricePerNight,
-    dateRange,
-    canBook,
-    onBook,
-}: HostBookingBarProps) {
+export function HostBookingBar({ pricePerNight, dateRange, canBook, onBook }: HostBookingBarProps) {
     const t = useTranslations();
     const nights = computeNights(dateRange?.from, dateRange?.to);
     const hasRange = Boolean(nights > 0 && dateRange?.from && dateRange?.to);

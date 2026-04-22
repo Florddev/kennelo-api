@@ -4,12 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { FileText } from "lucide-react";
 import { Button } from "@workspace/ui/components/button";
-import {
-    Empty,
-    EmptyHeader,
-    EmptyMedia,
-    EmptyTitle,
-} from "@workspace/ui/components/empty";
+import { Empty, EmptyHeader, EmptyMedia, EmptyTitle } from "@workspace/ui/components/empty";
 
 const DESCRIPTION_MAX = 220;
 const SECONDARY_BUTTON_CLASS =

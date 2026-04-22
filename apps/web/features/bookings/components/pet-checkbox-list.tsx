@@ -40,9 +40,7 @@ export function PetCheckboxList({
                         <PawPrint />
                     </EmptyMedia>
                     <EmptyTitle>{t("features.bookings.checkout.noPetsTitle")}</EmptyTitle>
-                    <EmptyDescription>
-                        {t("features.bookings.checkout.noPets")}
-                    </EmptyDescription>
+                    <EmptyDescription>{t("features.bookings.checkout.noPets")}</EmptyDescription>
                 </EmptyHeader>
                 <Button asChild variant="secondary" className="rounded-full">
                     <Link href={managePetsHref}>{t("features.bookings.checkout.goToPets")}</Link>
@@ -68,10 +66,7 @@ export function PetCheckboxList({
 
 type ReasonStatus = PetAvailability["status"];
 
-function resolveReasonLabel(
-    status: ReasonStatus,
-    t: (key: string) => string,
-): string | null {
+function resolveReasonLabel(status: ReasonStatus, t: (key: string) => string): string | null {
     if (status === "type-not-accepted") {
         return t("features.bookings.checkout.petUnavailableType");
     }

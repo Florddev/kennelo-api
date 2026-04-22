@@ -6,10 +6,7 @@ import { toast } from "sonner";
 import { Separator } from "@workspace/ui/components/separator";
 import { createBooking } from "@workspace/modules/bookings";
 import { computeNights, formatDateRange, toApiDate } from "@workspace/common";
-import type {
-    CapacityModel,
-    EstablishmentModel,
-} from "@workspace/modules/establishments";
+import type { CapacityModel, EstablishmentModel } from "@workspace/modules/establishments";
 import type { PetModel } from "@workspace/modules/pets";
 
 import { useNavigation } from "@/hooks/use-navigation";
@@ -96,10 +93,7 @@ export function BookingCheckoutForm({
             <div className="flex flex-col gap-6 px-4 py-4">
                 <EstablishmentSummaryCard establishment={establishment} />
 
-                <BookingTripSection
-                    datesLabel={datesLabel}
-                    petsCountLabel={petsCountLabel}
-                />
+                <BookingTripSection datesLabel={datesLabel} petsCountLabel={petsCountLabel} />
 
                 <Separator />
 
@@ -122,10 +116,7 @@ export function BookingCheckoutForm({
 
                 <Separator />
 
-                <BookingMessageSection
-                    value={specialRequests}
-                    onChange={setSpecialRequests}
-                />
+                <BookingMessageSection value={specialRequests} onChange={setSpecialRequests} />
             </div>
 
             <BookingFooter
