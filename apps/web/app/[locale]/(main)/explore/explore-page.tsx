@@ -51,7 +51,7 @@ export default function ExplorePage() {
                                 <li key={establishment.id}>
                                     <EstablishmentCard
                                         establishment={establishment}
-                                        href={routes.ExploreDetail({
+                                        href={routes.HostDetail({
                                             id: establishment.id,
                                         })}
                                     />

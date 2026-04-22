@@ -28,6 +28,10 @@ class DatabaseSeeder extends Seeder
             AttributeSeeder::class,
             PetSeeder::class,
 
+            // Establishment capacities & availabilities
+            EstablishmentCapacitySeeder::class,
+            EstablishmentAvailabilitySeeder::class,
+
             // Bookings
             BookingSeeder::class,
 

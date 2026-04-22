@@ -1,38 +1,31 @@
-export const SERVICE_FEE_RATE = 0.1;
+import type { CapacityModel } from "@workspace/modules/establishments";
+import type { PetModel } from "@workspace/modules/pets";
 
-export function computeNightsBetween(from: Date, to: Date): number {
-    const msPerDay = 1000 * 60 * 60 * 24;
-    return Math.max(0, Math.round((to.getTime() - from.getTime()) / msPerDay));
+export function sumPetsPricePerNight(
+    selectedPets: PetModel[],
+    capacities: CapacityModel[],
+): number {
+    return selectedPets.reduce((total, pet) => {
+        const capacity = capacities.find((c) => c.animalType.id === pet.animalTypeId);
+        return capacity ? total + capacity.pricePerNight : total;
+    }, 0);
 }
 
-export type PriceBreakdownData = {
-    nights: number;
+export type BookingTotals = {
     pricePerNight: number;
-    subtotal: number;
-    serviceFee: number;
+    nights: number;
     total: number;
 };
 
-export function computePriceBreakdown(pricePerNight: number, nights: number): PriceBreakdownData {
-    const subtotal = pricePerNight * nights;
-    const serviceFee = Math.round(subtotal * SERVICE_FEE_RATE);
+export function computeBookingTotals(
+    selectedPets: PetModel[],
+    capacities: CapacityModel[],
+    nights: number,
+): BookingTotals {
+    const pricePerNight = sumPetsPricePerNight(selectedPets, capacities);
     return {
-        nights,
         pricePerNight,
-        subtotal,
-        serviceFee,
-        total: subtotal + serviceFee,
+        nights,
+        total: pricePerNight * nights,
     };
-}
-
-export function toApiDate(date: Date): string {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
-}
-
-export function fromApiDate(value: string): Date {
-    const [year, month, day] = value.split("-").map(Number);
-    return new Date(year!, (month ?? 1) - 1, day ?? 1);
 }

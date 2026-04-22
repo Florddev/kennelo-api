@@ -1,13 +1,14 @@
 import { useTranslations } from "next-intl";
 import { Separator } from "@workspace/ui/components/separator";
+import { formatAmount } from "@workspace/common";
 
-import type { PriceBreakdownData } from "../lib/pricing";
+import type { BookingTotals } from "../lib/pricing";
 
 type PriceBreakdownProps = {
-    breakdown: PriceBreakdownData;
+    totals: BookingTotals;
 };
 
-export function PriceBreakdown({ breakdown }: PriceBreakdownProps) {
+export function PriceBreakdown({ totals }: PriceBreakdownProps) {
     const t = useTranslations();
 
     return (
@@ -15,22 +16,16 @@ export function PriceBreakdown({ breakdown }: PriceBreakdownProps) {
             <div className="flex items-center justify-between text-sm">
                 <span className="text-foreground underline">
                     {t("features.bookings.checkout.priceNights", {
-                        price: breakdown.pricePerNight,
-                        count: breakdown.nights,
+                        price: formatAmount(totals.pricePerNight),
+                        count: totals.nights,
                     })}
                 </span>
-                <span className="text-foreground">{breakdown.subtotal} €</span>
-            </div>
-            <div className="flex items-center justify-between text-sm">
-                <span className="text-foreground underline">
-                    {t("features.bookings.checkout.serviceFee")}
-                </span>
-                <span className="text-foreground">{breakdown.serviceFee} €</span>
+                <span className="text-foreground">{formatAmount(totals.total)} €</span>
             </div>
             <Separator />
             <div className="flex items-center justify-between text-base font-semibold">
                 <span>{t("features.bookings.checkout.totalCurrency")}</span>
-                <span>{breakdown.total} €</span>
+                <span>{formatAmount(totals.total)} €</span>
             </div>
         </div>
     );
