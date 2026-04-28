@@ -62,8 +62,8 @@ export default function AppLayout({ children, className }: AppLayoutProps) {
         {
             icon: KCompass,
             text: t("ui.navigation.explore"),
-            href: "/explore",
-            active: isActivePath("/explore"),
+            href: routes.Explore(),
+            active: isActivePath(routes.Explore()),
         },
         {
             icon: KHeart,

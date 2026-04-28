@@ -1,0 +1,29 @@
+{
+    "checkout": {
+        "title": "طلب حجز",
+        "back": "رجوع",
+        "tripSection": "رحلتك",
+        "datesLabel": "التواريخ",
+        "datesValue": "{from} - {to}",
+        "petsLabel": "الحيوانات",
+        "petsCount": "{count, plural, =0 {لا يوجد حيوان} =1 {# حيوان} other {# حيوانات}}",
+        "selectPets": "اختر حيواناتك",
+        "noPetsTitle": "لا يوجد حيوانات",
+        "noPets": "ليس لديك أي حيوانات بعد. أضف واحداً للحجز.",
+        "petUnavailableType": "هذا المضيف لا يقبل هذا النوع من الحيوانات",
+        "petUnavailableCapacity": "تم الوصول إلى الحد الأقصى للسعة لهذا النوع",
+        "goToPets": "إدارة حيواناتي",
+        "priceSection": "تفاصيل السعر",
+        "priceNights": "{price} € × {count, plural, =1 {# ليلة} other {# ليالٍ}}",
+        "serviceFee": "رسوم خدمة Kennelo",
+        "total": "الإجمالي",
+        "totalCurrency": "الإجمالي (EUR)",
+        "messageSection": "رسالة إلى المضيف",
+        "messagePlaceholder": "قدّم نفسك، اشرح سبب سفرك، وتحدث إلى المضيف عن حيوانك.",
+        "messageOptional": "اختياري",
+        "confirmCta": "احجز",
+        "confirmFooterTotal": "الإجمالي: {amount} €",
+        "successTitle": "تم إرسال طلب الحجز!",
+        "successDescription": "سيرد عليك المضيف قريباً."
+    }
+}

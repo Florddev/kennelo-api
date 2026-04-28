@@ -39,6 +39,23 @@ type BecomeHostParams = {
     search_params?: Record<string, string | number | boolean>;
 };
 
+type ExploreParams = {
+    locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type HostBookParams = {
+    locale?: string | number;
+    id: string;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type HostDetailParams = {
+    locale?: string | number;
+    id: string;
+    search_params?: Record<string, string | number | boolean>;
+};
+
 type NewPetParams = {
     locale?: string | number;
     search_params?: Record<string, string | number | boolean>;
@@ -103,6 +120,18 @@ function BecomeHost(params?: BecomeHostParams): string {
     return buildRoute("/[locale]/become-host", params);
 }
 
+function Explore(params?: ExploreParams): string {
+    return buildRoute("/[locale]/explore", params);
+}
+
+function HostBook(params: HostBookParams): string {
+    return buildRoute("/[locale]/host/[id]/book", params);
+}
+
+function HostDetail(params: HostDetailParams): string {
+    return buildRoute("/[locale]/host/[id]", params);
+}
+
 function NewPet(params?: NewPetParams): string {
     return buildRoute("/[locale]/pets/new", params);
 }
@@ -139,6 +168,9 @@ export const routes = {
     MyEstablishments,
     EstablishmentDetail,
     BecomeHost,
+    Explore,
+    HostBook,
+    HostDetail,
     NewPet,
     MyPets,
     PetDetails,
