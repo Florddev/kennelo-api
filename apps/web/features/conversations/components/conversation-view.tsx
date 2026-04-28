@@ -111,7 +111,11 @@ export function ConversationView({ onBack }: { onBack?: () => void }) {
                             {messages.map((message, i) => {
                                 const prev = messages[i - 1];
                                 const showSeparator =
-                                    !prev || !isSameDay(message.createdAt, prev.createdAt);
+                                    !prev ||
+                                    !isSameDay(
+                                        new Date(message.createdAt),
+                                        new Date(prev.createdAt),
+                                    );
                                 return (
                                     <Fragment key={message.id}>
                                         {showSeparator && (
