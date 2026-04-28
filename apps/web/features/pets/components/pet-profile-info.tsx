@@ -11,7 +11,6 @@ import {
     LucideIcon,
     Scissors,
     SlidersHorizontal,
-    Star,
     Users,
     UtensilsCrossed,
 } from "lucide-react";
@@ -20,7 +19,6 @@ import type { PetAttributeModel, PetModel } from "@workspace/modules/pets";
 import { PetGallery } from "@/features/pets/components/pet-gallery";
 import { PetBadgesStrip } from "@/features/pets/components/pet-badges-strip";
 import { PetTypeIllustration } from "./pet-type-illustration";
-import { Badge } from "@workspace/ui/components/badge";
 import { KHeartBeat, KInfoCircle } from "@workspace/ui/icons";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@workspace/ui/components/tabs";
 import { PetProfileReviews } from "./pet-profile-reviews";
@@ -56,10 +54,6 @@ function PetIdentityHeader({ pet }: { pet: PetModel }) {
             <div className="flex flex-col w-full">
                 <div className="flex gap-2 items-center">
                     <h1 className="text-3xl font-bold tracking-tight">{pet.name}</h1>
-                    <Badge variant="outline" className="text-amber-500 bg-amber-100 border-0">
-                        <Star className="size-4" />
-                        4.4
-                    </Badge>
                 </div>
                 <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
                     {pet.animalType && <span>{pet.animalType.name}</span>}

@@ -1,5 +1,6 @@
 import { UserModel } from "../../users/models/user.model";
 import { AddressModel } from "../../address/models/address.model";
+import { EstablishmentImageModel } from "./establishment-image.model";
 import { EstablishmentDto } from "./dtos/establishment.dto";
 
 export class EstablishmentModel {
@@ -15,9 +16,11 @@ export class EstablishmentModel {
         public readonly timezone: string | null,
         public readonly isActive: boolean,
         public readonly managerId: string,
+        public readonly avatarUrl: string | null,
         public readonly address: AddressModel | null,
-        public readonly manager: UserModel,
+        public readonly manager: UserModel | null,
         public readonly collaborators: UserModel[],
+        public readonly images: EstablishmentImageModel[],
         public readonly createdAt: string,
         public readonly updatedAt: string,
     ) {}
@@ -35,11 +38,23 @@ export class EstablishmentModel {
             dto.timezone,
             dto.is_active,
             dto.manager_id,
+            dto.avatar_url ?? null,
             dto.address ? AddressModel.from(dto.address) : null,
-            UserModel.from(dto.manager),
-            dto.collaborators.map(UserModel.from),
+            dto.manager ? UserModel.from(dto.manager) : null,
+            dto.collaborators ? dto.collaborators.map(UserModel.from) : [],
+            dto.images ? dto.images.map(EstablishmentImageModel.from) : [],
             dto.created_at,
             dto.updated_at,
         );
+    }
+
+    getAvatarUrl(): string | undefined {
+        if (this.avatarUrl) {
+            return this.avatarUrl;
+        }
+        if (this.images[0] != null) {
+            return this.images[0].url;
+        }
+        return undefined;
     }
 }

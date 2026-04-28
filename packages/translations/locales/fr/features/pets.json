@@ -206,6 +206,16 @@
         "yes": "Oui",
         "no": "Non"
     },
+    "types": {
+        "dog": "Chien",
+        "cat": "Chat",
+        "bird": "Oiseau",
+        "rabbit": "Lapin",
+        "reptile": "Reptile",
+        "amphibian": "Amphibien",
+        "fish": "Poisson",
+        "spider": "Araignée"
+    },
     "filters": {
         "all": "Tous",
         "sort": "Trier",

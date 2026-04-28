@@ -16,5 +16,9 @@
     },
     "exports": {
         ".": "./src/index.ts"
+    },
+    "dependencies": {
+        "laravel-echo": "^2.3.3",
+        "pusher-js": "^8.5.0"
     }
 }

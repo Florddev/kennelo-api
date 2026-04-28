@@ -12,6 +12,7 @@ use App\Models\Booking;
 use App\Models\Establishment;
 use App\Services\Booking\BookingService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class EstablishmentBookingController extends Controller
 {
@@ -33,12 +34,12 @@ class EstablishmentBookingController extends Controller
             ->response();
     }
 
-    public function confirm(Establishment $establishment, Booking $booking): JsonResponse
+    public function confirm(Request $request, Establishment $establishment, Booking $booking): JsonResponse
     {
         $this->authorize('manageForEstablishment', [Booking::class, $establishment]);
         abort_if((string) $booking->establishment_id !== (string) $establishment->id, 404);
 
-        $booking = $this->bookingService->confirm($booking);
+        $booking = $this->bookingService->confirm($booking, $request->user());
 
         return (new BookingResource($booking))
             ->additional([
@@ -48,12 +49,12 @@ class EstablishmentBookingController extends Controller
             ->response();
     }
 
-    public function cancel(Establishment $establishment, Booking $booking): JsonResponse
+    public function cancel(Request $request, Establishment $establishment, Booking $booking): JsonResponse
     {
         $this->authorize('manageForEstablishment', [Booking::class, $establishment]);
         abort_if((string) $booking->establishment_id !== (string) $establishment->id, 404);
 
-        $booking = $this->bookingService->rejectByEstablishment($booking);
+        $booking = $this->bookingService->rejectByEstablishment($booking, $request->user());
 
         return (new BookingResource($booking))
             ->additional([

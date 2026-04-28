@@ -191,6 +191,13 @@ importers:
         version: 5.9.3
 
   packages/common:
+    dependencies:
+      laravel-echo:
+        specifier: ^2.3.3
+        version: 2.3.3(pusher-js@8.5.0)(socket.io-client@4.8.3)
+      pusher-js:
+        specifier: ^8.5.0
+        version: 8.5.0
     devDependencies:
       '@workspace/eslint-config':
         specifier: workspace:*

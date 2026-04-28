@@ -206,6 +206,16 @@
         "yes": "Yes",
         "no": "No"
     },
+    "types": {
+        "dog": "Dog",
+        "cat": "Cat",
+        "bird": "Bird",
+        "rabbit": "Rabbit",
+        "reptile": "Reptile",
+        "amphibian": "Amphibian",
+        "fish": "Fish",
+        "spider": "Spider"
+    },
     "filters": {
         "all": "All",
         "sort": "Sort",

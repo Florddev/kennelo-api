@@ -5,8 +5,7 @@ import { Skeleton } from "@workspace/ui/components/skeleton";
 import type { PetModel } from "@workspace/modules/pets";
 import { useNavigation } from "@/hooks/use-navigation";
 import { getAge } from "@/features/pets/lib/pet-age";
-import { Badge } from "@workspace/ui/components/badge";
-import { CircleSlash, Mars, Star, Venus } from "lucide-react";
+import { CircleSlash, Mars, Venus } from "lucide-react";
 import { ShapeMedia } from "@/components/media/shape-media";
 
 type PetCardProps = {
@@ -72,10 +71,6 @@ export function PetCard({ pet }: PetCardProps) {
                         {`${sexLabel}${ageLabel}, ${weightLabel}`}
                     </span>
                 </div>
-                <Badge variant="outline" className="text-amber-500 bg-amber-100 border-0">
-                    <Star className="size-4" />
-                    4.4
-                </Badge>
             </div>
         </div>
     );

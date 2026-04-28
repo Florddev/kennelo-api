@@ -11,6 +11,7 @@ use App\Http\Controllers\Establishment\EstablishmentAvailabilityController;
 use App\Http\Controllers\Establishment\EstablishmentCapacityController;
 use App\Http\Controllers\Establishment\EstablishmentController;
 use App\Http\Controllers\Establishment\EstablishmentDashboardController;
+use App\Http\Controllers\Establishment\EstablishmentImageController;
 use App\Http\Controllers\Pet\AnimalTypeController;
 use App\Http\Controllers\Pet\PetAttributeController;
 use App\Http\Controllers\Pet\PetController;
@@ -37,6 +38,11 @@ Route::middleware(['auth.jwt'])->group(function () {
     Route::post('/establishments/{establishment}/capacities', [EstablishmentCapacityController::class, 'store']);
     Route::put('/establishments/{establishment}/capacities/{capacity}', [EstablishmentCapacityController::class, 'update']);
     Route::delete('/establishments/{establishment}/capacities/{capacity}', [EstablishmentCapacityController::class, 'destroy']);
+    Route::post('/establishments/{establishment}/avatar', [EstablishmentImageController::class, 'uploadAvatar']);
+    Route::get('/establishments/{establishment}/images', [EstablishmentImageController::class, 'index']);
+    Route::post('/establishments/{establishment}/images', [EstablishmentImageController::class, 'store']);
+    Route::post('/establishments/{establishment}/images/bulk', [EstablishmentImageController::class, 'storeBulk']);
+    Route::delete('/establishments/{establishment}/images/{media}', [EstablishmentImageController::class, 'destroy']);
 
     // Bookings (user)
     Route::apiResource('bookings', BookingController::class)->only(['index', 'show', 'store']);

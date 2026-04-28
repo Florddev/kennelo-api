@@ -62,5 +62,6 @@
         "empty": "Aucune disponibilité définie pour cette période.",
         "dateRange": "Plage de dates",
         "bulkUpdate": "Mise à jour groupée"
-    }
+    },
+    "host": "Hôte"
 }

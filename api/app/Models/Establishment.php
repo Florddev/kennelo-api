@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\EstablishmentPermission;
+use App\Services\MediaService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -13,10 +14,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-class Establishment extends Model
+class Establishment extends Model implements HasMedia
 {
-    use HasFactory, HasUuids, SoftDeletes;
+    use HasFactory, HasUuids, InteractsWithMedia, SoftDeletes;
 
     protected $fillable = [
         'name',
@@ -36,6 +40,21 @@ class Establishment extends Model
         return [
             'is_active' => 'boolean',
         ];
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection(MediaService::COLLECTION_AVATAR)
+            ->singleFile();
+
+        $this->addMediaCollection(MediaService::COLLECTION_IMAGES)
+            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/gif', 'image/webp']);
+    }
+
+    public function registerMediaConversions(?Media $media = null): void
+    {
+        MediaService::registerAvatarConversion($this);
+        MediaService::registerImagesConversion($this);
     }
 
     public function scopeActive(Builder $query): Builder

@@ -1,5 +1,6 @@
 import { jwtHelper, LocalStorageService } from "@workspace/common";
 import type { IStorageService } from "@workspace/common";
+import { UserRole } from "../types/user-roles.type";
 
 const ACCESS_TOKEN_KEY = "access_token";
 const REFRESH_TOKEN_KEY = "refresh_token";
@@ -40,9 +41,9 @@ export const authService = {
         return jwtHelper.isExpired(token);
     },
 
-    async getUserRoles(): Promise<string[]> {
+    async getUserRoles(): Promise<UserRole[]> {
         const token = await this.getAccessToken();
         if (!token) return [];
-        return jwtHelper.getProperty<string[]>(token, "roles") || [];
+        return jwtHelper.getProperty<UserRole[]>(token, "roles") || [];
     },
 } as const;

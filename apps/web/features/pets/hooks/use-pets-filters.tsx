@@ -3,9 +3,7 @@
 import { useMemo, useState } from "react";
 import type { PetModel } from "@workspace/modules/pets";
 
-export type SortOption = "newest" | "name-asc" | "name-desc" | "age-youngest" | "age-oldest";
-
-export type AvailableType = {
+type AvailableType = {
     id: number;
     name: string;
     code: string;
@@ -15,7 +13,6 @@ export type AvailableType = {
 export function usePetsFilters(pets: PetModel[]) {
     const [search, setSearch] = useState("");
     const [typeFilter, setTypeFilter] = useState<number | null>(null);
-    const [sort, setSort] = useState<SortOption>("newest");
 
     const availableTypes = useMemo<AvailableType[]>(() => {
         const map = new Map<number, AvailableType>();
@@ -52,41 +49,15 @@ export function usePetsFilters(pets: PetModel[]) {
             result = result.filter((p) => p.animalTypeId === typeFilter);
         }
 
-        return [...result].sort((a, b) => {
-            switch (sort) {
-                case "name-asc":
-                    return a.name.localeCompare(b.name);
-                case "name-desc":
-                    return b.name.localeCompare(a.name);
-                case "age-youngest":
-                    return (b.birthDate ?? "0000").localeCompare(a.birthDate ?? "0000");
-                case "age-oldest":
-                    return (a.birthDate ?? "9999").localeCompare(b.birthDate ?? "9999");
-                case "newest":
-                default:
-                    return b.createdAt.localeCompare(a.createdAt);
-            }
-        });
-    }, [pets, search, typeFilter, sort]);
-
-    const hasActiveFilters = search.trim() !== "" || typeFilter !== null;
-
-    function clearFilters() {
-        setSearch("");
-        setTypeFilter(null);
-        setSort("newest");
-    }
+        return [...result].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    }, [pets, search, typeFilter]);
 
     return {
         search,
         setSearch,
         typeFilter,
         setTypeFilter,
-        sort,
-        setSort,
         filteredPets,
         availableTypes,
-        hasActiveFilters,
-        clearFilters,
     };
 }

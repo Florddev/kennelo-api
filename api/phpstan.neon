@@ -3,6 +3,7 @@ includes:
     - vendor/nesbot/carbon/extension.neon
     - vendor/phpstan/phpstan-phpunit/extension.neon
     - vendor/phpstan/phpstan-phpunit/rules.neon
+    - vendor/pestphp/pest/extension.neon
 
 parameters:
 
@@ -15,7 +16,7 @@ parameters:
 
     ignoreErrors:
         - path: tests/*
-          message: '#Call to an undefined method PHPUnit\\Framework\\TestCase::#'
+          message: '#Call to an undefined method Pest\\PendingCalls\\TestCall::#'
         - path: database/migrations/*
           message: '#Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition::#'
         - path: database/factories/*
