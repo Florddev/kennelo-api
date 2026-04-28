@@ -7,6 +7,7 @@ use App\Models\Conversation;
 use App\Models\Establishment;
 use App\Models\Message;
 use App\Models\User;
+use Illuminate\Support\Facades\Event;
 
 it('authenticated user can list their conversations', function () {
     $user = User::factory()->create();
@@ -66,6 +67,8 @@ it('establishment manager can view conversation', function () {
 });
 
 it('user can get or create conversation for their booking', function () {
+    Event::fake();
+
     $user = User::factory()->create();
     $establishment = Establishment::factory()->create();
     $booking = Booking::factory()->create([
@@ -91,6 +94,8 @@ it('user cannot create conversation for another user booking', function () {
 });
 
 it('calling storeForBooking twice returns same conversation', function () {
+    Event::fake();
+
     $user = User::factory()->create();
     $establishment = Establishment::factory()->create();
     $booking = Booking::factory()->create([

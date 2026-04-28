@@ -4,7 +4,7 @@ import { sendableMessageTypes } from "../types/message-type.type";
 const messageTypeEnum = z.enum(sendableMessageTypes);
 
 export const sendMessageSchema = z.object({
-    content: z.string().min(1).max(5000),
+    content: z.string().max(5000).optional(),
     messageType: messageTypeEnum.optional(),
     bookingId: z.string().uuid().nullable().optional(),
 });

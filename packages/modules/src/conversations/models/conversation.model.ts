@@ -38,4 +38,20 @@ export class ConversationModel {
     hasUnreadMessages(): boolean {
         return (this.unreadCount ?? 0) > 0;
     }
+
+    withLatestMessage(message: MessageModel, resetUnread = false): ConversationModel {
+        return new ConversationModel(
+            this.id,
+            this.userId,
+            this.establishmentId,
+            message.createdAt,
+            this.user,
+            this.establishment,
+            message,
+            resetUnread ? 0 : this.unreadCount,
+            this.bookingThreads,
+            this.createdAt,
+            this.updatedAt,
+        );
+    }
 }

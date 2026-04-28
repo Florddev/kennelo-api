@@ -5,7 +5,6 @@ import NavItem, { NavigationItem } from "../nav-item";
 import { useTranslations } from "next-intl";
 import { useScrolled } from "@/hooks/use-scrolled";
 import { useAuth } from "@/features/auth";
-import { LanguageSwitcher } from "@/components/i18n/language-switcher";
 import Link from "next/link";
 import Image from "next/image";
 import NavButton from "../nav-button";
@@ -21,23 +20,23 @@ export function MainNavbar({ navigationItems }: { navigationItems: NavigationIte
     return (
         <header
             className={cn(
-                "sticky top-0 left-0 w-full h-16 flex items-center z-20 transition-backdrop transition-background duration-150",
+                "sticky top-0 left-0 w-full h-[var(--header-height)] flex items-center z-20 transition-backdrop transition-background duration-150",
                 scrolled
-                    ? "bg-background/90 backdrop-blur-sm border-border/50 border-b"
+                    ? "bg-card/90 backdrop-blur-sm border-border/50 border-b"
                     : "border-b border-transparent",
             )}
         >
-            <div className="mx-auto h-full flex justify-between items-center w-full px-8">
-                <div className="max-w-sm w-full">
+            <div className="mx-auto h-full flex justify-between items-center w-full px-12">
+                {/* <div className="max-w-sm w-full">
                     <LanguageSwitcher showDetails />
-                </div>
+                </div> */}
 
                 <Link
                     href={routes.Home()}
-                    className="relative w-full max-w-xs h-full flex justify-center items-center font-semibold text-lg"
+                    className="relative max-w-xs h-full flex justify-center items-center font-semibold text-lg"
                 >
                     <Image
-                        className="object-cover max-h-full h-1/2 w-auto"
+                        className="object-cover max-h-full h-7 w-auto"
                         src="/logo_type.svg"
                         height={120}
                         width={30}
@@ -93,6 +92,7 @@ export function MainNavbar({ navigationItems }: { navigationItems: NavigationIte
                                     user={user ?? undefined}
                                     onLogout={logout}
                                     hasEstablishment={hasEstablishment}
+                                    className="size-9 shadow-lg"
                                 />
                             </div>
                         </div>

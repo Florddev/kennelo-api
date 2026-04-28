@@ -2,6 +2,7 @@ import { SenderType } from "../../types/sender-type.type";
 import type { UserDto } from "../../../users/models/dtos/user.dto";
 import type { MessageFileDto } from "./message-file.dto";
 import { MessageType } from "../../types/message-type.type";
+import type { BookingDto } from "../../../bookings/models/dtos/booking.dto";
 
 export type MessageDto = {
     id: string;
@@ -13,5 +14,6 @@ export type MessageDto = {
     content: string | null;
     sender?: UserDto | null;
     files?: MessageFileDto[];
+    booking?: BookingDto | null;
     created_at: string;
 };

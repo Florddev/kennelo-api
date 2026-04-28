@@ -12,7 +12,6 @@ export * from "./components/pet-profile-owner";
 export * from "./components/pet-profile-reviews";
 export * from "./components/pet-section-header";
 export * from "./components/pet-type-illustration";
-export * from "./components/pets-filter-bar";
 export * from "./components/forms/create-pet-stepper.constants";
 export * from "./components/forms/create-pet-stepper.mappers";
 export * from "./components/forms/create-pet-stepper.selectors";

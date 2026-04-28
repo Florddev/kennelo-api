@@ -23,7 +23,8 @@ class MessageResource extends JsonResource
             'content' => $this->content,
             'sender' => new UserResource($this->whenLoaded('sender')),
             'files' => MessageFileResource::collection($this->whenLoaded('files')),
-            'created_at' => human_date($this->created_at),
+            'booking' => new BookingResource($this->whenLoaded('booking')),
+            'created_at' => $this->created_at?->toISOString(),
         ];
     }
 }

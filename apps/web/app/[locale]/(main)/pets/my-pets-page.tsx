@@ -1,8 +1,12 @@
 "use client";
 
-import { Plus, PawPrint, PlusIcon, Search } from "lucide-react";
+import { useState } from "react";
+import { Plus, PawPrint, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@workspace/ui/components/button";
+import { Badge } from "@workspace/ui/components/badge";
+import { InputGroup, InputGroupAddon, InputGroupInput } from "@workspace/ui/components/input-group";
+import { cn } from "@workspace/ui/lib/utils";
 import {
     Empty,
     EmptyContent,
@@ -11,16 +15,15 @@ import {
     EmptyMedia,
     EmptyTitle,
 } from "@workspace/ui/components/empty";
+import { isKnownAnimalTypeCode } from "@workspace/modules/pets";
 import { usePets } from "@/features/pets/hooks/use-pets";
 import { usePetsFilters } from "@/features/pets/hooks/use-pets-filters";
 import { PetCard, PetCardSkeleton } from "@/features/pets/components/pet-card";
-import { PetsFilterBar } from "@/features/pets/components/pets-filter-bar";
+import { PetTypeIllustration } from "@/features/pets/components/pet-type-illustration";
 import { KHeart } from "@workspace/ui/icons";
-import { useScrolled } from "@/hooks/use-scrolled";
-import { cn } from "@workspace/ui/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { ShapeMedia } from "@/components/media/shape-media";
 import { useNavigation } from "@/hooks/use-navigation";
+import PageLayout from "@/components/layouts/page-layout";
 
 type PetsContentProps = {
     isLoading: boolean;
@@ -72,17 +75,6 @@ function PetsContent({ isLoading, pets, filteredPets, t, onCreatePet }: PetsCont
             {filteredPets.map((pet) => (
                 <PetCard key={pet.id} pet={pet} />
             ))}
-            <div className="flex gap-4 items-center cursor-pointer" onClick={onCreatePet}>
-                <ShapeMedia emptyIcon={PlusIcon} shapeClassName="lg:size-28 xl:size-38" />
-                <div className="flex flex-col gap-2">
-                    <h1 className="text-2xl font-semibold">
-                        {t("features.pets.create.quickTitle")}
-                    </h1>
-                    <span className="text-sm text-muted-foreground">
-                        {t("features.pets.create.quickDescription")}
-                    </span>
-                </div>
-            </div>
         </div>
     );
 }
@@ -91,90 +83,117 @@ export default function MyPetsPage() {
     const t = useTranslations();
     const { routes, push } = useNavigation();
     const { pets, isLoading } = usePets();
-    const {
-        search,
-        setSearch,
-        typeFilter,
-        setTypeFilter,
-        sort,
-        setSort,
-        filteredPets,
-        availableTypes,
-        hasActiveFilters,
-        clearFilters,
-    } = usePetsFilters(pets);
-    const scrolled = useScrolled(100);
+    const { search, setSearch, typeFilter, setTypeFilter, filteredPets, availableTypes } =
+        usePetsFilters(pets);
     const isMobile = useIsMobile();
+    const [hideTitle, setHideTitle] = useState(false);
+    const [isSearching, setIsSearching] = useState(false);
+
     const handleCreatePet = () => push(`${routes.MyPets()}/new`);
 
+    const handleSearchOpen = () => {
+        setIsSearching(true);
+        setHideTitle(true);
+    };
+
+    const handleSearchClose = () => {
+        setIsSearching(false);
+        setHideTitle(false);
+        setSearch("");
+    };
+
     return (
-        <div className="min-h-screen bg-card">
-            <div
-                className={cn(
-                    "sticky top-0 bg-card flex items-center z-10",
-                    scrolled && "border-b",
-                )}
-            >
-                <div className="flex flex-col-reverse md:flex-row md:justify-between sm:items-center w-full py-2 p-4 sm:pt-6">
-                    <h1
-                        className={cn(
-                            "flex gap-1.5 items-center font-bold tracking-tight transition-all sm:mt-0 h-8",
-                            scrolled ? "text-xl -mt-8" : "text-3xl mt-4",
-                        )}
-                    >
-                        <KHeart
-                            className={cn("size-12 -ml-1.5 transition-all", scrolled && "size-9")}
-                            filled
-                            secondaryOpacity={1}
-                            secondary="text-secondary"
-                        />
-                        {t("features.pets.title")}
-                    </h1>
-                    <div className="ml-auto h-8 flex gap-1 items-center">
+        <PageLayout
+            Icon={KHeart}
+            title={t("features.pets.title")}
+            headerTopClassName={cn(isSearching && "w-full")}
+            hideTitle={hideTitle}
+            headerTop={
+                <>
+                    <div className="flex justify-end">
+                        <InputGroup
+                            className={cn(
+                                "h-7 gap-1 w-full transition-all duration-300 border-none bg-muted has-[[data-slot=input-group-control]:focus-visible]:ring-[2px]",
+                                !isSearching && "size-8",
+                            )}
+                            onClick={!isSearching ? handleSearchOpen : undefined}
+                            autoFocus={isSearching}
+                        >
+                            <InputGroupInput
+                                placeholder={t("common.actions.search")}
+                                className="placeholder:text-sm"
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                            />
+                            <InputGroupAddon
+                                align="inline-start"
+                                className={cn("transition-all", !isSearching && "pl-2")}
+                            >
+                                <Search className="size-3.5 text-primary" />
+                            </InputGroupAddon>
+                        </InputGroup>
+                    </div>
+                    {isSearching ? (
+                        <Button variant="ghost" size="default" onClick={handleSearchClose}>
+                            {t("common.actions.cancel")}
+                        </Button>
+                    ) : (
                         <Button
-                            className="bg-muted gap-2"
-                            variant="secondary"
+                            className="gap-2"
+                            variant="flat"
                             size={isMobile ? "icon-sm" : "default"}
                             onClick={handleCreatePet}
                         >
-                            <Plus className="size-4" />
+                            <Plus className="size-3.5" />
                             {!isMobile && t("features.pets.addPet")}
                         </Button>
-                        <Button
-                            className="bg-muted gap-2"
-                            variant="secondary"
-                            size={isMobile ? "icon-sm" : "default"}
+                    )}
+                </>
+            }
+            headerBottom={
+                !isLoading && pets.length > 0 && availableTypes.length > 1 ? (
+                    <div className="flex flex-nowrap gap-1.5 overflow-x-auto scrollbar-none w-full pb-0.5">
+                        <Badge
+                            variant={typeFilter === null ? "default" : "flat"}
+                            size="lg"
+                            className="text-xs cursor-pointer shrink-0 gap-1.5"
+                            onClick={() => setTypeFilter(null)}
                         >
-                            <Search className="size-4" />
-                            {!isMobile && t("common.actions.search")}
-                        </Button>
+                            {t("features.pets.filters.all")}
+                        </Badge>
+                        {availableTypes.map((type) => {
+                            const typeKey = `features.pets.types.${type.code}` as Parameters<
+                                typeof t
+                            >[0];
+                            const label = isKnownAnimalTypeCode(type.code) ? t(typeKey) : type.name;
+                            return (
+                                <Badge
+                                    key={type.id}
+                                    variant={typeFilter === type.id ? "default" : "flat"}
+                                    size="lg"
+                                    className="text-xs cursor-pointer shrink-0 gap-1.5"
+                                    onClick={() => setTypeFilter(type.id)}
+                                >
+                                    <PetTypeIllustration
+                                        code={type.code}
+                                        name={label}
+                                        className="size-3.5"
+                                    />
+                                    {label}
+                                </Badge>
+                            );
+                        })}
                     </div>
-                </div>
-            </div>
-
-            <div className="pb-6 space-y-6 px-4">
-                {!isLoading && pets.length > 0 && (
-                    <PetsFilterBar
-                        search={search}
-                        onSearchChange={setSearch}
-                        typeFilter={typeFilter}
-                        onTypeFilterChange={setTypeFilter}
-                        sort={sort}
-                        onSortChange={setSort}
-                        availableTypes={availableTypes}
-                        hasActiveFilters={hasActiveFilters}
-                        onClearFilters={clearFilters}
-                        resultsCount={filteredPets.length}
-                    />
-                )}
-                <PetsContent
-                    isLoading={isLoading}
-                    pets={pets}
-                    filteredPets={filteredPets}
-                    t={t}
-                    onCreatePet={handleCreatePet}
-                />
-            </div>
-        </div>
+                ) : null
+            }
+        >
+            <PetsContent
+                isLoading={isLoading}
+                pets={pets}
+                filteredPets={filteredPets}
+                t={t}
+                onCreatePet={handleCreatePet}
+            />
+        </PageLayout>
     );
 }

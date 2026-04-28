@@ -1,0 +1,32 @@
+{
+    "title": "Messages",
+    "description": "Gérez vos messages",
+    "filters": {
+        "all": "Tout",
+        "owner": "Mode propriétaire",
+        "host": "Mode hôte"
+    },
+    "empty": {
+        "title": "Vos messages",
+        "description": "Sélectionnez une conversation pour lire vos messages"
+    },
+    "noConversations": "Aucune conversation",
+    "noConversationsDescription": "Vos conversations apparaîtront ici",
+    "messagePlaceholder": "Écrivez un message...",
+    "send": "Envoyer",
+    "you": "Vous",
+    "typing": "{name} est en train d'écrire...",
+    "sendFailed": "Échec de l'envoi",
+    "retry": "Réessayer",
+    "attachFile": "Joindre un fichier",
+    "lastBooking": {
+        "confirmed": "Confirmé",
+        "cancelled": "Annulé"
+    },
+    "bookingReference": {
+        "requestMade": "Demande effectuée",
+        "confirmed": "Réservation confirmée",
+        "refused": "Réservation refusée",
+        "viewDetails": "Afficher les détails"
+    }
+}

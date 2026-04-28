@@ -14,9 +14,12 @@ use App\Models\BookingThread;
 use App\Models\Conversation;
 use App\Models\Establishment;
 use App\Models\Message;
+use App\Models\MessageFile;
 use App\Models\User;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class ConversationService
 {
@@ -24,7 +27,7 @@ class ConversationService
     {
         $perPage = $filters['per_page'] ?? 15;
 
-        return Conversation::with(['establishment', 'latestMessage.sender', 'bookingThreads.booking'])
+        return Conversation::with(['user', 'establishment.manager', 'latestMessage.sender', 'bookingThreads.booking'])
             ->withCount(['messages as unread_count' => function ($query) use ($user): void {
                 $query->where('sender_id', '!=', $user->id)
                     ->whereDoesntHave('reads', function ($q) use ($user): void {
@@ -64,19 +67,34 @@ class ConversationService
             ]
         );
 
-        BookingThread::firstOrCreate(
+        $thread = BookingThread::firstOrCreate(
             ['booking_id' => $booking->id],
             ['conversation_id' => $conversation->id]
         );
 
+        if ($thread->wasRecentlyCreated) {
+            $this->sendMessage($user, $conversation, [
+                'message_type' => MessageType::BookingReference->value,
+                'booking_id' => $booking->id,
+            ]);
+        }
+
         return $conversation->load(['establishment', 'user', 'bookingThreads.booking']);
+    }
+
+    public function sendBookingReference(Conversation $conversation, User $actor, Booking $booking): void
+    {
+        $this->sendMessage($actor, $conversation, [
+            'message_type' => MessageType::BookingReference->value,
+            'booking_id' => $booking->id,
+        ]);
     }
 
     public function getMessages(Conversation $conversation, array $filters = []): LengthAwarePaginator
     {
         $perPage = $filters['per_page'] ?? 30;
 
-        return Message::with(['sender', 'files'])
+        return Message::with(['sender', 'files', 'booking.establishment'])
             ->where('conversation_id', $conversation->id)
             ->when(isset($filters['booking_id']), fn ($q) => $q->where('booking_id', $filters['booking_id']))
             ->orderByDesc('created_at')
@@ -100,12 +118,28 @@ class ConversationService
                 'sender_id' => $user->id,
                 'sender_type' => $senderType,
                 'message_type' => $messageType,
-                'content' => $data['content'],
+                'content' => $data['content'] ?? null,
             ]);
+
+            foreach ($data['files'] ?? [] as $uploadedFile) {
+                /** @var UploadedFile $uploadedFile */
+                $path = $uploadedFile->store('conversations', 'public');
+                MessageFile::create([
+                    'message_id' => $message->id,
+                    'file_name' => $uploadedFile->getClientOriginalName(),
+                    'file_path' => Storage::disk('public')->url($path),
+                    'file_type' => $uploadedFile->extension(),
+                    'file_size' => $uploadedFile->getSize(),
+                    'mime_type' => $uploadedFile->getMimeType() ?? $uploadedFile->getClientMimeType(),
+                ]);
+            }
 
             $conversation->update(['last_message_at' => now()]);
 
             $message->load(['sender', 'files']);
+            if ($message->booking_id) {
+                $message->load('booking.establishment');
+            }
 
             event(new MessageSent($message));
             event(new NewMessageNotification($message));

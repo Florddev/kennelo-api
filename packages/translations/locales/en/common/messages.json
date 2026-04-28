@@ -8,5 +8,11 @@
     "otherInformation": "Other information",
     "health": "Health",
     "galleryEmpty": "Gallery coming soon",
-    "galleryEmptyDescription": "Profile photo and gallery will be available once the feature is released"
+    "galleryEmptyDescription": "Profile photo and gallery will be available once the feature is released",
+    "common": {
+        "message": {
+            "system": "System"
+        }
+    },
+    "system": "System"
 }

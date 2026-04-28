@@ -67,12 +67,15 @@ export function HostDetailContent({
                     address={establishment.address}
                     capacities={capacities}
                 />
-                <HostManagerSection manager={establishment.manager} />
-
-                {establishment.manager.isIdVerified && (
-                    <section className="pt-4">
-                        <HostVerifiedBanner />
-                    </section>
+                {establishment.manager && (
+                    <>
+                        <HostManagerSection manager={establishment.manager} />
+                        {establishment.manager.isIdVerified && (
+                            <section className="pt-4">
+                                <HostVerifiedBanner />
+                            </section>
+                        )}
+                    </>
                 )}
 
                 <HostAboutSection description={establishment.description} />

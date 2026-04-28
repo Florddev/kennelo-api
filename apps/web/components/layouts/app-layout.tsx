@@ -4,7 +4,6 @@ import { cn } from "@workspace/ui/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { KHome, KCompass, KMessage, KHeart } from "@workspace/ui/icons";
 import { NavigationItem } from "@/components/navigation/nav-item";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useNavigation } from "@/hooks/use-navigation";
@@ -80,9 +79,9 @@ export default function AppLayout({ children, className }: AppLayoutProps) {
     ];
 
     return (
-        <div className="bg-background h-full">
-            <div className="fixed bottom-8 right-8 flex flex-col items-end gap-4 z-20 hidden sm:block">
-                <div className="hidden">{/* Chat box */}</div>
+        <div className="bg-card min-h-screen">
+            {/* <div className="fixed bottom-8 right-8 flex flex-col items-end gap-4 z-20 sm:block w-fit">
+                <div className="w-24 h-32 rounded-lg border-border shadow-lg mb-2">Chat box</div>
                 <div className="h-fit w-fit">
                     <Image
                         className="w-14 shadow-md rounded-full"
@@ -92,7 +91,7 @@ export default function AppLayout({ children, className }: AppLayoutProps) {
                         alt="Keny Face"
                     />
                 </div>
-            </div>
+            </div> */}
 
             {!isMobile && <MainNavbar navigationItems={navigationItems} />}
             <main className={cn("w-full h-full", className)}>{children}</main>

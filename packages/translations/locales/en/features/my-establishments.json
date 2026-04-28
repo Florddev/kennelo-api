@@ -62,5 +62,17 @@
         "empty": "No availabilities set for this period.",
         "dateRange": "Date range",
         "bulkUpdate": "Bulk update"
-    }
+    },
+    "feature": {
+        "establishment": {
+            "host": "Host"
+        },
+        "my-establishment": {
+            "host": "Host"
+        },
+        "my-establishments": {
+            "host": "Host"
+        }
+    },
+    "host": "Host"
 }

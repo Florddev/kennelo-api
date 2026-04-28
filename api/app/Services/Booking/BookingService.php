@@ -7,11 +7,14 @@ namespace App\Services\Booking;
 use App\Enums\AvailabilityStatus;
 use App\Enums\BookingStatus;
 use App\Models\Booking;
+use App\Models\BookingThread;
+use App\Models\Conversation;
 use App\Models\Establishment;
 use App\Models\EstablishmentCapacity;
 use App\Models\Pet;
 use App\Models\Service;
 use App\Models\User;
+use App\Services\Conversation\ConversationService;
 use Carbon\Carbon;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
@@ -20,6 +23,10 @@ use Illuminate\Validation\ValidationException;
 
 class BookingService
 {
+    public function __construct(
+        private ConversationService $conversationService
+    ) {}
+
     public function getUserBookings(User $user, array $filters = []): LengthAwarePaginator
     {
         $perPage = $filters['per_page'] ?? 15;
@@ -56,7 +63,7 @@ class BookingService
             ? Service::whereIn('id', $data['service_ids'])->get()
             : collect();
 
-        return DB::transaction(function () use ($user, $data, $establishment, $checkIn, $checkOut, $nights, $pets, $services): Booking {
+        $booking = DB::transaction(function () use ($user, $data, $establishment, $checkIn, $checkOut, $nights, $pets, $services): Booking {
             $animalTypeIds = $pets->pluck('animal_type_id')->unique()->values();
 
             $capacities = EstablishmentCapacity::where('establishment_id', $establishment->id)
@@ -91,6 +98,10 @@ class BookingService
 
             return $booking->load(['establishment', 'pets', 'services']);
         });
+
+        $this->conversationService->getOrCreateForBooking($user, $booking);
+
+        return $booking;
     }
 
     public function cancel(Booking $booking): Booking
@@ -102,11 +113,13 @@ class BookingService
         return $booking->fresh();
     }
 
-    public function confirm(Booking $booking): Booking
+    public function confirm(Booking $booking, User $actor): Booking
     {
         $this->assertStatus($booking, [BookingStatus::PENDING], 'confirm');
 
         $booking->update(['status' => BookingStatus::CONFIRMED]);
+
+        $this->sendBookingReferenceIfConversationExists($booking, $actor);
 
         return $booking->fresh();
     }
@@ -120,11 +133,13 @@ class BookingService
         return $booking->fresh();
     }
 
-    public function rejectByEstablishment(Booking $booking): Booking
+    public function rejectByEstablishment(Booking $booking, User $actor): Booking
     {
         $this->assertStatus($booking, [BookingStatus::PENDING], 'reject');
 
         $booking->update(['status' => BookingStatus::CANCELLED]);
+
+        $this->sendBookingReferenceIfConversationExists($booking, $actor);
 
         return $booking->fresh();
     }
@@ -223,6 +238,15 @@ class BookingService
         $establishmentAmount = bcsub($totalPrice, $platformFee, 2);
 
         return [$totalPrice, $platformFee, $establishmentAmount, $petPivots, $servicePivots];
+    }
+
+    private function sendBookingReferenceIfConversationExists(Booking $booking, User $actor): void
+    {
+        $thread = BookingThread::where('booking_id', $booking->id)->with('conversation')->first();
+
+        if ($thread?->conversation instanceof Conversation) {
+            $this->conversationService->sendBookingReference($thread->conversation, $actor, $booking);
+        }
     }
 
     private function assertStatus(Booking $booking, array $allowedStatuses, string $action): void

@@ -1,0 +1,32 @@
+{
+    "title": "الرسائل",
+    "description": "إدارة رسائلك",
+    "filters": {
+        "all": "الكل",
+        "owner": "وضع الضيف",
+        "host": "وضع المضيف"
+    },
+    "empty": {
+        "title": "رسائلك",
+        "description": "اختر محادثة لقراءة رسائلك"
+    },
+    "noConversations": "لا توجد محادثات بعد",
+    "noConversationsDescription": "ستظهر محادثاتك هنا",
+    "messagePlaceholder": "اكتب رسالة...",
+    "send": "إرسال",
+    "you": "أنت",
+    "typing": "{name} يكتب...",
+    "sendFailed": "فشل الإرسال",
+    "retry": "إعادة المحاولة",
+    "attachFile": "إرفاق ملف",
+    "lastBooking": {
+        "confirmed": "مؤكد",
+        "cancelled": "ملغى"
+    },
+    "bookingReference": {
+        "requestMade": "تم تقديم الطلب",
+        "confirmed": "تم تأكيد الحجز",
+        "refused": "تم رفض الحجز",
+        "viewDetails": "إظهار التفاصيل"
+    }
+}

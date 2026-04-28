@@ -15,7 +15,7 @@ export function BottomNavbar({ navigationItems }: { navigationItems: NavigationI
     return (
         <nav
             className={cn(
-                "fixed bottom-0 w-full bg-background border-t border-primary/10 flex items-center z-10",
+                "fixed bottom-0 w-full bg-card border-t border-primary/10 flex items-center z-10",
                 isCapacitorApp ? "pb-3 h-16" : "pb-1 h-13",
             )}
         >
@@ -29,8 +29,8 @@ export function BottomNavbar({ navigationItems }: { navigationItems: NavigationI
                         iconSecondaryOpacity={item.active ? 1 : undefined}
                         href={item.href}
                         className={cn(
-                            "mt-1 text-xs text-muted-foreground",
-                            item.active ? "text-primary" : "text-muted-foreground",
+                            "mt-1 text-xs text-muted-foreground/80",
+                            item.active ? "text-primary" : "text-muted-foreground/80",
                         )}
                     >
                         {item.text}
@@ -39,7 +39,7 @@ export function BottomNavbar({ navigationItems }: { navigationItems: NavigationI
                 {isAuthenticated && (
                     <div className="flex flex-col items-center gap-0.5 mt-1">
                         <UserMenu user={user ?? undefined} onLogout={logout} />
-                        <span className="text-xs font-medium text-muted-foreground">
+                        <span className="text-xs font-medium text-muted-foreground/80">
                             {t("ui.navigation.profile")}
                         </span>
                     </div>

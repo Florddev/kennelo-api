@@ -10,12 +10,28 @@
             "dependsOn": ["^build", "barrels"],
             "inputs": ["$TURBO_DEFAULT$", ".env*"],
             "outputs": [".next/**", "!.next/cache/**", "dist/**"],
-            "env": ["NEXT_PUBLIC_API_URL", "MOBILE_BUILD", "NODE_ENV"]
+            "env": [
+                "NEXT_PUBLIC_API_URL",
+                "NEXT_PUBLIC_REVERB_AUTH_ENDPOINT",
+                "NEXT_PUBLIC_REVERB_APP_KEY",
+                "NEXT_PUBLIC_REVERB_HOST",
+                "NEXT_PUBLIC_REVERB_PORT",
+                "NEXT_PUBLIC_REVERB_SCHEME",
+                "MOBILE_BUILD",
+                "NODE_ENV"
+            ]
         },
         "lint": {
             "dependsOn": ["^lint"],
             "outputs": [],
-            "env": ["CI"]
+            "env": [
+                "CI",
+                "NEXT_PUBLIC_REVERB_AUTH_ENDPOINT",
+                "NEXT_PUBLIC_REVERB_APP_KEY",
+                "NEXT_PUBLIC_REVERB_HOST",
+                "NEXT_PUBLIC_REVERB_PORT",
+                "NEXT_PUBLIC_REVERB_SCHEME"
+            ]
         },
         "lint:fix": {
             "dependsOn": ["^lint:fix"],

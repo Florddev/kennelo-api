@@ -4,13 +4,18 @@ declare(strict_types=1);
 
 use App\Enums\AvailabilityStatus;
 use App\Enums\BookingStatus;
+use App\Enums\MessageType;
+use App\Enums\SenderType;
 use App\Models\AnimalType;
 use App\Models\Booking;
+use App\Models\BookingThread;
 use App\Models\Establishment;
 use App\Models\EstablishmentAvailability;
 use App\Models\EstablishmentCapacity;
+use App\Models\Message;
 use App\Models\Pet;
 use App\Models\User;
+use Illuminate\Support\Facades\Event;
 
 function makeBookingFixtures(): array
 {
@@ -82,6 +87,8 @@ it('user cannot view another user booking', function () {
 // ─── store ────────────────────────────────────────────────────────────────────
 
 it('authenticated user can create a booking', function () {
+    Event::fake();
+
     $user = User::factory()->create();
     [$manager, $establishment, $animalType] = makeBookingFixtures();
     $pet = Pet::create(['user_id' => $user->id, 'animal_type_id' => $animalType->id, 'name' => 'Rex']);
@@ -144,6 +151,33 @@ it('booking creation fails if capacity is exceeded', function () {
 
 it('unauthenticated user cannot create a booking', function () {
     $this->postJson('/api/bookings', [])->assertUnauthorized();
+});
+
+it('booking creation automatically creates a thread and a booking reference message', function () {
+    Event::fake();
+
+    $user = User::factory()->create();
+    [$manager, $establishment, $animalType] = makeBookingFixtures();
+    $pet = Pet::create(['user_id' => $user->id, 'animal_type_id' => $animalType->id, 'name' => 'Rex']);
+
+    $this->withHeaders(asUser($user))
+        ->postJson('/api/bookings', [
+            'establishment_id' => $establishment->id,
+            'check_in_date' => now()->addDays(10)->format('Y-m-d'),
+            'check_out_date' => now()->addDays(13)->format('Y-m-d'),
+            'pet_ids' => [$pet->id],
+        ])
+        ->assertCreated();
+
+    $booking = Booking::where('user_id', $user->id)->first();
+
+    expect(BookingThread::where('booking_id', $booking->id)->exists())->toBeTrue();
+    expect(
+        Message::where('booking_id', $booking->id)
+            ->where('message_type', MessageType::BookingReference->value)
+            ->where('sender_type', SenderType::User->value)
+            ->exists()
+    )->toBeTrue();
 });
 
 it('user cannot book with another user pets', function () {

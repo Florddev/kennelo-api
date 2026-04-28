@@ -37,7 +37,7 @@ export default function ProfileSettingsLayout({ children }: { children: React.Re
     ];
 
     return (
-        <div className="min-h-screen bg-card">
+        <div className="md:px-12 min-h-screen">
             <div className="h-18 flex items-center">
                 <div className="flex items-center justify-between w-full">
                     <h1 className="text-3xl font-semibold tracking-tight">

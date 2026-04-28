@@ -3,9 +3,15 @@
 declare(strict_types=1);
 
 use App\Enums\BookingStatus;
+use App\Enums\MessageType;
+use App\Enums\SenderType;
 use App\Models\Booking;
+use App\Models\BookingThread;
+use App\Models\Conversation;
 use App\Models\Establishment;
+use App\Models\Message;
 use App\Models\User;
+use Illuminate\Support\Facades\Event;
 
 // ─── index ────────────────────────────────────────────────────────────────────
 
@@ -95,6 +101,58 @@ it('manager cannot complete a pending booking', function () {
     $this->withHeaders(asUser($manager))
         ->putJson("/api/establishments/{$establishment->id}/bookings/{$booking->id}/complete")
         ->assertUnprocessable();
+});
+
+it('confirming a booking sends a booking reference message from the establishment', function () {
+    Event::fake();
+
+    $manager = User::factory()->create();
+    $user = User::factory()->create();
+    $establishment = Establishment::factory()->create(['manager_id' => $manager->id]);
+    $booking = Booking::factory()->pending()->create([
+        'user_id' => $user->id,
+        'establishment_id' => $establishment->id,
+    ]);
+
+    $conversation = Conversation::create(['user_id' => $user->id, 'establishment_id' => $establishment->id]);
+    BookingThread::create(['booking_id' => $booking->id, 'conversation_id' => $conversation->id]);
+
+    $this->withHeaders(asUser($manager))
+        ->putJson("/api/establishments/{$establishment->id}/bookings/{$booking->id}/confirm")
+        ->assertOk();
+
+    expect(
+        Message::where('booking_id', $booking->id)
+            ->where('message_type', MessageType::BookingReference->value)
+            ->where('sender_type', SenderType::Establishment->value)
+            ->exists()
+    )->toBeTrue();
+});
+
+it('cancelling a booking sends a booking reference message from the establishment', function () {
+    Event::fake();
+
+    $manager = User::factory()->create();
+    $user = User::factory()->create();
+    $establishment = Establishment::factory()->create(['manager_id' => $manager->id]);
+    $booking = Booking::factory()->pending()->create([
+        'user_id' => $user->id,
+        'establishment_id' => $establishment->id,
+    ]);
+
+    $conversation = Conversation::create(['user_id' => $user->id, 'establishment_id' => $establishment->id]);
+    BookingThread::create(['booking_id' => $booking->id, 'conversation_id' => $conversation->id]);
+
+    $this->withHeaders(asUser($manager))
+        ->putJson("/api/establishments/{$establishment->id}/bookings/{$booking->id}/cancel")
+        ->assertOk();
+
+    expect(
+        Message::where('booking_id', $booking->id)
+            ->where('message_type', MessageType::BookingReference->value)
+            ->where('sender_type', SenderType::Establishment->value)
+            ->exists()
+    )->toBeTrue();
 });
 
 it('manager cannot act on a booking from another establishment', function () {

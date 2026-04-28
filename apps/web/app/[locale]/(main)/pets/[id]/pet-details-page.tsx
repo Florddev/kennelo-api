@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, Heart, Share2, SquarePen } from "lucide-react";
+import { ArrowLeft, Heart, Share2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@workspace/ui/components/button";
 import { Skeleton } from "@workspace/ui/components/skeleton";
@@ -14,7 +14,7 @@ type Query = { id: string };
 
 function PetDetailsPageSkeleton() {
     return (
-        <div className="min-h-screen bg-card">
+        <div className="min-h-screen">
             <div className="absolute top-0 w-full z-10 flex justify-between items-center p-2">
                 <Skeleton className="size-8 rounded-4xl" />
                 <div className="flex gap-0.5">
@@ -126,7 +126,7 @@ export default function PetDetailsPage() {
     const isOwner = user?.id === pet.userId;
 
     return (
-        <div className="min-h-screen bg-card">
+        <div className="min-h-screen">
             <div className="absolute top-0 w-full z-10 sm:static flex justify-between items-center p-2">
                 <Button size="icon-sm" className="text-primary bg-card" onClick={back}>
                     <ArrowLeft />
@@ -144,7 +144,6 @@ export default function PetDetailsPage() {
             {isOwner && (
                 <div className="fixed bottom-0 w-full z-20 h-14 bg-card border-t px-2 flex justify-center items-center sm:hidden">
                     <Button className="w-full" size="lg">
-                        <SquarePen />
                         {t("features.pets.profile.edit")}
                     </Button>
                 </div>

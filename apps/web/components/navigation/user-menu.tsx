@@ -33,6 +33,7 @@ import { LanguageSelectorItems } from "../i18n/language-selector";
 import { routes } from "@/lib/routes";
 import { useNavigation } from "@/hooks/use-navigation";
 import { useAuth } from "@/features/auth";
+import { cn } from "@workspace/ui/lib/utils";
 
 interface UserMenuProps {
     user?: {
@@ -43,6 +44,7 @@ interface UserMenuProps {
     };
     hasEstablishment?: boolean;
     onLogout?: () => void;
+    className?: string;
 }
 
 function useHostSpaceHref() {
@@ -56,7 +58,7 @@ function useHostSpaceHref() {
     return routes.MyEstablishments();
 }
 
-export default function UserMenu({ user, hasEstablishment, onLogout }: UserMenuProps) {
+export default function UserMenu({ user, hasEstablishment, onLogout, className }: UserMenuProps) {
     const { theme, setTheme } = useTheme();
     const locale = useLocale() as Locale;
     const hostSpaceHref = useHostSpaceHref();
@@ -72,7 +74,7 @@ export default function UserMenu({ user, hasEstablishment, onLogout }: UserMenuP
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <button className="relative rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
-                    <Avatar className={"cursor-pointer size-[32px]"}>
+                    <Avatar className={cn("cursor-pointer size-[32px]", className)}>
                         <AvatarImage
                             src={user?.avatarUrl || undefined}
                             alt={user?.getFullName() || "User profile"}

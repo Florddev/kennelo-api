@@ -19,6 +19,7 @@ export * from "./models/user.model";
 export * from "./models/dtos/auth.dto";
 export * from "./models/dtos/user.dto";
 export * from "./services/auth.service";
+export * from "./types/user-roles.type";
 export * from "./validators/change-email.schema";
 export * from "./validators/change-password.schema";
 export * from "./validators/login-user.schema";

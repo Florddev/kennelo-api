@@ -1,5 +1,6 @@
 import { AddressDto } from "../../../address/models/dtos/address.dto";
 import { UserDto } from "../../../users/models/dtos/user.dto";
+import { EstablishmentImageDto } from "./establishment-image.dto";
 
 export type EstablishmentDto = {
     id: string;
@@ -13,9 +14,11 @@ export type EstablishmentDto = {
     timezone: string | null;
     is_active: boolean;
     manager_id: string;
+    avatar_url: string | null;
     address: AddressDto | null;
-    manager: UserDto;
-    collaborators: UserDto[];
+    manager?: UserDto | null;
+    collaborators?: UserDto[];
+    images?: EstablishmentImageDto[];
     created_at: string;
     updated_at: string;
 };

@@ -1,4 +1,5 @@
 import { AddressModel } from "../../address/models/address.model";
+import type { UserRole } from "../types/user-roles.type";
 import { UserDto } from "./dtos/user.dto";
 
 export class UserModel {
@@ -14,6 +15,7 @@ export class UserModel {
         public readonly locale: string,
         public readonly address: AddressModel | null,
         public readonly emailVerifiedAt: string | null,
+        public readonly roles: UserRole[],
         public readonly createdAt: string,
         public readonly updatedAt: string,
     ) {}
@@ -31,6 +33,7 @@ export class UserModel {
             dto.locale,
             dto.address ? AddressModel.from(dto.address) : null,
             dto.email_verified_at,
+            (dto.roles ?? []) as UserRole[],
             dto.created_at,
             dto.updated_at,
         );
@@ -46,5 +49,13 @@ export class UserModel {
 
     isEmailVerified(): boolean {
         return this.emailVerifiedAt !== null;
+    }
+
+    hasRoles(roles: UserRole[]): boolean {
+        return roles.every((role) => this.roles.includes(role));
+    }
+
+    hasAnyRoles(roles: UserRole[]): boolean {
+        return roles.some((role) => this.roles.includes(role));
     }
 }
