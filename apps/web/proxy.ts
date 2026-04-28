@@ -8,9 +8,14 @@ import { Middleware, runMiddlewares } from "./lib/middlewares";
 const middlewares: Middleware[] = [
     new SubdomainMiddleware(),
     new AuthGuardMiddleware({
-        guestOnly: ["/s/accounts/login", "/s/accounts/register"],
-        authRequired: ["/s/my/*", "/become-host"],
-        roleRequired: [{ roles: ["admin"], patterns: ["/s/admin/*"] }],
+        guestOnly: ["/login", "/register"],
+        authRequired: ["/hosting/*", "/settings/*", "/become-host"],
+        roleRequired: [
+            {
+                roles: ["admin"],
+                patterns: ["/admin/*"],
+            },
+        ],
     }),
     new I18nMiddleware(),
 ];

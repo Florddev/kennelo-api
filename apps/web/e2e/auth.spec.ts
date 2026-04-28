@@ -1,9 +1,10 @@
+import { routes } from "@/lib/routes";
 import { test, expect } from "@playwright/test";
 
 test.use({ storageState: { cookies: [], origins: [] } });
 
-const LOGIN_URL = "/s/accounts/login";
-const REGISTER_URL = "/s/accounts/register";
+const LOGIN_URL = routes.Login();
+const REGISTER_URL = routes.Register();
 const PLACEHOLDER_EMAIL = "Your email";
 const PLACEHOLDER_PASSWORD = "Your password";
 const SEEDED_EMAIL = "user@orus.com";

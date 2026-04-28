@@ -1,10 +1,11 @@
+import { routes } from "@/lib/routes";
 import { test, expect, type Page } from "@playwright/test";
 
 test.use({ storageState: { cookies: [], origins: [] } });
 
-const LOGIN_URL = "/s/accounts/login";
-const PROFILE_URL = "/s/my/profile/about";
-const CHANGE_PASSWORD_URL = "/s/my/profile/change-password";
+const LOGIN_URL = routes.Login();
+const PROFILE_URL = routes.MyProfileAbout();
+const CHANGE_PASSWORD_URL = routes.MyProfileChangePassword();
 const PLACEHOLDER_EMAIL = "Your email";
 const PLACEHOLDER_PASSWORD = "Your password";
 
