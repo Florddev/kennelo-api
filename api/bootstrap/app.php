@@ -6,8 +6,10 @@ use App\Enums\ApiStatus;
 use App\Http\Middleware\AuthenticateJWT;
 use App\Http\Middleware\EnsureEmailIsVerified;
 use App\Http\Middleware\SetLocale;
+use App\Services\Review\ReviewPublicationService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -27,6 +29,11 @@ return Application::configure(basePath: dirname(__DIR__))
         channels: __DIR__.'/../routes/channels.php',
         health: '/up',
     )
+    ->withSchedule(function (Schedule $schedule): void {
+        $schedule->call(fn () => app(ReviewPublicationService::class)->publishMatured())
+            ->dailyAt('03:00')
+            ->name('reviews:publish-matured');
+    })
     ->withMiddleware(function (Middleware $middleware): void {
 
         $middleware->api([
