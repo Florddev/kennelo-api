@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Image as ImageIcon } from "lucide-react";
@@ -14,6 +15,7 @@ export function EstablishmentCard({ establishment, href, className }: Establishm
     const t = useTranslations();
     const address = establishment.address;
     const subtitle = address ? `${address.city}, ${address.country}` : "";
+    const imageUrl = establishment.getAvatarUrl();
 
     return (
         <Link
@@ -24,11 +26,25 @@ export function EstablishmentCard({ establishment, href, className }: Establishm
                 className,
             )}
         >
-            <div className="relative flex h-64 w-full items-center justify-center overflow-hidden rounded-3xl bg-muted">
-                <div className="flex flex-col items-center gap-2 text-muted-foreground">
-                    <ImageIcon className="size-10" />
-                    <span className="text-xs">{t("features.explore.noImageAvailable")}</span>
-                </div>
+            <div className="relative h-64 w-full overflow-hidden rounded-3xl bg-muted">
+                {imageUrl ? (
+                    <Image
+                        src={imageUrl}
+                        alt={establishment.name}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    />
+                ) : (
+                    <div className="flex h-full w-full items-center justify-center">
+                        <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                            <ImageIcon className="size-10" />
+                            <span className="text-xs">
+                                {t("features.explore.noImageAvailable")}
+                            </span>
+                        </div>
+                    </div>
+                )}
             </div>
             <div className="flex flex-col gap-2 px-3 py-4">
                 <h3 className="text-xl font-semibold text-black line-clamp-1">

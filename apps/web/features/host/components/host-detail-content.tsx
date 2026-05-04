@@ -1,6 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { ArrowLeft, Image as ImageIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { Button } from "@workspace/ui/components/button";
 import { Separator } from "@workspace/ui/components/separator";
 import { toApiDate, fromApiDate } from "@workspace/common";
 import type {
@@ -11,9 +14,9 @@ import type {
 import type { DateRange } from "react-day-picker";
 
 import { useNavigation } from "@/hooks/use-navigation";
+import { DetailPageLayout } from "@/components/layouts/detail-page-layout";
 
 import { minPricePerNight } from "../lib/pricing";
-import { HostHeroSection } from "./host-hero-section";
 import { HostHeaderSection } from "./host-header-section";
 import { HostManagerSection } from "./host-manager-section";
 import { HostVerifiedBanner } from "./host-verified-banner";
@@ -39,6 +42,7 @@ export function HostDetailContent({
     initialDateRange,
     onBack,
 }: HostDetailContentProps) {
+    const t = useTranslations();
     const { router, routes } = useNavigation();
     const [dateRange, setDateRange] = useState<DateRange | undefined>(initialDateRange);
     const pricePerNight = minPricePerNight(capacities);
@@ -57,11 +61,39 @@ export function HostDetailContent({
         );
     };
 
-    return (
-        <div className="relative flex flex-col bg-white pb-[140px] md:pb-20">
-            <HostHeroSection images={[]} name={establishment.name} onBack={onBack} />
+    const images = establishment.images.map((img) => img.url);
 
-            <div className="relative -mt-8 flex flex-col gap-1 rounded-t-[32px] bg-white px-4 pt-4">
+    const galleryEmptyState = (
+        <div className="flex aspect-[4/3] w-full items-center justify-center bg-muted">
+            <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                <ImageIcon className="size-10" />
+                <span className="text-sm">{t("features.host.detail.noPhotos")}</span>
+            </div>
+        </div>
+    );
+
+    return (
+        <DetailPageLayout
+            images={images}
+            altPrefix={establishment.name}
+            emptyState={galleryEmptyState}
+            desktopCtaLabel={t("features.host.detail.viewPhotos", { count: images.length })}
+            headerStart={
+                <Button size="icon-sm" className="text-primary bg-card" onClick={onBack}>
+                    <ArrowLeft />
+                </Button>
+            }
+            footer={
+                <HostBookingBar
+                    pricePerNight={pricePerNight}
+                    dateRange={dateRange}
+                    canBook={canBook}
+                    onBook={handleBook}
+                />
+            }
+            className="bg-white pb-[140px] md:pb-20"
+        >
+            <div className="flex flex-col gap-1 px-4 pt-4">
                 <HostHeaderSection
                     name={establishment.name}
                     address={establishment.address}
@@ -100,14 +132,7 @@ export function HostDetailContent({
 
                 <HostReviewsSection reviews={[]} />
             </div>
-
-            <HostBookingBar
-                pricePerNight={pricePerNight}
-                dateRange={dateRange}
-                canBook={canBook}
-                onBook={handleBook}
-            />
-        </div>
+        </DetailPageLayout>
     );
 }
 

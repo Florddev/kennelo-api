@@ -18,6 +18,7 @@
         "location": "أين ستقيم",
         "locationEmpty": "لم يتم تقديم العنوان",
         "noPhotos": "لا توجد صور متاحة",
+        "viewPhotos": "عرض {count} صور",
         "selectDate": "اختر تاريخ الوصول",
         "selectDateDescription": "أضف تواريخ سفرك لمعرفة السعر الدقيق",
         "clearDates": "مسح التواريخ",

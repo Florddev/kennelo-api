@@ -18,6 +18,7 @@
         "location": "Où se situe le logement",
         "locationEmpty": "Adresse non renseignée",
         "noPhotos": "Aucune photo disponible",
+        "viewPhotos": "Voir les {count} photos",
         "selectDate": "Sélectionnez la date d'arrivée",
         "selectDateDescription": "Ajoutez vos dates de voyage pour connaître le prix exact",
         "clearDates": "Effacer les dates",
