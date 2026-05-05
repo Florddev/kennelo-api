@@ -12,13 +12,13 @@ import { Field, FieldLabel, FieldError, FieldDescription } from "@workspace/ui/c
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@workspace/ui/components/input-group";
 import { PasswordStrengthIndicator } from "./password-strength-indicator";
 import { PhoneInput } from "@workspace/ui/components/phone-input";
-import { KIcon } from "@workspace/ui/icons";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@workspace/ui/components/button";
 import { Calendar } from "@workspace/ui/components/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@workspace/ui/components/popover";
 import { Calendar as CalendarIcon } from "lucide-react";
+import { IconProps } from "@solar-icons/react";
 
 type InputControllerProps<TFieldValues extends FieldValues> = {
     name: Path<TFieldValues>;
@@ -30,7 +30,7 @@ type InputControllerProps<TFieldValues extends FieldValues> = {
     autoComplete?: string;
     showPasswordIndicator?: boolean;
     type?: string;
-    Icon?: KIcon;
+    Icon?: React.ComponentType<IconProps>;
     defaultCountry?: string;
 };
 
@@ -47,7 +47,7 @@ type TextInputSectionProps = {
     placeholder?: string;
     isLoading?: boolean;
     autoComplete?: string;
-    Icon?: KIcon;
+    Icon?: React.ComponentType<IconProps>;
     fieldId: string;
 };
 

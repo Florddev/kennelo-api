@@ -11,7 +11,13 @@ import NavButton from "../nav-button";
 import UserMenu from "../user-menu";
 import { useNavigation } from "@/hooks/use-navigation";
 
-export function MainNavbar({ navigationItems }: { navigationItems: NavigationItem[] }) {
+export function MainNavbar({
+    navigationItems,
+    className,
+}: {
+    navigationItems: NavigationItem[];
+    className?: string;
+}) {
     const { user, isAuthenticated, isLoaded, hasEstablishment, logout } = useAuth();
     const { routes } = useNavigation();
     const scrolled = useScrolled(0);
@@ -24,6 +30,7 @@ export function MainNavbar({ navigationItems }: { navigationItems: NavigationIte
                 scrolled
                     ? "bg-card/90 backdrop-blur-sm border-border/50 border-b"
                     : "border-b border-transparent",
+                className,
             )}
         >
             <div className="mx-auto h-full flex justify-between items-center w-full px-12">

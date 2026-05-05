@@ -6,7 +6,7 @@ import type { PetModel } from "@workspace/modules/pets";
 import { useNavigation } from "@/hooks/use-navigation";
 import { getAge } from "@/features/pets/lib/pet-age";
 import { CircleSlash, Mars, Venus } from "lucide-react";
-import { ShapeMedia } from "@/components/media/shape-media";
+import { ShapeMedia, ShapeMediaSkeleton } from "@/components/media/shape-media";
 
 type PetCardProps = {
     pet: PetModel;
@@ -78,22 +78,14 @@ export function PetCard({ pet }: PetCardProps) {
 
 export function PetCardSkeleton() {
     return (
-        <div className="rounded-2xl overflow-hidden border bg-card">
-            <Skeleton className="aspect-[4/3] w-full rounded-none" />
-            <div className="p-3.5 space-y-3">
-                <div className="flex items-start justify-between gap-2">
-                    <div className="space-y-1.5 flex-1">
-                        <Skeleton className="h-4 w-2/3" />
-                        <Skeleton className="h-3 w-1/2" />
-                    </div>
-                    <Skeleton className="size-6 rounded-lg shrink-0" />
+        <div data-slot="pet-card-skeleton" className="flex gap-4 items-center">
+            <ShapeMediaSkeleton shapeClassName="lg:size-28 xl:size-38" showBadge />
+            <div className="flex flex-col gap-2 w-full">
+                <Skeleton className="h-7 w-1/3" />
+                <div className="flex flex-col gap-1">
+                    <Skeleton className="h-4 w-1/2" />
+                    <Skeleton className="h-4 w-2/3" />
                 </div>
-                <div className="grid grid-cols-3 gap-2">
-                    <Skeleton className="h-16 rounded-2xl" />
-                    <Skeleton className="h-16 rounded-2xl" />
-                    <Skeleton className="h-16 rounded-2xl" />
-                </div>
-                <Skeleton className="h-10 rounded-2xl" />
             </div>
         </div>
     );

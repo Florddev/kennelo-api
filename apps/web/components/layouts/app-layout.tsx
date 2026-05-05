@@ -1,14 +1,18 @@
 "use client";
 
 import { cn } from "@workspace/ui/lib/utils";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { NavigationItem } from "@/components/navigation/nav-item";
 import { usePathname } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useNavigation } from "@/hooks/use-navigation";
 import { BottomNavbar } from "../navigation/navbar/bottom-navbar";
 import { MainNavbar } from "../navigation/navbar/main-navbar";
-import { ChatRoundLine, ClipboardHeart, Heart, MinimalisticMagnifier } from "@solar-icons/react";
+import {
+    ChatRoundLine,
+    FolderFavouriteStar,
+    Hearts,
+    MinimalisticMagnifier,
+} from "@solar-icons/react";
 
 interface AppLayoutProps {
     children: React.ReactNode;
@@ -16,7 +20,6 @@ interface AppLayoutProps {
 }
 
 export default function AppLayout({ children, className }: AppLayoutProps) {
-    const isMobile = useIsMobile();
     const pathname = usePathname();
     const locale = useLocale();
     const { routes } = useNavigation();
@@ -52,6 +55,12 @@ export default function AppLayout({ children, className }: AppLayoutProps) {
     };
 
     const navigationItems: NavigationItem[] = [
+        // {
+        //     icon: Home,
+        //     text: t("ui.navigation.home"),
+        //     href: routes.Home(),
+        //     active: isActivePath(routes.Home()),
+        // },
         {
             icon: MinimalisticMagnifier,
             text: t("ui.navigation.explore"),
@@ -59,13 +68,13 @@ export default function AppLayout({ children, className }: AppLayoutProps) {
             active: isActivePath(routes.Explore()),
         },
         {
-            icon: Heart,
+            icon: FolderFavouriteStar,
             text: t("ui.navigation.favorites"),
             href: "#",
             active: isActivePath("#"),
         },
         {
-            icon: ClipboardHeart,
+            icon: Hearts,
             text: t("ui.navigation.pets"),
             href: routes.MyPets(),
             active: isActivePath(routes.MyPets()),
@@ -93,9 +102,9 @@ export default function AppLayout({ children, className }: AppLayoutProps) {
                 </div>
             </div> */}
 
-            {!isMobile && <MainNavbar navigationItems={navigationItems} />}
+            <MainNavbar className="hidden md:block" navigationItems={navigationItems} />
             <main className={cn("w-full h-full", className)}>{children}</main>
-            {isMobile && <BottomNavbar navigationItems={navigationItems} />}
+            <BottomNavbar className="block md:hidden" navigationItems={navigationItems} />
         </div>
     );
 }

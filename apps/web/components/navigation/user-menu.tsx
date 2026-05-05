@@ -26,7 +26,6 @@ import { cn } from "@workspace/ui/lib/utils";
 import {
     Bell,
     Buildings,
-    Logout,
     Logout2,
     Monitor,
     Moon,

@@ -47,11 +47,11 @@ export default function NavItem({
                 {Icon && (
                     <Icon
                         size={iconSize}
-                        weight={active ? "BoldDuotone" : "Outline"}
+                        weight={active ? "BoldDuotone" : "Linear"}
                         className={cn(
                             "transition-colors size-auto",
                             active &&
-                                "text-primary [&_*[opacity]]:opacity-100 [&_*[opacity]]:text-secondary",
+                                "scale-110 text-primary [&_*[opacity]]:opacity-100 [&_*[opacity]]:text-secondary",
                             classNameIcon,
                         )}
                     />

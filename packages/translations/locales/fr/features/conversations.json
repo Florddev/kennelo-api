@@ -28,5 +28,7 @@
         "confirmed": "Réservation confirmée",
         "refused": "Réservation refusée",
         "viewDetails": "Afficher les détails"
-    }
+    },
+    "please-login": "Connectez-vous pour consulter les messages",
+    "please-login-description": "Une fois votre connexion effectuée, les messages des hôtes apparaîtront ici."
 }

@@ -40,5 +40,6 @@
     },
     "save-and-quit": "Enregistrer et quitter",
     "help": "Des question ?",
-    "download": "Télécharger"
+    "download": "Télécharger",
+    "login": "Connexion"
 }
