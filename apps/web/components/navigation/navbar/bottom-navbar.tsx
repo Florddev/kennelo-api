@@ -16,7 +16,7 @@ export function BottomNavbar({ navigationItems }: { navigationItems: NavigationI
         <nav
             className={cn(
                 "fixed bottom-0 w-full bg-card border-t border-primary/10 flex items-center z-10",
-                isCapacitorApp ? "pb-3 h-16" : "pb-1 h-13",
+                isCapacitorApp ? "pb-3 h-16" : "pb-0.5 h-13",
             )}
         >
             <div className="container mx-auto h-full flex justify-around w-full items-center">
@@ -24,13 +24,12 @@ export function BottomNavbar({ navigationItems }: { navigationItems: NavigationI
                     <NavItem
                         key={item.href}
                         Icon={item.icon}
-                        iconSize={32}
+                        iconSize={26}
                         active={item.active}
-                        iconSecondaryOpacity={item.active ? 1 : undefined}
                         href={item.href}
                         className={cn(
-                            "mt-1 text-xs text-muted-foreground/80",
-                            item.active ? "text-primary" : "text-muted-foreground/80",
+                            "mt-1 text-xs text-muted-foreground gap-0.5",
+                            item.active && "text-primary",
                         )}
                     >
                         {item.text}

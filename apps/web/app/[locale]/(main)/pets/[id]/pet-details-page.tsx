@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { ArrowLeft, Heart, PawPrint, Share2 } from "lucide-react";
+import { ArrowLeft, Heart, Share } from "@solar-icons/react";
+import { PawPrint } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@workspace/ui/components/button";
 import { Skeleton } from "@workspace/ui/components/skeleton";
@@ -164,7 +165,7 @@ export default function PetDetailsPage() {
                         <Heart />
                     </Button>
                     <Button size="icon-sm" className="text-primary bg-card">
-                        <Share2 />
+                        <Share />
                     </Button>
                 </>
             }

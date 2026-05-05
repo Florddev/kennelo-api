@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, PawPrint, Search } from "lucide-react";
+import { Plus, PawPrint } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@workspace/ui/components/button";
 import { Badge } from "@workspace/ui/components/badge";
@@ -20,10 +20,10 @@ import { usePets } from "@/features/pets/hooks/use-pets";
 import { usePetsFilters } from "@/features/pets/hooks/use-pets-filters";
 import { PetCard, PetCardSkeleton } from "@/features/pets/components/pet-card";
 import { PetTypeIllustration } from "@/features/pets/components/pet-type-illustration";
-import { KHeart } from "@workspace/ui/icons";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useNavigation } from "@/hooks/use-navigation";
 import PageLayout from "@/components/layouts/page-layout";
+import { ClipboardHeart, MinimalisticMagnifier } from "@solar-icons/react";
 
 type PetsContentProps = {
     isLoading: boolean;
@@ -104,7 +104,7 @@ export default function MyPetsPage() {
 
     return (
         <PageLayout
-            Icon={KHeart}
+            Icon={ClipboardHeart}
             title={t("features.pets.title")}
             headerTopClassName={cn(isSearching && "w-full")}
             hideTitle={hideTitle}
@@ -129,7 +129,7 @@ export default function MyPetsPage() {
                                 align="inline-start"
                                 className={cn("transition-all", !isSearching && "pl-2")}
                             >
-                                <Search className="size-3.5 text-primary" />
+                                <MinimalisticMagnifier className="size-3.5 text-primary" />
                             </InputGroupAddon>
                         </InputGroup>
                     </div>

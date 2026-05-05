@@ -1,7 +1,7 @@
 "use client";
 
 import { useScrolled } from "@/hooks/use-scrolled";
-import { KIcon } from "@workspace/ui/icons";
+import { IconProps } from "@solar-icons/react";
 import { cn } from "@workspace/ui/lib/utils";
 export default function PageLayout({
     children,
@@ -20,7 +20,7 @@ export default function PageLayout({
     headerTop?: React.ReactNode;
     headerBottom?: React.ReactNode;
     hideTitle?: boolean;
-    Icon?: KIcon;
+    Icon?: React.ComponentType<IconProps>;
 }) {
     const scrolled = useScrolled(80);
 
@@ -45,13 +45,11 @@ export default function PageLayout({
                         >
                             {Icon && (
                                 <Icon
+                                    weight="BoldDuotone"
                                     className={cn(
-                                        "size-11 -ml-1.5 transition-all",
+                                        "size-11 -ml-1.5 transition-all text-primary [&_*[opacity]]:opacity-100 [&_*[opacity]]:text-secondary",
                                         scrolled && "size-8",
                                     )}
-                                    filled
-                                    secondaryOpacity={1}
-                                    secondary="text-secondary"
                                 />
                             )}
                             {title}

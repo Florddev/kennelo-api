@@ -2,8 +2,6 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Search } from "lucide-react";
-import { KMessage } from "@workspace/ui/icons";
 import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@workspace/ui/components/input-group";
@@ -18,6 +16,7 @@ import {
 import { ConversationList } from "@/features/conversations/components/conversation-list";
 import { ConversationView } from "@/features/conversations/components/conversation-view";
 import { Separator } from "@workspace/ui/components/separator";
+import { ChatRoundLine, MinimalisticMagnifier } from "@solar-icons/react";
 
 function MessagePageContent() {
     const t = useTranslations();
@@ -64,7 +63,7 @@ function MessagePageContent() {
             <div className="w-full md:w-1/3 md:px-8">
                 <PageLayout
                     title={t("features.conversations.title")}
-                    Icon={KMessage}
+                    Icon={ChatRoundLine}
                     headerTopClassName={cn(isSearching && "w-full")}
                     hideTitle={hideTitle}
                     className="p-0 space-y-0 overflow-hidden"
@@ -90,7 +89,7 @@ function MessagePageContent() {
                                         align="inline-start"
                                         className={cn("transition-all", !isSearching && "pl-2")}
                                     >
-                                        <Search className="size-3.5 text-primary" />
+                                        <MinimalisticMagnifier className="size-3.5 text-primary" />
                                     </InputGroupAddon>
                                 </InputGroup>
                             </div>

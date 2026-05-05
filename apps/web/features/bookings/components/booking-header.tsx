@@ -1,13 +1,8 @@
 "use client";
 
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "@solar-icons/react";
 
-type BookingHeaderProps = {
-    title: string;
-    onBack: () => void;
-};
-
-export function BookingHeader({ title, onBack }: BookingHeaderProps) {
+export function BookingHeader({ title, onBack }: { title: string; onBack: () => void }) {
     return (
         <header className="sticky top-0 z-10 flex items-center gap-3 border-b bg-background px-4 py-3">
             <button

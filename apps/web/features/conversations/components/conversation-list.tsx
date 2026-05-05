@@ -27,7 +27,7 @@ export function ConversationList() {
     if (isLoadingConversations) {
         return (
             <div className="space-y-0">
-                {Array.from({ length: 6 }).map((_, i) => (
+                {Array.from({ length: 4 }).map((_, i) => (
                     <ConversationListItemSkeleton key={i} />
                 ))}
             </div>

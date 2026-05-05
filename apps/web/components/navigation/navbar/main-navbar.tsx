@@ -81,9 +81,9 @@ export function MainNavbar({ navigationItems }: { navigationItems: NavigationIte
                                         Icon={item.icon}
                                         iconSize={28}
                                         active={item.active}
-                                        iconSecondaryOpacity={item.active ? 1 : 0.8}
                                         href={item.href}
                                         className="mt-1"
+                                        classNameIcon="text-primary"
                                     >
                                         {item.text}
                                     </NavItem>
