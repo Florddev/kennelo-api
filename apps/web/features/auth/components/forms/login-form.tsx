@@ -6,11 +6,11 @@ import { loginUserSchema, type LoginUserInput, loginUser } from "@workspace/modu
 import { Button } from "@workspace/ui/components/button";
 import { Alert, AlertDescription } from "@workspace/ui/components/alert";
 import { useTranslations } from "next-intl";
-import { KEnvelope1, KLocked2 } from "@workspace/ui/icons";
 import { useAsyncState } from "@/hooks/use-async-state";
 import { InputController } from "@/components/forms/input-controller";
 import { useAuth } from "@/features/auth/hooks/use-auth";
 import { localeOrDefault, type Locale } from "@/dictionaries";
+import { Letter, LockKeyholeMinimalistic } from "@solar-icons/react";
 
 export function LoginForm({ onSuccess }: { onSuccess?: (locale: Locale) => void }) {
     const { error, isLoading, execute } = useAsyncState();
@@ -45,7 +45,7 @@ export function LoginForm({ onSuccess }: { onSuccess?: (locale: Locale) => void 
                 placeholder={t("common.placeholders.email")}
                 isLoading={isLoading}
                 autoComplete="email"
-                Icon={KEnvelope1}
+                Icon={Letter}
             />
             <InputController
                 name="password"
@@ -55,7 +55,7 @@ export function LoginForm({ onSuccess }: { onSuccess?: (locale: Locale) => void 
                 placeholder={t("common.placeholders.password")}
                 isLoading={isLoading}
                 autoComplete="current-password"
-                Icon={KLocked2}
+                Icon={LockKeyholeMinimalistic}
             />
             {error && (
                 <Alert variant="destructive">

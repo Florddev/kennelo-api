@@ -4,8 +4,9 @@ import { useRef, useState } from "react";
 import { cn } from "@workspace/ui/lib/utils";
 import { FilePreviewChip } from "./file-preview-chip";
 import { Button } from "@workspace/ui/components/button";
-import { ArrowUp, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { ResizableTextarea } from "@workspace/ui/components/resizable-textarea";
+import { ArrowUp } from "@solar-icons/react";
 
 export function MessageComposer() {
     const t = useTranslations();

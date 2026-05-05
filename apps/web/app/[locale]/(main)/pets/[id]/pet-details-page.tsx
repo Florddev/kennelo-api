@@ -1,6 +1,8 @@
 "use client";
 
-import { ArrowLeft, Heart, Share2 } from "lucide-react";
+import Image from "next/image";
+import { ArrowLeft, Heart, Share } from "@solar-icons/react";
+import { PawPrint } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@workspace/ui/components/button";
 import { Skeleton } from "@workspace/ui/components/skeleton";
@@ -9,6 +11,8 @@ import { PetProfileInfo } from "@/features/pets/components/pet-profile-info";
 import { useAuth } from "@/features/auth";
 import { useNavigation } from "@/hooks/use-navigation";
 import { getAge } from "@/features/pets/lib/pet-age";
+import { isIllustratedType } from "@/features/pets/lib/pet-illustrations";
+import { DetailPageLayout } from "@/components/layouts/detail-page-layout";
 
 type Query = { id: string };
 
@@ -124,38 +128,59 @@ export default function PetDetailsPage() {
         : null;
 
     const isOwner = user?.id === pet.userId;
+    const typeCode = pet.animalType?.code?.toLowerCase() ?? "";
+    const images = [...(pet.avatarUrl ? [pet.avatarUrl] : []), ...pet.images.map((img) => img.url)];
+
+    const emptyState = isIllustratedType(typeCode) ? (
+        <div className="relative aspect-[16/6] rounded-2xl overflow-hidden bg-muted">
+            <Image
+                src={`/illustrations/pets/${typeCode}.svg`}
+                alt={pet.animalType?.name ?? ""}
+                fill
+                className="object-contain p-12"
+            />
+        </div>
+    ) : (
+        <div className="relative aspect-[16/6] overflow-hidden bg-muted">
+            <div className="absolute inset-0 flex items-center justify-center">
+                <PawPrint className="size-20 text-muted-foreground/15" />
+            </div>
+        </div>
+    );
 
     return (
-        <div className="min-h-screen">
-            <div className="absolute top-0 w-full z-10 sm:static flex justify-between items-center p-2">
+        <DetailPageLayout
+            images={images}
+            altPrefix={pet.name}
+            emptyState={emptyState}
+            desktopCtaLabel={t("features.pets.profile.viewPhotos", { count: images.length })}
+            headerStart={
                 <Button size="icon-sm" className="text-primary bg-card" onClick={back}>
                     <ArrowLeft />
                 </Button>
-                <div className="flex gap-0.5">
+            }
+            headerEnd={
+                <>
                     <Button size="icon-sm" className="text-primary bg-card">
                         <Heart />
                     </Button>
                     <Button size="icon-sm" className="text-primary bg-card">
-                        <Share2 />
+                        <Share />
                     </Button>
-                </div>
-            </div>
-
-            {isOwner && (
-                <div className="fixed bottom-0 w-full z-20 h-14 bg-card border-t px-2 flex justify-center items-center sm:hidden">
-                    <Button className="w-full" size="lg">
-                        {t("features.pets.profile.edit")}
-                    </Button>
-                </div>
-            )}
-
-            <div className="pb-6">
-                <div className="flex flex-col lg:flex-row gap-8">
-                    <div className="flex-1 min-w-0 space-y-8">
-                        <PetProfileInfo pet={pet} ageDisplay={ageDisplay} />
+                </>
+            }
+            footer={
+                isOwner ? (
+                    <div className="h-14 bg-card border-t px-2 flex justify-center items-center sm:hidden">
+                        <Button className="w-full" size="lg">
+                            {t("features.pets.profile.edit")}
+                        </Button>
                     </div>
-                </div>
-            </div>
-        </div>
+                ) : undefined
+            }
+            className="pb-20 sm:pb-6"
+        >
+            <PetProfileInfo pet={pet} ageDisplay={ageDisplay} />
+        </DetailPageLayout>
     );
 }

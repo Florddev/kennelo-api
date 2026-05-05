@@ -35,6 +35,7 @@
         "@capacitor/splash-screen": "^8.0.1",
         "@formatjs/intl-localematcher": "^0.8.1",
         "@hookform/resolvers": "^5.2.2",
+        "@solar-icons/react": "^1.1.0",
         "@stepperize/react": "^6.1.0",
         "@tanstack/react-query": "^5.95.2",
         "@workspace/common": "workspace:*",

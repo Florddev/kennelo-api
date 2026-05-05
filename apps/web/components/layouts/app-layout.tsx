@@ -1,14 +1,18 @@
 "use client";
 
 import { cn } from "@workspace/ui/lib/utils";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { KHome, KCompass, KMessage, KHeart } from "@workspace/ui/icons";
 import { NavigationItem } from "@/components/navigation/nav-item";
 import { usePathname } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useNavigation } from "@/hooks/use-navigation";
 import { BottomNavbar } from "../navigation/navbar/bottom-navbar";
 import { MainNavbar } from "../navigation/navbar/main-navbar";
+import {
+    ChatRoundLine,
+    FolderFavouriteStar,
+    Hearts,
+    MinimalisticMagnifier,
+} from "@solar-icons/react";
 
 interface AppLayoutProps {
     children: React.ReactNode;
@@ -16,7 +20,6 @@ interface AppLayoutProps {
 }
 
 export default function AppLayout({ children, className }: AppLayoutProps) {
-    const isMobile = useIsMobile();
     const pathname = usePathname();
     const locale = useLocale();
     const { routes } = useNavigation();
@@ -52,29 +55,35 @@ export default function AppLayout({ children, className }: AppLayoutProps) {
     };
 
     const navigationItems: NavigationItem[] = [
+        // {
+        //     icon: Home,
+        //     text: t("ui.navigation.home"),
+        //     href: routes.Home(),
+        //     active: isActivePath(routes.Home()),
+        // },
         {
-            icon: KHome,
-            text: t("ui.navigation.home"),
-            href: routes.Home(),
-            active: isActivePath(routes.Home()),
-        },
-        {
-            icon: KCompass,
+            icon: MinimalisticMagnifier,
             text: t("ui.navigation.explore"),
             href: routes.Explore(),
             active: isActivePath(routes.Explore()),
         },
         {
-            icon: KHeart,
+            icon: FolderFavouriteStar,
+            text: t("ui.navigation.favorites"),
+            href: "#",
+            active: isActivePath("#"),
+        },
+        {
+            icon: Hearts,
             text: t("ui.navigation.pets"),
             href: routes.MyPets(),
             active: isActivePath(routes.MyPets()),
         },
         {
-            icon: KMessage,
+            icon: ChatRoundLine,
             text: t("ui.navigation.messages"),
-            href: "/messages",
-            active: isActivePath("/messages"),
+            href: routes.Messages(),
+            active: isActivePath(routes.Messages()),
         },
     ];
 
@@ -93,9 +102,9 @@ export default function AppLayout({ children, className }: AppLayoutProps) {
                 </div>
             </div> */}
 
-            {!isMobile && <MainNavbar navigationItems={navigationItems} />}
+            <MainNavbar className="hidden md:block" navigationItems={navigationItems} />
             <main className={cn("w-full h-full", className)}>{children}</main>
-            {isMobile && <BottomNavbar navigationItems={navigationItems} />}
+            <BottomNavbar className="block md:hidden" navigationItems={navigationItems} />
         </div>
     );
 }

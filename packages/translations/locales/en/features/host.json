@@ -18,6 +18,7 @@
         "location": "Where you'll stay",
         "locationEmpty": "No address provided",
         "noPhotos": "No photos available",
+        "viewPhotos": "View {count} photos",
         "selectDate": "Select arrival date",
         "selectDateDescription": "Add your travel dates to get the exact price",
         "clearDates": "Clear dates",

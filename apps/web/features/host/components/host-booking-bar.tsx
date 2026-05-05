@@ -2,7 +2,6 @@
 
 import { useTranslations } from "next-intl";
 import { Button } from "@workspace/ui/components/button";
-import { cn } from "@workspace/ui/lib/utils";
 import { computeNights, formatAmount, formatDay } from "@workspace/common";
 import type { DateRange } from "react-day-picker";
 
@@ -19,12 +18,7 @@ export function HostBookingBar({ pricePerNight, dateRange, canBook, onBook }: Ho
     const hasRange = Boolean(nights > 0 && dateRange?.from && dateRange?.to);
 
     return (
-        <div
-            className={cn(
-                "fixed inset-x-0 z-20 border-t bg-background px-4 py-3",
-                "bottom-13 md:bottom-0",
-            )}
-        >
+        <div className="border-t bg-card px-4 py-3">
             <div className="container mx-auto flex h-full items-center justify-between gap-4">
                 <div className="flex min-w-0 flex-col gap-1">
                     <PriceDisplay
@@ -35,9 +29,10 @@ export function HostBookingBar({ pricePerNight, dateRange, canBook, onBook }: Ho
                     />
                 </div>
                 <Button
+                    size="lg"
                     onClick={onBook}
                     disabled={!canBook}
-                    className="h-14 shrink-0 rounded-full bg-foreground px-10 text-base font-medium text-background hover:bg-foreground/90 disabled:opacity-50"
+                    className="shrink-0 rounded-full bg-foreground px-10 text-base font-medium text-background hover:bg-foreground/90 disabled:opacity-50"
                 >
                     {t("features.host.detail.book")}
                 </Button>

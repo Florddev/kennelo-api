@@ -6,10 +6,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { changeEmailSchema, type ChangeEmailInput, changeEmail } from "@workspace/modules/users";
 import { Button } from "@workspace/ui/components/button";
 import { useTranslations } from "next-intl";
-import { KEnvelope1, KLocked2 } from "@workspace/ui/icons";
 import { useAsyncState } from "@/hooks/use-async-state";
 import { InputController } from "@/components/forms/input-controller";
 import { useAuth } from "@/features/auth";
+import { Letter, LockKeyholeMinimalistic } from "@solar-icons/react";
 
 export function ChangeEmailForm() {
     const { user, refreshUser } = useAuth();
@@ -51,7 +51,7 @@ export function ChangeEmailForm() {
                 placeholder={t("common.placeholders.email")}
                 isLoading={isLoading}
                 autoComplete="email"
-                Icon={KEnvelope1}
+                Icon={Letter}
             />
             <InputController
                 name="password"
@@ -61,7 +61,7 @@ export function ChangeEmailForm() {
                 placeholder={t("common.placeholders.password")}
                 isLoading={isLoading}
                 autoComplete="current-password"
-                Icon={KLocked2}
+                Icon={LockKeyholeMinimalistic}
             />
             <Button type="submit" disabled={isLoading}>
                 {t("common.actions.save")}

@@ -515,5 +515,7 @@
                 "weekly": "Mue hebdomadaire"
             }
         }
-    }
+    },
+    "please-login": "Connectez-vous pour consulter la liste de vos animaux",
+    "please-login-description": "Une fois votre connexion effectuée, les profils de vos animaux apparaîtront ici."
 }

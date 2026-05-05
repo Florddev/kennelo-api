@@ -1,7 +1,6 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { KMessage } from "@workspace/ui/icons";
 import {
     Empty,
     EmptyHeader,
@@ -14,6 +13,7 @@ import {
     ConversationListItem,
     ConversationListItemSkeleton,
 } from "@/features/conversations/components/conversation-list-item";
+import { Dialog2 } from "@solar-icons/react";
 
 export function ConversationList() {
     const t = useTranslations();
@@ -27,7 +27,7 @@ export function ConversationList() {
     if (isLoadingConversations) {
         return (
             <div className="space-y-0">
-                {Array.from({ length: 6 }).map((_, i) => (
+                {Array.from({ length: 4 }).map((_, i) => (
                     <ConversationListItemSkeleton key={i} />
                 ))}
             </div>
@@ -36,22 +36,19 @@ export function ConversationList() {
 
     if (filteredConversations.length === 0) {
         return (
-            <Empty className="border-none">
-                <EmptyMedia>
-                    <KMessage
-                        className="size-14"
-                        filled
-                        secondaryOpacity={0.4}
-                        secondary="text-secondary"
-                    />
-                </EmptyMedia>
-                <EmptyHeader>
-                    <EmptyTitle>{t("features.conversations.noConversations")}</EmptyTitle>
-                    <EmptyDescription>
-                        {t("features.conversations.noConversationsDescription")}
-                    </EmptyDescription>
-                </EmptyHeader>
-            </Empty>
+            <div className="p-4">
+                <Empty className="border">
+                    <EmptyMedia variant="icon">
+                        <Dialog2 />
+                    </EmptyMedia>
+                    <EmptyHeader>
+                        <EmptyTitle>{t("features.conversations.noConversations")}</EmptyTitle>
+                        <EmptyDescription>
+                            {t("features.conversations.noConversationsDescription")}
+                        </EmptyDescription>
+                    </EmptyHeader>
+                </Empty>
+            </div>
         );
     }
 

@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-duplicate-string */
 "use client";
 
 import { cn } from "@workspace/ui/lib/utils";
@@ -204,6 +205,58 @@ function shouldShowEmptyIcon(
     }
 
     return !showCenterIcon;
+}
+
+type ShapeMediaSkeletonProps = {
+    className?: string;
+    shapeClassName?: string;
+    showBadge?: boolean;
+};
+
+export function ShapeMediaSkeleton({
+    className,
+    shapeClassName,
+    showBadge,
+}: ShapeMediaSkeletonProps) {
+    return (
+        <div
+            data-slot="shape-media-skeleton"
+            className={cn(
+                "relative inline-flex items-center justify-center animate-pulse",
+                className,
+            )}
+        >
+            {showBadge && (
+                <div
+                    className={cn("absolute translate-x-1/2 -translate-y-1/2 top-1/32 right-3/10")}
+                >
+                    <svg
+                        width={33}
+                        height={32}
+                        viewBox="0 0 33 32"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="text-muted"
+                    >
+                        <path
+                            d="M1.10249 8.16558C-0.814231 12.8262 -0.147215 18.4741 2.44802 22.7482C5.04326 27.0224 9.40954 29.9229 14.0825 30.9981C18.2954 31.9662 22.8879 31.4764 26.5795 29.1078C35.1971 23.5748 34.3192 10.8364 26.9245 4.59931C19.5068 -1.65696 5.48027 -2.49113 1.10249 8.16558Z"
+                            fill="currentColor"
+                        />
+                    </svg>
+                </div>
+            )}
+            <svg
+                width={SHAPE_WIDTH}
+                height={SHAPE_HEIGHT}
+                fill="none"
+                viewBox={SHAPE_VIEWBOX}
+                xmlns="http://www.w3.org/2000/svg"
+                className={cn("text-muted", shapeClassName)}
+            >
+                <path d={SHAPE_PATH} fill="currentColor" />
+            </svg>
+        </div>
+    );
 }
 
 export function ShapeMedia(props: ShapeMediaProps) {

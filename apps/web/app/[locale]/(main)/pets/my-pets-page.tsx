@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, PawPrint, Search } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@workspace/ui/components/button";
 import { Badge } from "@workspace/ui/components/badge";
@@ -20,20 +20,26 @@ import { usePets } from "@/features/pets/hooks/use-pets";
 import { usePetsFilters } from "@/features/pets/hooks/use-pets-filters";
 import { PetCard, PetCardSkeleton } from "@/features/pets/components/pet-card";
 import { PetTypeIllustration } from "@/features/pets/components/pet-type-illustration";
-import { KHeart } from "@workspace/ui/icons";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useNavigation } from "@/hooks/use-navigation";
 import PageLayout from "@/components/layouts/page-layout";
+import { Hearts, MinimalisticMagnifier } from "@solar-icons/react";
+import { useAuth } from "@/features/auth";
+import Link from "next/link";
 
-type PetsContentProps = {
+function PetsContent({
+    isLoading,
+    pets,
+    filteredPets,
+    onCreatePet,
+}: {
     isLoading: boolean;
     pets: ReturnType<typeof usePets>["pets"];
     filteredPets: ReturnType<typeof usePetsFilters>["filteredPets"];
-    t: ReturnType<typeof useTranslations>;
     onCreatePet: () => void;
-};
+}) {
+    const t = useTranslations();
 
-function PetsContent({ isLoading, pets, filteredPets, t, onCreatePet }: PetsContentProps) {
     if (isLoading) {
         return (
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -48,7 +54,7 @@ function PetsContent({ isLoading, pets, filteredPets, t, onCreatePet }: PetsCont
         return (
             <Empty className="border">
                 <EmptyMedia variant="icon">
-                    <PawPrint />
+                    <Hearts />
                 </EmptyMedia>
                 <EmptyHeader>
                     <EmptyTitle>
@@ -81,6 +87,7 @@ function PetsContent({ isLoading, pets, filteredPets, t, onCreatePet }: PetsCont
 
 export default function MyPetsPage() {
     const t = useTranslations();
+    const { isAuthenticated } = useAuth();
     const { routes, push } = useNavigation();
     const { pets, isLoading } = usePets();
     const { search, setSearch, typeFilter, setTypeFilter, filteredPets, availableTypes } =
@@ -104,54 +111,57 @@ export default function MyPetsPage() {
 
     return (
         <PageLayout
-            Icon={KHeart}
+            Icon={Hearts}
             title={t("features.pets.title")}
             headerTopClassName={cn(isSearching && "w-full")}
             hideTitle={hideTitle}
             headerTop={
-                <>
-                    <div className="flex justify-end">
-                        <InputGroup
-                            className={cn(
-                                "h-7 gap-1 w-full transition-all duration-300 border-none bg-muted has-[[data-slot=input-group-control]:focus-visible]:ring-[2px]",
-                                !isSearching && "size-8",
-                            )}
-                            onClick={!isSearching ? handleSearchOpen : undefined}
-                            autoFocus={isSearching}
-                        >
-                            <InputGroupInput
-                                placeholder={t("common.actions.search")}
-                                className="placeholder:text-sm"
-                                value={search}
-                                onChange={(e) => setSearch(e.target.value)}
-                            />
-                            <InputGroupAddon
-                                align="inline-start"
-                                className={cn("transition-all", !isSearching && "pl-2")}
+                isAuthenticated && (
+                    <>
+                        <div className="flex justify-end">
+                            <InputGroup
+                                className={cn(
+                                    "h-7 gap-1 w-full transition-all duration-300 border-none bg-muted has-[[data-slot=input-group-control]:focus-visible]:ring-[2px]",
+                                    !isSearching && "size-8",
+                                )}
+                                onClick={!isSearching ? handleSearchOpen : undefined}
+                                autoFocus={isSearching}
                             >
-                                <Search className="size-3.5 text-primary" />
-                            </InputGroupAddon>
-                        </InputGroup>
-                    </div>
-                    {isSearching ? (
-                        <Button variant="ghost" size="default" onClick={handleSearchClose}>
-                            {t("common.actions.cancel")}
-                        </Button>
-                    ) : (
-                        <Button
-                            className="gap-2"
-                            variant="flat"
-                            size={isMobile ? "icon-sm" : "default"}
-                            onClick={handleCreatePet}
-                        >
-                            <Plus className="size-3.5" />
-                            {!isMobile && t("features.pets.addPet")}
-                        </Button>
-                    )}
-                </>
+                                <InputGroupInput
+                                    placeholder={t("common.actions.search")}
+                                    className="placeholder:text-sm"
+                                    value={search}
+                                    onChange={(e) => setSearch(e.target.value)}
+                                />
+                                <InputGroupAddon
+                                    align="inline-start"
+                                    className={cn("transition-all", !isSearching && "pl-2")}
+                                >
+                                    <MinimalisticMagnifier className="size-3.5 text-primary" />
+                                </InputGroupAddon>
+                            </InputGroup>
+                        </div>
+                        {isSearching ? (
+                            <Button variant="ghost" size="default" onClick={handleSearchClose}>
+                                {t("common.actions.cancel")}
+                            </Button>
+                        ) : (
+                            <Button
+                                className="gap-2"
+                                variant="flat"
+                                size={isMobile ? "icon-sm" : "default"}
+                                onClick={handleCreatePet}
+                            >
+                                <Plus className="size-3.5" />
+                                {!isMobile && t("features.pets.addPet")}
+                            </Button>
+                        )}
+                    </>
+                )
             }
             headerBottom={
-                !isLoading && pets.length > 0 && availableTypes.length > 1 ? (
+                isAuthenticated &&
+                (!isLoading && pets.length > 0 && availableTypes.length > 1 ? (
                     <div className="flex flex-nowrap gap-1.5 overflow-x-auto scrollbar-none w-full pb-0.5">
                         <Badge
                             variant={typeFilter === null ? "default" : "flat"}
@@ -184,16 +194,31 @@ export default function MyPetsPage() {
                             );
                         })}
                     </div>
-                ) : null
+                ) : null)
             }
         >
-            <PetsContent
-                isLoading={isLoading}
-                pets={pets}
-                filteredPets={filteredPets}
-                t={t}
-                onCreatePet={handleCreatePet}
-            />
+            {!isAuthenticated ? (
+                <div className="flex flex-col gap-4 py-1 text-sm">
+                    <div className="flex flex-col gap-1">
+                        <p className="text-lg text-primary font-semibold">
+                            {t("features.pets.please-login")}
+                        </p>
+                        <span className="text-muted-foreground">
+                            {t("features.pets.please-login-description")}
+                        </span>
+                    </div>
+                    <Button variant="default" className="w-fit px-5" asChild>
+                        <Link href={routes.Login()}>{t("common.actions.login")}</Link>
+                    </Button>
+                </div>
+            ) : (
+                <PetsContent
+                    isLoading={isLoading}
+                    pets={pets}
+                    filteredPets={filteredPets}
+                    onCreatePet={handleCreatePet}
+                />
+            )}
         </PageLayout>
     );
 }

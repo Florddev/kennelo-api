@@ -1,6 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/avatar";
 import { Button } from "@workspace/ui/components/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "@solar-icons/react";
 
 export function ConversationHeader({
     name,

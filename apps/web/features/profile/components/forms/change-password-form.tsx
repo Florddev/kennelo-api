@@ -9,9 +9,9 @@ import {
 } from "@workspace/modules/users";
 import { Button } from "@workspace/ui/components/button";
 import { useTranslations } from "next-intl";
-import { KLocked2 } from "@workspace/ui/icons";
 import { useAsyncState } from "@/hooks/use-async-state";
 import { InputController } from "@/components/forms/input-controller";
+import { LockKeyholeMinimalistic } from "@solar-icons/react";
 
 export function ChangePasswordForm() {
     const { isLoading, execute } = useAsyncState();
@@ -43,7 +43,7 @@ export function ChangePasswordForm() {
                 placeholder={t("common.placeholders.password")}
                 isLoading={isLoading}
                 autoComplete="current-password"
-                Icon={KLocked2}
+                Icon={LockKeyholeMinimalistic}
             />
             <InputController
                 name="password"
@@ -53,7 +53,7 @@ export function ChangePasswordForm() {
                 placeholder={t("common.placeholders.newPassword")}
                 isLoading={isLoading}
                 autoComplete="new-password"
-                Icon={KLocked2}
+                Icon={LockKeyholeMinimalistic}
                 description={t("common.fields.passwordDescription")}
                 showPasswordIndicator
             />
@@ -65,7 +65,7 @@ export function ChangePasswordForm() {
                 placeholder={t("common.placeholders.passwordConfirmation")}
                 isLoading={isLoading}
                 autoComplete="new-password"
-                Icon={KLocked2}
+                Icon={LockKeyholeMinimalistic}
             />
             <Button type="submit" disabled={isLoading}>
                 {t("common.actions.update")}

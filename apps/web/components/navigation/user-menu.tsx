@@ -14,18 +14,7 @@ import {
     DropdownMenuSubTrigger,
     DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu";
-import {
-    Settings,
-    Bell,
-    LogOut,
-    Moon,
-    Sun,
-    Monitor,
-    Languages,
-    UserCircle,
-    CheckIcon,
-    Building2,
-} from "lucide-react";
+import { Languages, CheckIcon } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useLocale, useTranslations } from "next-intl";
 import type { Locale } from "@/dictionaries";
@@ -34,6 +23,17 @@ import { routes } from "@/lib/routes";
 import { useNavigation } from "@/hooks/use-navigation";
 import { useAuth } from "@/features/auth";
 import { cn } from "@workspace/ui/lib/utils";
+import {
+    Bell,
+    Buildings,
+    Logout2,
+    Monitor,
+    Moon,
+    Settings,
+    SolarProvider,
+    Sun,
+    UserCircle,
+} from "@solar-icons/react";
 
 interface UserMenuProps {
     user?: {
@@ -71,99 +71,103 @@ export default function UserMenu({ user, hasEstablishment, onLogout, className }
     ];
 
     return (
-        <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <button className="relative rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
-                    <Avatar className={cn("cursor-pointer size-[32px]", className)}>
-                        <AvatarImage
-                            src={user?.avatarUrl || undefined}
-                            alt={user?.getFullName() || "User profile"}
-                        />
-                        <AvatarFallback>{user?.getInitials() || "U"}</AvatarFallback>
-                    </Avatar>
-                </button>
-            </DropdownMenuTrigger>
+        <SolarProvider value={{ weight: "Outline" }}>
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <button className="relative rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
+                        <Avatar className={cn("cursor-pointer size-[26px]", className)}>
+                            <AvatarImage
+                                src={user?.avatarUrl || undefined}
+                                alt={user?.getFullName() || "User profile"}
+                            />
+                            <AvatarFallback className="text-xs">
+                                {user?.getInitials() || "U"}
+                            </AvatarFallback>
+                        </Avatar>
+                    </button>
+                </DropdownMenuTrigger>
 
-            <DropdownMenuContent className="w-48" align="end" sideOffset={8}>
-                <DropdownMenuGroup>
-                    <DropdownMenuItem asChild>
-                        <Link href={`/${locale}/profile`} className="cursor-pointer">
-                            <UserCircle className="h-4 w-4" />
-                            <span>{t("ui.navigation.my-profile")}</span>
-                        </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                        <Link href={`/${locale}/notifications`} className="cursor-pointer">
-                            <Bell className="h-4 w-4" />
-                            <span>{t("ui.navigation.notifications")}</span>
-                        </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                        <Link href={routes.MyProfileAbout()} className="cursor-pointer">
-                            <Settings className="h-4 w-4" />
-                            <span>{t("ui.navigation.settings")}</span>
-                        </Link>
-                    </DropdownMenuItem>
-                    {hasEstablishment && hostSpaceHref && (
+                <DropdownMenuContent className="w-48" align="end" sideOffset={8}>
+                    <DropdownMenuGroup>
                         <DropdownMenuItem asChild>
-                            <Link href={hostSpaceHref} className="cursor-pointer">
-                                <Building2 className="h-4 w-4" />
-                                <span>{t("common.actions.hostSpace")}</span>
+                            <Link href={`/${locale}/profile`} className="cursor-pointer">
+                                <UserCircle className="h-4 w-4" />
+                                <span>{t("ui.navigation.my-profile")}</span>
                             </Link>
                         </DropdownMenuItem>
-                    )}
-                </DropdownMenuGroup>
+                        <DropdownMenuItem asChild>
+                            <Link href={`/${locale}/notifications`} className="cursor-pointer">
+                                <Bell className="h-4 w-4" />
+                                <span>{t("ui.navigation.notifications")}</span>
+                            </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                            <Link href={routes.MyProfileAbout()} className="cursor-pointer">
+                                <Settings className="h-4 w-4" />
+                                <span>{t("ui.navigation.settings")}</span>
+                            </Link>
+                        </DropdownMenuItem>
+                        {hasEstablishment && hostSpaceHref && (
+                            <DropdownMenuItem asChild>
+                                <Link href={hostSpaceHref} className="cursor-pointer">
+                                    <Buildings className="h-4 w-4" />
+                                    <span>{t("common.actions.hostSpace")}</span>
+                                </Link>
+                            </DropdownMenuItem>
+                        )}
+                    </DropdownMenuGroup>
 
-                <DropdownMenuSeparator />
+                    <DropdownMenuSeparator />
 
-                <DropdownMenuLabel className="font-normal">
-                    {t("ui.navigation.preferences")}
-                </DropdownMenuLabel>
-                <DropdownMenuSub>
-                    <DropdownMenuSubTrigger>
-                        <Monitor className="h-4 w-4" />
-                        <span>{t("ui.navigation.theme")}</span>
-                    </DropdownMenuSubTrigger>
-                    <DropdownMenuSubContent>
-                        <DropdownMenuGroup>
-                            <DropdownMenuLabel className="font-normal">
-                                {t("ui.navigation.appearance")}
-                            </DropdownMenuLabel>
-                            {themeOptions.map((option) => {
-                                const Icon = option.icon;
-                                const isActive = theme === option.value;
-                                return (
-                                    <DropdownMenuItem
-                                        key={option.value}
-                                        onClick={() => setTheme(option.value)}
-                                    >
-                                        <Icon className="h-4 w-4" />
-                                        <span className="flex-1">{option.label}</span>
-                                        {isActive && <CheckIcon className="h-4 w-4 ms-auto" />}
-                                    </DropdownMenuItem>
-                                );
-                            })}
-                        </DropdownMenuGroup>
-                    </DropdownMenuSubContent>
-                </DropdownMenuSub>
+                    <DropdownMenuLabel className="font-normal">
+                        {t("ui.navigation.preferences")}
+                    </DropdownMenuLabel>
+                    <DropdownMenuSub>
+                        <DropdownMenuSubTrigger>
+                            <Monitor className="h-4 w-4" />
+                            <span>{t("ui.navigation.theme")}</span>
+                        </DropdownMenuSubTrigger>
+                        <DropdownMenuSubContent>
+                            <DropdownMenuGroup>
+                                <DropdownMenuLabel className="font-normal">
+                                    {t("ui.navigation.appearance")}
+                                </DropdownMenuLabel>
+                                {themeOptions.map((option) => {
+                                    const Icon = option.icon;
+                                    const isActive = theme === option.value;
+                                    return (
+                                        <DropdownMenuItem
+                                            key={option.value}
+                                            onClick={() => setTheme(option.value)}
+                                        >
+                                            <Icon className="h-4 w-4" />
+                                            <span className="flex-1">{option.label}</span>
+                                            {isActive && <CheckIcon className="h-4 w-4 ms-auto" />}
+                                        </DropdownMenuItem>
+                                    );
+                                })}
+                            </DropdownMenuGroup>
+                        </DropdownMenuSubContent>
+                    </DropdownMenuSub>
 
-                <DropdownMenuSub>
-                    <DropdownMenuSubTrigger>
-                        <Languages className="h-4 w-4" />
-                        <span>{t("ui.navigation.language")}</span>
-                    </DropdownMenuSubTrigger>
-                    <DropdownMenuSubContent>
-                        <LanguageSelectorItems />
-                    </DropdownMenuSubContent>
-                </DropdownMenuSub>
+                    <DropdownMenuSub>
+                        <DropdownMenuSubTrigger>
+                            <Languages className="h-4 w-4" />
+                            <span>{t("ui.navigation.language")}</span>
+                        </DropdownMenuSubTrigger>
+                        <DropdownMenuSubContent>
+                            <LanguageSelectorItems />
+                        </DropdownMenuSubContent>
+                    </DropdownMenuSub>
 
-                <DropdownMenuSeparator />
+                    <DropdownMenuSeparator />
 
-                <DropdownMenuItem variant="destructive" onClick={onLogout}>
-                    <LogOut className="h-4 w-4" />
-                    <span>{t("features.auth.logout")}</span>
-                </DropdownMenuItem>
-            </DropdownMenuContent>
-        </DropdownMenu>
+                    <DropdownMenuItem variant="destructive" onClick={onLogout}>
+                        <Logout2 className="h-4 w-4" />
+                        <span>{t("features.auth.logout")}</span>
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
+        </SolarProvider>
     );
 }
