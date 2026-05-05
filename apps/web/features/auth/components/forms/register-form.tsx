@@ -5,9 +5,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { registerUserSchema, type RegisterUserInput, registerUser } from "@workspace/modules/users";
 import { Button } from "@workspace/ui/components/button";
 import { useLocale, useTranslations } from "next-intl";
-import { KEnvelope1, KLocked2 } from "@workspace/ui/icons";
 import { useAsyncState } from "@/hooks/use-async-state";
 import { InputController } from "@/components/forms/input-controller";
+import { Letter, LockKeyholeMinimalistic } from "@solar-icons/react";
 
 export function RegisterForm({ onSuccess }: { onSuccess?: () => void }) {
     const locale = useLocale();
@@ -65,7 +65,7 @@ export function RegisterForm({ onSuccess }: { onSuccess?: () => void }) {
                 placeholder={t("common.placeholders.email")}
                 isLoading={isLoading}
                 autoComplete="email"
-                Icon={KEnvelope1}
+                Icon={Letter}
             />
 
             {/* <Controller
@@ -98,7 +98,7 @@ export function RegisterForm({ onSuccess }: { onSuccess?: () => void }) {
                 placeholder={t("common.placeholders.password")}
                 isLoading={isLoading}
                 autoComplete="new-password"
-                Icon={KLocked2}
+                Icon={LockKeyholeMinimalistic}
                 description={t("common.fields.passwordDescription")}
                 showPasswordIndicator
             />
@@ -110,7 +110,7 @@ export function RegisterForm({ onSuccess }: { onSuccess?: () => void }) {
                 placeholder={t("common.placeholders.passwordConfirmation")}
                 isLoading={isLoading}
                 autoComplete="new-password"
-                Icon={KLocked2}
+                Icon={LockKeyholeMinimalistic}
             />
             <Button
                 type="submit"
