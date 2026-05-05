@@ -106,6 +106,16 @@ class User extends Authenticatable implements HasMedia, JWTSubject, MustVerifyEm
         return $this->hasMany(Conversation::class);
     }
 
+    public function reviewsGiven(): HasMany
+    {
+        return $this->hasMany(Review::class, 'reviewer_id');
+    }
+
+    public function bookings(): HasMany
+    {
+        return $this->hasMany(Booking::class);
+    }
+
     public function getJWTIdentifier(): mixed
     {
         return $this->getKey();

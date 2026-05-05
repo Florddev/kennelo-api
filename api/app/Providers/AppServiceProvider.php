@@ -8,11 +8,15 @@ use App\Models\Booking;
 use App\Models\Conversation;
 use App\Models\Establishment;
 use App\Models\Pet;
+use App\Models\Review;
+use App\Models\ReviewReport;
 use App\Models\User;
 use App\Policies\BookingPolicy;
 use App\Policies\ConversationPolicy;
 use App\Policies\EstablishmentPolicy;
 use App\Policies\PetPolicy;
+use App\Policies\ReviewPolicy;
+use App\Policies\ReviewReportPolicy;
 use App\Policies\UserPolicy;
 use Dedoc\Scramble\Scramble;
 use Dedoc\Scramble\Support\Generator\OpenApi;
@@ -34,6 +38,8 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Pet::class, PetPolicy::class);
         Gate::policy(Booking::class, BookingPolicy::class);
         Gate::policy(Conversation::class, ConversationPolicy::class);
+        Gate::policy(Review::class, ReviewPolicy::class);
+        Gate::policy(ReviewReport::class, ReviewReportPolicy::class);
 
         Route::bind('media', fn (string $value) => Media::where('uuid', $value)->firstOrFail());
 

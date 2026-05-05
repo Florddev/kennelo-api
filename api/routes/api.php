@@ -16,6 +16,15 @@ use App\Http\Controllers\Pet\AnimalTypeController;
 use App\Http\Controllers\Pet\PetAttributeController;
 use App\Http\Controllers\Pet\PetController;
 use App\Http\Controllers\Pet\PetImageController;
+use App\Http\Controllers\Review\Admin\ReviewReportController as AdminReviewReportController;
+use App\Http\Controllers\Review\BookingReviewController;
+use App\Http\Controllers\Review\EstablishmentReviewController;
+use App\Http\Controllers\Review\MyReviewController;
+use App\Http\Controllers\Review\ReviewController;
+use App\Http\Controllers\Review\ReviewCriteriaController;
+use App\Http\Controllers\Review\ReviewReportController;
+use App\Http\Controllers\Review\ReviewResponseController;
+use App\Http\Controllers\Review\UserReviewController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\User\UserController;
 use Illuminate\Support\Facades\Route;
@@ -84,6 +93,23 @@ Route::middleware(['auth.jwt'])->group(function () {
     Route::get('/conversations/{conversation}/messages', [MessageController::class, 'index']);
     Route::post('/conversations/{conversation}/messages', [MessageController::class, 'store']);
     Route::put('/conversations/{conversation}/messages/read', [MessageController::class, 'markAsRead']);
+
+    // Reviews
+    Route::get('/review-criteria', [ReviewCriteriaController::class, 'index']);
+    Route::get('/establishments/{establishment}/reviews', [EstablishmentReviewController::class, 'index']);
+    Route::get('/users/{user}/reviews', [UserReviewController::class, 'index']);
+    Route::get('/reviews/{review}', [ReviewController::class, 'show']);
+    Route::post('/bookings/{booking}/reviews', [BookingReviewController::class, 'store']);
+    Route::post('/reviews/{review}/response', [ReviewResponseController::class, 'store']);
+    Route::post('/reviews/{review}/reports', [ReviewReportController::class, 'store']);
+    Route::get('/user/reviews/given', [MyReviewController::class, 'given']);
+    Route::get('/user/reviews/received', [MyReviewController::class, 'received']);
+
+    // Admin — review moderation
+    Route::middleware('role:admin')->group(function () {
+        Route::get('/admin/review-reports', [AdminReviewReportController::class, 'index']);
+        Route::put('/admin/review-reports/{report}', [AdminReviewReportController::class, 'update']);
+    });
 
     // Current user
     Route::get('/user', [UserController::class, 'getCurrentUser']);
