@@ -77,6 +77,11 @@ type PetDetailsParams = {
     search_params?: Record<string, string | number | boolean>;
 };
 
+type ProfileParams = {
+    locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
 type MyProfileAboutParams = {
     locale?: string | number;
     search_params?: Record<string, string | number | boolean>;
@@ -153,6 +158,10 @@ function PetDetails(params: PetDetailsParams): string {
     return buildRoute("/[locale]/pets/[id]", params);
 }
 
+function Profile(params?: ProfileParams): string {
+    return buildRoute("/[locale]/profile", params);
+}
+
 function MyProfileAbout(params?: MyProfileAboutParams): string {
     return buildRoute("/[locale]/settings/about", params);
 }
@@ -184,6 +193,7 @@ export const routes = {
     NewPet,
     MyPets,
     PetDetails,
+    Profile,
     MyProfileAbout,
     MyProfileChangePassword,
     MyProfileEmailPreferences,

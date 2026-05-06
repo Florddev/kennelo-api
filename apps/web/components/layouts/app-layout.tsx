@@ -13,6 +13,7 @@ import {
     Hearts,
     MinimalisticMagnifier,
 } from "@solar-icons/react";
+import { isActivePath } from "@workspace/common";
 
 interface AppLayoutProps {
     children: React.ReactNode;
@@ -25,34 +26,7 @@ export default function AppLayout({ children, className }: AppLayoutProps) {
     const { routes } = useNavigation();
     const t = useTranslations();
 
-    const normalizePath = (path: string) => {
-        const withoutQuery = path.split("?")[0] ?? "";
-        const cleanPath = withoutQuery.split("#")[0] || "/";
-        const localePrefix = `/${locale}`;
-        const hasLocalePrefix =
-            cleanPath === localePrefix || cleanPath.startsWith(`${localePrefix}/`);
-        const noLocalePath = hasLocalePrefix
-            ? cleanPath.slice(localePrefix.length) || "/"
-            : cleanPath;
-
-        let noTrailingSlash = noLocalePath;
-        while (noTrailingSlash.length > 1 && noTrailingSlash.endsWith("/")) {
-            noTrailingSlash = noTrailingSlash.slice(0, -1);
-        }
-
-        return noTrailingSlash;
-    };
-
-    const isActivePath = (href: string) => {
-        const currentPath = normalizePath(pathname);
-        const targetPath = normalizePath(href);
-
-        if (targetPath === "/") {
-            return currentPath === "/";
-        }
-
-        return currentPath === targetPath || currentPath.startsWith(`${targetPath}/`);
-    };
+    const isActive = (href: string) => isActivePath(href, pathname, locale);
 
     const navigationItems: NavigationItem[] = [
         // {
@@ -65,25 +39,25 @@ export default function AppLayout({ children, className }: AppLayoutProps) {
             icon: MinimalisticMagnifier,
             text: t("ui.navigation.explore"),
             href: routes.Explore(),
-            active: isActivePath(routes.Explore()),
+            active: isActive(routes.Explore()),
         },
         {
             icon: FolderFavouriteStar,
             text: t("ui.navigation.favorites"),
             href: "#",
-            active: isActivePath("#"),
+            active: isActive("#"),
         },
         {
             icon: Hearts,
             text: t("ui.navigation.pets"),
             href: routes.MyPets(),
-            active: isActivePath(routes.MyPets()),
+            active: isActive(routes.MyPets()),
         },
         {
             icon: ChatRoundLine,
             text: t("ui.navigation.messages"),
             href: routes.Messages(),
-            active: isActivePath(routes.Messages()),
+            active: isActive(routes.Messages()),
         },
     ];
 

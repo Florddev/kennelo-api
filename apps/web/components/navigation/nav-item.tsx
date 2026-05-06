@@ -37,7 +37,7 @@ export default function NavItem({
             variant="ghost"
             className={cn(
                 "px-1 flex flex-col gap-0 hover:bg-transparent hover:text-primary transition-colors",
-                active && "text-primary",
+                active && "!text-primary",
                 className,
             )}
             onClick={onClick}

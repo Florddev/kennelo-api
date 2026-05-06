@@ -1,0 +1,22 @@
+{
+    "title": "Profile",
+    "description": "Manage your profile and settings",
+    "memberSince": "Member since {date}",
+    "stats": {
+        "bookings": "Bookings",
+        "reviews": "Reviews",
+        "yearsOnApp": "Years on app"
+    },
+    "becomeHost": {
+        "title": "Become a host",
+        "description": "Welcome animals at your home and earn extra income",
+        "cta": "Get started"
+    },
+    "account": "My account",
+    "navigation": {
+        "settings": "Settings",
+        "help": "Help center",
+        "privacy": "Privacy policy"
+    },
+    "switchToHostMode": "Switch to host mode"
+}
