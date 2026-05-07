@@ -92,6 +92,11 @@ type MyProfileChangePasswordParams = {
     search_params?: Record<string, string | number | boolean>;
 };
 
+type SettingsParams = {
+    locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
 type MyProfileEmailPreferencesParams = {
     locale?: string | number;
     search_params?: Record<string, string | number | boolean>;
@@ -170,6 +175,10 @@ function MyProfileChangePassword(params?: MyProfileChangePasswordParams): string
     return buildRoute("/[locale]/settings/change-password", params);
 }
 
+function Settings(params?: SettingsParams): string {
+    return buildRoute("/[locale]/settings", params);
+}
+
 function MyProfileEmailPreferences(params?: MyProfileEmailPreferencesParams): string {
     return buildRoute("/[locale]/settings/preferences-email", params);
 }
@@ -196,6 +205,7 @@ export const routes = {
     Profile,
     MyProfileAbout,
     MyProfileChangePassword,
+    Settings,
     MyProfileEmailPreferences,
     MyProfilePreferencesNotification,
 } as const;

@@ -1,17 +1,24 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronRight, HelpCircle, LogOut, Settings2, Shield } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { UserCircle } from "@solar-icons/react";
+import {
+    AltArrowRight,
+    Bell,
+    Logout2,
+    QuestionCircle,
+    Settings,
+    ShieldCheck,
+    UserCircle,
+} from "@solar-icons/react";
 import { Button } from "@workspace/ui/components/button";
 import { Card, CardContent } from "@workspace/ui/components/card";
-import { Separator } from "@workspace/ui/components/separator";
 import { cn } from "@workspace/ui/lib/utils";
 import { useAuth } from "@/features/auth";
 import { UserAvatar } from "@/features/auth/components/user-avatar";
 import PageLayout from "@/components/layouts/page-layout";
 import { useNavigation } from "@/hooks/use-navigation";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 function StatCard({ value, label }: { value: number | string; label: string }) {
     return (
@@ -28,23 +35,25 @@ function NavRow({
     href,
     onClick,
     destructive,
+    displayArrow = false,
 }: {
     icon: React.ComponentType<{ className?: string }>;
     label: string;
     href?: string;
     onClick?: () => void;
     destructive?: boolean;
+    displayArrow?: boolean;
 }) {
     const className = cn(
-        "flex items-center gap-3 py-3.5 w-full text-sm transition-colors",
+        "flex items-center gap-3 py-3.5 px-0.5 w-full text-sm transition-colors",
         destructive ? "text-destructive" : "hover:text-primary",
     );
 
     const content = (
         <>
             <Icon className="size-4 shrink-0" />
-            <span className="flex-1 text-start font-medium">{label}</span>
-            <ChevronRight className="size-4 text-muted-foreground shrink-0" />
+            <span className="flex-1 text-start font-base">{label}</span>
+            {displayArrow && <AltArrowRight className="size-4 text-muted-foreground shrink-0" />}
         </>
     );
 
@@ -67,6 +76,7 @@ export default function ProfilePage() {
     const t = useTranslations();
     const { user, logout } = useAuth();
     const { routes } = useNavigation();
+    const isMobile = useIsMobile();
 
     const createdAtDate = user ? new Date(user.createdAt) : null;
     const isValidDate = createdAtDate !== null && !isNaN(createdAtDate.getTime());
@@ -80,8 +90,23 @@ export default function ProfilePage() {
     const isManager = user?.hasAnyRoles(["manager"]) ?? false;
 
     return (
-        <PageLayout Icon={UserCircle} title={t("features.profile.title")}>
-            <div className="flex flex-col gap-6">
+        <PageLayout
+            Icon={UserCircle}
+            title={t("features.profile.title")}
+            headerTop={
+                <>
+                    <Button
+                        className="gap-2"
+                        variant="flat"
+                        size={isMobile ? "icon-sm" : "default"}
+                    >
+                        <Bell className="size-3.5" />
+                        {!isMobile && t("ui.navigation.notifications")}
+                    </Button>
+                </>
+            }
+        >
+            <div className="flex flex-col gap-4">
                 <div className="flex flex-col items-center gap-3 pt-2">
                     <UserAvatar user={user} className="size-20 text-2xl" />
                     <div className="flex flex-col items-center gap-0.5">
@@ -126,31 +151,28 @@ export default function ProfilePage() {
                 )}
 
                 <div className="flex flex-col gap-2">
-                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-1">
-                        {t("features.profile.account")}
-                    </p>
-                    <Card>
-                        <CardContent className="px-4 py-0">
+                    <Card className="p-0 ring-0">
+                        <CardContent className="p-0">
                             <NavRow
-                                icon={Settings2}
-                                label={t("features.profile.navigation.settings")}
-                                href={routes.MyProfileAbout()}
+                                icon={Settings}
+                                label={t("ui.navigation.profileSettings")}
+                                href={routes.Settings()}
+                                displayArrow
                             />
-                            <Separator />
                             <NavRow
-                                icon={HelpCircle}
+                                icon={QuestionCircle}
                                 label={t("features.profile.navigation.help")}
                                 href="#"
+                                displayArrow
                             />
-                            <Separator />
                             <NavRow
-                                icon={Shield}
+                                icon={ShieldCheck}
                                 label={t("features.profile.navigation.privacy")}
                                 href="#"
+                                displayArrow
                             />
-                            <Separator />
                             <NavRow
-                                icon={LogOut}
+                                icon={Logout2}
                                 label={t("features.auth.logout")}
                                 onClick={logout}
                                 destructive

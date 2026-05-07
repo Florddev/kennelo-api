@@ -31,7 +31,7 @@ export function BottomNavbar({
         <nav
             className={cn(
                 "fixed bottom-0 w-full bg-card border-t border-primary/10 flex items-start z-10",
-                isCapacitorApp ? "h-14.5" : "h-12",
+                isCapacitorApp ? "h-14.5" : "h-11",
                 className,
             )}
         >
@@ -44,7 +44,7 @@ export function BottomNavbar({
                         active={item.active}
                         href={item.href}
                         className={cn(
-                            "mt-1 text-xs text-muted-foreground gap-0.5 max-w-1/5",
+                            "mt-1 text-xs text-muted-foreground gap-0.5 w-1/5",
                             item.active && "text-primary",
                         )}
                     >
@@ -56,7 +56,7 @@ export function BottomNavbar({
                         iconSize={24}
                         href={routes.Profile()}
                         active={isActive(routes.Profile())}
-                        className={cn("text-xs text-muted-foreground gap-0.5 max-w-1/5")}
+                        className={cn("text-xs mt-1 text-muted-foreground gap-0.5 w-1/5")}
                     >
                         <UserAvatar user={user} className="size-[26px]" />
                         {t("ui.navigation.profile")}
@@ -67,7 +67,7 @@ export function BottomNavbar({
                         iconSize={24}
                         href={routes.Login()}
                         active={isActive(routes.Login())}
-                        className={cn("mt-1 text-xs text-muted-foreground gap-0.5 max-w-1/5")}
+                        className={cn("mt-1 text-xs text-muted-foreground gap-0.5 w-1/5")}
                     >
                         {t("common.actions.login")}
                     </NavItem>

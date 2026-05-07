@@ -51,7 +51,7 @@ export default function GuestLayout({
                         height={600}
                         alt="Kennelo logo"
                     /> */}
-                    <div className="fixed inset-0 max-w-screen max-h-screen relative">
+                    <div className="fixed inset-0 max-w-screen max-h-screen">
                         <div className="absolute flex flex-col justify-between items-center w-full h-full">
                             <div
                                 className={cn(

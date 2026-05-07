@@ -17,7 +17,7 @@ export default function MyProfileAbout() {
     const t = useTranslations();
 
     return (
-        <div className="flex flex-col gap-8 pb-8">
+        <div className="flex flex-col gap-8">
             <section className="rounded-xl border bg-muted/30 p-6 flex items-center gap-8">
                 <UploadAvatarForm />
 
@@ -38,7 +38,7 @@ export default function MyProfileAbout() {
 
             <Separator />
 
-            <section className="grid grid-cols-[1fr_3fr] gap-8">
+            <section className="grid md:grid-cols-[1fr_3fr] gap-4 md:gap-8">
                 <div>
                     <h2 className="text-lg font-semibold">
                         {t("features.auth.personalInformation")}
@@ -52,7 +52,7 @@ export default function MyProfileAbout() {
 
             <Separator />
 
-            <section className="grid grid-cols-[1fr_3fr] gap-8">
+            <section className="grid md:grid-cols-[1fr_3fr] gap-4 md:gap-8">
                 <div>
                     <h2 className="text-lg font-semibold">{t("features.auth.accountEmail")}</h2>
                     <p className="mt-1 text-sm text-muted-foreground">
@@ -64,7 +64,7 @@ export default function MyProfileAbout() {
 
             <Separator />
 
-            <section className="grid grid-cols-[1fr_3fr] gap-8">
+            <section className="grid md:grid-cols-[1fr_3fr] gap-4 md:gap-8">
                 <div>
                     <h2 className="text-lg font-semibold text-destructive">
                         {t("features.auth.dangerZone")}
@@ -88,6 +88,8 @@ export default function MyProfileAbout() {
                     </div>
                 </div>
             </section>
+
+            <Separator />
         </div>
     );
 }

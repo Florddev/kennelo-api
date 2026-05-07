@@ -20,11 +20,12 @@
     "messages": "رسائل",
     "pets": "الحيوانات",
     "bookOnline": "احجز عبر الإنترنت",
-    "profileSettings": "الإعدادات",
+    "profileSettings": "إعدادات الحساب",
     "editProfile": "تعديل ملفي الشخصي",
     "emailPreferences": "تفضيلات البريد الإلكتروني",
     "notificationPreferences": "تفضيلات الإشعارات",
     "changePassword": "تغيير كلمة المرور",
     "comingSoon": "قريباً",
-    "favorites": "المفضلة"
+    "favorites": "المفضلة",
+    "personalInformation": "معلومات شخصية"
 }

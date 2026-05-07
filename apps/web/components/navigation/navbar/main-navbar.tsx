@@ -18,7 +18,7 @@ export function MainNavbar({
     navigationItems: NavigationItem[];
     className?: string;
 }) {
-    const { user, isAuthenticated, isLoaded, hasEstablishment, logout } = useAuth();
+    const { user, isAuthenticated, isLoaded, hasEstablishment } = useAuth();
     const { routes } = useNavigation();
     const scrolled = useScrolled(0);
     const t = useTranslations();
@@ -97,7 +97,6 @@ export function MainNavbar({
                                 ))}
                                 <UserMenu
                                     user={user ?? undefined}
-                                    onLogout={logout}
                                     hasEstablishment={hasEstablishment}
                                     className="size-9 shadow-lg"
                                 />

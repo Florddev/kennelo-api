@@ -22,7 +22,7 @@ export default function PageLayout({
     hideTitle?: boolean;
     Icon?: React.ComponentType<IconProps>;
 }) {
-    const scrolled = useScrolled(80);
+    const scrolled = useScrolled(50);
 
     return (
         <div>
@@ -39,7 +39,7 @@ export default function PageLayout({
                                 "flex gap-1.5 items-center tracking-tight transition-all sm:mt-0 h-8",
                                 scrolled || hideTitle
                                     ? "text-xl font-semibold -mt-8"
-                                    : "text-3xl font-bold mt-4",
+                                    : "text-3xl font-bold",
                                 hideTitle && "opacity-0",
                             )}
                         >
