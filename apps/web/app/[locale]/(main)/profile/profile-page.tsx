@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import {
-    AltArrowRight,
     Bell,
     Logout2,
     QuestionCircle,
@@ -19,6 +18,8 @@ import { UserAvatar } from "@/features/auth/components/user-avatar";
 import PageLayout from "@/components/layouts/page-layout";
 import { useNavigation } from "@/hooks/use-navigation";
 import { useIsMobile } from "@/hooks/use-mobile";
+import Image from "next/image";
+import { NavRow } from "@/components/navigation/nav-row";
 
 function StatCard({ value, label }: { value: number | string; label: string }) {
     return (
@@ -26,49 +27,6 @@ function StatCard({ value, label }: { value: number | string; label: string }) {
             <span className="text-2xl font-bold text-primary">{value}</span>
             <span className="text-xs text-muted-foreground text-center leading-tight">{label}</span>
         </div>
-    );
-}
-
-function NavRow({
-    icon: Icon,
-    label,
-    href,
-    onClick,
-    destructive,
-    displayArrow = false,
-}: {
-    icon: React.ComponentType<{ className?: string }>;
-    label: string;
-    href?: string;
-    onClick?: () => void;
-    destructive?: boolean;
-    displayArrow?: boolean;
-}) {
-    const className = cn(
-        "flex items-center gap-3 py-3.5 px-0.5 w-full text-sm transition-colors",
-        destructive ? "text-destructive" : "hover:text-primary",
-    );
-
-    const content = (
-        <>
-            <Icon className="size-4 shrink-0" />
-            <span className="flex-1 text-start font-base">{label}</span>
-            {displayArrow && <AltArrowRight className="size-4 text-muted-foreground shrink-0" />}
-        </>
-    );
-
-    if (href) {
-        return (
-            <Link href={href} className={className}>
-                {content}
-            </Link>
-        );
-    }
-
-    return (
-        <button onClick={onClick} className={className}>
-            {content}
-        </button>
     );
 }
 
@@ -85,108 +43,154 @@ export default function ProfilePage() {
         ? Math.max(0, new Date().getFullYear() - createdAtDate!.getFullYear())
         : 0;
 
-    const memberSinceYear = isValidDate ? createdAtDate!.getFullYear().toString() : "";
+    const memberSinceYear = isValidDate ? createdAtDate!.getFullYear().toString() : "0";
 
     const isManager = user?.hasAnyRoles(["manager"]) ?? false;
 
     return (
-        <PageLayout
-            Icon={UserCircle}
-            title={t("features.profile.title")}
-            headerTop={
-                <>
-                    <Button
-                        className="gap-2"
-                        variant="flat"
-                        size={isMobile ? "icon-sm" : "default"}
-                    >
-                        <Bell className="size-3.5" />
-                        {!isMobile && t("ui.navigation.notifications")}
-                    </Button>
-                </>
-            }
-        >
-            <div className="flex flex-col gap-4">
-                <div className="flex flex-col items-center gap-3 pt-2">
-                    <UserAvatar user={user} className="size-20 text-2xl" />
-                    <div className="flex flex-col items-center gap-0.5">
-                        <h2 className="text-xl font-bold">{user?.getFullName()}</h2>
-                        <p className="text-sm text-muted-foreground">
-                            {t("features.profile.memberSince", { date: memberSinceYear })}
-                        </p>
-                    </div>
-                </div>
-
-                <Card>
-                    <CardContent className="p-0">
-                        <div className="grid grid-cols-3 divide-x">
-                            <StatCard value={0} label={t("features.profile.stats.bookings")} />
-                            <StatCard value={0} label={t("features.profile.stats.reviews")} />
-                            <StatCard
-                                value={yearsOnApp}
-                                label={t("features.profile.stats.yearsOnApp")}
-                            />
-                        </div>
-                    </CardContent>
-                </Card>
-
-                {!isManager && (
-                    <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-secondary/10">
-                        <CardContent className="p-4 flex flex-col gap-3">
-                            <div className="flex flex-col gap-1">
-                                <h3 className="font-semibold">
-                                    {t("features.profile.becomeHost.title")}
-                                </h3>
-                                <p className="text-sm text-muted-foreground">
-                                    {t("features.profile.becomeHost.description")}
+        <div className="container mx-auto md:px-4">
+            <PageLayout
+                Icon={UserCircle}
+                title={t("features.profile.title")}
+                headerTop={
+                    <>
+                        <Button
+                            className="gap-2"
+                            variant="flat"
+                            size={isMobile ? "icon-sm" : "default"}
+                        >
+                            <Bell className="size-3.5" />
+                            {!isMobile && t("ui.navigation.notifications")}
+                        </Button>
+                    </>
+                }
+            >
+                <div className="flex flex-col gap-4">
+                    {/* <div className="flex border border-border rounded-sm px-6 items-center justify-around gap-8">
+                        <div className="flex flex-col items-center gap-3 pt-2">
+                            <UserAvatar user={user} className="size-20 text-2xl" />
+                            <div className="flex flex-col items-center gap-0.5">
+                                <h2 className="text-xl font-bold">{user?.firstName}</h2>
+                                <p className="text-sm text-center text-muted-foreground">
+                                    {t("features.profile.memberSince", { date: memberSinceYear })}
                                 </p>
                             </div>
-                            <Button size="sm" className="w-fit" asChild>
-                                <Link href={routes.BecomeHost()}>
-                                    {t("features.profile.becomeHost.cta")}
-                                </Link>
-                            </Button>
-                        </CardContent>
-                    </Card>
-                )}
+                        </div>
+                        <Card className="p-0 ring-0 rounded-xl">
+                            <CardContent className="p-0">
+                                <div className="grid grid-cols-1 divide-y">
+                                    <StatCard value={0} label={t("features.profile.stats.bookings")} />
+                                    <StatCard value={0} label={t("features.profile.stats.reviews")} />
+                                    <StatCard
+                                        value={yearsOnApp}
+                                        label={t("features.profile.stats.yearsOnApp")}
+                                    />
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div> */}
 
-                <div className="flex flex-col gap-2">
-                    <Card className="p-0 ring-0">
+                    <div className="flex flex-col items-center gap-3 pt-2">
+                        <UserAvatar user={user} className="size-20 text-2xl" />
+                        <div className="flex flex-col items-center gap-0.5">
+                            <h2 className="text-xl font-bold">{user?.getFullName()}</h2>
+                            <p className="text-sm text-muted-foreground">
+                                {t("features.profile.memberSince", { date: memberSinceYear })}
+                            </p>
+                        </div>
+                    </div>
+
+                    <Card className="py-2">
                         <CardContent className="p-0">
-                            <NavRow
-                                icon={Settings}
-                                label={t("ui.navigation.profileSettings")}
-                                href={routes.Settings()}
-                                displayArrow
-                            />
-                            <NavRow
-                                icon={QuestionCircle}
-                                label={t("features.profile.navigation.help")}
-                                href="#"
-                                displayArrow
-                            />
-                            <NavRow
-                                icon={ShieldCheck}
-                                label={t("features.profile.navigation.privacy")}
-                                href="#"
-                                displayArrow
-                            />
-                            <NavRow
-                                icon={Logout2}
-                                label={t("features.auth.logout")}
-                                onClick={logout}
-                                destructive
-                            />
+                            <div className="grid grid-cols-3 divide-x">
+                                <StatCard value={0} label={t("features.profile.stats.bookings")} />
+                                <StatCard value={0} label={t("features.profile.stats.reviews")} />
+                                <StatCard
+                                    value={yearsOnApp}
+                                    label={t("features.profile.stats.yearsOnApp")}
+                                />
+                            </div>
                         </CardContent>
                     </Card>
-                </div>
 
-                {isManager && (
-                    <Button variant="secondary" className="w-full">
-                        {t("features.profile.switchToHostMode")}
-                    </Button>
-                )}
-            </div>
-        </PageLayout>
+                    {!isManager && (
+                        <div
+                            data-slot="host-verified-banner"
+                            className="relative flex items-center gap-3 overflow-hidden rounded-3xl bg-secondary/20 p-4"
+                        >
+                            <span
+                                aria-hidden
+                                className="pointer-events-none absolute -top-5 -start-5 h-20 w-24 rounded-[50%] bg-secondary"
+                            />
+                            <div className="relative flex flex-1 flex-col gap-2">
+                                <h3 className="text-lg font-semibold text-slate-900 whitespace-nowrap">
+                                    {t("features.profile.becomeHost.title")}
+                                </h3>
+                                <p className="text-xs text-slate-700">
+                                    {t("features.profile.becomeHost.description")}
+                                </p>
+                                <Button size="sm" className="w-fit" asChild>
+                                    <Link href={routes.BecomeHost()}>
+                                        {t("features.profile.becomeHost.cta")}
+                                    </Link>
+                                </Button>
+                            </div>
+                            <Image
+                                src="/keny_illustration.png"
+                                alt=""
+                                aria-hidden
+                                width={122}
+                                height={92}
+                                className="relative h-auto w-28 shrink-0 object-contain"
+                            />
+                        </div>
+                    )}
+
+                    <div className={cn("flex flex-col gap-2 mb-8", !isManager && "mb-0")}>
+                        <Card className="p-0 ring-0">
+                            <CardContent className="p-0">
+                                <NavRow
+                                    icon={Settings}
+                                    label={t("ui.navigation.profileSettings")}
+                                    href={routes.Settings()}
+                                    displayArrow
+                                />
+                                <NavRow
+                                    icon={QuestionCircle}
+                                    label={t("features.profile.navigation.help")}
+                                    href="#"
+                                    displayArrow
+                                    disabled
+                                    comingSoon
+                                />
+                                <NavRow
+                                    icon={ShieldCheck}
+                                    label={t("features.profile.navigation.privacy")}
+                                    href="#"
+                                    displayArrow
+                                    disabled
+                                    comingSoon
+                                />
+                                <NavRow
+                                    icon={Logout2}
+                                    label={t("features.auth.logout")}
+                                    onClick={logout}
+                                    // destructive
+                                />
+                            </CardContent>
+                        </Card>
+                    </div>
+
+                    {isManager && (
+                        <Button
+                            variant="default"
+                            className="w-fit px-4 fixed bottom-14 left-1/2 transform -translate-x-1/2 mt-4"
+                        >
+                            {t("features.profile.switchToHostMode")}
+                        </Button>
+                    )}
+                </div>
+            </PageLayout>
+        </div>
     );
 }

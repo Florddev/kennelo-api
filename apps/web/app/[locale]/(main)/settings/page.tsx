@@ -1,3 +1,5 @@
+import MyProfileAbout from "./about/page";
+
 export default function Settings() {
-    return null;
+    return <MyProfileAbout />;
 }

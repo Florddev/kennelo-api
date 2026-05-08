@@ -15,6 +15,8 @@ import {
 } from "@solar-icons/react";
 import { isActivePath } from "@workspace/common";
 
+import { useNavVisibility } from "@/providers/navigation-visibility-provider";
+
 interface AppLayoutProps {
     children: React.ReactNode;
     className?: string;
@@ -26,6 +28,7 @@ export default function AppLayout({ children, className }: AppLayoutProps) {
     const { routes } = useNavigation();
     const t = useTranslations();
 
+    const { isBottomNavbarVisible } = useNavVisibility();
     const isActive = (href: string) => isActivePath(href, pathname, locale);
 
     const navigationItems: NavigationItem[] = [
@@ -78,7 +81,9 @@ export default function AppLayout({ children, className }: AppLayoutProps) {
 
             <MainNavbar className="hidden md:block" navigationItems={navigationItems} />
             <main className={cn("w-full h-full", className)}>{children}</main>
-            <BottomNavbar className="block md:hidden" navigationItems={navigationItems} />
+            {isBottomNavbarVisible && (
+                <BottomNavbar className="block md:hidden" navigationItems={navigationItems} />
+            )}
         </div>
     );
 }

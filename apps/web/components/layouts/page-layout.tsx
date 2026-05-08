@@ -28,11 +28,11 @@ export default function PageLayout({
         <div>
             <div
                 className={cn(
-                    "sticky top-0 flex items-center z-10 bg-card",
+                    "sticky top-0 md:static flex items-center z-10 bg-card",
                     scrolled && "border-b",
                 )}
             >
-                <div className="flex flex-col-reverse md:flex-row md:justify-between sm:items-start w-full py-2 p-4 sm:pt-6">
+                <div className="flex relative flex-col-reverse md:flex-row md:justify-between sm:items-start w-full py-2 p-4 sm:pt-6">
                     <div className={cn("flex flex-col gap-4", scrolled && "gap-3")}>
                         <h1
                             className={cn(

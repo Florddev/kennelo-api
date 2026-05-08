@@ -20,6 +20,35 @@ import { ChatRoundLine, MinimalisticMagnifier } from "@solar-icons/react";
 import { routes } from "@/lib/routes";
 import Link from "next/link";
 
+function ConversationPanels({
+    selectedConversation,
+    closeConversation,
+}: Pick<ReturnType<typeof useConversations>, "selectedConversation" | "closeConversation">) {
+    return (
+        <>
+            <div
+                className={cn(
+                    "flex h-full overflow-hidden w-full",
+                    selectedConversation ? "hidden md:flex" : "flex",
+                )}
+            >
+                <div className="flex flex-col !w-full md:w-80 flex-shrink-0 overflow-y-auto pb-13 md:pb-0">
+                    <ConversationList />
+                </div>
+            </div>
+
+            <div
+                className={cn(
+                    "fixed inset-0 z-50 flex flex-col transition-transform duration-300 md:hidden",
+                    selectedConversation ? "translate-x-0" : "translate-x-full",
+                )}
+            >
+                <ConversationView key={selectedConversation?.id} onBack={closeConversation} />
+            </div>
+        </>
+    );
+}
+
 function MessagePageContent() {
     const t = useTranslations();
     const { user, isAuthenticated } = useAuth();
@@ -62,7 +91,7 @@ function MessagePageContent() {
 
     return (
         <div className="flex w-full justify-between h-[calc(100dvh-var(--header-height))]">
-            <div className="w-full md:w-1/3 md:px-8">
+            <div className="w-full md:w-1/3 md:px-4 md:pt-2">
                 <PageLayout
                     title={t("features.conversations.title")}
                     Icon={ChatRoundLine}
@@ -72,7 +101,13 @@ function MessagePageContent() {
                     headerTop={
                         isAuthenticated && (
                             <>
-                                <div className="flex justify-end">
+                                <div
+                                    className={cn(
+                                        "flex justify-end",
+                                        isSearching &&
+                                            "md:w-[calc(100%-4.5rem)] md:absolute md:left-0 md:top-6.5 md:px-4",
+                                    )}
+                                >
                                     <InputGroup
                                         className={cn(
                                             "h-7 gap-1 w-full transition-all duration-300 border-none bg-muted has-[[data-slot=input-group-control]:focus-visible]:ring-[2px]",
@@ -98,9 +133,12 @@ function MessagePageContent() {
                                 </div>
                                 {isSearching ? (
                                     <Button
-                                        className="gap-2"
+                                        className={cn(
+                                            "gap-2",
+                                            isSearching && "md:absolute md:right-0",
+                                        )}
                                         variant="ghost"
-                                        size={"default"}
+                                        size={"sm"}
                                         onClick={handleSearchClose}
                                     >
                                         {t("common.actions.cancel")}
@@ -142,37 +180,17 @@ function MessagePageContent() {
                             </Button>
                         </div>
                     ) : (
-                        <>
-                            <div
-                                className={cn(
-                                    "flex h-full overflow-hidden w-full",
-                                    selectedConversation ? "hidden md:flex" : "flex",
-                                )}
-                            >
-                                <div className="flex flex-col !w-full md:w-80 flex-shrink-0 overflow-y-auto pb-13 md:pb-0">
-                                    <ConversationList />
-                                </div>
-                            </div>
-
-                            <div
-                                className={cn(
-                                    "fixed inset-0 z-50 flex flex-col transition-transform duration-300 md:hidden",
-                                    selectedConversation ? "translate-x-0" : "translate-x-full",
-                                )}
-                            >
-                                <ConversationView
-                                    key={selectedConversation?.id}
-                                    onBack={closeConversation}
-                                />
-                            </div>
-                        </>
+                        <ConversationPanels
+                            selectedConversation={selectedConversation}
+                            closeConversation={closeConversation}
+                        />
                     )}
                 </PageLayout>
             </div>
 
             <Separator orientation="vertical" className="hidden md:block w-[1px] h-full" />
 
-            <div className="hidden md:flex flex-1 flex-col h-full w-full">
+            <div className="hidden md:flex flex-1 flex-col h-full w-2/3">
                 {selectedConversation && <ConversationView key={selectedConversation.id} />}
             </div>
         </div>

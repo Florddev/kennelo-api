@@ -85,6 +85,42 @@ function PetsContent({
     );
 }
 
+function PetTypeFilters({
+    availableTypes,
+    typeFilter,
+    setTypeFilter,
+}: Pick<ReturnType<typeof usePetsFilters>, "availableTypes" | "typeFilter" | "setTypeFilter">) {
+    const t = useTranslations();
+    return (
+        <div className="flex flex-nowrap gap-1.5 overflow-x-auto scrollbar-none w-full pb-0.5">
+            <Badge
+                variant={typeFilter === null ? "default" : "flat"}
+                size="lg"
+                className="text-xs cursor-pointer shrink-0 gap-1.5"
+                onClick={() => setTypeFilter(null)}
+            >
+                {t("features.pets.filters.all")}
+            </Badge>
+            {availableTypes.map((type) => {
+                const typeKey = `features.pets.types.${type.code}` as Parameters<typeof t>[0];
+                const label = isKnownAnimalTypeCode(type.code) ? t(typeKey) : type.name;
+                return (
+                    <Badge
+                        key={type.id}
+                        variant={typeFilter === type.id ? "default" : "flat"}
+                        size="lg"
+                        className="text-xs cursor-pointer shrink-0 gap-1.5"
+                        onClick={() => setTypeFilter(type.id)}
+                    >
+                        <PetTypeIllustration code={type.code} name={label} className="size-3.5" />
+                        {label}
+                    </Badge>
+                );
+            })}
+        </div>
+    );
+}
+
 export default function MyPetsPage() {
     const t = useTranslations();
     const { isAuthenticated } = useAuth();
@@ -118,7 +154,13 @@ export default function MyPetsPage() {
             headerTop={
                 isAuthenticated && (
                     <>
-                        <div className="flex justify-end">
+                        <div
+                            className={cn(
+                                "flex justify-end w-fit",
+                                isSearching &&
+                                    "md:w-[calc(100%-4.5rem)] md:absolute md:left-0 md:top-6.5 md:px-4",
+                            )}
+                        >
                             <InputGroup
                                 className={cn(
                                     "h-7 gap-1 w-full transition-all duration-300 border-none bg-muted has-[[data-slot=input-group-control]:focus-visible]:ring-[2px]",
@@ -142,7 +184,12 @@ export default function MyPetsPage() {
                             </InputGroup>
                         </div>
                         {isSearching ? (
-                            <Button variant="ghost" size="default" onClick={handleSearchClose}>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={handleSearchClose}
+                                className="md:absolute md:right-0"
+                            >
                                 {t("common.actions.cancel")}
                             </Button>
                         ) : (
@@ -160,41 +207,13 @@ export default function MyPetsPage() {
                 )
             }
             headerBottom={
-                isAuthenticated &&
-                (!isLoading && pets.length > 0 && availableTypes.length > 1 ? (
-                    <div className="flex flex-nowrap gap-1.5 overflow-x-auto scrollbar-none w-full pb-0.5">
-                        <Badge
-                            variant={typeFilter === null ? "default" : "flat"}
-                            size="lg"
-                            className="text-xs cursor-pointer shrink-0 gap-1.5"
-                            onClick={() => setTypeFilter(null)}
-                        >
-                            {t("features.pets.filters.all")}
-                        </Badge>
-                        {availableTypes.map((type) => {
-                            const typeKey = `features.pets.types.${type.code}` as Parameters<
-                                typeof t
-                            >[0];
-                            const label = isKnownAnimalTypeCode(type.code) ? t(typeKey) : type.name;
-                            return (
-                                <Badge
-                                    key={type.id}
-                                    variant={typeFilter === type.id ? "default" : "flat"}
-                                    size="lg"
-                                    className="text-xs cursor-pointer shrink-0 gap-1.5"
-                                    onClick={() => setTypeFilter(type.id)}
-                                >
-                                    <PetTypeIllustration
-                                        code={type.code}
-                                        name={label}
-                                        className="size-3.5"
-                                    />
-                                    {label}
-                                </Badge>
-                            );
-                        })}
-                    </div>
-                ) : null)
+                isAuthenticated && !isLoading && pets.length > 0 && availableTypes.length > 1 ? (
+                    <PetTypeFilters
+                        availableTypes={availableTypes}
+                        typeFilter={typeFilter}
+                        setTypeFilter={setTypeFilter}
+                    />
+                ) : null
             }
         >
             {!isAuthenticated ? (

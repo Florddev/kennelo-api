@@ -13,8 +13,9 @@ update: ## Update/install dependencies Back/Front
 	pnpm install
 
 start: ## Start API and Web
-	cd api && php -d upload_max_filesize=50M -d post_max_size=55M artisan serve &
+	cd api && php -d upload_max_filesize=50M -d post_max_size=55M artisan serve --host=0.0.0.0 --port=8000 &
 	cd api && php artisan queue:work --queue=default --tries=1 --memory=1024 --timeout=180 &
+	cd api && php artisan reverb:start --host=0.0.0.0 --port=8080 &
 	pnpm dev &
 
 larastan: ## Run larastan

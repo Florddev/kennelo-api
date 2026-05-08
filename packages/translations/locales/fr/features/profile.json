@@ -1,7 +1,7 @@
 {
     "title": "Profil",
     "description": "Gérez votre profil et vos paramètres",
-    "memberSince": "Membre depuis {date}",
+    "memberSince": "Membre depuis {date} ans",
     "stats": {
         "bookings": "Réservations",
         "reviews": "Évaluations",
