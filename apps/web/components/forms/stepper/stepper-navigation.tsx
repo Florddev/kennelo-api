@@ -1,10 +1,21 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { Button } from "@workspace/ui/components/button";
 import { useFormContext, type FieldValues } from "react-hook-form";
 import { useStepper } from "rhf-stepper";
 import type { FormStepDefinition, FormStepperLabels } from "./stepper-types";
 import type { StepTransitionDirection } from "./stepper-step";
+
+export type StepperNavigationRenderProps = {
+    isFirstVisibleStep: boolean;
+    isLastVisibleStep: boolean;
+    isLoading: boolean;
+    handleNext: () => Promise<void>;
+    handlePrev: () => Promise<void>;
+    handleFinalSubmit: () => Promise<void>;
+    labels: FormStepperLabels;
+};
 
 type StepperNavigationProps<TFieldValues extends FieldValues> = {
     steps: FormStepDefinition<TFieldValues>[];
@@ -14,6 +25,7 @@ type StepperNavigationProps<TFieldValues extends FieldValues> = {
     formId?: string;
     onBeforeStepChange: (from: number, direction: StepTransitionDirection) => Promise<void>;
     onFinalStepSubmit: () => Promise<void> | void;
+    render?: (props: StepperNavigationRenderProps) => ReactNode;
 };
 
 export function StepperNavigation<TFieldValues extends FieldValues>({
@@ -23,6 +35,7 @@ export function StepperNavigation<TFieldValues extends FieldValues>({
     isLoading,
     onBeforeStepChange,
     onFinalStepSubmit,
+    render,
 }: StepperNavigationProps<TFieldValues>) {
     const form = useFormContext<TFieldValues>();
     const { activeStep, jumpTo } = useStepper<TFieldValues>();
@@ -112,6 +125,18 @@ export function StepperNavigation<TFieldValues extends FieldValues>({
         await onBeforeStepChange(activeStep, "backward");
         await jumpTo(prevVisibleStepIndex);
     };
+
+    if (render) {
+        return render({
+            isFirstVisibleStep,
+            isLastVisibleStep,
+            isLoading,
+            handleNext,
+            handlePrev,
+            handleFinalSubmit,
+            labels,
+        });
+    }
 
     return (
         <div className="flex items-center justify-between">

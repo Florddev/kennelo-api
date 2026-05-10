@@ -33,7 +33,6 @@ import { buildCategoryDefinitions, findSelectedAnimalType } from "./create-pet-s
 import { type AttributeDraft } from "./create-pet-stepper.types";
 import { AnimalTypeStep } from "./step/animal-type-step";
 import { AttributesCategoryStep } from "./step/attributes-category-step";
-import { IdentityDetailsStep } from "./step/identity-details-step";
 import { IdentityStep } from "./step/identity-step";
 import { IntroStep } from "./step/intro-step";
 import { MediaStep } from "./step/media-step";
@@ -119,18 +118,10 @@ export function CreatePetStepper() {
         },
         {
             id: Step.IDENTITY_BASICS,
-            fields: ["name", "sex", "breed"],
+            fields: ["name", "sex", "breed", "birthDate", "adoptionDate", "weight", "about"],
             groupId: StepGroup.GENERAL,
             component: ({ control, isLoading: loading }) => (
                 <IdentityStep control={control} isLoading={loading} />
-            ),
-        },
-        {
-            id: Step.IDENTITY_DETAILS,
-            fields: ["birthDate", "weight", "about"],
-            groupId: StepGroup.GENERAL,
-            component: ({ control, isLoading: loading }) => (
-                <IdentityDetailsStep control={control} isLoading={loading} />
             ),
         },
         {

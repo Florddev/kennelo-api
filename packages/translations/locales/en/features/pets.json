@@ -100,7 +100,7 @@
                 "error": "Please choose an animal type before continuing."
             },
             "identity": {
-                "title": "What is your pet's name?"
+                "title": "Tell us about your pet."
             },
             "identityDetails": {
                 "title": "Tell us a little more about your pet.",

@@ -32,5 +32,6 @@
     "notProvided": "Non renseigné",
     "emailVerified": "Email vérifié",
     "idVerified": "Identité vérifiée",
-    "phoneVerified": "Téléphone vérifié"
+    "phoneVerified": "Téléphone vérifié",
+    "selectDate": "Sélectionner une date"
 }

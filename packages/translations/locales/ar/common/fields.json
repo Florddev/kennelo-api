@@ -32,5 +32,6 @@
     "notProvided": "غير مُدخل",
     "emailVerified": "البريد الإلكتروني موثق",
     "idVerified": "الهوية موثقة",
-    "phoneVerified": "الهاتف موثق"
+    "phoneVerified": "الهاتف موثق",
+    "selectDate": "اختر تاريخاً"
 }

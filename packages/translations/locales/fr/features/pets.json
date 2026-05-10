@@ -100,7 +100,7 @@
                 "error": "Veuillez choisir un type d'animal avant de continuer."
             },
             "identity": {
-                "title": "Comment s'appelle votre animal ?"
+                "title": "Parlez-nous de votre animal de compagnie."
             },
             "identityDetails": {
                 "title": "Dites-nous en un peu plus sur votre animal.",
