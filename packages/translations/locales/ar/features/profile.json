@@ -1,0 +1,22 @@
+{
+    "title": "الملف الشخصي",
+    "description": "إدارة ملفك الشخصي وإعداداتك",
+    "memberSince": "عضو لمدة {date} سنة",
+    "stats": {
+        "bookings": "الحجوزات",
+        "reviews": "التقييمات",
+        "yearsOnApp": "سنوات في التطبيق"
+    },
+    "becomeHost": {
+        "title": "كن مضيفاً",
+        "description": "استضف الحيوانات في منزلك واكسب دخلاً إضافياً",
+        "cta": "ابدأ الآن"
+    },
+    "account": "حسابي",
+    "navigation": {
+        "settings": "الإعدادات",
+        "help": "مركز المساعدة",
+        "privacy": "سياسة الخصوصية"
+    },
+    "switchToHostMode": "التبديل إلى وضع المضيف"
+}

@@ -20,11 +20,12 @@
     "messages": "Messages",
     "pets": "Animals",
     "bookOnline": "Book online",
-    "profileSettings": "Settings",
+    "profileSettings": "Account settings",
     "editProfile": "Edit my profile",
     "emailPreferences": "Email preferences",
     "notificationPreferences": "Notification preferences",
     "changePassword": "Change password",
     "comingSoon": "Soon",
-    "favorites": "Favorites"
+    "favorites": "Favorites",
+    "personalInformation": "Personal information"
 }

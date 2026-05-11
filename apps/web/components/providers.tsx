@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { TooltipProvider } from "@workspace/ui/components/tooltip";
 import { Toaster } from "@workspace/ui/components/sonner";
 import { AuthProvider } from "@/features/auth/hooks/use-auth";
+import { NavigationVisibilityProvider } from "@/providers/navigation-visibility-provider";
 import { WebsocketProvider } from "@/providers/websocket-provider";
 
 export function Providers({
@@ -33,7 +34,7 @@ export function Providers({
             <TooltipProvider>
                 <QueryClientProvider client={queryClient}>
                     <AuthProvider initialIsAuthenticated={initialIsAuthenticated}>
-                        {children}
+                        <NavigationVisibilityProvider>{children}</NavigationVisibilityProvider>
                         <WebsocketProvider />
                     </AuthProvider>
                 </QueryClientProvider>

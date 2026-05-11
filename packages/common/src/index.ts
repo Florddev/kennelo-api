@@ -4,6 +4,7 @@
 
 export * from "./helpers/currency.helper";
 export * from "./helpers/dates.helper";
+export * from "./helpers/http.helper";
 export * from "./helpers/jwt.helper";
 export * from "./http/api-client";
 export * from "./storage/local-storage.service";

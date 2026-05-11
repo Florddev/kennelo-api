@@ -1,0 +1,22 @@
+{
+    "title": "Profil",
+    "description": "Gérez votre profil et vos paramètres",
+    "memberSince": "Membre depuis {date} ans",
+    "stats": {
+        "bookings": "Réservations",
+        "reviews": "Évaluations",
+        "yearsOnApp": "Ans sur l'app"
+    },
+    "becomeHost": {
+        "title": "Devenir hôte",
+        "description": "Accueillez des animaux chez vous et gagnez un revenu supplémentaire",
+        "cta": "Commencer"
+    },
+    "account": "Mon compte",
+    "navigation": {
+        "settings": "Paramètres",
+        "help": "Centre d'aide",
+        "privacy": "Politique de confidentialité"
+    },
+    "switchToHostMode": "Passer en mode hôte"
+}

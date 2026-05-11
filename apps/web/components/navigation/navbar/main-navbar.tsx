@@ -18,7 +18,7 @@ export function MainNavbar({
     navigationItems: NavigationItem[];
     className?: string;
 }) {
-    const { user, isAuthenticated, isLoaded, hasEstablishment, logout } = useAuth();
+    const { user, isAuthenticated, isLoaded, hasEstablishment } = useAuth();
     const { routes } = useNavigation();
     const scrolled = useScrolled(0);
     const t = useTranslations();
@@ -33,7 +33,7 @@ export function MainNavbar({
                 className,
             )}
         >
-            <div className="mx-auto h-full flex justify-between items-center w-full px-12">
+            <div className="mx-auto h-full flex justify-between items-center w-full px-8">
                 {/* <div className="max-w-sm w-full">
                     <LanguageSwitcher showDetails />
                 </div> */}
@@ -43,8 +43,8 @@ export function MainNavbar({
                     className="relative max-w-xs h-full flex justify-center items-center font-semibold text-lg"
                 >
                     <Image
-                        className="object-cover max-h-full h-7 w-auto"
-                        src="/logo_type.svg"
+                        className="object-cover max-h-full h-6 w-auto"
+                        src="/logo_font.svg"
                         height={120}
                         width={30}
                         alt="Kennelo logo"
@@ -97,7 +97,6 @@ export function MainNavbar({
                                 ))}
                                 <UserMenu
                                     user={user ?? undefined}
-                                    onLogout={logout}
                                     hasEstablishment={hasEstablishment}
                                     className="size-9 shadow-lg"
                                 />

@@ -5,6 +5,7 @@ import ReactCrop, { centerCrop, makeAspectCrop, type Crop, type PixelCrop } from
 import { CameraIcon, CropIcon, ImageIcon, Trash2Icon } from "lucide-react";
 
 import { cn } from "@workspace/ui/lib/utils";
+import { useIsMobile } from "@workspace/ui/hooks/use-mobile";
 import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/avatar";
 import { Button } from "@workspace/ui/components/button";
 import {
@@ -15,6 +16,14 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@workspace/ui/components/dialog";
+import {
+    Drawer,
+    DrawerClose,
+    DrawerContent,
+    DrawerFooter,
+    DrawerHeader,
+    DrawerTitle,
+} from "@workspace/ui/components/drawer";
 
 import "react-image-crop/dist/ReactCrop.css";
 
@@ -73,6 +82,50 @@ function dataUrlToFile(dataUrl: string, filename: string, type: string): File {
     return new File([u8arr], filename, { type });
 }
 
+type CropCanvasProps = {
+    imgRef: React.RefObject<HTMLImageElement | null>;
+    preview: string;
+    crop: Crop | undefined;
+    onCropChange: (c: Crop) => void;
+    onCropComplete: (c: PixelCrop) => void;
+    onImageLoad: (e: SyntheticEvent<HTMLImageElement>) => void;
+    aspect: number;
+    circular: boolean;
+    className?: string;
+};
+
+function CropCanvas({
+    imgRef,
+    preview,
+    crop,
+    onCropChange,
+    onCropComplete,
+    onImageLoad,
+    aspect,
+    circular,
+    className,
+}: CropCanvasProps) {
+    if (!preview) return null;
+    return (
+        <ReactCrop
+            crop={crop}
+            onChange={(_, pct) => onCropChange(pct)}
+            onComplete={onCropComplete}
+            aspect={aspect}
+            circularCrop={circular}
+            className={cn("w-full rounded-lg overflow-hidden", className)}
+        >
+            <img
+                ref={imgRef}
+                src={preview}
+                alt="Crop preview"
+                className={cn("w-full object-contain", className)}
+                onLoad={onImageLoad}
+            />
+        </ReactCrop>
+    );
+}
+
 export function ImageCropper({
     src,
     fallback,
@@ -84,10 +137,11 @@ export function ImageCropper({
     outputType = "image/jpeg",
     accept = "image/jpeg,image/png,image/gif",
 }: ImageCropperProps) {
+    const isMobile = useIsMobile();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const imgRef = useRef<HTMLImageElement>(null);
 
-    const [dialogOpen, setDialogOpen] = useState(false);
+    const [open, setOpen] = useState(false);
     const [preview, setPreview] = useState("");
     const [crop, setCrop] = useState<Crop>();
     const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
@@ -103,7 +157,7 @@ export function ImageCropper({
         setPreview(URL.createObjectURL(file));
         setCrop(undefined);
         setCompletedCrop(undefined);
-        setDialogOpen(true);
+        setOpen(true);
         e.target.value = "";
     };
 
@@ -126,7 +180,7 @@ export function ImageCropper({
         try {
             await onCrop(file);
             setCroppedSrc(dataUrl);
-            setDialogOpen(false);
+            setOpen(false);
         } finally {
             setIsSubmitting(false);
         }
@@ -137,8 +191,26 @@ export function ImageCropper({
         setPreview("");
         setCrop(undefined);
         setCompletedCrop(undefined);
-        setDialogOpen(false);
+        setOpen(false);
     };
+
+    const handleOpenChange = (value: boolean) => {
+        if (!value) handleCancel();
+    };
+
+    const cropCanvasProps: CropCanvasProps = {
+        imgRef,
+        preview,
+        crop,
+        onCropChange: setCrop,
+        onCropComplete: handleCropComplete,
+        onImageLoad,
+        aspect,
+        circular,
+    };
+
+    const confirmDisabled = !completedCrop?.width || isSubmitting;
+    const confirmLabel = isSubmitting ? "Saving…" : "Crop";
 
     return (
         <>
@@ -169,7 +241,7 @@ export function ImageCropper({
                 )}
                 <span
                     className={cn(
-                        "absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100",
+                        "absolute inset-0 flex items-center justify-center bg-black/40 md:opacity-0 transition-opacity group-hover:opacity-100",
                         circular ? "rounded-full" : "rounded-md",
                     )}
                 >
@@ -186,64 +258,74 @@ export function ImageCropper({
                 aria-hidden="true"
             />
 
-            <Dialog
-                open={dialogOpen}
-                onOpenChange={(open) => {
-                    if (!open) handleCancel();
-                }}
-            >
-                <DialogContent className="gap-4 p-0 sm:max-w-lg">
-                    <DialogTitle className="sr-only">Crop image</DialogTitle>
-                    <DialogHeader className="px-6 pt-4">
-                        <h2 className="text-lg font-semibold">Crop image</h2>
-                    </DialogHeader>
-
-                    <div className="flex items-center justify-center px-6">
-                        {preview && (
-                            <ReactCrop
-                                crop={crop}
-                                onChange={(_, pct) => setCrop(pct)}
-                                onComplete={handleCropComplete}
-                                aspect={aspect}
-                                circularCrop={circular}
-                                className="max-h-[60vh] w-full rounded-lg overflow-hidden"
-                            >
-                                <img
-                                    ref={imgRef}
-                                    src={preview}
-                                    alt="Crop preview"
-                                    className="max-h-[60vh] w-full object-contain"
-                                    onLoad={onImageLoad}
-                                />
-                            </ReactCrop>
-                        )}
-                    </div>
-
-                    <DialogFooter className="gap-2 p-6 pt-0">
-                        <DialogClose asChild>
+            {isMobile ? (
+                <Drawer open={open} onOpenChange={handleOpenChange}>
+                    <DrawerContent>
+                        <DrawerHeader>
+                            <DrawerTitle>Crop image</DrawerTitle>
+                        </DrawerHeader>
+                        <div className="flex items-center justify-center px-4">
+                            <CropCanvas {...cropCanvasProps} className="max-h-[50vh]" />
+                        </div>
+                        <DrawerFooter>
                             <Button
-                                variant="outline"
+                                type="button"
+                                disabled={confirmDisabled}
+                                onClick={() => void handleConfirm()}
+                            >
+                                <CropIcon />
+                                {confirmLabel}
+                            </Button>
+                            <DrawerClose asChild>
+                                <Button
+                                    variant="outline"
+                                    type="button"
+                                    onClick={handleCancel}
+                                    disabled={isSubmitting}
+                                >
+                                    <Trash2Icon />
+                                    Cancel
+                                </Button>
+                            </DrawerClose>
+                        </DrawerFooter>
+                    </DrawerContent>
+                </Drawer>
+            ) : (
+                <Dialog open={open} onOpenChange={handleOpenChange}>
+                    <DialogContent className="gap-4 p-0 sm:max-w-lg">
+                        <DialogTitle className="sr-only">Crop image</DialogTitle>
+                        <DialogHeader className="px-6 pt-4">
+                            <h2 className="text-lg font-semibold">Crop image</h2>
+                        </DialogHeader>
+                        <div className="flex items-center justify-center px-6">
+                            <CropCanvas {...cropCanvasProps} className="max-h-[60vh]" />
+                        </div>
+                        <DialogFooter className="gap-2 p-6 pt-0">
+                            <DialogClose asChild>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    type="button"
+                                    onClick={handleCancel}
+                                    disabled={isSubmitting}
+                                >
+                                    <Trash2Icon />
+                                    Cancel
+                                </Button>
+                            </DialogClose>
+                            <Button
                                 size="sm"
                                 type="button"
-                                onClick={handleCancel}
-                                disabled={isSubmitting}
+                                disabled={confirmDisabled}
+                                onClick={() => void handleConfirm()}
                             >
-                                <Trash2Icon />
-                                Cancel
+                                <CropIcon />
+                                {confirmLabel}
                             </Button>
-                        </DialogClose>
-                        <Button
-                            size="sm"
-                            type="button"
-                            disabled={!completedCrop?.width || isSubmitting}
-                            onClick={() => void handleConfirm()}
-                        >
-                            <CropIcon />
-                            {isSubmitting ? "Saving…" : "Crop"}
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+            )}
         </>
     );
 }
