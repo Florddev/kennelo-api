@@ -1,20 +1,89 @@
+import { useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
+import { X } from "lucide-react";
 import { type CreatePetInput } from "@workspace/modules/pets";
 import { Control } from "react-hook-form";
-import { CalendarMark, Cpu, Library, Men, TextSquare, Weigher } from "@solar-icons/react";
+import { Gallery, GallerySend, Library, Men, TextSquare, TShirt, Women } from "@solar-icons/react";
 
+import { Field, FieldLabel } from "@workspace/ui/components/field";
 import { WizardStepShell } from "@/components/forms/stepper/wizard-step-shell";
 import { InlineController } from "@/components/forms/inline-controller";
-type IdentityStepProps = {
+import { ImagePickerDialog } from "@/components/forms/image-picker-dialog";
+
+function FilePreview({ file, alt }: { file: File; alt: string }) {
+    const url = useMemo(() => URL.createObjectURL(file), [file]);
+    useEffect(() => () => URL.revokeObjectURL(url), [url]);
+    // eslint-disable-next-line @next/next/no-img-element
+    return <img src={url} alt={alt} className="size-full object-cover" />;
+}
+
+export function IdentityStep({
+    control,
+    isLoading,
+    avatarFile,
+    onAvatarChange,
+}: {
     control: Control<CreatePetInput>;
     isLoading: boolean;
-};
-
-export function IdentityStep({ control, isLoading }: IdentityStepProps) {
+    avatarFile: File | null;
+    onAvatarChange: (file: File | null) => void;
+}) {
     const t = useTranslations();
 
     return (
         <WizardStepShell title={t("features.pets.create.steps.identity.title")}>
+            {/* <div className="flex flex-col justify-center items-center gap-2 p-3">
+
+                <div className="relative flex justify-center items-center bg-muted/50 border-2 border-dashed size-24 rounded-full">
+                    <Camera className="size-8 text-muted-foreground" />
+
+                    <Button variant="default" size="icon-xs" className="absolute right-0 bottom-0">
+                        <Plus className="size-4" />
+                    </Button>
+                </div>
+
+                <div className="flex gap-2 text-sm md:text-base font-semibold">
+                    Ajouter une photo 
+                </div>
+
+            </div> */}
+
+            <Field className="gap-2">
+                <FieldLabel className="text-sm md:text-base font-semibold">
+                    <Gallery className="size-5" />
+                    {t("features.pets.create.steps.media.avatarLabel")}
+                </FieldLabel>
+                <ImagePickerDialog
+                    value={avatarFile ? [avatarFile] : []}
+                    onChange={(files) => onAvatarChange(files[0] ?? null)}
+                    maxFiles={1}
+                >
+                    <div className="gap-2 rounded-sm border-2 bg-muted/50 border-dashed min-h-42 w-full p-2 h-fit cursor-pointer flex items-center justify-center text-sm md:text-base font-semibold">
+                        {!avatarFile ? (
+                            <>
+                                <GallerySend className="size-5" />
+                                Ajouter une photo
+                            </>
+                        ) : (
+                            <div className="relative w-full aspect-video rounded-2xl overflow-hidden border bg-muted">
+                                <FilePreview file={avatarFile} alt={avatarFile.name} />
+                                <button
+                                    type="button"
+                                    className="absolute top-1 end-1 rounded-full bg-card/90 p-1 border"
+                                    onClick={(event) => {
+                                        event.preventDefault();
+                                        event.stopPropagation();
+                                        onAvatarChange(null);
+                                    }}
+                                >
+                                    <X className="size-3" />
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </ImagePickerDialog>
+            </Field>
+
             <InlineController
                 name="name"
                 control={control}
@@ -28,60 +97,25 @@ export function IdentityStep({ control, isLoading }: IdentityStepProps) {
             <InlineController
                 name="sex"
                 control={control}
-                type="list"
+                type="button-list"
                 label={t("features.pets.fields.sex")}
-                Icon={Men}
-                // placeholder={t("common.placeholders.select")}
+                Icon={TShirt}
                 isLoading={isLoading}
                 options={[
-                    { label: t("features.pets.sex.male"), value: "male" },
-                    { label: t("features.pets.sex.female"), value: "female" },
-                    { label: t("features.pets.sex.unknown"), value: "unknown" },
+                    { label: t("features.pets.sex.male"), value: "male", Icon: Men },
+                    { label: t("features.pets.sex.female"), value: "female", Icon: Women },
                 ]}
             />
 
             <InlineController
-                name="birthDate"
-                control={control}
-                type="date"
-                label={t("features.pets.fields.birthDate")}
-                Icon={CalendarMark}
-                // placeholder={t("features.pets.create.placeholders.birthDate")}
-                isLoading={isLoading}
-            />
-
-            <div className="flex flex-col md:flex-row gap-2">
-                <InlineController
-                    name="breed"
-                    control={control}
-                    type="text"
-                    label={t("features.pets.fields.breed")}
-                    Icon={Library}
-                    // placeholder={t("features.pets.create.placeholders.breed")}
-                    isLoading={isLoading}
-                    className="w-full"
-                />
-                <InlineController
-                    name="weight"
-                    control={control}
-                    type="number"
-                    label={t("features.pets.fields.weight")}
-                    Icon={Weigher}
-                    step={0.5}
-                    min={0}
-                    isLoading={isLoading}
-                    className="md:w-2/3 shrink-0"
-                />
-            </div>
-
-            <InlineController
-                name="microchipNumber"
+                name="breed"
                 control={control}
                 type="text"
-                label={t("features.pets.fields.microchipNumber")}
-                Icon={Cpu}
-                // placeholder={t("features.pets.create.placeholders.microchipNumber")}
+                label={t("features.pets.fields.breed")}
+                Icon={Library}
+                // placeholder={t("features.pets.create.placeholders.breed")}
                 isLoading={isLoading}
+                className="w-full"
             />
         </WizardStepShell>
     );

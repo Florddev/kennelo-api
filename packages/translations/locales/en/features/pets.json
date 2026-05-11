@@ -65,7 +65,8 @@
         "adoptionDate": "Adoption date",
         "about": "About",
         "healthNotes": "Health notes",
-        "animalType": "Animal type"
+        "animalType": "Animal type",
+        "gender": "Gender"
     },
     "create": {
         "pageTitle": "Create a new pet",

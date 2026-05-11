@@ -65,7 +65,8 @@
         "adoptionDate": "تاريخ التبني",
         "about": "حول",
         "healthNotes": "ملاحظات صحية",
-        "animalType": "نوع الحيوان"
+        "animalType": "نوع الحيوان",
+        "gender": "جنس"
     },
     "create": {
         "pageTitle": "إنشاء حيوان جديد",

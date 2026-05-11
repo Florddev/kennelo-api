@@ -13,18 +13,11 @@ function FilePreview({ file, alt }: { file: File; alt: string }) {
 }
 
 type MediaStepProps = {
-    avatarFile: File | null;
-    onAvatarChange: (file: File | null) => void;
     imageFiles: File[];
     onImageFilesChange: (files: File[]) => void;
 };
 
-export function MediaStep({
-    avatarFile,
-    onAvatarChange,
-    imageFiles,
-    onImageFilesChange,
-}: MediaStepProps) {
+export function MediaStep({ imageFiles, onImageFilesChange }: MediaStepProps) {
     const t = useTranslations();
 
     return (
@@ -33,39 +26,6 @@ export function MediaStep({
             subtitle={t("features.pets.create.steps.media.subtitle")}
         >
             <div className="flex flex-col gap-4">
-                <Field className="gap-2">
-                    <FieldLabel>{t("features.pets.create.steps.media.avatarLabel")}</FieldLabel>
-                    <ImagePickerDialog
-                        value={avatarFile ? [avatarFile] : []}
-                        onChange={(files) => onAvatarChange(files[0] ?? null)}
-                        maxFiles={1}
-                    >
-                        <div className="gap-2 rounded-2xl border border-dashed min-h-42 w-full p-2 h-fit cursor-pointer flex items-center justify-center">
-                            {!avatarFile ? (
-                                <>
-                                    <Upload className="size-4" />
-                                    {t("features.pets.create.steps.media.pickAvatar")}
-                                </>
-                            ) : (
-                                <div className="relative w-full aspect-video rounded-2xl overflow-hidden border bg-muted">
-                                    <FilePreview file={avatarFile} alt={avatarFile.name} />
-                                    <button
-                                        type="button"
-                                        className="absolute top-1 end-1 rounded-full bg-card/90 p-1 border"
-                                        onClick={(event) => {
-                                            event.preventDefault();
-                                            event.stopPropagation();
-                                            onAvatarChange(null);
-                                        }}
-                                    >
-                                        <X className="size-3" />
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-                    </ImagePickerDialog>
-                </Field>
-
                 <Field className="gap-2">
                     <FieldLabel>{t("features.pets.create.steps.media.imagesLabel")}</FieldLabel>
                     <ImagePickerDialog

@@ -30,19 +30,21 @@ import {
     DrawerTrigger,
 } from "@workspace/ui/components/drawer";
 import { Popover, PopoverContent, PopoverTrigger } from "@workspace/ui/components/popover";
+import { SwitchChecker } from "@workspace/ui/components/switch-checker";
 import { cn } from "@workspace/ui/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 export type InlineOption = {
     label: string;
     value: string;
+    Icon?: React.ComponentType<IconProps>;
 };
 
 export type InlineControllerProps<TFieldValues extends FieldValues> = {
     name: Path<TFieldValues>;
     control: Control<TFieldValues>;
     label: string;
-    type?: "text" | "number" | "date" | "list";
+    type?: "text" | "number" | "date" | "list" | "button-list" | "boolean";
     Icon?: React.ComponentType<IconProps>;
     isLoading?: boolean;
     placeholder?: string;
@@ -53,11 +55,12 @@ export type InlineControllerProps<TFieldValues extends FieldValues> = {
     className?: string;
 };
 
-function rowCn(showError: boolean, isLoading?: boolean, extra?: string) {
+function rowCn(showError: boolean, isLoading?: boolean, extra?: string, clickable?: boolean) {
     return cn(
-        "h-12 p-3 md:h-16 md:p-4 border rounded-sm flex justify-between items-center transition-colors",
+        "h-12 p-3 md:gap-4 md:h-16 md:p-4 border rounded-sm flex justify-between items-center transition-colors",
         showError && "border-destructive",
         isLoading && "opacity-50 pointer-events-none",
+        clickable && "cursor-pointer",
         extra,
     );
 }
@@ -234,7 +237,7 @@ function InlineDate({
         <div
             data-slot="inline-row"
             data-invalid={showError}
-            className={cn(rowCn(showError, isLoading, className), "cursor-pointer")}
+            className={rowCn(showError, isLoading, className, true)}
         >
             <RowLabel Icon={Icon} label={label} />
             <div className="flex gap-1.5 items-center text-sm shrink-0">
@@ -314,7 +317,7 @@ function InlineList({
         <div
             data-slot="inline-row"
             data-invalid={showError}
-            className={cn(rowCn(showError, isLoading, className), "cursor-pointer")}
+            className={rowCn(showError, isLoading, className, true)}
         >
             <RowLabel Icon={Icon} label={label} />
             <div className="flex gap-1.5 items-center text-sm shrink-0">
@@ -367,6 +370,90 @@ function InlineList({
     );
 }
 
+function InlineBoolean({
+    field,
+    fieldState,
+    label,
+    Icon,
+    isLoading,
+    className,
+}: {
+    field: ControllerRenderProps<FieldValues, string>;
+    fieldState: ControllerFieldState;
+    label: string;
+    Icon?: React.ComponentType<IconProps>;
+    isLoading?: boolean;
+    className?: string;
+}) {
+    const showError = shouldShowError(fieldState);
+    const switchId = `inline-boolean-${field.name}`;
+
+    return (
+        <label
+            htmlFor={switchId}
+            data-slot="inline-row"
+            data-invalid={showError}
+            className={rowCn(showError, isLoading, className, true)}
+        >
+            <RowLabel Icon={Icon} label={label} />
+            <SwitchChecker
+                id={switchId}
+                checked={Boolean(field.value)}
+                onCheckedChange={field.onChange}
+                size={"sm"}
+                disabled={isLoading}
+            />
+        </label>
+    );
+}
+
+function InlineButtonList({
+    field,
+    fieldState,
+    label,
+    Icon,
+    isLoading,
+    options = [],
+    className,
+}: {
+    field: ControllerRenderProps<FieldValues, string>;
+    fieldState: ControllerFieldState;
+    label: string;
+    Icon?: React.ComponentType<IconProps>;
+    isLoading?: boolean;
+    options?: InlineOption[];
+    className?: string;
+}) {
+    const showError = shouldShowError(fieldState);
+
+    return (
+        <div
+            data-slot="inline-row"
+            data-invalid={showError}
+            className={rowCn(showError, isLoading, className)}
+        >
+            <RowLabel Icon={Icon} label={label} />
+            <div className="flex gap-0.5 items-center">
+                {options.map((option) => (
+                    <Button
+                        key={option.value}
+                        type="button"
+                        variant={field.value === option.value ? "default" : "flat"}
+                        size="sm"
+                        disabled={isLoading}
+                        onClick={() =>
+                            field.onChange(field.value === option.value ? "" : option.value)
+                        }
+                    >
+                        {option.Icon && <option.Icon className="size-4" />}
+                        {option.label}
+                    </Button>
+                ))}
+            </div>
+        </div>
+    );
+}
+
 export function InlineController<TFieldValues extends FieldValues>({
     name,
     control,
@@ -405,6 +492,12 @@ export function InlineController<TFieldValues extends FieldValues>({
                 }
                 if (type === "list") {
                     return <InlineList {...shared} options={options} />;
+                }
+                if (type === "button-list") {
+                    return <InlineButtonList {...shared} options={options} />;
+                }
+                if (type === "boolean") {
+                    return <InlineBoolean {...shared} />;
                 }
                 return <InlineText {...shared} />;
             }}

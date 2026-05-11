@@ -121,7 +121,12 @@ export function CreatePetStepper() {
             fields: ["name", "sex", "breed", "birthDate", "adoptionDate", "weight", "about"],
             groupId: StepGroup.GENERAL,
             component: ({ control, isLoading: loading }) => (
-                <IdentityStep control={control} isLoading={loading} />
+                <IdentityStep
+                    control={control}
+                    isLoading={loading}
+                    avatarFile={avatarFile}
+                    onAvatarChange={setAvatarFile}
+                />
             ),
         },
         {
@@ -221,12 +226,7 @@ export function CreatePetStepper() {
             fields: [],
             groupId: StepGroup.COMPLETION,
             component: () => (
-                <MediaStep
-                    avatarFile={avatarFile}
-                    onAvatarChange={setAvatarFile}
-                    imageFiles={imageFiles}
-                    onImageFilesChange={setImageFiles}
-                />
+                <MediaStep imageFiles={imageFiles} onImageFilesChange={setImageFiles} />
             ),
         },
     ];
