@@ -33,5 +33,6 @@
     "emailVerified": "البريد الإلكتروني موثق",
     "idVerified": "الهوية موثقة",
     "phoneVerified": "الهاتف موثق",
-    "selectDate": "اختر تاريخاً"
+    "selectDate": "اختر تاريخاً",
+    "noResults": "لا توجد نتائج"
 }

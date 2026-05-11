@@ -47,7 +47,8 @@
         "summary": "Summary",
         "socialization": "Socialization",
         "boarding": "Boarding",
-        "otherInformation": "Other information"
+        "otherInformation": "Other information",
+        "findHost": "Find a host for {name}"
     },
     "fields": {
         "name": "Name",

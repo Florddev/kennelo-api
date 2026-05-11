@@ -47,7 +47,8 @@
         "summary": "ملخص",
         "socialization": "التنشئة الاجتماعية",
         "boarding": "الإقامة",
-        "otherInformation": "معلومات أخرى"
+        "otherInformation": "معلومات أخرى",
+        "findHost": "ابحث عن مضيف لـ {name}}"
     },
     "fields": {
         "name": "الاسم",

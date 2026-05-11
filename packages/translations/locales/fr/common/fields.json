@@ -33,5 +33,6 @@
     "emailVerified": "Email vérifié",
     "idVerified": "Identité vérifiée",
     "phoneVerified": "Téléphone vérifié",
-    "selectDate": "Sélectionner une date"
+    "selectDate": "Sélectionner une date",
+    "noResults": "Aucun résultat"
 }

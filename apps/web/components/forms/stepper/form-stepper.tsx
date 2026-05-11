@@ -204,9 +204,14 @@ export function FormStepper<TFieldValues extends FieldValues>({
                                                     </Button>
                                                 )}
                                             />
-                                            <span className="text-center font-medium">
-                                                Etape {activeStep + 1} sur {visibleIndices.length}
-                                            </span>
+                                            <div className="text-center font-medium font-">
+                                                <span className="text-primary font-bold">
+                                                    {activeStep + 1}{" "}
+                                                </span>
+                                                <span className="text-muted-foreground/60">
+                                                    / {visibleIndices.length}
+                                                </span>
+                                            </div>
                                             {/* <div className="text-end">
                                                 <Button
                                                     type="button"

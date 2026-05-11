@@ -47,7 +47,8 @@
         "summary": "Récapitulatif",
         "socialization": "Socialisation",
         "boarding": "Garde",
-        "otherInformation": "Autres informations"
+        "otherInformation": "Autres informations",
+        "findHost": "Trouver un hôte pour {name}"
     },
     "fields": {
         "name": "Nom",

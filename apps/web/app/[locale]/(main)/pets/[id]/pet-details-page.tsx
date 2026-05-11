@@ -173,7 +173,7 @@ export default function PetDetailsPage() {
                 isOwner ? (
                     <div className="h-14 bg-card border-t px-2 flex justify-center items-center sm:hidden">
                         <Button className="w-full" size="lg">
-                            {t("features.pets.profile.edit")}
+                            {t("features.pets.profile.findHost", { name: pet.name })}
                         </Button>
                     </div>
                 ) : undefined

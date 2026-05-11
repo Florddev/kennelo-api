@@ -33,5 +33,6 @@
     "emailVerified": "Email Verified",
     "idVerified": "ID Verified",
     "phoneVerified": "Phone Verified",
-    "selectDate": "Select a date"
+    "selectDate": "Select a date",
+    "noResults": "No results"
 }
