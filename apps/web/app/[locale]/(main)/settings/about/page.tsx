@@ -2,7 +2,6 @@
 
 import { useAuth } from "@/features/auth";
 import { Separator } from "@workspace/ui/components/separator";
-import { CalendarDays } from "lucide-react";
 import { useTranslations } from "next-intl";
 import {
     UploadAvatarForm,
@@ -17,18 +16,18 @@ export default function MyProfileAbout() {
     const t = useTranslations();
 
     return (
-        <div className="flex flex-col gap-8 pb-8">
-            <section className="rounded-xl border bg-muted/30 p-6 flex items-center gap-8">
+        <div className="flex flex-col gap-6 md:gap-8">
+            <section className="rounded-xl border bg-muted/30 p-6 flex flex-col md:flex-row items-center gap-4 md:gap-8">
                 <UploadAvatarForm />
 
-                <div className="flex flex-col gap-1 min-w-0">
+                <div className="flex flex-col gap-1 min-w-0 items-center sm:items-start">
                     <div className="text-xl font-semibold">
                         <Loaded isLoaded={isLoaded} className="w-48">
                             {user?.getFullName()}
                         </Loaded>
                     </div>
                     <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                        <CalendarDays className="size-3.5 shrink-0" />
+                        {/* <CalendarDays className="size-3.5 shrink-0" /> */}
                         <Loaded isLoaded={isLoaded} className="w-48">
                             {t("features.auth.memberSince", { date: user?.createdAt || "" })}
                         </Loaded>
@@ -38,7 +37,7 @@ export default function MyProfileAbout() {
 
             <Separator />
 
-            <section className="grid grid-cols-[1fr_3fr] gap-8">
+            <section className="grid gap-4">
                 <div>
                     <h2 className="text-lg font-semibold">
                         {t("features.auth.personalInformation")}
@@ -52,7 +51,7 @@ export default function MyProfileAbout() {
 
             <Separator />
 
-            <section className="grid grid-cols-[1fr_3fr] gap-8">
+            <section className="grid gap-4">
                 <div>
                     <h2 className="text-lg font-semibold">{t("features.auth.accountEmail")}</h2>
                     <p className="mt-1 text-sm text-muted-foreground">
@@ -64,7 +63,7 @@ export default function MyProfileAbout() {
 
             <Separator />
 
-            <section className="grid grid-cols-[1fr_3fr] gap-8">
+            <section className="grid gap-4">
                 <div>
                     <h2 className="text-lg font-semibold text-destructive">
                         {t("features.auth.dangerZone")}

@@ -22,24 +22,24 @@ export default function PageLayout({
     hideTitle?: boolean;
     Icon?: React.ComponentType<IconProps>;
 }) {
-    const scrolled = useScrolled(80);
+    const scrolled = useScrolled(50);
 
     return (
         <div>
             <div
                 className={cn(
-                    "sticky top-0 flex items-center z-10 bg-card",
+                    "sticky top-0 md:static flex items-center z-10 bg-card",
                     scrolled && "border-b",
                 )}
             >
-                <div className="flex flex-col-reverse md:flex-row md:justify-between sm:items-start w-full py-2 p-4 sm:pt-6">
+                <div className="flex relative flex-col-reverse md:flex-row md:justify-between sm:items-start w-full py-2 p-4 sm:pt-6">
                     <div className={cn("flex flex-col gap-4", scrolled && "gap-3")}>
                         <h1
                             className={cn(
                                 "flex gap-1.5 items-center tracking-tight transition-all sm:mt-0 h-8",
                                 scrolled || hideTitle
                                     ? "text-xl font-semibold -mt-8"
-                                    : "text-3xl font-bold mt-4",
+                                    : "text-3xl font-bold",
                                 hideTitle && "opacity-0",
                             )}
                         >

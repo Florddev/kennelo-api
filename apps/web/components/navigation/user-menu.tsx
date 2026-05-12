@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/avatar";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -34,16 +33,12 @@ import {
     Sun,
     UserCircle,
 } from "@solar-icons/react";
+import { UserAvatar } from "@/features/auth/components/user-avatar";
+import { UserModel } from "@workspace/modules/users";
 
 interface UserMenuProps {
-    user?: {
-        avatarUrl?: string | null;
-        getFullName: () => string;
-        getInitials: () => string;
-        email?: string | null;
-    };
+    user?: UserModel;
     hasEstablishment?: boolean;
-    onLogout?: () => void;
     className?: string;
 }
 
@@ -58,8 +53,9 @@ function useHostSpaceHref() {
     return routes.MyEstablishments();
 }
 
-export default function UserMenu({ user, hasEstablishment, onLogout, className }: UserMenuProps) {
+export default function UserMenu({ user, hasEstablishment, className }: UserMenuProps) {
     const { theme, setTheme } = useTheme();
+    const { logout } = useAuth();
     const locale = useLocale() as Locale;
     const hostSpaceHref = useHostSpaceHref();
     const t = useTranslations();
@@ -74,16 +70,13 @@ export default function UserMenu({ user, hasEstablishment, onLogout, className }
         <SolarProvider value={{ weight: "Outline" }}>
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <button className="relative rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
-                        <Avatar className={cn("cursor-pointer size-[26px]", className)}>
-                            <AvatarImage
-                                src={user?.avatarUrl || undefined}
-                                alt={user?.getFullName() || "User profile"}
-                            />
-                            <AvatarFallback className="text-xs">
-                                {user?.getInitials() || "U"}
-                            </AvatarFallback>
-                        </Avatar>
+                    <button
+                        className={cn(
+                            "relative rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
+                            className,
+                        )}
+                    >
+                        <UserAvatar user={user} className="size-full" />
                     </button>
                 </DropdownMenuTrigger>
 
@@ -162,7 +155,7 @@ export default function UserMenu({ user, hasEstablishment, onLogout, className }
 
                     <DropdownMenuSeparator />
 
-                    <DropdownMenuItem variant="destructive" onClick={onLogout}>
+                    <DropdownMenuItem variant="destructive" onClick={logout}>
                         <Logout2 className="h-4 w-4" />
                         <span>{t("features.auth.logout")}</span>
                     </DropdownMenuItem>

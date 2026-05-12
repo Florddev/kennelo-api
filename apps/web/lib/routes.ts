@@ -77,12 +77,22 @@ type PetDetailsParams = {
     search_params?: Record<string, string | number | boolean>;
 };
 
+type ProfileParams = {
+    locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
 type MyProfileAboutParams = {
     locale?: string | number;
     search_params?: Record<string, string | number | boolean>;
 };
 
 type MyProfileChangePasswordParams = {
+    locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type SettingsParams = {
     locale?: string | number;
     search_params?: Record<string, string | number | boolean>;
 };
@@ -153,12 +163,20 @@ function PetDetails(params: PetDetailsParams): string {
     return buildRoute("/[locale]/pets/[id]", params);
 }
 
+function Profile(params?: ProfileParams): string {
+    return buildRoute("/[locale]/profile", params);
+}
+
 function MyProfileAbout(params?: MyProfileAboutParams): string {
     return buildRoute("/[locale]/settings/about", params);
 }
 
 function MyProfileChangePassword(params?: MyProfileChangePasswordParams): string {
     return buildRoute("/[locale]/settings/change-password", params);
+}
+
+function Settings(params?: SettingsParams): string {
+    return buildRoute("/[locale]/settings", params);
 }
 
 function MyProfileEmailPreferences(params?: MyProfileEmailPreferencesParams): string {
@@ -184,8 +202,10 @@ export const routes = {
     NewPet,
     MyPets,
     PetDetails,
+    Profile,
     MyProfileAbout,
     MyProfileChangePassword,
+    Settings,
     MyProfileEmailPreferences,
     MyProfilePreferencesNotification,
 } as const;
