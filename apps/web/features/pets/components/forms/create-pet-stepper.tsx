@@ -23,6 +23,7 @@ import {
     useOptimizedPetImageUpload,
     type UploadProgress,
 } from "@/hooks/use-optimized-pet-image-upload";
+import { imageCompressionService } from "@/services/image-compression.service";
 import { CATEGORY_ORDER, Step, StepGroup } from "./create-pet-stepper.constants";
 import {
     applyAttributeDraftPatch,
@@ -161,7 +162,16 @@ export function CreatePetStepper() {
                 }
 
                 if (avatarFile) {
-                    const avatarResult = await execute(() => uploadPetAvatar(petId, avatarFile), {
+                    const compressed = await imageCompressionService.compressImage(avatarFile, {
+                        maxWidth: 800,
+                        maxHeight: 800,
+                        quality: 0.82,
+                    });
+                    const baseName = avatarFile.name.replace(/\.[^.]+$/, "");
+                    const webpAvatar = new File([compressed.blob], `${baseName}.webp`, {
+                        type: "image/webp",
+                    });
+                    const avatarResult = await execute(() => uploadPetAvatar(petId, webpAvatar), {
                         displayError: true,
                     });
                     if (!avatarResult) return false;

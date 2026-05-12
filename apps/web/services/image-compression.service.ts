@@ -116,8 +116,10 @@ function createImageCompressionService() {
 
             const compressed = await compressImage(file, config);
 
-            const compressedFile = new File([compressed.blob], file.name, {
-                type: `image/${config.format ?? "webp"}`,
+            const format = config.format ?? "webp";
+            const baseName = file.name.replace(/\.[^.]+$/, "");
+            const compressedFile = new File([compressed.blob], `${baseName}.${format}`, {
+                type: `image/${format}`,
             });
 
             results.push(compressedFile);
