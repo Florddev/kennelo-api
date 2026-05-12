@@ -83,7 +83,7 @@ function SwitchChecker({
                     config.switchWidth,
                     config.thumbSize,
                     config.thumbTranslate,
-                    "[&_span]:z-10 [&_span]:transition-transform [&_span]:duration-300 [&_span]:ease-[cubic-bezier(0.16,1,0.3,1)]",
+                    "[&_span]:z-10 [&_span]:bg-white [&_span]:transition-transform [&_span]:duration-300 [&_span]:ease-[cubic-bezier(0.16,1,0.3,1)]",
                 )}
             />
             <span
@@ -92,10 +92,7 @@ function SwitchChecker({
                     config.iconArea,
                 )}
             >
-                <XIcon
-                    className={cn("text-muted-foreground", config.iconSize)}
-                    aria-hidden="true"
-                />
+                <XIcon className={cn(config.iconSize)} aria-hidden="true" />
             </span>
             <span
                 className={cn(

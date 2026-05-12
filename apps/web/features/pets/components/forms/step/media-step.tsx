@@ -1,9 +1,10 @@
-import { Upload, X } from "lucide-react";
+import { X } from "lucide-react";
 import { useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { Field, FieldLabel } from "@workspace/ui/components/field";
 import { ImagePickerDialog } from "@/components/forms/image-picker-dialog";
 import { WizardStepShell } from "@/components/forms/stepper/wizard-step-shell";
+import { GallerySend } from "@solar-icons/react";
 
 function FilePreview({ file, alt }: { file: File; alt: string }) {
     const url = useMemo(() => URL.createObjectURL(file), [file]);
@@ -33,10 +34,10 @@ export function MediaStep({ imageFiles, onImageFilesChange }: MediaStepProps) {
                         onChange={onImageFilesChange}
                         maxFiles={15}
                     >
-                        <div className="gap-2 rounded-2xl border border-dashed min-h-72 w-full p-2 h-fit cursor-pointer flex items-center justify-center">
+                        <div className="gap-2 rounded-sm border-2 bg-muted/50 border-dashed min-h-42 w-full p-2 h-fit cursor-pointer flex items-center justify-center text-sm md:text-base font-semibold">
                             {imageFiles.length === 0 ? (
                                 <>
-                                    <Upload className="size-4" />
+                                    <GallerySend className="size-4" />
                                     {t("features.pets.create.steps.media.pickImages")}
                                 </>
                             ) : (

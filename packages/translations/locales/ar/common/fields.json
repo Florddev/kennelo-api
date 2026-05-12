@@ -34,5 +34,12 @@
     "idVerified": "الهوية موثقة",
     "phoneVerified": "الهاتف موثق",
     "selectDate": "اختر تاريخاً",
-    "noResults": "لا توجد نتائج"
+    "noResults": "لا توجد نتائج",
+    "day": "اليوم",
+    "month": "الشهر",
+    "year": "السنة",
+    "years": "سنوات",
+    "months": "أشهر",
+    "exactDate": "تاريخ محدد",
+    "approximateAge": "العمر التقريبي"
 }

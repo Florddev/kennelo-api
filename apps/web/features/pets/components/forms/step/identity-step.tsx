@@ -3,7 +3,15 @@ import { useTranslations } from "next-intl";
 import { X } from "lucide-react";
 import { type CreatePetInput } from "@workspace/modules/pets";
 import { Control } from "react-hook-form";
-import { Gallery, GallerySend, Library, Men, TextSquare, TShirt, Women } from "@solar-icons/react";
+import {
+    DocumentMedicine,
+    Gallery,
+    GallerySend,
+    Library,
+    Men,
+    TextSquare,
+    Women,
+} from "@solar-icons/react";
 
 import { Field, FieldLabel } from "@workspace/ui/components/field";
 import { WizardStepShell } from "@/components/forms/stepper/wizard-step-shell";
@@ -45,7 +53,6 @@ export function IdentityStep({
                 <div className="flex gap-2 text-sm md:text-base font-semibold">
                     Ajouter une photo 
                 </div>
-
             </div> */}
 
             <Field className="gap-2">
@@ -57,12 +64,13 @@ export function IdentityStep({
                     value={avatarFile ? [avatarFile] : []}
                     onChange={(files) => onAvatarChange(files[0] ?? null)}
                     maxFiles={1}
+                    mode="direct"
                 >
                     <div className="gap-2 rounded-sm border-2 bg-muted/50 border-dashed min-h-42 w-full p-2 h-fit cursor-pointer flex items-center justify-center text-sm md:text-base font-semibold">
                         {!avatarFile ? (
                             <>
                                 <GallerySend className="size-5" />
-                                Ajouter une photo
+                                {t("common.actions.addPhoto")}
                             </>
                         ) : (
                             <div className="relative w-full aspect-video rounded-2xl overflow-hidden border bg-muted">
@@ -99,7 +107,7 @@ export function IdentityStep({
                 control={control}
                 type="button-list"
                 label={t("features.pets.fields.sex")}
-                Icon={TShirt}
+                Icon={DocumentMedicine}
                 isLoading={isLoading}
                 options={[
                     { label: t("features.pets.sex.male"), value: "male", Icon: Men },

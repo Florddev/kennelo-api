@@ -34,5 +34,12 @@
     "idVerified": "Identité vérifiée",
     "phoneVerified": "Téléphone vérifié",
     "selectDate": "Sélectionner une date",
-    "noResults": "Aucun résultat"
+    "noResults": "Aucun résultat",
+    "day": "Jour",
+    "month": "Mois",
+    "year": "Année",
+    "years": "Ans",
+    "months": "Mois",
+    "exactDate": "Date exacte",
+    "approximateAge": "Âge approximatif"
 }

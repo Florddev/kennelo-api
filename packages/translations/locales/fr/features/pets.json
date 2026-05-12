@@ -61,7 +61,7 @@
         "weight": "Poids (kg)",
         "sterilized": "Stérilisé·e",
         "microchip": "Micropuce",
-        "microchipNumber": "Numéro de micropuce",
+        "microchipNumber": "Numéro de puce",
         "adoptionDate": "Date d'adoption",
         "about": "À propos",
         "healthNotes": "Notes de santé",
@@ -151,7 +151,7 @@
             },
             "media": {
                 "title": "Ajoutons les photos pour le profil de votre animal.",
-                "subtitle": "Choisissez un avatar et ajoutez des photos supplémentaires si besoin.",
+                "subtitle": "Choisissez et ajoutez des photos supplémentaires si besoin.",
                 "avatarLabel": "Photo de profil",
                 "imagesLabel": "Photos supplémentaires",
                 "pickAvatar": "Choisir un avatar",
@@ -174,7 +174,7 @@
                 "attributesCount": "Attributs sélectionnés : {count}",
                 "imagesCount": "Photos sélectionnées : {count}",
                 "submit": "Créer le profil de mon animal",
-                "submitting": "Création du profil en cours..."
+                "submitting": "Création du profil..."
             }
         },
         "upload": {
@@ -519,5 +519,6 @@
         }
     },
     "please-login": "Connectez-vous pour consulter la liste de vos animaux",
-    "please-login-description": "Une fois votre connexion effectuée, les profils de vos animaux apparaîtront ici."
+    "please-login-description": "Une fois votre connexion effectuée, les profils de vos animaux apparaîtront ici.",
+    "createTitle": "Créer un animal"
 }

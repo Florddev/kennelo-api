@@ -28,5 +28,7 @@
     "help": "Questions?",
     "save-and-quit": "Save and exit",
     "download": "Download",
-    "login": "Login"
+    "login": "Login",
+    "addPhoto": "Add a photo",
+    "finish": "Finish"
 }

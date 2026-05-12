@@ -3,7 +3,7 @@ import { type CreatePetInput } from "@workspace/modules/pets";
 import { Control } from "react-hook-form";
 import { WizardStepShell } from "@/components/forms/stepper/wizard-step-shell";
 import { InlineController } from "@/components/forms/inline-controller";
-import { CalendarMark, Cpu, Scissors, Weigher } from "@solar-icons/react";
+import { CalendarMark, Cpu, InfoSquare, Scissors, Weigher } from "@solar-icons/react";
 
 export function ProfileStep({
     control,
@@ -24,6 +24,7 @@ export function ProfileStep({
                 Icon={CalendarMark}
                 // placeholder={t("features.pets.create.placeholders.birthDate")}
                 isLoading={isLoading}
+                allowApproximate
             />
             <InlineController
                 name="weight"
@@ -31,10 +32,18 @@ export function ProfileStep({
                 type="number"
                 label={t("features.pets.fields.weight")}
                 Icon={Weigher}
-                step={0.5}
+                step={1}
                 min={0}
                 isLoading={isLoading}
                 className="shrink-0"
+            />
+            <InlineController
+                name="isSterilized"
+                control={control}
+                type="boolean"
+                label={t("features.pets.fields.sterilized")}
+                Icon={Scissors}
+                isLoading={isLoading}
             />
             <InlineController
                 name="microchipNumber"
@@ -46,11 +55,12 @@ export function ProfileStep({
                 isLoading={isLoading}
             />
             <InlineController
-                name="isSterilized"
+                name="about"
                 control={control}
-                type="boolean"
-                label={t("features.pets.fields.sterilized")}
-                Icon={Scissors}
+                type="textarea"
+                label={t("features.pets.fields.about")}
+                Icon={InfoSquare}
+                placeholder={t("features.pets.create.placeholders.about")}
                 isLoading={isLoading}
             />
         </WizardStepShell>

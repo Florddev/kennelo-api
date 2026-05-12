@@ -1,5 +1,3 @@
-import { Plus, X } from "lucide-react";
-import { useState } from "react";
 import { useMessages, useTranslations } from "next-intl";
 import {
     type AttributeDefinitionModel,
@@ -9,11 +7,12 @@ import {
 import { Badge } from "@workspace/ui/components/badge";
 import { ChoiceCards } from "@workspace/ui/components/choice-cards";
 import { FieldLabel } from "@workspace/ui/components/field";
+import { MultipleSelector } from "@workspace/ui/components/multi-select";
 import { Textarea } from "@workspace/ui/components/textarea";
 import { cn } from "@workspace/ui/lib/utils";
 import { Control, useWatch } from "react-hook-form";
 import { WizardStepShell } from "@/components/forms/stepper/wizard-step-shell";
-import { TextareaController } from "@/components/forms/textarea-controller";
+import { InlineController } from "@/components/forms/inline-controller";
 import { type AttributeDraft } from "../create-pet-stepper.types";
 
 function readNestedMessage(messages: unknown, path: string): string | null {
@@ -29,82 +28,6 @@ function readNestedMessage(messages: unknown, path: string): string | null {
     }
 
     return typeof current === "string" ? current : null;
-}
-
-function MedicationsInput({
-    value,
-    onChange,
-}: {
-    value: string;
-    onChange: (value: string) => void;
-}) {
-    const t = useTranslations();
-    const [inputValue, setInputValue] = useState("");
-
-    const medications = value
-        ? value
-              .split(",")
-              .map((m) => m.trim())
-              .filter(Boolean)
-        : [];
-
-    function addMedication() {
-        const trimmed = inputValue.trim();
-        if (!trimmed || medications.includes(trimmed)) {
-            return;
-        }
-        onChange([...medications, trimmed].join(", "));
-        setInputValue("");
-    }
-
-    function removeMedication(med: string) {
-        const updated = medications.filter((m) => m !== med);
-        onChange(updated.join(", "));
-    }
-
-    return (
-        <div className="rounded-lg border bg-card p-3 py-4 flex flex-col gap-2 min-h-[48px]">
-            {medications.length > 0 && (
-                <div className="flex flex-wrap gap-1.5">
-                    {medications.map((med) => (
-                        <Badge key={med} variant="secondary" className="gap-1 pe-1">
-                            {med}
-                            <button
-                                type="button"
-                                onClick={() => removeMedication(med)}
-                                className="rounded-full p-0.5 hover:bg-foreground/10 transition-colors"
-                            >
-                                <X className="size-3" />
-                            </button>
-                        </Badge>
-                    ))}
-                </div>
-            )}
-            <div className="flex gap-2 items-center">
-                <input
-                    type="text"
-                    value={inputValue}
-                    placeholder={t("features.pets.create.attributes.medicationsPlaceholder")}
-                    className="flex-1 bg-transparent outline-none text-sm placeholder:text-muted-foreground"
-                    onChange={(e) => setInputValue(e.target.value)}
-                    onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                            e.preventDefault();
-                            addMedication();
-                        }
-                    }}
-                />
-                <button
-                    type="button"
-                    onClick={addMedication}
-                    disabled={!inputValue.trim()}
-                    className="text-muted-foreground hover:text-foreground disabled:opacity-30 transition-colors"
-                >
-                    <Plus className="size-4" />
-                </button>
-            </div>
-        </div>
-    );
 }
 
 type OptionBadgeProps = {
@@ -125,7 +48,7 @@ function OptionBadge({ option, definitionCode, isSelected, onSelect }: OptionBad
             asChild
             variant="outline"
             className={cn(
-                "h-10 px-6 rounded-full bg-card cursor-pointer text-sm",
+                "h-8 px-3 md:h-10 md:px-6 rounded-full bg-card cursor-pointer text-sm",
                 isSelected && "ring-[1px] bg-primary/5 border-primary ring-primary text-primary",
             )}
         >
@@ -183,7 +106,23 @@ function AttributeInput({ definition, draft, setDraft }: AttributeInputProps) {
         });
 
     if (definition.code === "medications") {
-        return <MedicationsInput value={draftFreeText(draft)} onChange={onFreeTextChange} />;
+        const medications = draftFreeText(draft)
+            .split(",")
+            .map((m) => m.trim())
+            .filter(Boolean);
+        const selected = medications.map((m) => ({ value: m, label: m }));
+
+        return (
+            <MultipleSelector
+                value={selected}
+                onChange={(opts) => onFreeTextChange(opts.map((o) => o.value).join(", "))}
+                creatable
+                openOnFocus={false}
+                placeholder={t("features.pets.create.attributes.medicationsPlaceholder")}
+                hidePlaceholderWhenSelected
+                hideClearAllButton
+            />
+        );
     }
 
     if (definition.valueType === "boolean") {
@@ -252,7 +191,7 @@ export function AttributesCategoryStep({
         <WizardStepShell
             title={t(`features.pets.create.steps.attributesCategoryTitles.${category}`)}
         >
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-4 md:gap-6">
                 {definitions.map((definition) => {
                     const translationKey = `features.pets.attributes_definitions.${definition.code}.question`;
                     const translatedQuestion = readNestedMessage(messages, translationKey);
@@ -263,7 +202,7 @@ export function AttributesCategoryStep({
                           });
 
                     return (
-                        <div key={definition.id} className="space-y-2.5">
+                        <div key={definition.id} className="space-y-2 md:space-y-2.5">
                             <FieldLabel>{question}</FieldLabel>
                             <AttributeInput
                                 definition={definition}
@@ -274,10 +213,10 @@ export function AttributesCategoryStep({
                     );
                 })}
                 {category === "health" && (
-                    <TextareaController
+                    <InlineController
                         control={control}
                         name="healthNotes"
-                        rows={4}
+                        type="textarea"
                         label={t("features.pets.fields.healthNotes")}
                         placeholder={t("features.pets.create.placeholders.healthNotes")}
                     />

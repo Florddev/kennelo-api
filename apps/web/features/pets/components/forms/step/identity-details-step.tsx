@@ -22,8 +22,8 @@ export function IdentityDetailsStep({
                 type="date"
                 label={t("features.pets.fields.birthDate")}
                 Icon={CalendarMark}
-                // placeholder={t("features.pets.create.placeholders.birthDate")}
                 isLoading={isLoading}
+                allowApproximate
             />
             <InlineController
                 name="weight"

@@ -25,6 +25,7 @@ type StepperNavigationProps<TFieldValues extends FieldValues> = {
     formId?: string;
     onBeforeStepChange: (from: number, direction: StepTransitionDirection) => Promise<void>;
     onFinalStepSubmit: () => Promise<void> | void;
+    onFirstStepBack?: () => void;
     render?: (props: StepperNavigationRenderProps) => ReactNode;
 };
 
@@ -35,6 +36,7 @@ export function StepperNavigation<TFieldValues extends FieldValues>({
     isLoading,
     onBeforeStepChange,
     onFinalStepSubmit,
+    onFirstStepBack,
     render,
 }: StepperNavigationProps<TFieldValues>) {
     const form = useFormContext<TFieldValues>();
@@ -116,6 +118,11 @@ export function StepperNavigation<TFieldValues extends FieldValues>({
     };
 
     const handlePrev = async () => {
+        if (isFirstVisibleStep) {
+            onFirstStepBack?.();
+            return;
+        }
+
         const prevVisibleStepIndex = visibleIndices[currentVisibleIndex - 1];
 
         if (prevVisibleStepIndex === undefined) {
@@ -148,7 +155,7 @@ export function StepperNavigation<TFieldValues extends FieldValues>({
                 onClick={() => {
                     void handlePrev();
                 }}
-                disabled={isFirstVisibleStep || isLoading}
+                disabled={isLoading}
             >
                 {labels.back}
             </Button>

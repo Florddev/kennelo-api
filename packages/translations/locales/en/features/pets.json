@@ -151,7 +151,7 @@
             },
             "media": {
                 "title": "Let us add the photos for your pet profile.",
-                "subtitle": "Choose one avatar and optionally add extra photos.",
+                "subtitle": "Choose and add additional photos if necessary.",
                 "avatarLabel": "Profile photo",
                 "imagesLabel": "Additional photos",
                 "pickAvatar": "Choose an avatar",
@@ -174,7 +174,7 @@
                 "attributesCount": "Attributes selected: {count}",
                 "imagesCount": "Photos selected: {count}",
                 "submit": "Create my pet profile",
-                "submitting": "Creating your pet profile..."
+                "submitting": "Creating the profile..."
             }
         },
         "upload": {
@@ -519,5 +519,6 @@
         }
     },
     "please-login": "Log in to view the list of your animals",
-    "please-login-description": "Once you log in, your pets' profiles will appear here."
+    "please-login-description": "Once you log in, your pets' profiles will appear here.",
+    "createTitle": "Create a pet"
 }

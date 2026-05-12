@@ -80,8 +80,9 @@ export function FormStepper<TFieldValues extends FieldValues>({
     className,
     groups,
     renderProgress,
+    stepperName,
 }: FormStepperProps<TFieldValues>) {
-    const { routes } = useNavigation();
+    const { routes, router } = useNavigation();
     const t = useTranslations();
 
     const form = useForm<TFieldValues>({
@@ -139,6 +140,7 @@ export function FormStepper<TFieldValues extends FieldValues>({
                 onFinalStepSubmit={() =>
                     onSubmit(form.getValues(), (field, error) => form.setError(field, error))
                 }
+                onFirstStepBack={() => router.back()}
                 render={render}
             />
         </div>
@@ -147,7 +149,7 @@ export function FormStepper<TFieldValues extends FieldValues>({
     return (
         <FormProvider {...form}>
             <form id={id} className={cn("space-y-6", className)}>
-                <div className="fixed top-0 left-0 w-screen h-screen max-h-[100vh] bg-card z-20">
+                <div className="fixed top-0 left-0 w-screen h-[100dvh] max-h-[100dvh] bg-card z-20">
                     <div className="flex flex-col h-full justify-between overflow-auto">
                         <Stepper>
                             {({ activeStep }) => (
@@ -186,41 +188,32 @@ export function FormStepper<TFieldValues extends FieldValues>({
                                             </div>
                                         </div>
 
-                                        <div className="grid grid-cols-3 items-center w-full md:hidden">
+                                        <div className="flex justify-between items-center w-full md:hidden">
                                             <Navigation
-                                                className="gris"
+                                                className="gris min-w-16"
                                                 render={(props) => (
                                                     <Button
                                                         type="button"
                                                         variant="flat"
                                                         size="icon-sm"
                                                         onClick={props.handlePrev}
-                                                        disabled={
-                                                            props.isFirstVisibleStep ||
-                                                            props.isLoading
-                                                        }
+                                                        disabled={props.isLoading}
                                                     >
                                                         <ArrowLeft />
                                                     </Button>
                                                 )}
                                             />
-                                            <div className="text-center font-medium font-">
+                                            <p className="text-lg font-semibold text-center w-full">
+                                                {stepperName}
+                                            </p>
+                                            <div className="text-end font-medium px-1 min-w-16">
                                                 <span className="text-primary font-bold">
-                                                    {activeStep + 1}{" "}
+                                                    {visibleIndices.indexOf(activeStep) + 1}{" "}
                                                 </span>
                                                 <span className="text-muted-foreground/60">
                                                     / {visibleIndices.length}
                                                 </span>
                                             </div>
-                                            {/* <div className="text-end">
-                                                <Button
-                                                    type="button"
-                                                    variant="link"
-                                                    className="px-0"
-                                                >
-                                                    Quitter
-                                                </Button>
-                                            </div> */}
                                         </div>
                                     </div>
                                     <div className="w-full bg-background px-2 md:px-8">
