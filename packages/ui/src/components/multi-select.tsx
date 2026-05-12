@@ -176,11 +176,9 @@ const CommandEmpty = ({
 
     if (!render) return null;
 
-    // eslint-disable-next-line react/no-unknown-property
     return (
         <div
             className={cn("px-2 py-4 text-center text-sm", className)}
-            cmdk-empty=""
             role="presentation"
             {...props}
         />
