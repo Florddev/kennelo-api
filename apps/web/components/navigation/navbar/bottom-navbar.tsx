@@ -5,11 +5,11 @@ import NavItem, { NavigationItem } from "../nav-item";
 import { useLocale, useTranslations } from "next-intl";
 import { cn } from "@workspace/ui/lib/utils";
 import { usePlatform } from "@/hooks/use-platform";
-import { routes } from "@/lib/routes";
 import { UserCircle } from "@solar-icons/react";
 import { UserAvatar } from "@/features/auth/components/user-avatar";
 import { usePathname } from "next/navigation";
 import { isActivePath } from "@workspace/common";
+import { useNavigation } from "@/hooks/use-navigation";
 
 export function BottomNavbar({
     navigationItems,
@@ -20,6 +20,7 @@ export function BottomNavbar({
 }) {
     const { user, isAuthenticated } = useAuth();
     const { isCapacitorApp } = usePlatform();
+    const { routes } = useNavigation();
     const t = useTranslations();
 
     const pathname = usePathname();

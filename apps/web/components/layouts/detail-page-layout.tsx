@@ -28,7 +28,7 @@ export function DetailPageLayout({
     className,
 }: DetailPageLayoutProps) {
     return (
-        <div data-slot="detail-page-layout" className={cn("relative min-h-screen", className)}>
+        <div data-slot="detail-page-layout" className={cn("relative min-h-[100dvh]", className)}>
             <div className="absolute top-0 start-0 end-0 z-10 sm:static sm:z-auto flex justify-between items-center p-2">
                 <div>{headerStart}</div>
                 <div className="flex gap-0.5">{headerEnd}</div>

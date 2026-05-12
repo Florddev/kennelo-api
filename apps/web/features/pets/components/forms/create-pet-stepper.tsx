@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import {
@@ -42,6 +42,7 @@ export function CreatePetStepper() {
     const t = useTranslations();
     const { routes, router } = useNavigation();
     const { execute, isLoading } = useAsyncState();
+    const queryClient = useQueryClient();
     const { uploadCompressedImages } = useOptimizedPetImageUpload();
     const [formKey, setFormKey] = useState(0);
     const [createdPetId, setCreatedPetId] = useState<string | null>(null);
@@ -271,13 +272,14 @@ export function CreatePetStepper() {
             }
         }
 
+        await queryClient.invalidateQueries({ queryKey: ["pets", "list"] });
         setFormKey((previous) => previous + 1);
         setCreatedPetId(null);
         setSelectedAnimalTypeValue(null);
         setAttributeDrafts({});
         setAvatarFile(null);
         setImageFiles([]);
-        router.push(routes.PetDetails({ id: petId }));
+        router.replace(routes.PetDetails({ id: petId }));
     };
 
     return (

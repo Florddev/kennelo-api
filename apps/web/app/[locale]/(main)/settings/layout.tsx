@@ -6,17 +6,18 @@ import { Button } from "@workspace/ui/components/button";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { routes } from "@/lib/routes";
 import { ArrowLeft, Bell, LetterUnread, Password, UserCircle } from "@solar-icons/react";
 import { useHideBottomNavbar } from "@/hooks/use-hide-bottom-navbar";
 import { useScrolled } from "@/hooks/use-scrolled";
 import { NavRow } from "@/components/navigation/nav-row";
 import { Separator } from "@workspace/ui/components/separator";
+import { useNavigation } from "@/hooks/use-navigation";
 
 export default function ProfileSettingsLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
     const t = useTranslations();
     const scrolled = useScrolled(100);
+    const { routes } = useNavigation();
     useHideBottomNavbar();
 
     const settingsNav = [
