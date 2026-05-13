@@ -520,5 +520,29 @@
     },
     "please-login": "قم بتسجيل الدخول لعرض قائمة حيواناتك",
     "please-login-description": "بمجرد تسجيل الدخول، ستظهر الملفات الشخصية لحيواناتك الأليفة هنا.",
-    "createTitle": "إنشاء حيوان أليف"
+    "createTitle": "إنشاء حيوان أليف",
+    "edit": {
+        "pageTitle": "تعديل",
+        "sections": {
+            "general": "عام",
+            "profile": "الملف الشخصي",
+            "health": "الصحة",
+            "personality": "الشخصية",
+            "photos": "الصور"
+        },
+        "sectionDescriptions": {
+            "general": "الاسم، النوع، السلالة، الجنس",
+            "profile": "العمر، الوزن، تاريخ التبني",
+            "health": "التعقيم، الشريحة الإلكترونية، ملاحظات صحية",
+            "personality": "السمات السلوكية",
+            "photos": "الصورة الرمزية وصور المعرض"
+        },
+        "completionLabel": "اكتمال الملف الشخصي",
+        "delete": "حذف",
+        "deleteTitle": "حذف {name}؟",
+        "deleteDescription": "لا يمكن التراجع عن هذا الإجراء. ستُحذف جميع بيانات هذا الحيوان الأليف نهائيًا.",
+        "deleteConfirm": "حذف نهائي",
+        "saveSuccess": "تم حفظ التغييرات",
+        "deleteSuccess": "تم حذف الحيوان الأليف"
+    }
 }

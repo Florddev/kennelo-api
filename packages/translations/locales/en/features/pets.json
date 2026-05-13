@@ -520,5 +520,29 @@
     },
     "please-login": "Log in to view the list of your animals",
     "please-login-description": "Once you log in, your pets' profiles will appear here.",
-    "createTitle": "Create a pet"
+    "createTitle": "Create a pet",
+    "edit": {
+        "pageTitle": "Edit",
+        "sections": {
+            "general": "General",
+            "profile": "Profile",
+            "health": "Health",
+            "personality": "Personality",
+            "photos": "Photos"
+        },
+        "sectionDescriptions": {
+            "general": "Name, type, breed, sex",
+            "profile": "Age, weight, adoption date",
+            "health": "Sterilization, microchip, health notes",
+            "personality": "Behavioral attributes",
+            "photos": "Avatar and gallery photos"
+        },
+        "completionLabel": "Profile completion",
+        "delete": "Delete",
+        "deleteTitle": "Delete {name}?",
+        "deleteDescription": "This action cannot be undone. All data for this pet will be permanently deleted.",
+        "deleteConfirm": "Delete permanently",
+        "saveSuccess": "Changes saved",
+        "deleteSuccess": "Pet deleted"
+    }
 }

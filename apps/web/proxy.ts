@@ -9,7 +9,14 @@ const middlewares: Middleware[] = [
     new SubdomainMiddleware(),
     new AuthGuardMiddleware({
         guestOnly: ["/login", "/register"],
-        authRequired: ["/hosting/*", "/settings", "/settings/*", "/become-host", "/profile"],
+        authRequired: [
+            "/hosting/*",
+            "/settings",
+            "/settings/*",
+            "/become-host",
+            "/profile",
+            "/pets/*",
+        ],
         roleRequired: [
             {
                 roles: ["admin"],

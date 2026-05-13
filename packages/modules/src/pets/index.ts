@@ -29,5 +29,8 @@ export * from "./models/dtos/pet.dto";
 export * from "./types/animal-type-codes.type";
 export * from "./types/attributes-categories.type";
 export * from "./validators/create-pet.schema";
+export * from "./validators/update-pet-general.schema";
+export * from "./validators/update-pet-health.schema";
+export * from "./validators/update-pet-profile.schema";
 export * from "./validators/update-pet.schema";
 export * from "./validators/upsert-pet-attributes.schema";

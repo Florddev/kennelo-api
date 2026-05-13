@@ -520,5 +520,29 @@
     },
     "please-login": "Connectez-vous pour consulter la liste de vos animaux",
     "please-login-description": "Une fois votre connexion effectuée, les profils de vos animaux apparaîtront ici.",
-    "createTitle": "Créer un animal"
+    "createTitle": "Créer un animal",
+    "edit": {
+        "pageTitle": "Modifier",
+        "sections": {
+            "general": "Général",
+            "profile": "Profil",
+            "health": "Santé",
+            "personality": "Personnalité",
+            "photos": "Photos"
+        },
+        "sectionDescriptions": {
+            "general": "Nom, type, race, sexe",
+            "profile": "Âge, poids, date d'adoption",
+            "health": "Stérilisation, puce, notes de santé",
+            "personality": "Attributs comportementaux",
+            "photos": "Avatar et photos de galerie"
+        },
+        "completionLabel": "Complétion du profil",
+        "delete": "Supprimer",
+        "deleteTitle": "Supprimer {name} ?",
+        "deleteDescription": "Cette action est irréversible. Toutes les données de cet animal seront définitivement supprimées.",
+        "deleteConfirm": "Supprimer définitivement",
+        "saveSuccess": "Modifications enregistrées",
+        "deleteSuccess": "Animal supprimé"
+    }
 }

@@ -71,6 +71,36 @@ type MyPetsParams = {
     search_params?: Record<string, string | number | boolean>;
 };
 
+type PetEditGeneralPageParams = {
+    locale?: string | number;
+    id: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type PetEditHealthPageParams = {
+    locale?: string | number;
+    id: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type PetEditPageParams = {
+    locale?: string | number;
+    id: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type PetEditPersonalityPageParams = {
+    locale?: string | number;
+    id: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type PetEditPhotosPageParams = {
+    locale?: string | number;
+    id: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
 type PetDetailsParams = {
     locale?: string | number;
     id: string;
@@ -159,6 +189,26 @@ function MyPets(params?: MyPetsParams): string {
     return buildRoute("/[locale]/pets", params);
 }
 
+function PetEditGeneralPage(params: PetEditGeneralPageParams): string {
+    return buildRoute("/[locale]/pets/[id]/edit/general", params);
+}
+
+function PetEditHealthPage(params: PetEditHealthPageParams): string {
+    return buildRoute("/[locale]/pets/[id]/edit/health", params);
+}
+
+function PetEditPage(params: PetEditPageParams): string {
+    return buildRoute("/[locale]/pets/[id]/edit", params);
+}
+
+function PetEditPersonalityPage(params: PetEditPersonalityPageParams): string {
+    return buildRoute("/[locale]/pets/[id]/edit/personality", params);
+}
+
+function PetEditPhotosPage(params: PetEditPhotosPageParams): string {
+    return buildRoute("/[locale]/pets/[id]/edit/photos", params);
+}
+
 function PetDetails(params: PetDetailsParams): string {
     return buildRoute("/[locale]/pets/[id]", params);
 }
@@ -201,6 +251,11 @@ export const routes = {
     Messages,
     NewPet,
     MyPets,
+    PetEditGeneralPage,
+    PetEditHealthPage,
+    PetEditPage,
+    PetEditPersonalityPage,
+    PetEditPhotosPage,
     PetDetails,
     Profile,
     MyProfileAbout,

@@ -267,9 +267,78 @@ class AttributeSeeder extends Seeder
         $this->animalTypes = $types;
     }
 
-    /**
-     * Helper to create attribute with options
-     */
+    private function deriveIconName(string $code): ?string
+    {
+        return match ($code) {
+            'energy_level' => 'BoltCircle',
+            'potty_trained' => 'WaterDroplet',
+            'litter_trained' => 'WaterDroplet',
+            'friendly_with_kids' => 'UsersGroupRounded',
+            'friendly_with_dogs' => 'PawRounded',
+            'friendly_with_cats' => 'PawRounded',
+            'potty_break' => 'ClockCircle',
+            'meal_schedule' => 'Bowl',
+            'can_be_left_alone' => 'HomeSmile',
+            'medications' => 'Pill',
+            'indoor_outdoor' => 'Home2',
+            'declawed' => 'Scissors',
+            'cage_type' => 'SquareAltArrowDown',
+            'is_nocturnal' => 'Moon',
+            'can_be_handled' => 'HandShake',
+            'bites_scratches' => 'DangerTriangle',
+            'friendly_with_same_species' => 'UsersGroupRounded',
+            'diet_specifics' => 'NotesBold',
+            'bird_species' => 'Book',
+            'can_fly' => 'Windup',
+            'wings_clipped' => 'Scissors',
+            'noise_level' => 'Speakerphone',
+            'can_talk' => 'ChatRound',
+            'friendly_with_other_birds' => 'UsersGroupRounded',
+            'water_type' => 'WaterDroplet',
+            'tank_size_liters' => 'Ruler',
+            'water_temperature' => 'Thermometer',
+            'compatible_with_other_fish' => 'UsersGroupRounded',
+            'equipment_needed' => 'Settings',
+            'feeding_frequency' => 'Calendar',
+            'reptile_species' => 'Book',
+            'terrarium_type' => 'SquareAltArrowDown',
+            'temperature_range' => 'Thermometer',
+            'humidity_level' => 'CloudDrizzle',
+            'is_venomous' => 'DangerTriangle',
+            'diet_type' => 'NotesBold',
+            'requires_live_food' => 'DangerSquare',
+            'uv_light_needed' => 'Sun',
+            'amphibian_species' => 'Book',
+            'habitat_type' => 'Home2',
+            'is_aquatic' => 'WaterDroplet',
+            'water_quality_requirements' => 'Shield',
+            'spider_species' => 'Book',
+            'molting_frequency' => 'Refresh',
+            default => null,
+        };
+    }
+
+    private function deriveInputType(string $code, string $valueType, bool $hasPredefinedOptions): string
+    {
+        if ($code === 'medications') {
+            return 'multi-list';
+        }
+        if ($valueType === 'boolean') {
+            return 'boolean';
+        }
+        if ($valueType === 'integer' || $valueType === 'decimal') {
+            return 'number';
+        }
+        if ($valueType === 'date') {
+            return 'date';
+        }
+        if ($hasPredefinedOptions) {
+            return 'badge-list';
+        }
+
+        return 'textarea';
+    }
+
     private function createAttribute(string $code, string $label, AnimalAttributeCategory $category, string $valueType, bool $hasPredefinedOptions, array $animalTypeIds, array $options = []): void
     {
         $attribute = AttributeDefinition::updateOrCreate(
@@ -278,6 +347,8 @@ class AttributeSeeder extends Seeder
                 'label' => $label,
                 'category' => $category->value,
                 'value_type' => $valueType,
+                'input_type' => $this->deriveInputType($code, $valueType, $hasPredefinedOptions),
+                'icon_name' => $this->deriveIconName($code),
                 'has_predefined_options' => $hasPredefinedOptions,
                 'is_required' => false,
                 'validation_rules' => null,
