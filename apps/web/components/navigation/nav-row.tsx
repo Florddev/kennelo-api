@@ -28,7 +28,7 @@ export function NavRow({
     const t = useTranslations();
 
     className = cn(
-        "flex items-center gap-3 py-3.5 px-0.5 w-full text-sm transition-colors md:text-base",
+        "flex items-center gap-3 py-3.5 px-1 w-full text-base transition-colors md:text-base",
         destructive ? "text-destructive" : "hover:text-primary",
         disabled && "opacity-50 pointer-events-none",
         className,
@@ -36,7 +36,7 @@ export function NavRow({
 
     const content = (
         <>
-            {Icon && <Icon className="size-4.5 md:size-6 shrink-0" />}
+            {Icon && <Icon className="size-6 md:size-6 shrink-0" />}
             <span className="flex-1 text-start font-base">{label}</span>
             {comingSoon && <Badge variant="destructive">{t("ui.navigation.comingSoon")}</Badge>}
             {displayArrow && (

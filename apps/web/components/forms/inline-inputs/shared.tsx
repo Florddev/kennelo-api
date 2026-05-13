@@ -13,7 +13,7 @@ export function rowCn(
     clickable?: boolean,
 ) {
     return cn(
-        "h-12 p-3 md:gap-4 md:h-16 md:p-4 border rounded-sm flex justify-between items-center transition-colors",
+        "min-h-12 p-3 md:gap-4 md:min-h-16 md:p-4 border rounded-sm flex justify-between items-center transition-colors",
         showError && "border border-destructive bg-destructive/5 text-destructive",
         isLoading && "pointer-events-none opacity-50",
         clickable && "cursor-pointer",
@@ -32,12 +32,9 @@ export function RowLabel({
 }) {
     return (
         <div
-            className={cn(
-                "flex gap-2.5 items-center text-sm md:text-base font-semibold shrink-0",
-                className,
-            )}
+            className={cn("flex gap-2 items-center text-sm md:text-base font-semibold", className)}
         >
-            {Icon && <Icon className="size-5 md:size-6" />}
+            {Icon && <Icon className="size-5 md:size-6 shrink-0" />}
             <span>{label}</span>
         </div>
     );

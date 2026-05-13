@@ -9,10 +9,10 @@ import {
     ArrowLeft,
     DocumentMedicine,
     Gallery,
+    GalleryMinimalistic,
     InfoSquare,
     Star,
     TrashBinTrash,
-    UserCircle,
 } from "@solar-icons/react";
 import { useHideBottomNavbar } from "@/hooks/use-hide-bottom-navbar";
 import { useScrolled } from "@/hooks/use-scrolled";
@@ -31,13 +31,25 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@workspace/ui/components/alert-dialog";
+import {
+    Drawer,
+    DrawerContent,
+    DrawerDescription,
+    DrawerFooter,
+    DrawerHeader,
+    DrawerTitle,
+    DrawerTrigger,
+} from "@workspace/ui/components/drawer";
 import { cn } from "@workspace/ui/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { useNavigation } from "@/hooks/use-navigation";
 import { useRouter } from "next/navigation";
 import { deletePet, PetModel } from "@workspace/modules/pets";
 import { useAsyncState } from "@/hooks/use-async-state";
 import { usePet } from "@/features/pets/hooks/use-pet";
 import { toast } from "sonner";
+import { Field, FieldLabel } from "@workspace/ui/components/field";
+import { Progress } from "@workspace/ui/components/progress";
 
 const EDIT_SECTIONS = ["general", "health", "personality", "photos"] as const;
 
@@ -69,27 +81,32 @@ function PetAvatarCard({
 }) {
     const t = useTranslations();
     return (
-        <div className="flex flex-col items-center gap-3 py-4 md:py-6">
-            <div className="relative size-20 rounded-full overflow-hidden bg-muted border-2 border-border shrink-0">
+        <div className="flex flex-col items-center gap-3 w-full">
+            <div className="relative rounded-sm overflow-hidden bg-muted shadow-lg shrink-0 w-full aspect-14/9 2xl:aspect-video">
                 {avatarUrl ? (
                     <Image src={avatarUrl} alt={pet?.name ?? ""} fill className="object-cover" />
                 ) : (
                     <div className="size-full flex items-center justify-center">
-                        <UserCircle className="size-10 text-muted-foreground" />
+                        <GalleryMinimalistic className="size-10 text-muted-foreground mb-12" />
                     </div>
                 )}
-            </div>
-            <h1 className="font-semibold text-xl text-center">{pet?.name ?? ""}</h1>
-            <div className="w-full px-2">
-                <div className="flex justify-between text-xs text-muted-foreground mb-1.5">
-                    <span>{t("features.pets.edit.completionLabel")}</span>
-                    <span>{completion}%</span>
-                </div>
-                <div className="w-full bg-muted rounded-full h-1.5">
-                    <div
-                        className="bg-primary h-1.5 rounded-full transition-all duration-500"
-                        style={{ width: `${completion}%` }}
-                    />
+
+                <div className="absolute p-1 w-full bottom-0 left-0">
+                    <div className="bg-white/70 w-full rounded-2xl p-4 backdrop-blur-sm">
+                        <Field className="w-full">
+                            <FieldLabel htmlFor="progress-upload">
+                                <span>{t("features.pets.edit.completionLabel")}</span>
+                                <span className="ml-auto">{completion}%</span>
+                            </FieldLabel>
+                            {pet && (
+                                <Progress
+                                    value={completion}
+                                    id="progress-upload"
+                                    className="backdrop-blur-lg bg-transparent"
+                                />
+                            )}
+                        </Field>
+                    </div>
                 </div>
             </div>
         </div>
@@ -106,16 +123,49 @@ function DeletePetDialog({
     onDelete: () => void;
 }) {
     const t = useTranslations();
+    const isMobile = useIsMobile();
+
+    const trigger = (
+        <NavRow
+            icon={TrashBinTrash}
+            label={t("features.pets.edit.delete")}
+            destructive
+            className="md:rounded-md md:p-4 hover:bg-destructive/10 w-full cursor-pointer"
+        />
+    );
+
+    if (isMobile) {
+        return (
+            <Drawer>
+                <DrawerTrigger asChild>{trigger}</DrawerTrigger>
+                <DrawerContent>
+                    <DrawerHeader>
+                        <DrawerTitle>
+                            {t("features.pets.edit.deleteTitle", { name: petName })}
+                        </DrawerTitle>
+                        <DrawerDescription>
+                            {t("features.pets.edit.deleteDescription")}
+                        </DrawerDescription>
+                    </DrawerHeader>
+                    <DrawerFooter>
+                        <Button
+                            variant="destructive"
+                            size="xl"
+                            onClick={onDelete}
+                            disabled={isDeleting}
+                            className="w-full"
+                        >
+                            {t("features.pets.edit.deleteConfirm")}
+                        </Button>
+                    </DrawerFooter>
+                </DrawerContent>
+            </Drawer>
+        );
+    }
+
     return (
         <AlertDialog>
-            <AlertDialogTrigger asChild>
-                <NavRow
-                    icon={TrashBinTrash}
-                    label={t("features.pets.edit.delete")}
-                    destructive
-                    className="md:rounded-md md:p-4"
-                />
-            </AlertDialogTrigger>
+            <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>
             <AlertDialogContent>
                 <AlertDialogHeader>
                     <AlertDialogTitle>
@@ -137,6 +187,95 @@ function DeletePetDialog({
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>
+    );
+}
+
+function PetEditSidebarTop({
+    scrolled,
+    isEditRoot,
+    backHref,
+    petName,
+    pet,
+    avatarUrl,
+    completion,
+}: {
+    scrolled: boolean;
+    isEditRoot: boolean;
+    backHref: string;
+    petName: string;
+    pet: PetModel | null;
+    avatarUrl: string | undefined;
+    completion: number;
+}) {
+    const t = useTranslations();
+    return (
+        <div className="flex flex-col">
+            <div
+                className={cn(
+                    "bg-card flex items-center gap-3 px-4 py-2 w-full fixed top-0 z-10 md:static md:p-0 md:pb-4",
+                    scrolled && "border-b",
+                )}
+            >
+                <Button variant="flat" size="sm" className="px-2 md:px-3" asChild>
+                    <Link href={backHref}>
+                        <ArrowLeft className="size-4" />
+                        <span className="hidden md:block">{t("common.actions.back")}</span>
+                    </Link>
+                </Button>
+                <h1
+                    className={cn(
+                        "font-semibold text-2xl md:text-3xl",
+                        !isEditRoot && "hidden md:block",
+                    )}
+                >
+                    {petName}
+                </h1>
+            </div>
+            <div className="pt-13 md:pt-0 px-4 md:px-0">
+                <div className={cn(!isEditRoot && "hidden md:flex")}>
+                    <PetAvatarCard pet={pet} avatarUrl={avatarUrl} completion={completion} />
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function PetEditNavCard({
+    nav,
+    lastSegment,
+    isEditRoot,
+    petName,
+    isDeleting,
+    onDelete,
+}: {
+    nav: { href: string; label: string; icon: React.ComponentType<{ className?: string }> }[];
+    lastSegment: string;
+    isEditRoot: boolean;
+    petName: string;
+    isDeleting: boolean;
+    onDelete: () => void;
+}) {
+    return (
+        <Card className="p-0 ring-0">
+            <CardContent className="p-0 flex flex-col md:gap-1">
+                {nav.map((item, index) => (
+                    <NavRow
+                        key={item.href}
+                        icon={item.icon}
+                        label={item.label}
+                        href={item.href}
+                        displayArrow={true}
+                        className={cn(
+                            "md:hover:bg-muted md:rounded-md md:p-4",
+                            (item.href.endsWith(`/${lastSegment}`) ||
+                                (isEditRoot && index === 0)) &&
+                                "md:bg-muted",
+                        )}
+                    />
+                ))}
+                <DeletePetDialog petName={petName} isDeleting={isDeleting} onDelete={onDelete} />
+            </CardContent>
+        </Card>
     );
 }
 
@@ -185,6 +324,7 @@ export default function PetEditLayout({
     ];
 
     const currentPageLabel = nav.find((item) => item.href.endsWith(`/${lastSegment}`))?.label;
+    const backHref = isEditRoot ? routes.PetDetails({ id }) : base;
 
     const handleDelete = () => {
         executeDelete(() => deletePet(id), {
@@ -198,62 +338,26 @@ export default function PetEditLayout({
     return (
         <div className="flex flex-col md:flex-row w-full justify-between h-fit md:h-[calc(100dvh-var(--header-height))] md:overflow-hidden">
             <div className="w-full md:w-1/3 md:p-8 md:overflow-y-auto">
-                <div className="flex flex-col">
-                    <div
-                        className={cn(
-                            "bg-card flex items-center gap-3 px-4 py-2 w-full fixed top-0 z-10 md:hidden",
-                            scrolled && "border-b",
-                        )}
-                    >
-                        <Button variant="flat" size="icon-sm" asChild>
-                            <Link href={isEditRoot ? routes.PetDetails({ id }) : base}>
-                                <ArrowLeft className="size-4" />
-                            </Link>
-                        </Button>
-                    </div>
-
-                    <div className="pt-13 md:pt-0 px-4 md:px-0">
-                        <div className={cn(!isEditRoot && "hidden md:flex")}>
-                            <PetAvatarCard
-                                pet={pet ?? null}
-                                avatarUrl={avatarUrl}
-                                completion={completion}
-                            />
-                        </div>
-                    </div>
-                </div>
+                <PetEditSidebarTop
+                    scrolled={scrolled}
+                    isEditRoot={isEditRoot}
+                    backHref={backHref}
+                    petName={pet?.name ?? ""}
+                    pet={pet ?? null}
+                    avatarUrl={avatarUrl}
+                    completion={completion}
+                />
 
                 <div className={cn("flex flex-col gap-2", !isEditRoot && "hidden md:flex")}>
                     <div className="flex flex-col gap-2 p-4 py-2 md:py-4 md:px-0 w-full">
-                        <Card className="p-0 ring-0">
-                            <CardContent className="p-0 flex flex-col md:gap-1">
-                                {nav.map((item: (typeof nav)[number], index: number) => (
-                                    <NavRow
-                                        key={item.href}
-                                        icon={item.icon}
-                                        label={item.label}
-                                        href={item.href}
-                                        displayArrow={true}
-                                        className={cn(
-                                            "md:hover:bg-muted md:rounded-md md:p-4",
-                                            (item.href.endsWith(`/${lastSegment}`) ||
-                                                (isEditRoot && index === 0)) &&
-                                                "md:bg-muted",
-                                        )}
-                                    />
-                                ))}
-                            </CardContent>
-                        </Card>
-
-                        <Card className="p-0 ring-0">
-                            <CardContent className="p-0">
-                                <DeletePetDialog
-                                    petName={pet?.name ?? ""}
-                                    isDeleting={isDeleting}
-                                    onDelete={handleDelete}
-                                />
-                            </CardContent>
-                        </Card>
+                        <PetEditNavCard
+                            nav={nav}
+                            lastSegment={lastSegment}
+                            isEditRoot={isEditRoot}
+                            petName={pet?.name ?? ""}
+                            isDeleting={isDeleting}
+                            onDelete={handleDelete}
+                        />
                     </div>
                 </div>
             </div>
@@ -261,10 +365,10 @@ export default function PetEditLayout({
             <Separator orientation="vertical" className="hidden md:block w-[1px] h-full" />
 
             <div className="md:w-2/3 md:p-8 md:overflow-y-auto h-full">
-                <div className="flex-1 md:py-6 md:pt-0">
+                <div className="flex-1">
                     <div
                         className={cn(
-                            "flex flex-col gap-3",
+                            "flex flex-col gap-3 pb-8",
                             isEditRoot && "hidden md:block",
                             !isEditRoot && "px-4 md:p-0",
                         )}

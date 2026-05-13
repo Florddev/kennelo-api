@@ -6,17 +6,21 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMessages, useTranslations } from "next-intl";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+    Calendar,
+    CalendarAdd,
     CalendarMark,
+    DocumentMedicine,
     GallerySend,
+    InfoCircle,
     InfoSquare,
     Library,
     Men,
     Paw,
+    SoundwaveSquare,
     TextSquare,
     Weigher,
     Women,
 } from "@solar-icons/react";
-import { PawPrint } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@workspace/ui/components/button";
 import { cn } from "@workspace/ui/lib/utils";
@@ -34,6 +38,7 @@ import { useAsyncState } from "@/hooks/use-async-state";
 import { isIllustratedType } from "@/features/pets/lib/pet-illustrations";
 import { readNestedMessage } from "@/features/pets/utils/attribute-form-utils";
 import { toast } from "sonner";
+import { RowLabel } from "@/components/forms/inline-inputs/shared";
 
 export function GeneralEditForm({ pet }: { pet: PetModel }): React.ReactElement {
     const t = useTranslations();
@@ -65,7 +70,7 @@ export function GeneralEditForm({ pet }: { pet: PetModel }): React.ReactElement 
                             className="size-9 object-contain"
                         />
                     ) : (
-                        <PawPrint className="size-9 text-primary" />
+                        <Paw className="size-9 text-primary" />
                     ),
                 };
             }),
@@ -148,7 +153,7 @@ export function GeneralEditForm({ pet }: { pet: PetModel }): React.ReactElement 
     const avatarUrl = pet.getAvatarUrl();
 
     return (
-        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-3 pb-20 md:pb-0">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-3">
             <ImagePickerDialog value={[]} onChange={handleAvatarChange} maxFiles={1} mode="direct">
                 <div
                     className={cn(
@@ -156,7 +161,7 @@ export function GeneralEditForm({ pet }: { pet: PetModel }): React.ReactElement 
                         isAvatarLoading && "opacity-50 pointer-events-none",
                     )}
                 >
-                    <div className="relative size-16 rounded-full overflow-hidden bg-muted shrink-0">
+                    <div className="relative aspect-14/9 h-16 rounded-sm overflow-hidden bg-muted shrink-0">
                         {avatarUrl ? (
                             <Image src={avatarUrl} alt={pet.name} fill className="object-cover" />
                         ) : (
@@ -176,6 +181,12 @@ export function GeneralEditForm({ pet }: { pet: PetModel }): React.ReactElement 
                 </div>
             </ImagePickerDialog>
 
+            <RowLabel
+                Icon={SoundwaveSquare}
+                className="mt-4"
+                label={t("features.pets.edit.generalGroups.identity")}
+            />
+
             <InlineController
                 name="name"
                 control={form.control}
@@ -184,44 +195,70 @@ export function GeneralEditForm({ pet }: { pet: PetModel }): React.ReactElement 
                 Icon={TextSquare}
                 isLoading={isLoading}
             />
-            <InlineController
-                name="animalTypeId"
-                control={form.control}
-                type="card-list"
-                label={t("features.pets.fields.animalType")}
-                Icon={Paw}
-                options={animalTypeOptions}
-                isLoading={isLoading}
-            />
-            <InlineController
-                name="breed"
-                control={form.control}
-                type="text"
-                label={t("features.pets.fields.breed")}
-                Icon={Library}
-                isLoading={isLoading}
-            />
+
+            <div className="grid md:grid-cols-2 gap-3">
+                <InlineController
+                    name="animalTypeId"
+                    control={form.control}
+                    type="card-list"
+                    label={t("features.pets.fields.animalType")}
+                    Icon={Paw}
+                    options={animalTypeOptions}
+                    isLoading={isLoading}
+                />
+                <InlineController
+                    name="breed"
+                    control={form.control}
+                    type="text"
+                    label={t("features.pets.fields.breed")}
+                    Icon={Library}
+                    isLoading={isLoading}
+                />
+            </div>
+
             <InlineController
                 name="sex"
+                Icon={DocumentMedicine}
                 control={form.control}
                 type="button-list"
                 label={t("features.pets.fields.sex")}
-                Icon={Paw}
                 isLoading={isLoading}
                 options={[
                     { label: t("features.pets.sex.male"), value: "male", Icon: Men },
                     { label: t("features.pets.sex.female"), value: "female", Icon: Women },
                 ]}
             />
+
+            <RowLabel
+                Icon={CalendarAdd}
+                className="mt-4"
+                label={t("features.pets.edit.generalGroups.keyDates")}
+            />
+
             <InlineController
                 name="birthDate"
                 control={form.control}
                 type="date"
                 label={t("features.pets.fields.birthDate")}
-                Icon={CalendarMark}
+                Icon={Calendar}
                 isLoading={isLoading}
                 allowApproximate
             />
+            <InlineController
+                Icon={CalendarMark}
+                name="adoptionDate"
+                control={form.control}
+                type="date"
+                label={t("features.pets.fields.adoptionDate")}
+                isLoading={isLoading}
+            />
+
+            <RowLabel
+                Icon={InfoCircle}
+                className="mt-4"
+                label={t("features.pets.edit.generalGroups.characteristics")}
+            />
+
             <InlineController
                 name="weight"
                 control={form.control}
@@ -231,14 +268,6 @@ export function GeneralEditForm({ pet }: { pet: PetModel }): React.ReactElement 
                 step={0.1}
                 min={0}
                 max={200}
-                isLoading={isLoading}
-            />
-            <InlineController
-                name="adoptionDate"
-                control={form.control}
-                type="date"
-                label={t("features.pets.fields.adoptionDate")}
-                Icon={Paw}
                 isLoading={isLoading}
             />
             <InlineController

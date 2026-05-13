@@ -155,7 +155,8 @@
                 "avatarLabel": "صورة الملف الشخصي",
                 "imagesLabel": "صور إضافية",
                 "pickAvatar": "اختر صورة ملف شخصي",
-                "pickImages": "اختر صورًا"
+                "pickImages": "اختر صورًا",
+                "addImages": "إضافة الصور"
             },
             "avatar": {
                 "title": "دعنا نختار صورة ملف شخصية لحيوانك الأليف.",
@@ -536,6 +537,11 @@
             "health": "التعقيم، الشريحة الإلكترونية، ملاحظات صحية",
             "personality": "السمات السلوكية",
             "photos": "الصورة الرمزية وصور المعرض"
+        },
+        "generalGroups": {
+            "identity": "الهوية",
+            "keyDates": "التواريخ الرئيسية",
+            "characteristics": "الخصائص"
         },
         "completionLabel": "اكتمال الملف الشخصي",
         "delete": "حذف",

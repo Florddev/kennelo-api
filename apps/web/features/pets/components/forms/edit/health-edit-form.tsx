@@ -87,7 +87,7 @@ export function HealthEditForm({ pet }: { pet: PetModel }): React.ReactElement {
     };
 
     return (
-        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-3 pb-20 md:pb-0">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-3">
             <InlineController
                 name="isSterilized"
                 control={form.control}

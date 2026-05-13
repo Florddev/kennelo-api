@@ -15,12 +15,9 @@ export default function PetEditPage(): React.ReactElement {
         <div className="flex flex-col gap-6">
             <section className="grid gap-4">
                 <div>
-                    <h2 className="hidden md:block text-lg font-semibold">
+                    <h2 className="hidden md:block font-semibold tracking-tight text-2xl md:text-3xl">
                         {t("features.pets.edit.sections.general")}
                     </h2>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                        {t("features.pets.edit.sectionDescriptions.general")}
-                    </p>
                 </div>
                 {pet && <GeneralEditForm pet={pet} />}
             </section>

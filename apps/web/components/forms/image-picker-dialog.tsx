@@ -39,6 +39,7 @@ type ImagePickerDialogProps = {
     children: React.ReactNode;
     maxFiles?: number;
     mode?: "dialog" | "direct";
+    className?: string;
 };
 
 export function ImagePickerDialog({
@@ -47,6 +48,7 @@ export function ImagePickerDialog({
     children,
     maxFiles,
     mode = "dialog",
+    className,
 }: ImagePickerDialogProps) {
     const t = useTranslations();
     const isMobile = useIsMobile();
@@ -126,7 +128,7 @@ export function ImagePickerDialog({
                 }}
                 onClick={() => directInputRef.current?.click()}
                 data-dragging={isDragging || undefined}
-                className="cursor-pointer"
+                className={cn("cursor-pointer", className)}
             >
                 {children}
                 <input

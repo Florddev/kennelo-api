@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { ArrowLeft, Heart, Share } from "@solar-icons/react";
+import { ArrowLeft, PenNewSquare, Share } from "@solar-icons/react";
 import { PawPrint } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@workspace/ui/components/button";
@@ -13,6 +13,7 @@ import { useNavigation } from "@/hooks/use-navigation";
 import { getAge } from "@/features/pets/lib/pet-age";
 import { isIllustratedType } from "@/features/pets/lib/pet-illustrations";
 import { DetailPageLayout } from "@/components/layouts/detail-page-layout";
+import Link from "next/link";
 
 type Query = { id: string };
 
@@ -107,7 +108,7 @@ function PetDetailsPageSkeleton() {
 
 export default function PetDetailsPage() {
     const t = useTranslations();
-    const { params, back } = useNavigation<Query>();
+    const { params, back, routes } = useNavigation<Query>();
     const { pet, isLoading } = usePet(params.id);
     const { user } = useAuth();
 
@@ -161,9 +162,13 @@ export default function PetDetailsPage() {
             }
             headerEnd={
                 <>
-                    <Button size="icon-sm" className="text-primary bg-card">
-                        <Heart />
-                    </Button>
+                    {isOwner && (
+                        <Button size="icon-sm" className="text-primary bg-card" asChild>
+                            <Link href={routes.PetEditPage({ id: pet.id })}>
+                                <PenNewSquare />
+                            </Link>
+                        </Button>
+                    )}
                     <Button size="icon-sm" className="text-primary bg-card">
                         <Share />
                     </Button>

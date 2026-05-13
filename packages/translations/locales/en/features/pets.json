@@ -155,7 +155,8 @@
                 "avatarLabel": "Profile photo",
                 "imagesLabel": "Additional photos",
                 "pickAvatar": "Choose an avatar",
-                "pickImages": "Choose photos"
+                "pickImages": "Choose photos",
+                "addImages": "Add photos"
             },
             "avatar": {
                 "title": "Let us choose a profile photo for your pet.",
@@ -536,6 +537,11 @@
             "health": "Sterilization, microchip, health notes",
             "personality": "Behavioral attributes",
             "photos": "Avatar and gallery photos"
+        },
+        "generalGroups": {
+            "identity": "Identity",
+            "keyDates": "Key dates",
+            "characteristics": "Characteristics"
         },
         "completionLabel": "Profile completion",
         "delete": "Delete",

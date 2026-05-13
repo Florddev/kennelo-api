@@ -65,7 +65,7 @@ export function InlineCardList({
     );
 
     const grid = (
-        <div className="grid grid-cols-2 gap-2 p-4 pb-6">
+        <div className="grid grid-cols-2 gap-2 px-1 md:px-4 py-4">
             {options.map((option) => {
                 const isSelected = option.value === resolved.value;
                 return (

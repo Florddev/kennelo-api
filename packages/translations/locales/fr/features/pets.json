@@ -155,7 +155,8 @@
                 "avatarLabel": "Photo de profil",
                 "imagesLabel": "Photos supplémentaires",
                 "pickAvatar": "Choisir un avatar",
-                "pickImages": "Choisir des photos"
+                "pickImages": "Choisir des photos",
+                "addImages": "Ajouter des photos"
             },
             "avatar": {
                 "title": "Choisissons une photo de profil pour votre animal.",
@@ -536,6 +537,11 @@
             "health": "Stérilisation, puce, notes de santé",
             "personality": "Attributs comportementaux",
             "photos": "Avatar et photos de galerie"
+        },
+        "generalGroups": {
+            "identity": "Identité",
+            "keyDates": "Dates clés",
+            "characteristics": "Caractéristiques"
         },
         "completionLabel": "Complétion du profil",
         "delete": "Supprimer",
