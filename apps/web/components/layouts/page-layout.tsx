@@ -2,7 +2,6 @@
 
 import { usePlatform } from "@/hooks/use-platform";
 import { useScrolled } from "@/hooks/use-scrolled";
-import { isCapacitorApp } from "@/lib/platform";
 import { IconProps } from "@solar-icons/react";
 import { cn } from "@workspace/ui/lib/utils";
 export default function PageLayout({

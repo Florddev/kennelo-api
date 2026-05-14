@@ -16,7 +16,6 @@ import {
 import { isActivePath } from "@workspace/common";
 
 import { useNavVisibility } from "@/providers/navigation-visibility-provider";
-import { usePlatform } from "@/hooks/use-platform";
 
 interface AppLayoutProps {
     children: React.ReactNode;
@@ -28,8 +27,6 @@ export default function AppLayout({ children, className }: AppLayoutProps) {
     const locale = useLocale();
     const { routes } = useNavigation();
     const t = useTranslations();
-    // const { isCapacitorApp } = usePlatform();
-
     const { isBottomNavbarVisible } = useNavVisibility();
     const isActive = (href: string) => isActivePath(href, pathname, locale);
 

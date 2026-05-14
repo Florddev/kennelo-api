@@ -5,6 +5,7 @@ import { Field, FieldLabel } from "@workspace/ui/components/field";
 import { ImagePickerDialog } from "@/components/forms/image-picker-dialog";
 import { WizardStepShell } from "@/components/forms/stepper/wizard-step-shell";
 import { GallerySend } from "@solar-icons/react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 function FilePreview({ file, alt }: { file: File; alt: string }) {
     const url = useMemo(() => URL.createObjectURL(file), [file]);
@@ -20,6 +21,7 @@ type MediaStepProps = {
 
 export function MediaStep({ imageFiles, onImageFilesChange }: MediaStepProps) {
     const t = useTranslations();
+    const isMobile = useIsMobile();
 
     return (
         <WizardStepShell
@@ -32,6 +34,7 @@ export function MediaStep({ imageFiles, onImageFilesChange }: MediaStepProps) {
                     <ImagePickerDialog
                         value={imageFiles}
                         onChange={onImageFilesChange}
+                        mode={isMobile ? "direct" : "dialog"}
                         maxFiles={15}
                     >
                         <div className="gap-2 rounded-sm border-2 bg-muted/50 border-dashed min-h-42 w-full p-2 h-fit cursor-pointer flex items-center justify-center text-sm md:text-base font-semibold">

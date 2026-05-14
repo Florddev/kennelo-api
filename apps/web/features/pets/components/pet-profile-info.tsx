@@ -1,48 +1,20 @@
 "use client";
 
-import {
-    Activity,
-    Cpu,
-    Droplets,
-    Heart,
-    Home,
-    Image,
-    Info,
-    LucideIcon,
-    Scissors,
-    SlidersHorizontal,
-    Users,
-    UtensilsCrossed,
-} from "lucide-react";
+import { Image } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { PetAttributeModel, PetModel } from "@workspace/modules/pets";
 import { PetBadgesStrip } from "@/features/pets/components/pet-badges-strip";
 import { PetTypeIllustration } from "./pet-type-illustration";
-import { KHeartBeat, KInfoCircle } from "@workspace/ui/icons";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@workspace/ui/components/tabs";
 import { PetProfileReviews } from "./pet-profile-reviews";
 import { PetAttributeCategory } from "../../../../../packages/modules/src/pets/types/attributes-categories.type";
 import { cn } from "@workspace/ui/lib/utils";
 import { SectionShapeSvg } from "@/components/svg/section-shape";
-import { usePlatform } from "@/hooks/use-platform";
+import { HeartPulse, type IconProps, InfoCircle, InfoSquare } from "@solar-icons/react";
+import { DynamicIcon, type SolarIconName } from "@/components/dynamic-icon";
 
 type PetProfileInfoProps = {
     pet: PetModel;
     ageDisplay: string | null;
-};
-
-const categoriesIcons: Record<
-    PetAttributeCategory,
-    React.ComponentType<React.SVGProps<SVGSVGElement>>
-> = {
-    info: Info,
-    behavior: SlidersHorizontal,
-    social: Users,
-    hygiene: Droplets,
-    care: Heart,
-    health: Activity,
-    habitat: Home,
-    diet: UtensilsCrossed,
 };
 
 const YES_ACTION_KEY = "common.actions.yes";
@@ -77,24 +49,31 @@ function PetIdentityHeader({ pet }: { pet: PetModel }) {
 export function PetAttributeItem({
     label,
     value,
-    category,
-    Icon,
+    iconName,
+    className,
 }: {
     label: string;
     value: string;
-    category?: PetAttributeCategory;
-    Icon?: LucideIcon;
+    iconName?: string | null;
+    className?: string;
 }) {
-    const IconComponent =
-        Icon || (category && categoriesIcons[category] ? categoriesIcons[category] : Info);
-
     return (
         <div className="flex gap-2">
-            <div className="size-6 aspect-square rounded-[8px] flex justify-center items-center bg-card">
-                <IconComponent className="size-3.5 text-muted-foreground/80" />
+            <div
+                className={cn(
+                    "bg-muted size-8 min-w-8 rounded-[0.8rem] flex justify-center items-center ",
+                    className,
+                )}
+            >
+                <DynamicIcon
+                    iconName={iconName as SolarIconName}
+                    DefaultIcon={InfoSquare}
+                    className="size-5 min-w-5 text-primary"
+                    weight="Linear"
+                />
             </div>
-            <div className="flex flex-col">
-                <span className="text-xs text-primary font-medium">{label}</span>
+            <div className="flex flex-col gap-0.5">
+                <span className="text-sm text-primary font-medium">{label}</span>
                 <span className="text-xs text-muted-foreground">{value}</span>
             </div>
         </div>
@@ -106,11 +85,13 @@ export function PetGroupedAttributesList({
     title,
     categories,
     children,
+    className,
 }: {
     pet: PetModel;
     title?: string | null;
     categories?: PetAttributeCategory[] | null;
     children?: React.ReactNode;
+    className?: string;
 }) {
     const t = useTranslations();
     const yesText = t(YES_ACTION_KEY);
@@ -122,14 +103,15 @@ export function PetGroupedAttributesList({
     return (
         <div className="flex flex-col gap-3">
             {title && <h3 className="text-md font-semibold">{title}</h3>}
-            <div className="grid grid-cols-2 gap-2">
+            <div className="flex flex-wrap gap-4">
                 {attrs.map(({ attributes }) =>
                     attributes.map((attr: PetAttributeModel) => (
                         <PetAttributeItem
                             key={attr.id}
                             label={attr.attributeDefinition?.label || ""}
                             value={attr.displayValue(yesText, noText)}
-                            category={attr.attributeDefinition?.category}
+                            iconName={attr.attributeDefinition?.iconName}
+                            className={className}
                         />
                     )),
                 )}
@@ -148,12 +130,12 @@ export function PetDetailsSection({
     title: string;
     children: React.ReactNode;
     className?: string;
-    Icon?: React.ComponentType<{ className?: string; filled?: boolean }>;
+    Icon?: React.ComponentType<IconProps>;
 }) {
     return (
         <div className={cn("flex flex-col gap-4", className)}>
-            <div className="flex gap-1 items-center pb-0 z-10">
-                {Icon && <Icon className="size-6 text-primary/70" filled />}
+            <div className="flex gap-2 items-center pb-0 z-10">
+                {Icon && <Icon className="size-6" />}
                 <h2 className="text-lg font-semibold">{title}</h2>
             </div>
 
@@ -177,98 +159,76 @@ export function PetProfileInfo({ pet, ageDisplay }: PetProfileInfoProps) {
                 <PetBadgesStrip pet={pet} ageDisplay={ageDisplay} />
             </div>
 
-            <Tabs defaultValue="overview" className="flex flex-col gap-2">
-                <TabsList variant="line" className="flex justify-between w-full">
-                    <TabsTrigger value="overview" className="w-fit hover:text-red-500">
-                        <span data-slot="tab-label">{t("common.messages.overview")}</span>
-                        <span data-slot="tab-indicator" />
-                    </TabsTrigger>
-                    <TabsTrigger value="gallery" className="w-fit">
-                        <span data-slot="tab-label">{t("common.messages.gallery")}</span>
-                        <span data-slot="tab-indicator" />
-                    </TabsTrigger>
-                    <TabsTrigger value="reviews" className="w-fit">
-                        <span data-slot="tab-label">{t("common.messages.reviews")}</span>
-                        <span data-slot="tab-indicator" />
-                    </TabsTrigger>
-                </TabsList>
-                <TabsContent value="overview" className="flex flex-col gap-6">
-                    <PetDetailsSection
-                        title={t("common.messages.summary")}
-                        Icon={KInfoCircle}
-                        className="bg-amber-100 rounded-3xl py-2.5 px-3 relative overflow-hidden"
-                    >
-                        <SectionShapeSvg className="text-amber-400 absolute top-0 left-0" />
+            <div className="flex flex-col gap-6">
+                <PetDetailsSection
+                    title={t("common.messages.summary")}
+                    Icon={InfoCircle}
+                    className="bg-amber-100 rounded-3xl p-4 relative overflow-hidden"
+                >
+                    <SectionShapeSvg className="text-amber-400 absolute top-0 left-0" />
 
-                        <PetGroupedAttributesList
-                            pet={pet}
-                            title={t("common.messages.socialization")}
-                            categories={["social"]}
-                        />
-                        <PetGroupedAttributesList
-                            pet={pet}
-                            title={t("common.messages.boarding")}
-                            categories={["behavior", "habitat", "hygiene", "care"]}
-                        />
-                        <PetGroupedAttributesList
-                            pet={pet}
-                            title={t("common.messages.otherInformation")}
-                            categories={["diet", "info"]}
-                        />
-                    </PetDetailsSection>
+                    <PetGroupedAttributesList
+                        pet={pet}
+                        title={t("common.messages.socialization")}
+                        categories={["social"]}
+                        className="bg-amber-50"
+                    />
+                    <PetGroupedAttributesList
+                        pet={pet}
+                        title={t("common.messages.boarding")}
+                        categories={["behavior", "habitat", "hygiene", "care"]}
+                        className="bg-amber-50"
+                    />
+                    <PetGroupedAttributesList
+                        pet={pet}
+                        title={t("common.messages.otherInformation")}
+                        categories={["diet", "info"]}
+                        className="bg-amber-50"
+                    />
+                </PetDetailsSection>
 
-                    <PetDetailsSection title={t("common.messages.health")} Icon={KHeartBeat}>
-                        <PetGroupedAttributesList pet={pet} categories={["health"]}>
-                            {pet.isSterilized !== null && (
-                                <PetAttributeItem
-                                    label={t("features.pets.fields.sterilized")}
-                                    value={pet.isSterilized ? t(YES_ACTION_KEY) : t(NO_ACTION_KEY)}
-                                    Icon={Scissors}
-                                />
-                            )}
-
+                <PetDetailsSection title={t("common.messages.health")} Icon={HeartPulse}>
+                    <PetGroupedAttributesList pet={pet} categories={["health"]}>
+                        {pet.isSterilized !== null && (
                             <PetAttributeItem
-                                label={t("features.pets.fields.microchip")}
-                                value={
-                                    pet.hasMicrochip
-                                        ? (pet.microchipNumber ?? t(YES_ACTION_KEY))
-                                        : t(NO_ACTION_KEY)
-                                }
-                                Icon={Cpu}
+                                label={t("features.pets.fields.sterilized")}
+                                value={pet.isSterilized ? t(YES_ACTION_KEY) : t(NO_ACTION_KEY)}
+                                iconName="Scissors"
                             />
-                        </PetGroupedAttributesList>
+                        )}
+
+                        <PetAttributeItem
+                            label={t("features.pets.fields.microchip")}
+                            value={
+                                pet.hasMicrochip
+                                    ? (pet.microchipNumber ?? t(YES_ACTION_KEY))
+                                    : t(NO_ACTION_KEY)
+                            }
+                            iconName="Cpu"
+                        />
 
                         {pet.healthNotes && (
-                            <div className="space-y-2.5">
-                                <p className="text-md font-medium">
-                                    {t("features.pets.profile.medicalNotes")}
-                                </p>
-                                <div className="rounded-2xl border border-amber-200 bg-amber-50 dark:border-amber-900/50 dark:bg-amber-900/10 p-4">
-                                    <p className="text-sm text-amber-800/80 dark:text-amber-300/80 leading-relaxed">
-                                        {pet.healthNotes}
-                                    </p>
-                                </div>
-                            </div>
+                            <PetAttributeItem
+                                label={t("features.pets.profile.medicalNotes")}
+                                value={pet.healthNotes}
+                                iconName="InfoSquare"
+                            />
                         )}
-                    </PetDetailsSection>
-                </TabsContent>
-                <TabsContent value="gallery">
-                    <div className="rounded-2xl border bg-muted/30 p-10 flex flex-col items-center gap-3 text-center">
-                        <Image className="size-10 text-muted-foreground opacity-20" />
-                        <div className="space-y-1">
-                            <p className="font-medium text-sm">
-                                {t("common.messages.galleryEmpty")}
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                                {t("common.messages.galleryEmptyDescription")}
-                            </p>
-                        </div>
+                    </PetGroupedAttributesList>
+                </PetDetailsSection>
+
+                <div className="rounded-2xl border bg-muted/30 p-10 flex flex-col items-center gap-3 text-center">
+                    <Image className="size-10 text-muted-foreground opacity-20" />
+                    <div className="space-y-1">
+                        <p className="font-medium text-sm">{t("common.messages.galleryEmpty")}</p>
+                        <p className="text-xs text-muted-foreground">
+                            {t("common.messages.galleryEmptyDescription")}
+                        </p>
                     </div>
-                </TabsContent>
-                <TabsContent value="reviews">
-                    <PetProfileReviews />
-                </TabsContent>
-            </Tabs>
+                </div>
+
+                <PetProfileReviews />
+            </div>
         </div>
     );
 }

@@ -15,6 +15,7 @@ import Image from "next/image";
 import { useNavigation } from "@/hooks/use-navigation";
 import { useTranslations } from "next-intl";
 import { ArrowLeft } from "@solar-icons/react";
+import { usePlatform } from "@/hooks/use-platform";
 
 const STEP_EXIT_DURATION_MS = 50;
 
@@ -83,6 +84,7 @@ export function FormStepper<TFieldValues extends FieldValues>({
     stepperName,
 }: FormStepperProps<TFieldValues>) {
     const { routes, router } = useNavigation();
+    const { isCapacitorApp } = usePlatform();
     const t = useTranslations();
 
     const form = useForm<TFieldValues>({
@@ -155,7 +157,11 @@ export function FormStepper<TFieldValues extends FieldValues>({
                             {({ activeStep }) => (
                                 <>
                                     <div
-                                        className={cn("w-full h-18 px-2 md:px-8 flex items-center")}
+                                        className={cn(
+                                            "w-full md:h-18 px-2 md:px-8 flex items-center",
+                                            isCapacitorApp &&
+                                                "pt-[var(--mobile-top-margin)] md:pt-0",
+                                        )}
                                     >
                                         <div className="hidden md:flex w-full items-center justify-between">
                                             <Link
@@ -188,7 +194,7 @@ export function FormStepper<TFieldValues extends FieldValues>({
                                             </div>
                                         </div>
 
-                                        <div className="flex justify-between items-center w-full md:hidden">
+                                        <div className="flex justify-between items-center w-full md:hidden py-2">
                                             <Navigation
                                                 className="gris min-w-16"
                                                 render={(props) => (

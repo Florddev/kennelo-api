@@ -24,7 +24,6 @@ export * from "./components/forms/edit/personality-edit-form";
 export * from "./components/forms/edit/photos-edit-form";
 export * from "./components/forms/step/animal-type-step";
 export * from "./components/forms/step/attributes-category-step";
-export * from "./components/forms/step/identity-details-step";
 export * from "./components/forms/step/identity-step";
 export * from "./components/forms/step/intro-step";
 export * from "./components/forms/step/media-step";

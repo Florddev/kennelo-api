@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { ArrowLeft, PenNewSquare, Share } from "@solar-icons/react";
+import { ArrowLeft, PenNewSquare } from "@solar-icons/react";
 import { PawPrint } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@workspace/ui/components/button";
@@ -17,6 +17,16 @@ import Link from "next/link";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 type Query = { id: string };
+
+function formatAgeDisplay(
+    birthDate: string | null | undefined,
+    formatYears: (count: number) => string,
+    formatMonths: (count: number) => string,
+): string | null {
+    if (!birthDate) return null;
+    const { years, months } = getAge(birthDate);
+    return years >= 1 ? formatYears(years) : formatMonths(months);
+}
 
 function PetDetailsPageSkeleton() {
     return (
@@ -122,13 +132,11 @@ export default function PetDetailsPage() {
         return null;
     }
 
-    const ageDisplay = pet.birthDate
-        ? (() => {
-              const { years, months } = getAge(pet.birthDate);
-              if (years >= 1) return t("features.pets.age.years", { count: years });
-              return t("features.pets.age.months", { count: months });
-          })()
-        : null;
+    const ageDisplay = formatAgeDisplay(
+        pet.birthDate,
+        (count) => t("features.pets.age.years", { count }),
+        (count) => t("features.pets.age.months", { count }),
+    );
 
     const isOwner = user?.id === pet.userId;
     const typeCode = pet.animalType?.code?.toLowerCase() ?? "";

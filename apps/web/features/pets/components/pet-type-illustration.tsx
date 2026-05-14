@@ -26,5 +26,4 @@ export function PetTypeIllustration({ code, name = "", className }: PetTypeIllus
     }
 
     return null;
-    // return <PawPrint className={cn("shrink-0 text-muted-foreground/50", className)} />;
 }

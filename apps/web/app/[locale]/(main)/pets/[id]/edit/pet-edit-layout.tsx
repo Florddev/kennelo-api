@@ -58,6 +58,7 @@ import { toast } from "sonner";
 import { usePlatform } from "@/hooks/use-platform";
 
 const EDIT_SECTIONS = ["general", "health", "personality", "photos"] as const;
+const HIDDEN_ON_MOBILE = "hidden md:block";
 
 function computeCompletion(pet: PetModel): number {
     const checks = [
@@ -76,6 +77,26 @@ function computeCompletion(pet: PetModel): number {
     return Math.round((checks.filter(Boolean).length / checks.length) * 100);
 }
 
+function PetAvatarImage({
+    pet,
+    avatarUrl,
+}: {
+    pet: PetModel | null;
+    avatarUrl: string | undefined;
+}) {
+    if (avatarUrl) {
+        return <Image src={avatarUrl} alt={pet?.name ?? ""} fill className="object-cover" />;
+    }
+    if (pet) {
+        return (
+            <div className="size-full flex items-center justify-center">
+                <GalleryMinimalistic className="size-10 text-muted-foreground mb-12" />
+            </div>
+        );
+    }
+    return <Skeleton className="size-full rounded-none" />;
+}
+
 function PetAvatarCard({
     pet,
     avatarUrl,
@@ -89,15 +110,7 @@ function PetAvatarCard({
     return (
         <div className="flex flex-col items-center gap-3 w-full">
             <div className="relative rounded-sm overflow-hidden bg-muted shadow-lg shrink-0 w-full aspect-14/9 2xl:aspect-video">
-                {avatarUrl ? (
-                    <Image src={avatarUrl} alt={pet?.name ?? ""} fill className="object-cover" />
-                ) : pet ? (
-                    <div className="size-full flex items-center justify-center">
-                        <GalleryMinimalistic className="size-10 text-muted-foreground mb-12" />
-                    </div>
-                ) : (
-                    <Skeleton className="size-full rounded-none" />
-                )}
+                <PetAvatarImage pet={pet} avatarUrl={avatarUrl} />
 
                 <div className="absolute p-1 w-full bottom-0 left-0">
                     <div className="bg-white/70 w-full rounded-2xl p-4 backdrop-blur-sm">
@@ -230,21 +243,21 @@ function PetEditSidebarTop({
                     <Button variant="flat" size="sm" className="px-2 md:px-3" asChild>
                         <Link href={backHref}>
                             <ArrowLeft className="size-4" />
-                            <span className="hidden md:block">{t("common.actions.back")}</span>
+                            <span className={HIDDEN_ON_MOBILE}>{t("common.actions.back")}</span>
                         </Link>
                     </Button>
                     {petName ? (
                         <h1
                             className={cn(
                                 "font-semibold text-2xl md:text-3xl",
-                                !isEditRoot && "hidden md:block",
+                                !isEditRoot && HIDDEN_ON_MOBILE,
                             )}
                         >
                             {petName}
                         </h1>
                     ) : (
                         <Skeleton
-                            className={cn("h-8 w-40 rounded-xl", !isEditRoot && "hidden md:block")}
+                            className={cn("h-8 w-40 rounded-xl", !isEditRoot && HIDDEN_ON_MOBILE)}
                         />
                     )}
                 </div>
@@ -302,6 +315,16 @@ function PetEditNavCard({
     );
 }
 
+function computeBackHref(
+    isMobile: boolean,
+    isEditRoot: boolean,
+    petDetailsHref: string,
+    petEditPageHref: string,
+): string {
+    if (isMobile && !isEditRoot) return petEditPageHref;
+    return petDetailsHref;
+}
+
 export function PetEditLayout({ children }: { children: React.ReactNode }) {
     const { id } = useRouteParams<{ id: string }>();
     const pathname = usePathname();
@@ -348,11 +371,12 @@ export function PetEditLayout({ children }: { children: React.ReactNode }) {
     const currentPageLabel = nav.find((item) =>
         item.href?.split("?")[0]?.endsWith(`/${lastSegment}`),
     )?.label;
-    const backHref = isMobile
-        ? isEditRoot
-            ? routes.PetDetails({ id })
-            : routes.PetEditPage({ id })
-        : routes.PetDetails({ id });
+    const backHref = computeBackHref(
+        isMobile,
+        isEditRoot,
+        routes.PetDetails({ id }),
+        routes.PetEditPage({ id }),
+    );
 
     const handleDelete = () => {
         executeDelete(() => deletePet(id), {
@@ -402,7 +426,7 @@ export function PetEditLayout({ children }: { children: React.ReactNode }) {
                     <div
                         className={cn(
                             "flex flex-col gap-3 pb-8",
-                            isEditRoot && "hidden md:block",
+                            isEditRoot && HIDDEN_ON_MOBILE,
                             !isEditRoot && "px-4 md:p-0",
                         )}
                     >
