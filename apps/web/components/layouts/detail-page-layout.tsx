@@ -3,6 +3,7 @@
 import { ReactNode } from "react";
 import { cn } from "@workspace/ui/lib/utils";
 import { MediaGallery } from "@/components/media/media-gallery";
+import { usePlatform } from "@/hooks/use-platform";
 
 type DetailPageLayoutProps = {
     images: string[];
@@ -27,9 +28,23 @@ export function DetailPageLayout({
     children,
     className,
 }: DetailPageLayoutProps) {
+    const { isCapacitorApp } = usePlatform();
+
     return (
-        <div data-slot="detail-page-layout" className={cn("relative min-h-[100dvh]", className)}>
-            <div className="absolute top-0 start-0 end-0 z-10 sm:static sm:z-auto flex justify-between items-center p-2">
+        <div
+            data-slot="detail-page-layout"
+            className={cn(
+                "relative min-h-[100dvh]",
+                isCapacitorApp && "-pt-[var(--mobile-top-margin)]",
+                className,
+            )}
+        >
+            <div
+                className={cn(
+                    "absolute top-0 start-0 end-0 z-10 sm:static sm:z-auto flex justify-between items-center p-2 px-4",
+                    isCapacitorApp && "mt-[var(--mobile-top-margin)]",
+                )}
+            >
                 <div>{headerStart}</div>
                 <div className="flex gap-0.5">{headerEnd}</div>
             </div>

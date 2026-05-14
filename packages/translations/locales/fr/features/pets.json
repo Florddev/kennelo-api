@@ -156,7 +156,8 @@
                 "imagesLabel": "Photos supplémentaires",
                 "pickAvatar": "Choisir un avatar",
                 "pickImages": "Choisir des photos",
-                "addImages": "Ajouter des photos"
+                "addImages": "Ajouter des photos",
+                "avatarUploadError": "La photo de profil n'a pas pu être envoyée, vous pourrez la modifier depuis le profil."
             },
             "avatar": {
                 "title": "Choisissons une photo de profil pour votre animal.",

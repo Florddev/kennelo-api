@@ -12,7 +12,7 @@ import { SwitchChecker } from "@workspace/ui/components/switch-checker";
 import { type InlineFieldBaseProps } from "./types";
 import { RowLabel, resolveInlineField, rowCn } from "./shared";
 
-export type InlineBooleanProps = InlineFieldBaseProps & {
+export type InlineBooleanProps = InlineFieldBaseProps<boolean> & {
     field?: ControllerRenderProps<FieldValues, string>;
     fieldState?: ControllerFieldState;
 };

@@ -24,6 +24,7 @@ import { PetProfileReviews } from "./pet-profile-reviews";
 import { PetAttributeCategory } from "../../../../../packages/modules/src/pets/types/attributes-categories.type";
 import { cn } from "@workspace/ui/lib/utils";
 import { SectionShapeSvg } from "@/components/svg/section-shape";
+import { usePlatform } from "@/hooks/use-platform";
 
 type PetProfileInfoProps = {
     pet: PetModel;

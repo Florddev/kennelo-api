@@ -1,12 +1,9 @@
-"use client";
+import { PetEditGeneralPage } from "./general-edit-page";
 
-import { useParams } from "next/navigation";
-import { usePet } from "@/features/pets/hooks/use-pet";
-import { GeneralEditForm } from "@/features/pets/components/forms/edit/general-edit-form";
+export function generateStaticParams() {
+    return [{ id: "[id]" }];
+}
 
-export default function PetEditGeneralPage() {
-    const { id } = useParams<{ id: string }>();
-    const { pet } = usePet(id);
-
-    return pet && <GeneralEditForm pet={pet} />;
+export default function PetEditGeneral() {
+    return <PetEditGeneralPage />;
 }

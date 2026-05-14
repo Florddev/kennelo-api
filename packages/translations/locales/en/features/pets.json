@@ -156,7 +156,8 @@
                 "imagesLabel": "Additional photos",
                 "pickAvatar": "Choose an avatar",
                 "pickImages": "Choose photos",
-                "addImages": "Add photos"
+                "addImages": "Add photos",
+                "avatarUploadError": "Profile photo could not be uploaded, you can set it later from the profile."
             },
             "avatar": {
                 "title": "Let us choose a profile photo for your pet.",

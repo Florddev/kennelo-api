@@ -1,12 +1,9 @@
-"use client";
+import { PetEditPersonalityPage } from "./personality-edit-page";
 
-import { useParams } from "next/navigation";
-import { usePet } from "@/features/pets/hooks/use-pet";
-import { PersonalityEditForm } from "@/features/pets/components/forms/edit/personality-edit-form";
+export function generateStaticParams() {
+    return [{ id: "[id]" }];
+}
 
-export default function PetEditPersonalityPage() {
-    const { id } = useParams<{ id: string }>();
-    const { pet } = usePet(id);
-
-    return pet && <PersonalityEditForm pet={pet} />;
+export default function PetEditPersonality() {
+    return <PetEditPersonalityPage />;
 }

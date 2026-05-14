@@ -162,19 +162,24 @@ export function CreatePetStepper() {
                 }
 
                 if (avatarFile) {
-                    const compressed = await imageCompressionService.compressImage(avatarFile, {
-                        maxWidth: 800,
-                        maxHeight: 800,
-                        quality: 0.82,
-                    });
-                    const baseName = avatarFile.name.replace(/\.[^.]+$/, "");
-                    const webpAvatar = new File([compressed.blob], `${baseName}.webp`, {
-                        type: "image/webp",
-                    });
-                    const avatarResult = await execute(() => uploadPetAvatar(petId, webpAvatar), {
-                        displayError: true,
-                    });
-                    if (!avatarResult) return false;
+                    try {
+                        const compressed = await imageCompressionService.compressImage(avatarFile, {
+                            maxWidth: 800,
+                            maxHeight: 800,
+                            quality: 0.82,
+                        });
+                        const baseName = avatarFile.name.replace(/\.[^.]+$/, "");
+                        const compressedAvatar = new File(
+                            [compressed.blob],
+                            `${baseName}.${compressed.format}`,
+                            { type: `image/${compressed.format}` },
+                        );
+                        await execute(() => uploadPetAvatar(petId, compressedAvatar), {
+                            displayError: true,
+                        });
+                    } catch {
+                        toast.error(t("features.pets.create.steps.media.avatarUploadError"));
+                    }
                 }
 
                 return true;

@@ -7,6 +7,7 @@ type CompressionConfig = {
 
 type CompressionResult = {
     blob: Blob;
+    format: string;
     originalSize: number;
     compressedSize: number;
     ratio: number;
@@ -57,22 +58,39 @@ function resizeAndEncode(
 
         ctx.drawImage(img, 0, 0, width, height);
 
-        canvas.toBlob(
-            (blob) => {
-                if (!blob) {
-                    reject(new Error("Canvas conversion failed"));
-                    return;
-                }
-                resolve({
-                    blob,
-                    originalSize: file.size,
-                    compressedSize: blob.size,
-                    ratio: blob.size / file.size,
+        const encodeBlob = (format: string, onBlob: (blob: Blob | null, fmt: string) => void) => {
+            canvas.toBlob((blob) => onBlob(blob, format), `image/${format}`, config.quality);
+        };
+
+        encodeBlob(config.format, (blob, fmt) => {
+            if (!blob && fmt === "webp") {
+                encodeBlob("jpeg", (fallbackBlob, fallbackFmt) => {
+                    if (!fallbackBlob) {
+                        reject(new Error("Canvas conversion failed"));
+                        return;
+                    }
+                    resolve({
+                        blob: fallbackBlob,
+                        format: fallbackFmt,
+                        originalSize: file.size,
+                        compressedSize: fallbackBlob.size,
+                        ratio: fallbackBlob.size / file.size,
+                    });
                 });
-            },
-            `image/${config.format}`,
-            config.quality,
-        );
+                return;
+            }
+            if (!blob) {
+                reject(new Error("Canvas conversion failed"));
+                return;
+            }
+            resolve({
+                blob,
+                format: fmt,
+                originalSize: file.size,
+                compressedSize: blob.size,
+                ratio: blob.size / file.size,
+            });
+        });
     } catch (error) {
         reject(error as Error);
     }
@@ -116,10 +134,9 @@ function createImageCompressionService() {
 
             const compressed = await compressImage(file, config);
 
-            const format = config.format ?? "webp";
             const baseName = file.name.replace(/\.[^.]+$/, "");
-            const compressedFile = new File([compressed.blob], `${baseName}.${format}`, {
-                type: `image/${format}`,
+            const compressedFile = new File([compressed.blob], `${baseName}.${compressed.format}`, {
+                type: `image/${compressed.format}`,
             });
 
             results.push(compressedFile);

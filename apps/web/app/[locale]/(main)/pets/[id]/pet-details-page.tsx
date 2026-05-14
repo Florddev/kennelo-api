@@ -14,6 +14,7 @@ import { getAge } from "@/features/pets/lib/pet-age";
 import { isIllustratedType } from "@/features/pets/lib/pet-illustrations";
 import { DetailPageLayout } from "@/components/layouts/detail-page-layout";
 import Link from "next/link";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 type Query = { id: string };
 
@@ -108,8 +109,9 @@ function PetDetailsPageSkeleton() {
 
 export default function PetDetailsPage() {
     const t = useTranslations();
-    const { params, back, routes } = useNavigation<Query>();
+    const { params, routes } = useNavigation<Query>();
     const { pet, isLoading } = usePet(params.id);
+    const isMobile = useIsMobile();
     const { user } = useAuth();
 
     if (!pet && isLoading) {
@@ -156,34 +158,44 @@ export default function PetDetailsPage() {
             emptyState={emptyState}
             desktopCtaLabel={t("features.pets.profile.viewPhotos", { count: images.length })}
             headerStart={
-                <Button size="icon-sm" className="text-primary bg-card" onClick={back}>
-                    <ArrowLeft />
+                <Button size="icon-sm" className="text-primary bg-card hover:bg-muted" asChild>
+                    <Link href={routes.MyPets()}>
+                        <ArrowLeft />
+                    </Link>
                 </Button>
             }
             headerEnd={
                 <>
                     {isOwner && (
-                        <Button size="icon-sm" className="text-primary bg-card" asChild>
-                            <Link href={routes.PetEditPage({ id: pet.id })}>
+                        <Button
+                            size="sm"
+                            className="text-primary bg-card hover:bg-muted gap-1.5"
+                            asChild
+                        >
+                            <Link
+                                href={
+                                    isMobile
+                                        ? routes.PetEditPage({ id: pet.id })
+                                        : routes.PetEditGeneral({ id: pet.id })
+                                }
+                            >
                                 <PenNewSquare />
+                                {t("common.actions.edit")}
                             </Link>
                         </Button>
                     )}
-                    <Button size="icon-sm" className="text-primary bg-card">
-                        <Share />
-                    </Button>
                 </>
             }
             footer={
                 isOwner ? (
-                    <div className="h-14 bg-card border-t px-2 flex justify-center items-center sm:hidden">
-                        <Button className="w-full" size="lg">
+                    <div className="h-16 bg-card border-t px-2 flex justify-center items-center sm:hidden">
+                        <Button className="w-full" size="xl">
                             {t("features.pets.profile.findHost", { name: pet.name })}
                         </Button>
                     </div>
                 ) : undefined
             }
-            className="pb-20 sm:pb-6"
+            className="pb-6"
         >
             <PetProfileInfo pet={pet} ageDisplay={ageDisplay} />
         </DetailPageLayout>

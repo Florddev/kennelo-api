@@ -64,7 +64,7 @@ function DateModeToggle({
     );
 }
 
-export type InlineDateProps = InlineFieldBaseProps & {
+export type InlineDateProps = InlineFieldBaseProps<string> & {
     field?: ControllerRenderProps<FieldValues, string>;
     fieldState?: ControllerFieldState;
     allowApproximate?: boolean;
@@ -130,7 +130,7 @@ export function InlineDate({
         setDateMode(mode);
     }
 
-    const todayIso = new Date().toISOString().split("T")[0];
+    const todayIso = new Date().toISOString().slice(0, 10);
 
     const trigger = (
         <div

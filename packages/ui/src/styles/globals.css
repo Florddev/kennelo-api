@@ -9,6 +9,7 @@
 
 :root {
     --header-height: 5rem;
+    --mobile-top-margin: 2.5rem;
     --background: oklch(0.991 0.0041 91.45);
     --foreground: oklch(0.2178 0 0);
     --card: oklch(1.0000 0 0);

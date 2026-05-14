@@ -31,7 +31,7 @@ function readNestedMessage(messages: unknown, path: string): string | null {
 }
 
 type OptionBadgeProps = {
-    option: { id: number; value: string; label: string };
+    option: { id: string; value: string; label: string };
     definitionCode: string;
     isSelected: boolean;
     onSelect: () => void;

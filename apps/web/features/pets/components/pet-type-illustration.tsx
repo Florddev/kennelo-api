@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import { PawPrint } from "lucide-react";
 import { cn } from "@workspace/ui/lib/utils";
 import { isIllustratedType } from "@/features/pets/lib/pet-illustrations";
 
@@ -26,5 +25,6 @@ export function PetTypeIllustration({ code, name = "", className }: PetTypeIllus
         );
     }
 
-    return <PawPrint className={cn("shrink-0 text-muted-foreground", className)} />;
+    return null;
+    // return <PawPrint className={cn("shrink-0 text-muted-foreground/50", className)} />;
 }

@@ -207,7 +207,7 @@ export default function MyPetsPage() {
                 )
             }
             headerBottom={
-                isAuthenticated && !isLoading && pets.length > 0 && availableTypes.length > 1 ? (
+                isAuthenticated && !isLoading && pets.length > 0 ? (
                     <PetTypeFilters
                         availableTypes={availableTypes}
                         typeFilter={typeFilter}

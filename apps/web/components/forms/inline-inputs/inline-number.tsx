@@ -26,7 +26,7 @@ import { type InlineFieldBaseProps } from "./types";
 import { RowLabel, resolveInlineField, rowCn } from "./shared";
 import { cn } from "@workspace/ui/lib/utils";
 
-export type InlineNumberProps = InlineFieldBaseProps & {
+export type InlineNumberProps = InlineFieldBaseProps<number> & {
     field?: ControllerRenderProps<FieldValues, string>;
     fieldState?: ControllerFieldState;
     step?: number;

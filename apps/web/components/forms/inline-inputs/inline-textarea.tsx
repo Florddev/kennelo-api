@@ -12,7 +12,7 @@ import { cn } from "@workspace/ui/lib/utils";
 import { type InlineFieldBaseProps } from "./types";
 import { RowLabel, resolveInlineField } from "./shared";
 
-export type InlineTextareaProps = InlineFieldBaseProps & {
+export type InlineTextareaProps = InlineFieldBaseProps<string> & {
     field?: ControllerRenderProps<FieldValues, string>;
     fieldState?: ControllerFieldState;
 };

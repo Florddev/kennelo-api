@@ -12,12 +12,15 @@ import { useScrolled } from "@/hooks/use-scrolled";
 import { NavRow } from "@/components/navigation/nav-row";
 import { Separator } from "@workspace/ui/components/separator";
 import { useNavigation } from "@/hooks/use-navigation";
+import { usePlatform } from "@/hooks/use-platform";
 
 export default function ProfileSettingsLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
     const t = useTranslations();
     const scrolled = useScrolled(100);
     const { routes } = useNavigation();
+    const { isCapacitorApp } = usePlatform();
+
     useHideBottomNavbar();
 
     const settingsNav = [
@@ -52,13 +55,19 @@ export default function ProfileSettingsLayout({ children }: { children: React.Re
 
     return (
         <div className="flex flex-col md:flex-row w-full justify-between h-fit md:h-[calc(100dvh-var(--header-height))] md:overflow-hidden">
-            <div className="w-full md:w-1/3 md:p-8 md:overflow-y-auto">
+            <div
+                className={cn(
+                    "w-full md:w-1/3 md:p-8 md:overflow-y-auto",
+                    isCapacitorApp && "mt-[var(--mobile-top-margin)]",
+                )}
+            >
                 <div className="flex flex-col">
                     <div
                         className={cn(
                             "bg-card flex justify-between px-4 py-2 w-full fixed top-0 z-10 md:hidden",
                             scrolled && "border-b",
                             !isSettingsRoot && "md:hidden",
+                            isCapacitorApp && "pt-[var(--mobile-top-margin)]",
                         )}
                     >
                         <Button variant="flat" size="icon-sm" asChild>

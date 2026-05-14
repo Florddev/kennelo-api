@@ -32,40 +32,49 @@ export function BottomNavbar({
         <nav
             className={cn(
                 "fixed bottom-0 w-full bg-card border-t border-primary/10 flex items-start z-10",
-                isCapacitorApp ? "pb-3" : "pb-0",
+                isCapacitorApp ? "pb-2.5" : "pb-0",
                 className,
             )}
         >
-            <div className="container mx-auto h-fit grid grid-cols-5 justify-around w-full items-center py-1.5 pt-2">
+            <div className="container mx-auto h-fit grid grid-cols-5 justify-around w-full items-center py-1.5">
                 {navigationItems.map((item) => (
                     <NavItem
                         key={item.href}
                         Icon={item.icon}
-                        iconSize={28}
+                        iconSize={26}
                         active={item.active}
                         href={item.href}
-                        className={cn("text-muted-foreground", item.active && "text-primary")}
+                        className={cn(
+                            "text-muted-foreground text-xs",
+                            item.active && "text-primary",
+                        )}
                     >
                         {item.text}
                     </NavItem>
                 ))}
                 {isAuthenticated ? (
                     <NavItem
-                        iconSize={28}
+                        iconSize={26}
                         href={routes.Profile()}
                         active={isActive(routes.Profile())}
-                        className="text-muted-foreground"
+                        className="text-muted-foreground text-xs"
                     >
-                        <UserAvatar user={user} className="size-[28px]" />
+                        <UserAvatar
+                            user={user}
+                            className={cn(
+                                "size-[28px] border-1 border-white",
+                                isActive(routes.Profile()) && "ring-1 ring-primary rounded-full",
+                            )}
+                        />
                         {t("ui.navigation.profile")}
                     </NavItem>
                 ) : (
                     <NavItem
                         Icon={UserCircle}
-                        iconSize={28}
+                        iconSize={26}
                         href={routes.Login()}
                         active={isActive(routes.Login())}
-                        className="text-muted-foreground"
+                        className="text-muted-foreground text-xs"
                     >
                         {t("common.actions.login")}
                     </NavItem>

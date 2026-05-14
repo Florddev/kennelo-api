@@ -1,6 +1,8 @@
 "use client";
 
+import { usePlatform } from "@/hooks/use-platform";
 import { useScrolled } from "@/hooks/use-scrolled";
+import { isCapacitorApp } from "@/lib/platform";
 import { IconProps } from "@solar-icons/react";
 import { cn } from "@workspace/ui/lib/utils";
 export default function PageLayout({
@@ -22,7 +24,8 @@ export default function PageLayout({
     hideTitle?: boolean;
     Icon?: React.ComponentType<IconProps>;
 }) {
-    const scrolled = useScrolled(50);
+    const scrolled = useScrolled(80);
+    const { isCapacitorApp } = usePlatform();
 
     return (
         <div>
@@ -32,13 +35,19 @@ export default function PageLayout({
                     scrolled && "border-b",
                 )}
             >
-                <div className="flex relative flex-col-reverse md:flex-row md:justify-between sm:items-start w-full py-2 p-4 sm:pt-6">
+                <div
+                    className={cn(
+                        "flex relative flex-col-reverse md:flex-row md:justify-between sm:items-start w-full py-2 p-4 sm:pt-6",
+                        isCapacitorApp && "mt-[var(--mobile-top-margin)]",
+                        scrolled && "py-2",
+                    )}
+                >
                     <div className={cn("flex flex-col gap-4", scrolled && "gap-3")}>
                         <h1
                             className={cn(
                                 "flex gap-1.5 items-center tracking-tight transition-all sm:mt-0 h-8",
                                 scrolled || hideTitle
-                                    ? "text-xl font-semibold -mt-8"
+                                    ? "text-2xl font-semibold -mt-8"
                                     : "text-3xl font-bold",
                                 hideTitle && "opacity-0",
                             )}

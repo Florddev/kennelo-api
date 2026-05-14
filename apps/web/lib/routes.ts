@@ -71,13 +71,13 @@ type MyPetsParams = {
     search_params?: Record<string, string | number | boolean>;
 };
 
-type PetEditGeneralPageParams = {
+type PetEditGeneralParams = {
     locale?: string | number;
     id: string | number;
     search_params?: Record<string, string | number | boolean>;
 };
 
-type PetEditHealthPageParams = {
+type PetEditHealthParams = {
     locale?: string | number;
     id: string | number;
     search_params?: Record<string, string | number | boolean>;
@@ -89,13 +89,13 @@ type PetEditPageParams = {
     search_params?: Record<string, string | number | boolean>;
 };
 
-type PetEditPersonalityPageParams = {
+type PetEditPersonalityParams = {
     locale?: string | number;
     id: string | number;
     search_params?: Record<string, string | number | boolean>;
 };
 
-type PetEditPhotosPageParams = {
+type PetEditPhotosParams = {
     locale?: string | number;
     id: string | number;
     search_params?: Record<string, string | number | boolean>;
@@ -189,11 +189,11 @@ function MyPets(params?: MyPetsParams): string {
     return buildRoute("/[locale]/pets", params);
 }
 
-function PetEditGeneralPage(params: PetEditGeneralPageParams): string {
+function PetEditGeneral(params: PetEditGeneralParams): string {
     return buildRoute("/[locale]/pets/[id]/edit/general", params);
 }
 
-function PetEditHealthPage(params: PetEditHealthPageParams): string {
+function PetEditHealth(params: PetEditHealthParams): string {
     return buildRoute("/[locale]/pets/[id]/edit/health", params);
 }
 
@@ -201,11 +201,11 @@ function PetEditPage(params: PetEditPageParams): string {
     return buildRoute("/[locale]/pets/[id]/edit", params);
 }
 
-function PetEditPersonalityPage(params: PetEditPersonalityPageParams): string {
+function PetEditPersonality(params: PetEditPersonalityParams): string {
     return buildRoute("/[locale]/pets/[id]/edit/personality", params);
 }
 
-function PetEditPhotosPage(params: PetEditPhotosPageParams): string {
+function PetEditPhotos(params: PetEditPhotosParams): string {
     return buildRoute("/[locale]/pets/[id]/edit/photos", params);
 }
 
@@ -251,11 +251,11 @@ export const routes = {
     Messages,
     NewPet,
     MyPets,
-    PetEditGeneralPage,
-    PetEditHealthPage,
+    PetEditGeneral,
+    PetEditHealth,
     PetEditPage,
-    PetEditPersonalityPage,
-    PetEditPhotosPage,
+    PetEditPersonality,
+    PetEditPhotos,
     PetDetails,
     Profile,
     MyProfileAbout,
