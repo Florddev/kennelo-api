@@ -1,0 +1,22 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: kennelo-postgres-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: kennelo
+      POSTGRES_PASSWORD: kennelo_dev_password
+      POSTGRES_DB: kennelo
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kennelo -d kennelo"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres-data:
+    name: kennelo-postgres-dev-data
