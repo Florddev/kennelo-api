@@ -16,6 +16,7 @@
         "laravel/reverb": "^1.10",
         "laravel/tinker": "^2.10.1",
         "php-open-source-saver/jwt-auth": "^2.0",
+        "predis/predis": "^3.4",
         "propaganistas/laravel-phone": "^6.0",
         "sentry/sentry-laravel": "^4.16",
         "spatie/image": "^3.0",
