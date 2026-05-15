@@ -12,6 +12,8 @@
         "gallery": "Galerie",
         "owner": "Propriétaire",
         "reviews": "Avis",
+        "reviewsTitle": "Ce que disent les hôtes",
+        "reviewsCount": "{count, plural, =0 {Aucun avis} =1 {1 avis d'un hôte} other {# avis d'hôtes}}",
         "reviewsEmpty": "Aucun avis pour l'instant",
         "reviewsEmptyDescription": "Les avis laissés par les hôtes ayant gardé cet animal apparaîtront ici",
         "photosPlaceholder": "Photos à venir",

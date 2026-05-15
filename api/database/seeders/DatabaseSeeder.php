@@ -40,6 +40,7 @@ class DatabaseSeeder extends Seeder
 
             // Reviews
             ReviewCriteriaSeeder::class,
+            PetReviewSeeder::class,
         ]);
 
         User::factory(5)->create()->each(function ($user) {

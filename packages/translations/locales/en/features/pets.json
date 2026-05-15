@@ -12,6 +12,8 @@
         "gallery": "Gallery",
         "owner": "Owner",
         "reviews": "Reviews",
+        "reviewsTitle": "What others say",
+        "reviewsCount": "{count, plural, =0 {No reviews yet} =1 {1 review from a host} other {# reviews from hosts}}",
         "reviewsEmpty": "No reviews yet",
         "reviewsEmptyDescription": "Reviews from hosts who have cared for this pet will appear here",
         "photosPlaceholder": "Photos coming soon",

@@ -12,6 +12,8 @@
         "gallery": "المعرض",
         "owner": "المالك",
         "reviews": "التقييمات",
+        "reviewsTitle": "ما يقوله المضيفون",
+        "reviewsCount": "{count, plural, =0 {لا توجد تقييمات} =1 {تقييم واحد من مضيف} other {# تقييمات من مضيفين}}",
         "reviewsEmpty": "لا توجد تقييمات بعد",
         "reviewsEmptyDescription": "ستظهر هنا التقييمات التي تركها المضيفون الذين اعتنوا بهذا الحيوان",
         "photosPlaceholder": "الصور قادمة قريباً",

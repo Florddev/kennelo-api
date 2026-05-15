@@ -1,5 +1,4 @@
 import { User } from "@solar-icons/react";
-import { UserModel } from "@workspace/modules/users";
 import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/avatar";
 import { cn } from "@workspace/ui/lib/utils";
 
@@ -8,7 +7,10 @@ export function UserAvatar({
     className,
     size,
 }: {
-    user?: UserModel | null;
+    user?: {
+        avatarUrl?: string | null;
+        getFullName: () => string;
+    } | null;
     className?: string;
     size?: "default" | "sm" | "lg";
 }) {
