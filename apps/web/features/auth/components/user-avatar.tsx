@@ -15,12 +15,12 @@ export function UserAvatar({
     size?: "default" | "sm" | "lg";
 }) {
     return (
-        <Avatar className={cn("cursor-pointer after:border-0", className)} size={size}>
+        <Avatar className={cn("cursor-pointer bg-muted after:border-0", className)} size={size}>
             <AvatarImage
                 src={user?.avatarUrl || undefined}
                 alt={user?.getFullName() || "User profile"}
             />
-            <AvatarFallback className="text-xs bg-muted border-0">
+            <AvatarFallback className="text-xs border-0 bg-transparent">
                 <User
                     weight="Bold"
                     className="size-full max-w-2/3 text-muted-foreground/30 border-0"

@@ -50,7 +50,11 @@
         "socialization": "Socialization",
         "boarding": "Boarding",
         "otherInformation": "Other information",
-        "findHost": "Find a host for {name}"
+        "findHost": "Find a host for {name}",
+        "overviewSectionTitle": "Character & Habits",
+        "overviewSectionDescription": "Character, habits, and care at a glance",
+        "galleryTitle": "Photo gallery of {name}",
+        "galleryDescription": "Find all photos taken of {name} during their stays."
     },
     "fields": {
         "name": "Name",
@@ -553,5 +557,6 @@
         "deleteConfirm": "Delete permanently",
         "saveSuccess": "Changes saved",
         "deleteSuccess": "Pet deleted"
-    }
+    },
+    "noDescription": "No description was provided for this animal."
 }

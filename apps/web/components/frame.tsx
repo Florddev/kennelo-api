@@ -1,23 +1,28 @@
 import { cn } from "@workspace/ui/lib/utils";
 
 export function Frame({
-    title,
+    header,
+    footer,
     children,
     className,
+    contentClassName,
 }: {
-    title?: string | React.ReactNode;
+    header?: string | React.ReactNode;
+    footer?: string | React.ReactNode;
     children: React.ReactNode;
     className?: string;
+    contentClassName?: string;
 }) {
     return (
         <div
             className={cn(
-                "flex flex-col bg-muted rounded-sm p-0.5 relative overflow-hidden",
+                "flex flex-col bg-muted rounded-sm p-0.5 relative overflow-hidden relative",
                 className,
             )}
         >
-            {title}
-            <div className="bg-card rounded-sm p-4 border">{children}</div>
+            {header}
+            <div className={cn("bg-card rounded-sm p-4 border", contentClassName)}>{children}</div>
+            {footer}
         </div>
     );
 }

@@ -50,7 +50,11 @@
         "socialization": "Socialisation",
         "boarding": "Garde",
         "otherInformation": "Autres informations",
-        "findHost": "Trouver un hôte pour {name}"
+        "findHost": "Trouver un hôte pour {name}",
+        "overviewSectionTitle": "Caractère & Habitudes",
+        "overviewSectionDescription": "Caractère, habitudes et besoins en un coup d'œil",
+        "galleryTitle": "Galerie photos de {name}",
+        "galleryDescription": "Retrouvez toutes les photos prises de {name} lors de ses gardes."
     },
     "fields": {
         "name": "Nom",
@@ -553,5 +557,11 @@
         "deleteConfirm": "Supprimer définitivement",
         "saveSuccess": "Modifications enregistrées",
         "deleteSuccess": "Animal supprimé"
+    },
+    "noDescription": "Aucun description n'a été fournie pour cette animal.",
+    "common": {
+        "messages": {
+            "infos": "Infos"
+        }
     }
 }

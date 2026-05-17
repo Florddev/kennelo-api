@@ -7,7 +7,8 @@
     "boarding": "Garde",
     "otherInformation": "Autres informations",
     "health": "Santé",
-    "galleryEmpty": "Galerie bientôt disponible",
-    "galleryEmptyDescription": "La photo de profil et la galerie seront disponibles à la sortie de la fonctionnalité",
-    "system": "Système"
+    "galleryEmpty": "La gallery est vide",
+    "galleryEmptyDescription": "Aucune photo supplémentaire n'a été prise pendant les séjours",
+    "system": "Système",
+    "infos": "Infos"
 }

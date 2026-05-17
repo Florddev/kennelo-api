@@ -50,7 +50,11 @@
         "socialization": "التنشئة الاجتماعية",
         "boarding": "الإقامة",
         "otherInformation": "معلومات أخرى",
-        "findHost": "ابحث عن مضيف لـ {name}}"
+        "findHost": "ابحث عن مضيف لـ {name}",
+        "overviewSectionTitle": "الشخصية والعادات",
+        "overviewSectionDescription": "الشخصية والعادات والاحتياجات في لمحة",
+        "galleryTitle": "معرض صور {name}",
+        "galleryDescription": "اعثر على جميع الصور التي تم التقاطها من {name} أثناء إقاماته."
     },
     "fields": {
         "name": "الاسم",
@@ -553,5 +557,6 @@
         "deleteConfirm": "حذف نهائي",
         "saveSuccess": "تم حفظ التغييرات",
         "deleteSuccess": "تم حذف الحيوان الأليف"
-    }
+    },
+    "noDescription": "لم يتم تقديم وصف لهذا الحيوان."
 }

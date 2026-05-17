@@ -150,8 +150,13 @@ export function FormStepper<TFieldValues extends FieldValues>({
 
     return (
         <FormProvider {...form}>
-            <form id={id} className={cn("space-y-6", className)}>
-                <div className="fixed top-0 left-0 w-screen h-[100dvh] max-h-[100dvh] bg-card z-20">
+            <form id={id} className="space-y-6">
+                <div
+                    className={cn(
+                        "fixed top-0 left-0 w-screen h-[100dvh] max-h-[100dvh] bg-card z-20",
+                        className,
+                    )}
+                >
                     <div className="flex flex-col h-full justify-between overflow-auto">
                         <Stepper>
                             {({ activeStep }) => (

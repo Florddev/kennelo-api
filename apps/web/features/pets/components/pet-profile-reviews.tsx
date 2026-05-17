@@ -36,7 +36,7 @@ export function PetProfileReviews({ pet }: { pet: PetModel }) {
     return (
         <div className="flex flex-col gap-4">
             {reviews.map((review) => (
-                <PetReviewCard key={review.id} review={review} />
+                <PetReviewCard key={review.id} review={review} pet={pet} />
             ))}
         </div>
     );

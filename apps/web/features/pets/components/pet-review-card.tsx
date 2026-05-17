@@ -3,9 +3,10 @@
 import { UserAvatar } from "@/features/auth";
 import { Star } from "@solar-icons/react";
 import { formatDateAdaptive } from "@workspace/common";
-import type { PetReviewModel } from "@workspace/modules/pets";
+import type { PetModel, PetReviewModel } from "@workspace/modules/pets";
 
-export function PetReviewCard({ review }: { review: PetReviewModel }) {
+export function PetReviewCard({ review, pet }: { review: PetReviewModel; pet: PetModel }) {
+    const petColorClass = pet?.animalType?.getTailwindColorClass();
     const filledStars = 3;
 
     return (
@@ -33,13 +34,13 @@ export function PetReviewCard({ review }: { review: PetReviewModel }) {
                                             <Star
                                                 weight="Bold"
                                                 key={i}
-                                                className="size-3.5 text-amber-400"
+                                                className={`size-3.5 text-${petColorClass}-400`}
                                             />
                                         ) : (
                                             <Star
                                                 key={i}
                                                 weight="Bold"
-                                                className="size-3.5 text-muted-foreground/20"
+                                                className="size-3.5 text-muted-foreground/10"
                                             />
                                         ),
                                     )}
