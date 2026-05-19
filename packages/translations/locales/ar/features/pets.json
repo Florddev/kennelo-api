@@ -219,12 +219,12 @@
     "types": {
         "dog": "كلب",
         "cat": "قطة",
-        "bird": "طائر",
         "rabbit": "أرنب",
+        "rodent": "قارض",
+        "ferret": "فريت",
+        "bird": "طائر",
         "reptile": "زاحف",
-        "amphibian": "برمائي",
-        "fish": "سمكة",
-        "spider": "عنكبوت"
+        "amphibian": "برمائي"
     },
     "filters": {
         "all": "الكل",
@@ -257,32 +257,43 @@
             "options": {
                 "low": "هادئ ومنخفض النشاط",
                 "medium": "طاقة متوازنة",
-                "high": "نشيط جدًا"
+                "high": "نشيط جدًا",
+                "very_high": "نشيط للغاية"
             }
         },
-        "potty_trained": {
-            "question": "ما مدى تدريب {petName} على قضاء الحاجة؟",
-            "options": {
-                "trained": "مدرّب جيدًا",
-                "learning": "لا يزال يتعلم",
-                "to_determine": "لست متأكدًا بعد"
-            }
-        },
-        "litter_trained": {
-            "question": "ما مدى التزام {petName} باستخدام صندوق الفضلات؟",
-            "options": {
-                "trained": "يستخدم الصندوق بشكل منتظم",
-                "learning": "لا يزال يتعلم",
-                "to_determine": "لست متأكدًا بعد"
-            }
-        },
-        "friendly_with_kids": {
+        "friendly_with_children": {
             "question": "كيف يتصرف {petName} مع الأطفال؟",
             "options": {
                 "yes": "ينسجم جيدًا مع الأطفال",
+                "supervised_only": "تحت الإشراف فقط",
                 "no": "لا ينسجم مع الأطفال",
                 "unknown": "لا أعرف"
             }
+        },
+        "feeding_schedule": {
+            "question": "ما هو جدول تغذية {petName}؟",
+            "options": {
+                "morning_only": "الصباح فقط",
+                "evening_only": "المساء فقط",
+                "morning_and_evening": "الصباح والمساء",
+                "three_times_daily": "ثلاث مرات يوميًا",
+                "free_feeding": "تغذية حرة (متاح دائمًا)"
+            }
+        },
+        "feeding_frequency": {
+            "question": "كم مرة يجب إطعام {petName}؟",
+            "options": {
+                "daily": "مرة يوميًا",
+                "every_2_days": "كل يومين",
+                "twice_weekly": "مرتين في الأسبوع",
+                "weekly": "مرة في الأسبوع"
+            }
+        },
+        "medications": {
+            "question": "هل يحتاج {petName} إلى أدوية معينة؟"
+        },
+        "special_diet": {
+            "question": "هل لدى {petName} متطلبات غذائية خاصة؟"
         },
         "friendly_with_dogs": {
             "question": "كيف يتصرف {petName} مع الكلاب؟",
@@ -300,34 +311,119 @@
                 "unknown": "لا أعرف"
             }
         },
-        "potty_break": {
-            "question": "كم مرة يحتاج {petName} إلى الخروج لقضاء الحاجة؟",
-            "options": {
-                "2h": "كل ساعتين تقريبًا",
-                "4h": "كل أربع ساعات تقريبًا",
-                "6h_plus": "يمكنه الانتظار 6 ساعات أو أكثر"
-            }
-        },
-        "meal_schedule": {
-            "question": "ما جدول وجبات {petName}؟",
-            "options": {
-                "morning": "وجبة واحدة صباحًا",
-                "evening": "وجبة واحدة مساءً",
-                "morning_evening": "وجبتان صباحًا ومساءً",
-                "free_feeding": "طعام متاح طوال الوقت"
-            }
-        },
         "can_be_left_alone": {
             "question": "كم من الوقت يمكن ترك {petName} بمفرده؟",
             "options": {
                 "1h": "حتى ساعة واحدة",
                 "4h": "حتى 4 ساعات",
-                "8h_plus": "8 ساعات أو أكثر",
+                "8h": "حتى 8 ساعات",
                 "never": "لا يجب تركه بمفرده"
             }
         },
-        "medications": {
-            "question": "هل يحتاج {petName} إلى أدوية معينة؟"
+        "can_be_handled": {
+            "question": "إلى أي مدى يمكن التعامل مع {petName} باليد؟",
+            "options": {
+                "yes_easily": "يمكن التعامل معه بسهولة",
+                "yes_with_care": "يتطلب الحذر عند التعامل",
+                "requires_experience": "يتطلب خبرة",
+                "no": "لا يحب التعامل المباشر"
+            }
+        },
+        "litter_trained": {
+            "question": "ما مدى التزام {petName} باستخدام صندوق الفضلات؟",
+            "options": {
+                "yes": "مدرّب على صندوق الرمل",
+                "in_training": "لا يزال يتعلم",
+                "no": "غير مدرّب"
+            }
+        },
+        "housing_size": {
+            "question": "ما حجم المسكن المناسب لـ {petName}؟",
+            "options": {
+                "small": "صغير",
+                "medium": "متوسط",
+                "large": "كبير",
+                "extra_large": "كبير جدًا / طائرية"
+            }
+        },
+        "is_nocturnal": {
+            "question": "هل {petName} ليليّ النشاط؟"
+        },
+        "humidity_level": {
+            "question": "ما مستوى الرطوبة المناسب لـ {petName}؟",
+            "options": {
+                "low": "منخفضة (30–40%)",
+                "medium": "متوسطة (50–60%)",
+                "high": "مرتفعة (70–80%)",
+                "very_high": "مرتفعة جدًا (80%+)"
+            }
+        },
+        "diet_type": {
+            "question": "ما نوع النظام الغذائي المناسب لـ {petName}؟",
+            "options": {
+                "insects": "حشرات",
+                "rodents": "قوارض / فئران صغيرة",
+                "worms": "ديدان",
+                "vegetables": "خضروات / فاكهة",
+                "omnivore": "قارت",
+                "carnivore": "آكل لحوم"
+            }
+        },
+        "requires_live_food": {
+            "question": "هل يحتاج {petName} إلى طعام حي؟"
+        },
+        "is_venomous": {
+            "question": "هل {petName} سام أو ذو سُمية؟"
+        },
+        "handling_frequency": {
+            "question": "كم مرة يتم التعامل مع {petName}؟",
+            "options": {
+                "daily": "يوميًا",
+                "few_per_week": "عدة مرات في الأسبوع",
+                "weekly": "مرة في الأسبوع",
+                "rarely": "نادرًا / أبدًا"
+            }
+        },
+        "potty_trained": {
+            "question": "ما مدى تدريب {petName} على قضاء الحاجة؟",
+            "options": {
+                "fully_trained": "مدرّب جيدًا",
+                "in_training": "لا يزال يتعلم",
+                "not_trained": "غير مدرّب"
+            }
+        },
+        "potty_break_frequency": {
+            "question": "كم مرة يحتاج {petName} للخروج لقضاء الحاجة؟",
+            "options": {
+                "every_2h": "كل ساعتين",
+                "every_4h": "كل 4 ساعات",
+                "every_6h_plus": "كل 6 ساعات أو أكثر"
+            }
+        },
+        "leash_trained": {
+            "question": "هل {petName} مدرّب على المقود؟",
+            "options": {
+                "yes": "نعم، مدرّب جيدًا",
+                "in_training": "لا يزال يتعلم",
+                "no": "غير مدرّب على المقود"
+            }
+        },
+        "daily_walks": {
+            "question": "كم نزهة يحتاج {petName} يوميًا؟",
+            "options": {
+                "one": "نزهة واحدة",
+                "two": "نزهتان",
+                "three_plus": "3 نزهات أو أكثر"
+            }
+        },
+        "separation_anxiety": {
+            "question": "هل يعاني {petName} من قلق الانفصال؟",
+            "options": {
+                "none": "لا قلق",
+                "mild": "قلق خفيف",
+                "moderate": "قلق متوسط",
+                "severe": "قلق شديد"
+            }
         },
         "indoor_outdoor": {
             "question": "هل يعيش {petName} داخل المنزل أم خارجه أم كلاهما؟",
@@ -340,59 +436,78 @@
         "declawed": {
             "question": "هل تم نزع مخالب {petName}؟"
         },
-        "cage_type": {
-            "question": "ما نوع القفص أو الحظيرة المناسب لـ {petName}؟",
+        "friendly_with_other_cats": {
+            "question": "كيف يتصرف {petName} مع القطط الأخرى؟",
             "options": {
-                "small": "قفص صغير",
-                "medium": "قفص متوسط",
-                "large": "قفص كبير",
-                "enclosure": "حظيرة",
-                "aviary": "قفص طيور كبير"
-            }
-        },
-        "is_nocturnal": {
-            "question": "هل {petName} ليليّ النشاط؟"
-        },
-        "can_be_handled": {
-            "question": "إلى أي مدى يمكن التعامل مع {petName} باليد؟",
-            "options": {
-                "yes_easily": "يمكن التعامل معه بسهولة",
-                "yes_with_care": "يمكن التعامل معه بحذر",
-                "no_fearful": "لا يحب التعامل المباشر"
-            }
-        },
-        "bites_scratches": {
-            "question": "هل يقوم {petName} بالعض أو الخدش؟",
-            "options": {
-                "never": "أبدًا",
-                "rarely": "نادرًا",
-                "often": "غالبًا"
-            }
-        },
-        "friendly_with_same_species": {
-            "question": "كيف يتصرف {petName} مع نفس النوع؟",
-            "options": {
-                "yes": "ينسجم مع نفس النوع",
-                "no": "لا ينسجم مع نفس النوع",
+                "yes": "ينسجم جيدًا مع القطط الأخرى",
+                "no": "لا ينسجم مع القطط الأخرى",
                 "unknown": "لا أعرف"
             }
         },
-        "diet_specifics": {
-            "question": "هل لدى {petName} نظام غذائي خاص؟"
+        "housing_type": {
+            "question": "ما نوع المسكن المناسب لـ {petName}؟",
+            "options": {
+                "indoor_cage": "قفص داخلي",
+                "outdoor_hutch": "حظيرة خارجية",
+                "free_roam": "حرية الحركة",
+                "cage_with_exercise": "قفص مع منطقة ترفيه"
+            }
+        },
+        "hay_type": {
+            "question": "ما نوع العلف الذي يأكله {petName}؟",
+            "options": {
+                "timothy": "عشبة التيموثي",
+                "orchard": "حشيشة البستان",
+                "meadow": "عشب المروج",
+                "alfalfa": "البرسيم الحجازي (للصغار أو المرضى)"
+            }
+        },
+        "free_roam_time": {
+            "question": "كم من وقت الحرية يحتاج {petName} يوميًا؟",
+            "options": {
+                "less_than_1h": "أقل من ساعة",
+                "1_to_3h": "من 1 إلى 3 ساعات",
+                "3_to_6h": "من 3 إلى 6 ساعات",
+                "all_day": "طوال اليوم"
+            }
+        },
+        "rodent_species": {
+            "question": "ما نوع القارض الخاص بـ {petName}؟"
+        },
+        "social_living": {
+            "question": "هل يعيش {petName} بمفرده أم مع آخرين؟",
+            "options": {
+                "alone": "يعيش بمفرده",
+                "pair": "ثنائي",
+                "group": "في مجموعة"
+            }
+        },
+        "biting_tendency": {
+            "question": "هل يميل {petName} إلى العض؟",
+            "options": {
+                "never": "لا يعض أبدًا",
+                "rarely": "نادرًا ما يعض",
+                "when_stressed": "يعض عند التوتر"
+            }
+        },
+        "social_with_ferrets": {
+            "question": "كيف يتصرف {petName} مع الفريتات الأخرى؟",
+            "options": {
+                "yes": "ينسجم مع الفريتات الأخرى",
+                "no": "لا ينسجم مع الفريتات الأخرى",
+                "unknown": "لا أعرف"
+            }
         },
         "bird_species": {
             "question": "ما نوع الطائر الخاص بـ {petName}؟"
         },
-        "can_fly": {
-            "question": "هل يستطيع {petName} الطيران؟",
+        "flight_status": {
+            "question": "ما وضع طيران {petName}؟",
             "options": {
-                "yes": "يستطيع الطيران",
-                "no_clipped": "لا يستطيع الطيران بسبب قص الأجنحة",
-                "limited": "قدرته على الطيران محدودة"
+                "fully_flighted": "طيران كامل",
+                "wings_clipped": "أجنحة مقصوصة",
+                "limited_flight": "طيران محدود"
             }
-        },
-        "wings_clipped": {
-            "question": "هل أجنحة {petName} مقصوصة؟"
         },
         "noise_level": {
             "question": "ما مستوى صوت {petName}؟",
@@ -406,48 +521,30 @@
         "can_talk": {
             "question": "هل يستطيع {petName} التحدث؟"
         },
-        "friendly_with_other_birds": {
+        "out_of_cage_time": {
+            "question": "كم من الوقت يحتاج {petName} خارج القفص يوميًا؟",
+            "options": {
+                "not_needed": "غير ضروري",
+                "less_than_1h": "أقل من ساعة",
+                "1_to_3h": "من 1 إلى 3 ساعات",
+                "more_than_3h": "أكثر من 3 ساعات"
+            }
+        },
+        "bath_method": {
+            "question": "كيف يستحم {petName}؟",
+            "options": {
+                "misting": "رش بالماء",
+                "shallow_dish": "طبق ضحل",
+                "both": "كلا الطريقتين",
+                "none_needed": "غير ضروري"
+            }
+        },
+        "friendly_with_birds": {
             "question": "كيف يتصرف {petName} مع الطيور الأخرى؟",
             "options": {
                 "yes": "ينسجم مع الطيور الأخرى",
                 "no": "لا ينسجم مع الطيور الأخرى",
                 "unknown": "لا أعرف"
-            }
-        },
-        "water_type": {
-            "question": "ما نوع الماء المناسب لـ {petName}؟",
-            "options": {
-                "freshwater": "ماء عذب",
-                "saltwater": "ماء مالح",
-                "brackish": "ماء شروب"
-            }
-        },
-        "tank_size_liters": {
-            "question": "ما حجم الحوض باللترات المناسب لـ {petName}؟"
-        },
-        "water_temperature": {
-            "question": "ما درجة حرارة الماء المناسبة لـ {petName}؟"
-        },
-        "compatible_with_other_fish": {
-            "question": "هل يتوافق {petName} مع الأسماك الأخرى؟",
-            "options": {
-                "yes": "متوافق مع معظم الأسماك",
-                "certain_types": "متوافق مع أنواع معينة فقط",
-                "no_aggressive": "عدواني تجاه الأسماك الأخرى"
-            }
-        },
-        "equipment_needed": {
-            "question": "ما المعدات اللازمة لـ {petName}؟"
-        },
-        "feeding_frequency": {
-            "question": "كم مرة يجب إطعام {petName}؟",
-            "options": {
-                "once_daily": "مرة واحدة يوميًا",
-                "twice_daily": "مرتان يوميًا",
-                "every_2_days": "كل يومين",
-                "twice_weekly": "مرتان إلى ثلاث مرات أسبوعيًا",
-                "weekly": "مرة واحدة أسبوعيًا",
-                "biweekly": "مرة كل أسبوعين"
             }
         },
         "reptile_species": {
@@ -458,37 +555,15 @@
             "options": {
                 "desert": "حوض صحراوي",
                 "tropical": "حوض استوائي",
+                "woodland": "حوض حراجي",
                 "aqua_terrarium": "حوض مائي-أرضي"
             }
         },
-        "temperature_range": {
-            "question": "ما نطاق الحرارة المناسب لـ {petName}؟"
+        "temperature_day": {
+            "question": "ما درجة الحرارة النهارية المطلوبة لـ {petName} (°م)؟"
         },
-        "humidity_level": {
-            "question": "ما مستوى الرطوبة المناسب لـ {petName}؟",
-            "options": {
-                "low": "رطوبة منخفضة (30-40%)",
-                "medium": "رطوبة متوسطة (50-60%)",
-                "high": "رطوبة مرتفعة (70-80%)"
-            }
-        },
-        "is_venomous": {
-            "question": "هل {petName} سام؟"
-        },
-        "diet_type": {
-            "question": "ما نوع النظام الغذائي المناسب لـ {petName}؟",
-            "options": {
-                "insects": "يعتمد على الحشرات",
-                "rodents": "يعتمد على القوارض",
-                "vegetarian": "نظام نباتي",
-                "omnivore": "نظام قارت",
-                "carnivore": "نظام لاحم",
-                "worms": "يعتمد على الديدان",
-                "detritivore": "يتغذى على المواد العضوية المتحللة"
-            }
-        },
-        "requires_live_food": {
-            "question": "هل يحتاج {petName} إلى طعام حي؟"
+        "temperature_night": {
+            "question": "ما درجة الحرارة الليلية المطلوبة لـ {petName} (°م)؟"
         },
         "uv_light_needed": {
             "question": "هل يحتاج {petName} إلى إضاءة UV؟"
@@ -499,31 +574,16 @@
         "habitat_type": {
             "question": "ما نوع الموطن المناسب لـ {petName}؟",
             "options": {
-                "aquatic": "موطن مائي",
-                "semi_aquatic": "موطن شبه مائي",
-                "terrestrial": "موطن بري",
-                "dry_terrarium": "حوض جاف",
-                "humid_terrarium": "حوض رطب",
-                "aquarium": "حوض أسماك"
+                "aquatic": "مائي",
+                "semi_aquatic": "شبه مائي",
+                "terrestrial": "بري"
             }
         },
-        "is_aquatic": {
-            "question": "هل {petName} مائي؟"
+        "water_quality": {
+            "question": "ما متطلبات جودة الماء لـ {petName}؟"
         },
-        "water_quality_requirements": {
-            "question": "ما متطلبات جودة الماء الخاصة بـ {petName}؟"
-        },
-        "spider_species": {
-            "question": "ما نوع العنكبوت الخاص بـ {petName}؟"
-        },
-        "molting_frequency": {
-            "question": "كم مرة يبدّل {petName} جلده؟",
-            "options": {
-                "never": "لا يبدّل الجلد",
-                "annual": "مرة سنويًا",
-                "monthly": "مرة شهريًا",
-                "weekly": "مرة أسبوعيًا"
-            }
+        "skin_care_notes": {
+            "question": "هل هناك احتياجات خاصة بجلد {petName}؟"
         }
     },
     "please-login": "قم بتسجيل الدخول لعرض قائمة حيواناتك",
