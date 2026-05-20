@@ -12,6 +12,7 @@ load_secret() {
 }
 
 load_secret "APP_KEY"               "/run/secrets/kennelo_app_key"
+load_secret "JWT_SECRET"            "/run/secrets/kennelo_jwt_secret"
 load_secret "DB_PASSWORD"           "/run/secrets/kennelo_postgres_password"
 load_secret "REDIS_PASSWORD"        "/run/secrets/kennelo_redis_password"
 load_secret "AWS_ACCESS_KEY_ID"     "/run/secrets/kennelo_minio_root_user"

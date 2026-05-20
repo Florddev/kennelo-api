@@ -43,10 +43,15 @@ services:
       AWS_USE_PATH_STYLE_ENDPOINT: "true"
       AWS_URL: https://cdn.kennelo.fr/kennelo-media
 
+      JWT_ALGO: HS256
+      JWT_TTL: "60"
+      JWT_REFRESH_TOKEN_TTL: "43200"
+
       BROADCAST_CONNECTION: log
       MAIL_MAILER: log
     secrets:
       - kennelo_app_key
+      - kennelo_jwt_secret
       - kennelo_postgres_password
       - kennelo_redis_password
       - kennelo_minio_root_user
@@ -70,6 +75,8 @@ networks:
 
 secrets:
   kennelo_app_key:
+    external: true
+  kennelo_jwt_secret:
     external: true
   kennelo_postgres_password:
     external: true
