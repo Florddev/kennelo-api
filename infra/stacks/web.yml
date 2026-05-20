@@ -3,6 +3,12 @@ services:
     image: ghcr.io/anthony14fr/kennelo-web:feature-infra-swarm-cluster
     networks:
       - kennelo-public
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://127.0.0.1:3000/"]
+      interval: 30s
+      timeout: 10s
+      start_period: 30s
+      retries: 3
     deploy:
       replicas: 2
       restart_policy:
