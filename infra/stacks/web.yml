@@ -1,0 +1,16 @@
+services:
+  web:
+    image: ghcr.io/anthony14fr/kennelo-web:feature-infra-swarm-cluster
+    networks:
+      - kennelo-public
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: any
+      update_config:
+        parallelism: 1
+        delay: 10s
+
+networks:
+  kennelo-public:
+    external: true
