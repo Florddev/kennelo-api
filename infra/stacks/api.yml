@@ -1,0 +1,81 @@
+services:
+  api:
+    image: ghcr.io/anthony14fr/kennelo-api:feature-infra-swarm-cluster
+    environment:
+      APP_NAME: Kennelo
+      APP_ENV: production
+      APP_DEBUG: "false"
+      APP_URL: https://api.kennelo.fr
+      FRONTEND_URL: https://kennelo.fr
+      CORS_ALLOWED_ORIGINS: "https://kennelo.fr,https://www.kennelo.fr,https://kennelo.com,https://www.kennelo.com"
+
+      APP_LOCALE: en
+      APP_FALLBACK_LOCALE: en
+      DOMAIN_LOCALES: "kennelo.fr:fr,kennelo.com:en,kennelo.it:it,kennelo.be:fr,kennelo.de:de"
+      DEFAULT_LOCALE: en
+      AVAILABLE_LOCALES: "fr,en,it,de"
+
+      LOG_CHANNEL: stack
+      LOG_STACK: single
+      LOG_LEVEL: warning
+
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_DATABASE: kennelo
+      DB_USERNAME: kennelo
+
+      SESSION_DRIVER: redis
+      SESSION_LIFETIME: "120"
+      CACHE_STORE: redis
+      QUEUE_CONNECTION: redis
+      REDIS_CLIENT: predis
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      REDIS_DB: "0"
+      REDIS_CACHE_DB: "1"
+
+      FILESYSTEM_DISK: s3
+      MEDIA_DISK: s3
+      AWS_DEFAULT_REGION: us-east-1
+      AWS_BUCKET: kennelo-media
+      AWS_ENDPOINT: http://minio:9000
+      AWS_USE_PATH_STYLE_ENDPOINT: "true"
+      AWS_URL: https://cdn.kennelo.fr/kennelo-media
+
+      BROADCAST_CONNECTION: log
+      MAIL_MAILER: log
+    secrets:
+      - kennelo_app_key
+      - kennelo_postgres_password
+      - kennelo_redis_password
+      - kennelo_minio_root_user
+      - kennelo_minio_root_password
+    networks:
+      - kennelo-internal
+      - kennelo-public
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: any
+      update_config:
+        parallelism: 1
+        delay: 10s
+
+networks:
+  kennelo-internal:
+    external: true
+  kennelo-public:
+    external: true
+
+secrets:
+  kennelo_app_key:
+    external: true
+  kennelo_postgres_password:
+    external: true
+  kennelo_redis_password:
+    external: true
+  kennelo_minio_root_user:
+    external: true
+  kennelo_minio_root_password:
+    external: true
