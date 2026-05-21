@@ -13,10 +13,9 @@ import { CompactSearchTrigger } from "@/features/explore/components/search-trigg
 import { FilterChips } from "@/features/explore/components/filter-chips";
 import { HostCard } from "@/features/explore/components/host-card";
 import { SearchModal } from "@/features/explore/components/search-modal";
-import { MOCK_HOSTS } from "@/features/explore/lib/mock-hosts";
+import { useExploreEstablishments } from "@/features/explore/hooks/use-explore-establishments";
 
 const SNAP_POINTS: (number | string)[] = [0.08, 0.5, 0.95];
-const RESULT_COUNT = 23;
 
 type ResultsPageProps = {
     location: string;
@@ -123,7 +122,15 @@ export default function ExploreResultsPage({ location, dateFrom, dateTo, pets }:
     const [snap, setSnap] = useState<number | string | null>(0.5);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [highlightedId, setHighlightedId] = useState<string | null>(null);
-    const [showEmpty] = useState(false);
+
+    const { establishments } = useExploreEstablishments();
+
+    function getFilteredHosts() {
+        if (activeFilter === "pro") return establishments.filter((e) => e.isProfessional);
+        if (activeFilter === "particulier") return establishments.filter((e) => !e.isProfessional);
+        return establishments;
+    }
+    const filteredHosts = getFilteredHosts();
 
     useEffect(() => {
         setBottomNavbarVisible(false);
@@ -196,7 +203,7 @@ export default function ExploreResultsPage({ location, dateFrom, dateTo, pets }:
                         <div className="mx-auto mt-3 mb-2 w-10 h-1 rounded-full bg-muted shrink-0" />
 
                         <div className="flex items-center justify-between px-4 pb-3 shrink-0">
-                            <h2 className="font-bold text-base">{RESULT_COUNT} hôtes</h2>
+                            <h2 className="font-bold text-base">{filteredHosts.length} hôtes</h2>
                             <button className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
                                 <span>Pertinence</span>
                                 <span className="text-xs">▼</span>
@@ -209,7 +216,7 @@ export default function ExploreResultsPage({ location, dateFrom, dateTo, pets }:
                                 snap === SNAP_POINTS[0] ? "hidden" : "flex-1",
                             )}
                         >
-                            {showEmpty ? (
+                            {filteredHosts.length === 0 ? (
                                 <EmptyResults
                                     onExpand={() => {}}
                                     onModify={() => setIsModalOpen(true)}
@@ -229,7 +236,7 @@ export default function ExploreResultsPage({ location, dateFrom, dateTo, pets }:
                                     </div>
 
                                     <div className="flex flex-col divide-y divide-border/40 pb-8">
-                                        {MOCK_HOSTS.map((host) => (
+                                        {filteredHosts.map((host) => (
                                             <div key={host.id} className="px-2">
                                                 <HostCard
                                                     host={host}

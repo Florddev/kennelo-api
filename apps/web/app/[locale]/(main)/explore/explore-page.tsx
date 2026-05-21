@@ -2,20 +2,15 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { Shield, CheckCircle, CreditCard, Headphones } from "lucide-react";
+
 import { useAuth } from "@/features/auth";
 import { UserAvatar } from "@/features/auth/components/user-avatar";
 import { SearchTrigger } from "@/features/explore/components/search-trigger";
 import { FilterChips } from "@/features/explore/components/filter-chips";
 import { ExploreSection } from "@/features/explore/components/explore-section";
 import { SearchModal } from "@/features/explore/components/search-modal";
-import {
-    MOCK_NEARBY,
-    MOCK_WEEKEND,
-    MOCK_PROS,
-    MOCK_PARTICULIERS,
-    MOCK_NEW,
-} from "@/features/explore/lib/mock-hosts";
-import { Shield, CheckCircle, CreditCard, Headphones } from "lucide-react";
+import { useExploreEstablishments } from "@/features/explore/hooks/use-explore-establishments";
 
 const TRUST_ITEMS = [
     { icon: Shield, label: "Assurance incluse" },
@@ -34,6 +29,21 @@ export default function ExplorePage() {
     const { user, isAuthenticated } = useAuth();
     const [activeFilter, setActiveFilter] = useState("all");
     const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const { establishments, isLoading } = useExploreEstablishments();
+
+    const pros = establishments.filter((e) => e.isProfessional);
+    const particuliers = establishments.filter((e) => !e.isProfessional);
+    const recent = [...establishments].sort(
+        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    );
+
+    function getFiltered() {
+        if (activeFilter === "pro") return pros;
+        if (activeFilter === "particulier") return particuliers;
+        return establishments;
+    }
+    const filtered = getFiltered();
 
     return (
         <div className="flex flex-col bg-background min-h-full">
@@ -63,11 +73,26 @@ export default function ExplorePage() {
             </div>
 
             <div className="flex flex-col gap-8 pb-8 pt-4">
-                <ExploreSection title="Hôtes proches de chez vous" hosts={MOCK_NEARBY} />
-                <ExploreSection title="Disponibles ce week-end" hosts={MOCK_WEEKEND} />
-                <ExploreSection title="Les pros vérifiés près de chez vous" hosts={MOCK_PROS} />
-                <ExploreSection title="Pet-sitters coup de cœur" hosts={MOCK_PARTICULIERS} />
-                <ExploreSection title="Nouveaux hôtes dans votre région" hosts={MOCK_NEW} />
+                {isLoading ? (
+                    <div className="px-4 py-8 flex items-center justify-center">
+                        <div className="size-6 rounded-full border-2 border-secondary border-t-transparent animate-spin" />
+                    </div>
+                ) : (
+                    <>
+                        {filtered.length > 0 && (
+                            <ExploreSection title="Hôtes disponibles" hosts={filtered} />
+                        )}
+                        {pros.length > 0 && activeFilter === "all" && (
+                            <ExploreSection title="Les pros vérifiés" hosts={pros} />
+                        )}
+                        {particuliers.length > 0 && activeFilter === "all" && (
+                            <ExploreSection title="Pet-sitters particuliers" hosts={particuliers} />
+                        )}
+                        {recent.length > 0 && activeFilter === "all" && (
+                            <ExploreSection title="Nouveaux hôtes" hosts={recent.slice(0, 6)} />
+                        )}
+                    </>
+                )}
 
                 <section className="mx-4">
                     <div className="bg-muted/40 rounded-3xl p-5">

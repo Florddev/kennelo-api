@@ -2,11 +2,11 @@
 
 import { cn } from "@workspace/ui/lib/utils";
 import { HostCard } from "./host-card";
-import type { MockHost } from "../lib/mock-hosts";
+import type { EstablishmentModel } from "@workspace/modules/establishments";
 
 type ExploreSectionProps = {
     title: string;
-    hosts: MockHost[];
+    hosts: EstablishmentModel[];
     className?: string;
 };
 

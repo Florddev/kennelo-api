@@ -84,6 +84,11 @@ class Establishment extends Model implements HasMedia
         return $this->hasMany(EstablishmentCollaboratorPermission::class);
     }
 
+    public function capacities(): HasMany
+    {
+        return $this->hasMany(EstablishmentCapacity::class);
+    }
+
     public function availabilities(): HasMany
     {
         return $this->hasMany(EstablishmentAvailability::class);

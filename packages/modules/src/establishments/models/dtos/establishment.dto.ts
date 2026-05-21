@@ -14,6 +14,9 @@ export type EstablishmentDto = {
     timezone: string | null;
     is_active: boolean;
     manager_id: string;
+    is_professional: boolean;
+    min_price: number | null;
+    animal_types: string[];
     avatar_url: string | null;
     address: AddressDto | null;
     manager?: UserDto | null;

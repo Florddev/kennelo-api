@@ -32,6 +32,9 @@ class DatabaseSeeder extends Seeder
             EstablishmentCapacitySeeder::class,
             EstablishmentAvailabilitySeeder::class,
 
+            // Explore demo data (random hosts with varied profiles)
+            ExploreSeeder::class,
+
             // Bookings
             BookingSeeder::class,
 

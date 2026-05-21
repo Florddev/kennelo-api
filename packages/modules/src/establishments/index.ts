@@ -22,6 +22,7 @@ export * from "./actions/queries/get-dashboard";
 export * from "./actions/queries/get-establishment-images";
 export * from "./actions/queries/get-establishment";
 export * from "./actions/queries/get-establishments";
+export * from "./actions/queries/get-explore-establishments";
 export * from "./models/availability.model";
 export * from "./models/capacity.model";
 export * from "./models/dashboard.model";

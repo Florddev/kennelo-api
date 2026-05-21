@@ -14,6 +14,17 @@ class EstablishmentResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
+        $capacities = $this->whenLoaded('capacities');
+        $loadedCapacities = $this->relationLoaded('capacities') ? $this->capacities : collect();
+
+        $minPrice = $loadedCapacities->isNotEmpty()
+            ? (float) $loadedCapacities->min('price_per_night')
+            : null;
+
+        $animalTypes = $loadedCapacities->isNotEmpty()
+            ? $loadedCapacities->map(fn ($c) => $c->animalType?->code)->filter()->values()->all()
+            : [];
+
         return [
             'id' => $this->id,
             'name' => $this->name,
@@ -26,6 +37,9 @@ class EstablishmentResource extends JsonResource
             'timezone' => $this->timezone,
             'is_active' => $this->is_active,
             'manager_id' => $this->manager_id,
+            'is_professional' => $this->siret !== null,
+            'min_price' => $minPrice,
+            'animal_types' => $animalTypes,
             'avatar_url' => $this->getFirstMediaUrl(MediaService::COLLECTION_AVATAR, MediaService::CONVERSION_AVATAR_WEBP)
                 ?: $this->getFirstMediaUrl(MediaService::COLLECTION_AVATAR)
                 ?: null,
