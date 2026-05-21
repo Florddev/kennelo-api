@@ -47,11 +47,18 @@ services:
       JWT_TTL: "60"
       JWT_REFRESH_TOKEN_TTL: "43200"
 
-      BROADCAST_CONNECTION: log
+      BROADCAST_CONNECTION: reverb
+      REVERB_APP_ID: kennelo
+      REVERB_APP_KEY: kennelo-key
+      REVERB_HOST: ws.kennelo.fr
+      REVERB_PORT: "443"
+      REVERB_SCHEME: https
+
       MAIL_MAILER: log
     secrets:
       - kennelo_app_key
       - kennelo_jwt_secret
+      - kennelo_reverb_app_secret
       - kennelo_postgres_password
       - kennelo_redis_password
       - kennelo_minio_root_user
@@ -77,6 +84,8 @@ secrets:
   kennelo_app_key:
     external: true
   kennelo_jwt_secret:
+    external: true
+  kennelo_reverb_app_secret:
     external: true
   kennelo_postgres_password:
     external: true
