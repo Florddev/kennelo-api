@@ -1,13 +1,21 @@
 import { api } from "@workspace/common";
-import { EstablishmentModel } from "../../models/establishment.model";
-import { EstablishmentDto } from "../../models/dtos/establishment.dto";
+import { ExploreSectionModel } from "../../models/explore-section.model";
+import { ExploreSectionsResponseDto } from "../../models/dtos/explore-sections-response.dto";
 
-export async function getExploreEstablishments(): Promise<EstablishmentModel[]> {
-    const response = await api.get<EstablishmentDto[]>("/explore/establishments");
+export type ExploreCoords = {
+    lat: number;
+    lng: number;
+};
+
+export async function getExploreEstablishments(
+    coords?: ExploreCoords,
+): Promise<ExploreSectionModel[]> {
+    const params = coords ? { lat: coords.lat, lng: coords.lng } : undefined;
+    const response = await api.get<ExploreSectionsResponseDto>("/explore/establishments", params);
 
     if (!response.data) {
-        throw new Error("No data returned");
+        return [];
     }
 
-    return response.data.map(EstablishmentModel.from);
+    return response.data.sections.map(ExploreSectionModel.from);
 }

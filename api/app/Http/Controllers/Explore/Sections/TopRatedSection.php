@@ -1,0 +1,35 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Http\Controllers\Explore\Sections;
+
+use App\Contracts\ExploreSection;
+use App\Enums\ReviewerType;
+use Illuminate\Database\Eloquent\Builder;
+
+class TopRatedSection implements ExploreSection
+{
+    public function id(): string
+    {
+        return 'top_rated';
+    }
+
+    public function apply(Builder $query, ?float $lat, ?float $lng): Builder
+    {
+        $reviewerType = ReviewerType::USER->value;
+
+        return $query
+            ->whereNull('establishments.siret')
+            ->whereRaw(
+                '(SELECT COALESCE(AVG(r.overall_rating), 0) FROM reviews r INNER JOIN bookings b ON b.id = r.booking_id WHERE b.establishment_id = establishments.id AND r.is_published = 1 AND r.reviewer_type = ?) >= ?',
+                [$reviewerType, 4.5]
+            )
+            ->whereRaw(
+                '(SELECT COUNT(*) FROM reviews r INNER JOIN bookings b ON b.id = r.booking_id WHERE b.establishment_id = establishments.id AND r.is_published = 1 AND r.reviewer_type = ?) >= ?',
+                [$reviewerType, 5]
+            )
+            ->orderByRaw('COALESCE(avg_rating, 0) DESC')
+            ->orderByDesc('review_count');
+    }
+}

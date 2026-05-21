@@ -22,6 +22,9 @@ export type EstablishmentDto = {
     manager?: UserDto | null;
     collaborators?: UserDto[];
     images?: EstablishmentImageDto[];
+    rating: number | null;
+    review_count: number;
+    distance: number | null;
     created_at: string;
     updated_at: string;
 };

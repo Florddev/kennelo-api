@@ -1,11 +1,11 @@
 "use client";
 
 import Image from "next/image";
+import { MapPin, ImageIcon, Star } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { cn } from "@workspace/ui/lib/utils";
-import { MapPin, ImageIcon } from "lucide-react";
 import { useNavigation } from "@/hooks/use-navigation";
 import type { EstablishmentModel } from "@workspace/modules/establishments";
-import { useTranslations } from "next-intl";
 
 type HostCardProps = {
     host: EstablishmentModel;
@@ -16,6 +16,7 @@ type HostCardProps = {
 };
 
 function ProBadge({ isPro }: { isPro: boolean }) {
+    const t = useTranslations();
     return (
         <div
             className={cn(
@@ -31,7 +32,7 @@ function ProBadge({ isPro }: { isPro: boolean }) {
                     isPro ? "bg-secondary" : "bg-muted-foreground",
                 )}
             />
-            {isPro ? "Pro certifié" : "Particulier"}
+            {isPro ? t("features.explore.card.pro") : t("features.explore.card.individual")}
         </div>
     );
 }
@@ -67,6 +68,18 @@ function PetIcons({ types, max = 3 }: { types: string[]; max?: number }) {
     );
 }
 
+function RatingBadge({ rating, reviewCount }: { rating: number | null; reviewCount: number }) {
+    const t = useTranslations();
+    if (!rating) return null;
+    return (
+        <div className="flex items-center gap-1 text-xs text-muted-foreground">
+            <Star className="size-3 fill-secondary text-secondary shrink-0" />
+            <span className="font-semibold text-foreground">{rating.toFixed(1)}</span>
+            <span>({t("features.explore.card.reviews", { count: reviewCount })})</span>
+        </div>
+    );
+}
+
 function HostAvatar({ url, name }: { url: string | undefined; name: string }) {
     if (url) {
         return (
@@ -89,6 +102,7 @@ export function HostCard({
     className,
     onClick,
 }: HostCardProps) {
+    const t = useTranslations();
     const { routes, router } = useNavigation();
     const avatarUrl = host.getAvatarUrl();
 
@@ -121,8 +135,10 @@ export function HostCard({
                         </span>
                         {host.minPrice !== null && (
                             <span className="text-xs font-semibold text-foreground shrink-0">
-                                dès {host.minPrice}€
-                                <span className="text-muted-foreground font-normal">/nuit</span>
+                                {t("features.explore.card.from")} {host.minPrice}€
+                                <span className="text-muted-foreground font-normal">
+                                    {t("features.explore.card.perNight")}
+                                </span>
                             </span>
                         )}
                     </div>
@@ -131,8 +147,17 @@ export function HostCard({
                         <div className="flex items-center gap-1 text-xs text-muted-foreground">
                             <MapPin className="size-3 shrink-0" />
                             <span>{host.address.city}</span>
+                            {host.distance !== null && (
+                                <span className="ms-1">
+                                    ·{" "}
+                                    {t("features.explore.card.distanceKm", {
+                                        distance: host.distance,
+                                    })}
+                                </span>
+                            )}
                         </div>
                     )}
+                    <RatingBadge rating={host.rating} reviewCount={host.reviewCount} />
                     <PetIcons types={host.animalTypes} />
                 </div>
             </button>
@@ -158,7 +183,7 @@ export function HostCard({
                 </div>
                 <button
                     type="button"
-                    aria-label="Ajouter aux favoris"
+                    aria-label={t("features.explore.card.addToFavorites")}
                     onClick={(e) => e.stopPropagation()}
                     className="absolute top-2 end-2 size-7 rounded-full bg-background/80 backdrop-blur-sm flex items-center justify-center shadow-sm"
                 >
@@ -171,14 +196,23 @@ export function HostCard({
                     <div className="flex items-center gap-1 text-xs text-muted-foreground">
                         <MapPin className="size-3 shrink-0" />
                         <span className="truncate">{host.address.city}</span>
+                        {host.distance !== null && (
+                            <span className="shrink-0 ms-0.5">
+                                ·{" "}
+                                {t("features.explore.card.distanceKm", { distance: host.distance })}
+                            </span>
+                        )}
                     </div>
                 )}
+                <RatingBadge rating={host.rating} reviewCount={host.reviewCount} />
                 <PetIcons types={host.animalTypes} />
                 {host.minPrice !== null && (
                     <div className="flex items-center justify-between mt-0.5">
                         <span className="text-xs font-semibold text-foreground">
-                            dès {host.minPrice}€
-                            <span className="text-muted-foreground font-normal">/nuit</span>
+                            {t("features.explore.card.from")} {host.minPrice}€
+                            <span className="text-muted-foreground font-normal">
+                                {t("features.explore.card.perNight")}
+                            </span>
                         </span>
                     </div>
                 )}

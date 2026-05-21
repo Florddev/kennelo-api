@@ -33,6 +33,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/test', [TestController::class, 'index']);
 Route::get('/animal-types', [AnimalTypeController::class, 'index']);
 Route::get('/explore/establishments', [ExploreController::class, 'establishments']);
+Route::get('/explore/establishments/sections/{sectionId}', [ExploreController::class, 'sectionPage']);
+Route::get('/explore/search', [ExploreController::class, 'search']);
 
 Route::middleware(['auth.jwt'])->group(function () {
     // Establishments

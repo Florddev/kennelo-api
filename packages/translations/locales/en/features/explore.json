@@ -4,8 +4,45 @@
     "results": "{count, plural, =0 {No results} =1 {# result} other {# results}}",
     "filters": "Filters",
     "noImageAvailable": "No image available",
+    "seeMore": "See more",
+    "retry": "Retry",
     "empty": {
         "title": "No hosts available",
-        "description": "Come back later to discover new hosts."
+        "description": "Check back later to discover new hosts."
+    },
+    "sections": {
+        "nearby": "Hosts near you",
+        "available_weekend": "Available this weekend",
+        "verified_pros": "Verified pros near you",
+        "top_rated": "Top-rated pet sitters",
+        "new_hosts": "New hosts in your area"
+    },
+    "card": {
+        "pro": "Certified Pro",
+        "individual": "Individual",
+        "from": "from",
+        "perNight": "/night",
+        "addToFavorites": "Add to favorites",
+        "reviews": "{count, plural, =0 {No reviews} =1 {# review} other {# reviews}}",
+        "distanceKm": "{distance} km"
+    },
+    "location": {
+        "promptTitle": "Enable your location",
+        "promptDescription": "See the hosts closest to you first.",
+        "activate": "Enable",
+        "dismiss": "Later",
+        "denied": "Location denied",
+        "unavailable": "Location unavailable"
+    },
+    "overlay": {
+        "allResults": "All results",
+        "back": "Back",
+        "loadMore": "Load more",
+        "loading": "Loading…",
+        "noMore": "All results are displayed"
+    },
+    "error": {
+        "title": "Something went wrong",
+        "description": "Unable to load establishments."
     }
 }
