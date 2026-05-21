@@ -33,6 +33,7 @@ RUN apk add --no-cache --virtual .build-deps \
     exif \
     zip \
     opcache \
+    pcntl \
     sodium \
     && apk del .build-deps \
     && rm -rf /var/cache/apk/*
