@@ -20,21 +20,7 @@
         "establishmentType": {
             "title": "Parmi les propositions suivantes, laquelle décrit le mieux votre activité ?",
             "subtitle": "Quel type de structure gérez-vous ?",
-            "pension": "Pension",
-            "pensionDescription": "Hébergement et soins pour animaux en séjour",
-            "breeding": "Élevage",
-            "breedingDescription": "Élevage professionnel d'animaux",
-            "daycare": "Garderie",
-            "daycareDescription": "Garde d'animaux à la journée",
-            "shelter": "Refuge",
-            "shelterDescription": "Accueil et adoption d'animaux",
-            "other": "Autre",
-            "otherDescription": "Autre type de structure animalière",
-            "error": "Veuillez sélectionner un type d'établissement",
-            "pet-sitter": "Pet-sitter indépendant",
-            "home-care": "Garde à domicile",
-            "host-family": "Famille d’accueil",
-            "mobile-boarding": "Garde itinérante"
+            "error": "Veuillez sélectionner un type d’établissement"
         },
         "establishmentInfo": {
             "title": "Votre établissement",

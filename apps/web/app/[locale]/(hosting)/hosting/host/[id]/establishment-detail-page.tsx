@@ -43,10 +43,10 @@ import { InputController } from "@/components/forms/input-controller";
 import { TextareaController } from "@/components/forms/textarea-controller";
 
 const SECTION_HEADER_CLASS = "text-sm font-medium text-muted-foreground uppercase tracking-wider";
-const T_SECTIONS_DETAILS = "features.my-establishments.detail.sections.details" as const;
-const T_SECTIONS_CONTACT = "features.my-establishments.detail.sections.contact" as const;
-const T_SECTIONS_ADDRESS = "features.my-establishments.detail.sections.address" as const;
-const T_SECTIONS_BUSINESS = "features.my-establishments.detail.sections.business" as const;
+const T_SECTIONS_DETAILS = "features.establishments.detail.sections.details" as const;
+const T_SECTIONS_CONTACT = "features.establishments.detail.sections.contact" as const;
+const T_SECTIONS_ADDRESS = "features.establishments.detail.sections.address" as const;
+const T_SECTIONS_BUSINESS = "features.establishments.detail.sections.business" as const;
 
 function InfoItem({
     icon: Icon,
@@ -111,7 +111,7 @@ function EstablishmentViewMode({
                             )}
                         >
                             {establishment.description ||
-                                t("features.my-establishments.detail.empty.description")}
+                                t("features.establishments.detail.empty.description")}
                         </p>
                     </div>
                 </CardContent>
@@ -126,21 +126,21 @@ function EstablishmentViewMode({
                         icon={Phone}
                         label={t("common.fields.phone")}
                         value={establishment.phone}
-                        empty={t("features.my-establishments.detail.empty.phone")}
+                        empty={t("features.establishments.detail.empty.phone")}
                     />
                     <Separator />
                     <InfoItem
                         icon={Mail}
                         label={t("common.fields.email")}
                         value={establishment.email}
-                        empty={t("features.my-establishments.detail.empty.email")}
+                        empty={t("features.establishments.detail.empty.email")}
                     />
                     <Separator />
                     <InfoItem
                         icon={Globe}
                         label={t("common.fields.website")}
                         value={establishment.website}
-                        empty={t("features.my-establishments.detail.empty.website")}
+                        empty={t("features.establishments.detail.empty.website")}
                     />
                 </CardContent>
             </Card>
@@ -407,10 +407,10 @@ function EstablishmentNotFound({ backHref }: { backHref: string }) {
         <div className="container mx-auto px-4 py-16 max-w-5xl text-center">
             <Building2 className="size-12 text-muted-foreground mx-auto mb-4" />
             <h2 className="text-xl font-semibold mb-2">
-                {t("features.my-establishments.detail.notFound")}
+                {t("features.establishments.detail.notFound")}
             </h2>
             <p className="text-muted-foreground mb-6">
-                {t("features.my-establishments.detail.notFoundDescription")}
+                {t("features.establishments.detail.notFoundDescription")}
             </p>
             <Button asChild variant="outline" className="rounded-4xl">
                 <Link href={backHref}>{t("common.actions.back")}</Link>
@@ -442,10 +442,10 @@ function DeleteEstablishmentDialog({
             <AlertDialogContent>
                 <AlertDialogHeader>
                     <AlertDialogTitle>
-                        {t("features.my-establishments.detail.deleteTitle")}
+                        {t("features.establishments.detail.deleteTitle")}
                     </AlertDialogTitle>
                     <AlertDialogDescription>
-                        {t("features.my-establishments.detail.deleteDescription")}
+                        {t("features.establishments.detail.deleteDescription")}
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -493,18 +493,18 @@ function DetailPageHeader({
                 <div className="flex items-center gap-3">
                     <h1 className="text-2xl font-bold tracking-tight">
                         {isEditing
-                            ? t("features.my-establishments.detail.editTitle")
+                            ? t("features.establishments.detail.editTitle")
                             : establishment.name}
                     </h1>
                     <Badge variant={establishment.isActive ? "default" : "secondary"}>
                         {establishment.isActive
-                            ? t("features.my-establishments.status.active")
-                            : t("features.my-establishments.status.inactive")}
+                            ? t("features.establishments.status.active")
+                            : t("features.establishments.status.inactive")}
                     </Badge>
                 </div>
                 {isEditing && (
                     <p className="text-sm text-muted-foreground mt-1">
-                        {t("features.my-establishments.detail.editDescription")}
+                        {t("features.establishments.detail.editDescription")}
                     </p>
                 )}
             </div>
@@ -604,15 +604,15 @@ export default function EstablishmentDetailPage() {
                         </TabsTrigger>
                         <TabsTrigger value="dashboard" className="gap-2 px-4 py-2.5">
                             <KCompass size={18} secondary="text-muted-foreground" />
-                            {t("features.my-establishments.dashboard.title")}
+                            {t("features.establishments.dashboard.title")}
                         </TabsTrigger>
                         <TabsTrigger value="capacities" className="gap-2 px-4 py-2.5">
                             <KHeart size={18} secondary="text-muted-foreground" />
-                            {t("features.my-establishments.capacities.title")}
+                            {t("features.establishments.capacities.title")}
                         </TabsTrigger>
                         <TabsTrigger value="availabilities" className="gap-2 px-4 py-2.5">
                             <KCalendar size={18} secondary="text-muted-foreground" />
-                            {t("features.my-establishments.availabilities.title")}
+                            {t("features.establishments.availabilities.title")}
                         </TabsTrigger>
                     </TabsList>
                     <TabsContent value="overview" className="pt-6">

@@ -67,8 +67,8 @@ function getFirstDayOfWeek(year: number, month: number): number {
     return day === 0 ? 6 : day - 1;
 }
 
-const T_OPEN = "features.my-establishments.availabilities.open" as const;
-const T_CLOSED = "features.my-establishments.availabilities.closed" as const;
+const T_OPEN = "features.establishments.availabilities.open" as const;
+const T_CLOSED = "features.establishments.availabilities.closed" as const;
 
 function CalendarDayCell({
     day,
@@ -211,7 +211,7 @@ export function AvailabilitiesTab({ establishmentId }: { establishmentId: string
                         </div>
                         <div>
                             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                                {t("features.my-establishments.availabilities.title")}
+                                {t("features.establishments.availabilities.title")}
                             </p>
                             <p className="text-2xl font-bold tabular-nums mt-0.5">
                                 {availabilities.length}
@@ -328,7 +328,7 @@ export function AvailabilitiesTab({ establishmentId }: { establishmentId: string
                             </div>
                             <div className="flex items-center gap-2">
                                 <div className="size-3 rounded-full ring-2 ring-primary" />
-                                <span>{t("features.my-establishments.dashboard.todayStatus")}</span>
+                                <span>{t("features.establishments.dashboard.todayStatus")}</span>
                             </div>
                         </div>
                     </CardContent>
@@ -338,7 +338,7 @@ export function AvailabilitiesTab({ establishmentId }: { establishmentId: string
                     <CardHeader>
                         <div className="flex items-center justify-between">
                             <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
-                                {t("features.my-establishments.availabilities.addAvailability")}
+                                {t("features.establishments.availabilities.addAvailability")}
                             </CardTitle>
                             {!showForm && (
                                 <Button
@@ -371,7 +371,7 @@ export function AvailabilitiesTab({ establishmentId }: { establishmentId: string
                                     />
                                 </div>
                                 <p className="text-sm text-muted-foreground">
-                                    {t("features.my-establishments.availabilities.empty")}
+                                    {t("features.establishments.availabilities.empty")}
                                 </p>
                                 <Button
                                     variant="outline"
@@ -380,7 +380,7 @@ export function AvailabilitiesTab({ establishmentId }: { establishmentId: string
                                     onClick={() => setShowForm(true)}
                                 >
                                     <Plus className="size-4" />
-                                    {t("features.my-establishments.availabilities.addAvailability")}
+                                    {t("features.establishments.availabilities.addAvailability")}
                                 </Button>
                             </div>
                         )}

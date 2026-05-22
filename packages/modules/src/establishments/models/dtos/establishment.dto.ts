@@ -15,6 +15,7 @@ export type EstablishmentDto = {
     is_active: boolean;
     manager_id: string;
     is_professional: boolean;
+    type: string | null;
     min_price: number | null;
     animal_types: string[];
     avatar_url: string | null;

@@ -63,5 +63,16 @@
         "dateRange": "Plage de dates",
         "bulkUpdate": "Mise à jour groupée"
     },
-    "host": "Hôte"
+    "host": "Hôte",
+    "types": {
+        "boarding": "Pension",
+        "breeding": "Élevage",
+        "daycare": "Garderie",
+        "shelter": "Refuge",
+        "other": "Autre",
+        "pet-sitter": "Pet-sitter",
+        "home-care": "Garde à domicile",
+        "host-family": "Famille d'accueil",
+        "mobile-boarding": "Pension mobile"
+    }
 }

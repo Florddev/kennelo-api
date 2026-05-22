@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: { params: { locale: string } 
     const t = await getTranslations({ locale });
 
     return {
-        title: t("features.my-establishments.title"),
+        title: t("features.establishments.title"),
     };
 }
 

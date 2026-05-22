@@ -14,7 +14,6 @@ class EstablishmentResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
-        $capacities = $this->whenLoaded('capacities');
         $loadedCapacities = $this->relationLoaded('capacities') ? $this->capacities : collect();
 
         $minPrice = $loadedCapacities->isNotEmpty()
@@ -38,6 +37,7 @@ class EstablishmentResource extends JsonResource
             'is_active' => $this->is_active,
             'manager_id' => $this->manager_id,
             'is_professional' => $this->siret !== null,
+            'type' => $this->resource->getRawOriginal('type'),
             'min_price' => $minPrice,
             'animal_types' => $animalTypes,
             'avatar_url' => $this->getFirstMediaUrl(MediaService::COLLECTION_AVATAR, MediaService::CONVERSION_AVATAR_WEBP)

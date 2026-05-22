@@ -11,6 +11,7 @@ export async function createEstablishment(
         name: input.name,
     };
 
+    if (input.type) body.type = input.type;
     if (input.description) body.description = input.description;
     if (input.phone) body.phone = input.phone;
     if (input.email) body.email = input.email;

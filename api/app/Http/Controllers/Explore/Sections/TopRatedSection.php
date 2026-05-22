@@ -20,7 +20,6 @@ class TopRatedSection implements ExploreSection
         $reviewerType = ReviewerType::USER->value;
 
         return $query
-            ->whereNull('establishments.siret')
             ->whereRaw(
                 '(SELECT COALESCE(AVG(r.overall_rating), 0) FROM reviews r INNER JOIN bookings b ON b.id = r.booking_id WHERE b.establishment_id = establishments.id AND r.is_published = 1 AND r.reviewer_type = ?) >= ?',
                 [$reviewerType, 4.5]

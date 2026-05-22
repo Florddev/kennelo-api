@@ -4,12 +4,19 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
+use App\Enums\BookingStatus;
+use App\Enums\EstablishmentType;
+use App\Enums\ReviewerType;
 use App\Models\AnimalType;
+use App\Models\Booking;
 use App\Models\Establishment;
 use App\Models\EstablishmentCapacity;
+use App\Models\Review;
 use App\Models\User;
 use App\Services\MediaService;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 use Spatie\Permission\Models\Role;
 
@@ -27,6 +34,20 @@ class ExploreSeeder extends Seeder
     ];
 
     private array $imageKeywords = ['kennel', 'pet', 'dog', 'cattery', 'animals'];
+
+    private array $proTypes = [
+        EstablishmentType::BOARDING,
+        EstablishmentType::BREEDING,
+        EstablishmentType::DAYCARE,
+        EstablishmentType::SHELTER,
+    ];
+
+    private array $individualTypes = [
+        EstablishmentType::PET_SITTER,
+        EstablishmentType::HOME_CARE,
+        EstablishmentType::HOST_FAMILY,
+        EstablishmentType::MOBILE_BOARDING,
+    ];
 
     public function run(): void
     {
@@ -47,9 +68,12 @@ class ExploreSeeder extends Seeder
             $estabCount = random_int(1, 2);
 
             for ($j = 0; $j < $estabCount; $j++) {
+                $type = fake()->randomElement($isProHost ? $this->proTypes : $this->individualTypes);
+
                 $establishment = Establishment::factory()->create([
                     'manager_id' => $user->id,
                     'siret' => $isProHost ? fake()->numerify('##############') : null,
+                    'type' => $type,
                     'is_active' => true,
                 ]);
 
@@ -57,9 +81,53 @@ class ExploreSeeder extends Seeder
                 $this->seedImages($establishment);
             }
         }
+
+        $this->seedReviews($userRole);
     }
 
-    private function seedCapacities(Establishment $establishment, $animalTypes): void
+    private function seedReviews(?Role $userRole): void
+    {
+        $establishments = Establishment::where('is_active', true)
+            ->whereNull('deleted_at')
+            ->get();
+
+        $reviewers = User::factory(10)->create()->each(function (User $user) use ($userRole): void {
+            if ($userRole) {
+                $user->assignRole($userRole);
+            }
+        });
+
+        foreach ($establishments as $establishment) {
+            $count = random_int(3, 8);
+
+            for ($i = 0; $i < $count; $i++) {
+                $reviewer = $reviewers->random();
+                $daysAgo = random_int(30, 365);
+
+                $booking = Booking::create([
+                    'user_id' => $reviewer->id,
+                    'establishment_id' => $establishment->id,
+                    'check_in_date' => Carbon::now()->subDays($daysAgo + 7)->format('Y-m-d'),
+                    'check_out_date' => Carbon::now()->subDays($daysAgo)->format('Y-m-d'),
+                    'total_price' => random_int(50, 300),
+                    'status' => BookingStatus::COMPLETED,
+                ]);
+
+                Review::create([
+                    'booking_id' => $booking->id,
+                    'reviewer_id' => $reviewer->id,
+                    'reviewer_type' => ReviewerType::USER,
+                    'overall_rating' => fake()->randomFloat(1, 3.0, 5.0),
+                    'comment' => fake()->boolean(70) ? fake()->paragraph() : null,
+                    'would_recommend' => fake()->boolean(85),
+                    'is_published' => true,
+                    'published_at' => Carbon::now()->subDays($daysAgo - 1),
+                ]);
+            }
+        }
+    }
+
+    private function seedCapacities(Establishment $establishment, Collection $animalTypes): void
     {
         if ($animalTypes->isEmpty()) {
             return;
@@ -73,10 +141,15 @@ class ExploreSeeder extends Seeder
 
         foreach ($codes->take($count) as $code) {
             [$min, $max] = $this->pricingByCode[$code];
+            $animalType = $animalTypes->get($code);
+
+            if (! $animalType instanceof AnimalType) {
+                continue;
+            }
 
             EstablishmentCapacity::create([
                 'establishment_id' => $establishment->id,
-                'animal_type_id' => $animalTypes->get($code)->id,
+                'animal_type_id' => $animalType->getKey(),
                 'max_capacity' => random_int(2, 10),
                 'price_per_night' => random_int($min * 100, $max * 100) / 100,
             ]);

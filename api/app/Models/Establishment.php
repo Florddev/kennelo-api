@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\EstablishmentPermission;
+use App\Enums\EstablishmentType;
 use App\Enums\ReviewerType;
 use App\Services\MediaService;
 use Illuminate\Database\Eloquent\Builder;
@@ -27,6 +28,7 @@ class Establishment extends Model implements HasMedia
     protected $fillable = [
         'name',
         'siret',
+        'type',
         'description',
         'phone',
         'email',
@@ -41,6 +43,7 @@ class Establishment extends Model implements HasMedia
     {
         return [
             'is_active' => 'boolean',
+            'type' => EstablishmentType::class,
         ];
     }
 

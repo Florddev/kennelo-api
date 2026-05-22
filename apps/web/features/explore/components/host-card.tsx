@@ -68,6 +68,31 @@ function PetIcons({ types, max = 3 }: { types: string[]; max?: number }) {
     );
 }
 
+function LocationLine({ host }: { host: EstablishmentModel }) {
+    const t = useTranslations();
+    const typeLabel = host.type
+        ? t(`features.establishments.types.${host.type}` as Parameters<typeof t>[0])
+        : null;
+    const distanceLabel =
+        host.distance !== null
+            ? t("features.explore.card.distanceKm", { distance: host.distance })
+            : null;
+    const secondary = distanceLabel ?? host.address?.city ?? null;
+
+    if (!typeLabel && !secondary) return null;
+
+    return (
+        <div className="flex items-center gap-1 text-xs text-muted-foreground">
+            <MapPin className="size-3 shrink-0" />
+            {typeLabel && <span className="shrink-0">{typeLabel}</span>}
+            {typeLabel && secondary && <span aria-hidden="true">·</span>}
+            {secondary && (
+                <span className={distanceLabel ? "shrink-0" : "truncate"}>{secondary}</span>
+            )}
+        </div>
+    );
+}
+
 function RatingBadge({ rating, reviewCount }: { rating: number | null; reviewCount: number }) {
     const t = useTranslations();
     if (!rating) return null;
@@ -143,20 +168,7 @@ export function HostCard({
                         )}
                     </div>
                     <ProBadge isPro={host.isProfessional} />
-                    {host.address?.city && (
-                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                            <MapPin className="size-3 shrink-0" />
-                            <span>{host.address.city}</span>
-                            {host.distance !== null && (
-                                <span className="ms-1">
-                                    ·{" "}
-                                    {t("features.explore.card.distanceKm", {
-                                        distance: host.distance,
-                                    })}
-                                </span>
-                            )}
-                        </div>
-                    )}
+                    <LocationLine host={host} />
                     <RatingBadge rating={host.rating} reviewCount={host.reviewCount} />
                     <PetIcons types={host.animalTypes} />
                 </div>
@@ -192,18 +204,7 @@ export function HostCard({
             </div>
             <div className="flex flex-col gap-1 p-2.5">
                 <span className="font-semibold text-sm line-clamp-1">{host.name}</span>
-                {host.address?.city && (
-                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                        <MapPin className="size-3 shrink-0" />
-                        <span className="truncate">{host.address.city}</span>
-                        {host.distance !== null && (
-                            <span className="shrink-0 ms-0.5">
-                                ·{" "}
-                                {t("features.explore.card.distanceKm", { distance: host.distance })}
-                            </span>
-                        )}
-                    </div>
-                )}
+                <LocationLine host={host} />
                 <RatingBadge rating={host.rating} reviewCount={host.reviewCount} />
                 <PetIcons types={host.animalTypes} />
                 {host.minPrice !== null && (
