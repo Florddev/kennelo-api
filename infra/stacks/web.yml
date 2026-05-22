@@ -1,6 +1,6 @@
 services:
   web:
-    image: ghcr.io/anthony14fr/kennelo-web:feature-infra-swarm-cluster
+    image: ghcr.io/anthony14fr/kennelo-web:main
     networks:
       - kennelo-public
     healthcheck:

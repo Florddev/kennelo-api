@@ -1,6 +1,6 @@
 services:
   reverb:
-    image: ghcr.io/anthony14fr/kennelo-api:feature-infra-swarm-cluster
+    image: ghcr.io/anthony14fr/kennelo-api:main
     command: ["php", "artisan", "reverb:start", "--host=0.0.0.0", "--port=8080"]
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://127.0.0.1:8080/up"]
