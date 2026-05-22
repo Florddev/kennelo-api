@@ -29,5 +29,6 @@
     "note": "Note facultative...",
     "selectAnimalType": "Sélectionner un type d'animal",
     "selectStatus": "Sélectionner un statut",
-    "search": "Rechercher..."
+    "search": "Rechercher...",
+    "search-for-destination": "Rechercher un lieu"
 }

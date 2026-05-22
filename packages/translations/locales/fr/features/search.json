@@ -7,6 +7,14 @@
     "suggestions": "Suggestions de destinations",
     "nearby": "À proximité",
     "nearby-description": "Découvrez les pensions à proximité",
+    "mobile": {
+        "title": "Rechercher",
+        "where": "Où ?",
+        "when": "Quand ?",
+        "who": "Qui ?",
+        "next": "Suivant",
+        "clear-all": "Tout effacer"
+    },
     "pets": {
         "label": "Animaux",
         "add": "Ajouter des animaux...",

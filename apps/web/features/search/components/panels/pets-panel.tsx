@@ -12,6 +12,7 @@ import { PET_TYPES } from "../../lib/constants";
 type PetsPanelProps = {
     petCounts: PetCounts;
     onAdjust: (type: PetType, delta: number) => void;
+    className?: string;
 };
 
 function PetCounter({
@@ -73,13 +74,16 @@ function PetCounter({
     );
 }
 
-export function PetsPanel({ petCounts, onAdjust }: PetsPanelProps) {
+export function PetsPanel({ petCounts, onAdjust, className }: PetsPanelProps) {
     const t = useTranslations();
 
     return (
         <div
             data-slot="search-bar-pets-panel"
-            className="absolute z-50 top-full mt-3 end-0 w-80 bg-card rounded-2xl shadow-2xl ring-1 ring-border p-5 overflow-auto max-h-128"
+            className={cn(
+                "absolute z-50 top-full mt-3 end-0 w-80 bg-card rounded-2xl shadow-2xl ring-1 ring-border p-5 overflow-auto max-h-128",
+                className,
+            )}
         >
             {PET_TYPES.map((type, i) => (
                 <div key={type}>

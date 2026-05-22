@@ -3,16 +3,15 @@
 import { useEffect } from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
+import { AlertCircle } from "lucide-react";
 import { useAuth } from "@/features/auth";
 import { UserAvatar } from "@/features/auth/components/user-avatar";
-import { SearchTrigger } from "@/features/explore/components/search-trigger";
-import { SearchModal } from "@/features/explore/components/search-modal";
 import { ExploreSection } from "@/features/explore/components/explore-section";
 import { LocationPrompt } from "@/features/explore/components/location-prompt";
 import { LocationProvider, useLocation } from "@/features/explore/context/location-context";
 import { useExploreEstablishments } from "@/features/explore/hooks/use-explore-establishments";
-import { useState } from "react";
-import { AlertCircle } from "lucide-react";
+import SearchBar from "@/features/search/components/search-bar";
+import MobileSearch from "@/features/search/components/mobile/mobile-search";
 
 function SectionSkeleton() {
     return (
@@ -39,7 +38,6 @@ function ExploreContent() {
     const { user, isAuthenticated } = useAuth();
     const { coords, isDismissed, setCoords } = useLocation();
     const { sections, isLoading, error, retry } = useExploreEstablishments();
-    const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
         if (isAuthenticated && user?.address?.latitude && user.address.longitude && !coords) {
@@ -115,14 +113,17 @@ function ExploreContent() {
             </header>
 
             <div className="px-4 pt-4 pb-3">
-                <SearchTrigger onClick={() => setIsModalOpen(true)} />
+                <div className="hidden md:block">
+                    <SearchBar />
+                </div>
+                <div className="md:hidden">
+                    <MobileSearch />
+                </div>
             </div>
 
             {showLocationPrompt && <LocationPrompt className="mb-4" />}
 
             <div className="flex flex-col gap-8 pb-8 pt-2">{renderBody()}</div>
-
-            <SearchModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
         </div>
     );
 }

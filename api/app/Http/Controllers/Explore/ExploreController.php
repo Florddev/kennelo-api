@@ -6,6 +6,8 @@ namespace App\Http\Controllers\Explore;
 
 use App\Contracts\ExploreSection;
 use App\Enums\ApiStatus;
+use App\Enums\AvailabilityStatus;
+use App\Enums\BookingStatus;
 use App\Enums\ReviewerType;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Explore\Sections\AvailableWeekendSection;
@@ -14,6 +16,7 @@ use App\Http\Controllers\Explore\Sections\NewHostsSection;
 use App\Http\Controllers\Explore\Sections\TopRatedSection;
 use App\Http\Controllers\Explore\Sections\VerifiedProsSection;
 use App\Http\Resources\ExploreEstablishmentResource;
+use App\Models\AnimalType;
 use App\Models\Establishment;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
@@ -65,6 +68,60 @@ class ExploreController extends Controller
         $lng = $request->filled('lng') ? (float) $request->input('lng') : null;
 
         return [$lat, $lng];
+    }
+
+    private function resolveAnimalCounts(Request $request): array
+    {
+        $codes = AnimalType::pluck('code')->all();
+        $counts = [];
+        foreach ($codes as $code) {
+            $value = $request->input($code);
+            if ($value !== null && is_numeric($value) && (int) $value > 0) {
+                $counts[$code] = (int) $value;
+            }
+        }
+
+        return $counts;
+    }
+
+    private function applyAnimalCountsFilter(Builder $query, array $animalCounts, ?string $dateFrom, ?string $dateTo): void
+    {
+        $excluded = [BookingStatus::CANCELLED->value, BookingStatus::COMPLETED->value];
+
+        foreach ($animalCounts as $code => $count) {
+            $query->whereHas('capacities', function (Builder $q) use ($code, $count, $dateFrom, $dateTo, $excluded): void {
+                $q->whereHas('animalType', fn (Builder $at) => $at->where('code', $code));
+
+                if ($dateFrom && $dateTo) {
+                    $q->whereRaw(
+                        'establishment_capacities.max_capacity - (
+                            SELECT COALESCE(COUNT(bp.id), 0)
+                            FROM booking_pet bp
+                            JOIN bookings bk ON bk.id = bp.booking_id
+                            JOIN pets p ON p.id = bp.pet_id
+                            JOIN animal_types at ON at.id = p.animal_type_id
+                            WHERE bk.establishment_id = establishment_capacities.establishment_id
+                            AND at.code = ?
+                            AND bk.status NOT IN (?, ?)
+                            AND bk.check_in_date < ?
+                            AND bk.check_out_date > ?
+                        ) >= ?',
+                        [$code, ...$excluded, $dateTo, $dateFrom, $count]
+                    );
+                } else {
+                    $q->where('max_capacity', '>=', $count);
+                }
+            });
+        }
+    }
+
+    private function applyDateRangeFilter(Builder $query, string $dateFrom, string $dateTo): void
+    {
+        $query->whereDoesntHave('availabilities', function (Builder $q) use ($dateFrom, $dateTo): void {
+            $q->where('status', AvailabilityStatus::CLOSED->value)
+                ->where('date', '>=', $dateFrom)
+                ->where('date', '<', $dateTo);
+        });
     }
 
     public function establishments(Request $request): JsonResponse
@@ -141,15 +198,27 @@ class ExploreController extends Controller
     {
         [$lat, $lng] = $this->resolveCoords($request);
         $page = max(1, (int) $request->input('page', 1));
+        $dateFrom = $request->filled('date_from') ? (string) $request->input('date_from') : null;
+        $dateTo = $request->filled('date_to') ? (string) $request->input('date_to') : null;
 
         $query = $this->baseQuery();
 
-        if ($request->filled('animal_types')) {
-            $types = explode(',', (string) $request->input('animal_types'));
-            $query->whereHas(
-                'capacities.animalType',
-                fn (Builder $q) => $q->whereIn('code', $types)
-            );
+        if ($request->filled('location')) {
+            $location = $request->input('location');
+            $query->whereHas('address', function (Builder $q) use ($location): void {
+                $q->where('city', 'like', "%{$location}%")
+                    ->orWhere('region', 'like', "%{$location}%")
+                    ->orWhere('country', 'like', "%{$location}%");
+            });
+        }
+
+        $animalCounts = $this->resolveAnimalCounts($request);
+        if (! empty($animalCounts)) {
+            $this->applyAnimalCountsFilter($query, $animalCounts, $dateFrom, $dateTo);
+        }
+
+        if ($dateFrom && $dateTo) {
+            $this->applyDateRangeFilter($query, $dateFrom, $dateTo);
         }
 
         if ($request->filled('host_type')) {

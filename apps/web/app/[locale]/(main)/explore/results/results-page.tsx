@@ -12,8 +12,9 @@ import { useNavVisibility } from "@/providers/navigation-visibility-provider";
 import { CompactSearchTrigger } from "@/features/explore/components/search-trigger";
 import { FilterChips } from "@/features/explore/components/filter-chips";
 import { HostCard } from "@/features/explore/components/host-card";
-import { SearchModal } from "@/features/explore/components/search-modal";
-import { useExploreEstablishments } from "@/features/explore/hooks/use-explore-establishments";
+import { useSearchResults } from "@/features/explore/hooks/use-search-results";
+import { useMobileSearch } from "@/features/search/hooks/use-mobile-search";
+import { MobileSearchOverlay } from "@/features/search/components/mobile/mobile-search-overlay";
 
 const SNAP_POINTS: (number | string)[] = [0.08, 0.5, 0.95];
 
@@ -21,7 +22,7 @@ type ResultsPageProps = {
     location: string;
     dateFrom: string;
     dateTo: string;
-    pets: string;
+    petCounts: Record<string, number>;
 };
 
 function MapPlaceholder({ onSearchArea }: { onSearchArea: () => void }) {
@@ -114,16 +115,58 @@ function EmptyResults({ onExpand, onModify }: { onExpand: () => void; onModify: 
     );
 }
 
-export default function ExploreResultsPage({ location, dateFrom, dateTo, pets }: ResultsPageProps) {
+export default function ExploreResultsPage({
+    location,
+    dateFrom,
+    dateTo,
+    petCounts,
+}: ResultsPageProps) {
     const router = useRouter();
     const { setBottomNavbarVisible } = useNavVisibility();
 
     const [activeFilter, setActiveFilter] = useState("all");
     const [snap, setSnap] = useState<number | string | null>(0.5);
-    const [isModalOpen, setIsModalOpen] = useState(false);
     const [highlightedId, setHighlightedId] = useState<string | null>(null);
 
-    const { establishments } = useExploreEstablishments();
+    const { establishments } = useSearchResults({
+        location,
+        dateFrom,
+        dateTo,
+        animalCounts: petCounts,
+    });
+
+    const {
+        isOverlayOpen,
+        openOverlay,
+        closeOverlay,
+        activeCollapsible,
+        locationSearchActive,
+        location: searchLocation,
+        dateRange,
+        petCounts: searchPetCounts,
+        totalPets,
+        filteredSuggestions,
+        dateDisplay,
+        isLastStep,
+        locationInputRef,
+        formatDate,
+        toggleCollapsible,
+        selectLocation,
+        clearLocation,
+        setLocation,
+        setDateRange,
+        adjustPetCount,
+        clearAll,
+        handleNext,
+        handleSearch,
+        selectRecentSearch,
+        setLocationSearchActive,
+    } = useMobileSearch({
+        initialLocation: location,
+        initialDateFrom: dateFrom,
+        initialDateTo: dateTo,
+        initialPetCounts: petCounts,
+    });
 
     function getFilteredHosts() {
         if (activeFilter === "pro") return establishments.filter((e) => e.isProfessional);
@@ -137,10 +180,15 @@ export default function ExploreResultsPage({ location, dateFrom, dateTo, pets }:
         return () => setBottomNavbarVisible(true);
     }, [setBottomNavbarVisible]);
 
+    const petSummary = Object.entries(petCounts)
+        .filter(([, count]) => count > 0)
+        .map(([type, count]) => `${count} ${type}`)
+        .join(", ");
+
     const searchSummary = [
         location || "Carhaix",
         dateFrom && dateTo ? `${formatShortDate(dateFrom)}–${formatShortDate(dateTo)}` : "",
-        pets ? capitalizeFirst(pets.split(",")[0] ?? "") : "",
+        petSummary,
     ]
         .filter(Boolean)
         .join(" · ");
@@ -149,11 +197,6 @@ export default function ExploreResultsPage({ location, dateFrom, dateTo, pets }:
         if (!iso) return "";
         const d = new Date(iso);
         return new Intl.DateTimeFormat("fr", { day: "numeric", month: "short" }).format(d);
-    }
-
-    function capitalizeFirst(s: string) {
-        if (!s) return "";
-        return s.charAt(0).toUpperCase() + s.slice(1);
     }
 
     return (
@@ -166,10 +209,7 @@ export default function ExploreResultsPage({ location, dateFrom, dateTo, pets }:
                     <ChevronLeft className="size-4" />
                 </button>
 
-                <CompactSearchTrigger
-                    summary={searchSummary}
-                    onModify={() => setIsModalOpen(true)}
-                />
+                <CompactSearchTrigger summary={searchSummary} onModify={openOverlay} />
 
                 <button
                     className="size-9 rounded-full bg-muted flex items-center justify-center shrink-0 hover:bg-muted/70 transition-colors relative"
@@ -217,10 +257,7 @@ export default function ExploreResultsPage({ location, dateFrom, dateTo, pets }:
                             )}
                         >
                             {filteredHosts.length === 0 ? (
-                                <EmptyResults
-                                    onExpand={() => {}}
-                                    onModify={() => setIsModalOpen(true)}
-                                />
+                                <EmptyResults onExpand={() => {}} onModify={openOverlay} />
                             ) : (
                                 <>
                                     <div className="px-4 pb-1 flex items-center justify-between">
@@ -258,11 +295,33 @@ export default function ExploreResultsPage({ location, dateFrom, dateTo, pets }:
                 </DrawerPrimitive.Root>
             </div>
 
-            <SearchModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                initialLocation={location}
-            />
+            {isOverlayOpen && (
+                <MobileSearchOverlay
+                    activeCollapsible={activeCollapsible}
+                    locationSearchActive={locationSearchActive}
+                    location={searchLocation}
+                    dateRange={dateRange}
+                    petCounts={searchPetCounts}
+                    totalPets={totalPets}
+                    filteredSuggestions={filteredSuggestions}
+                    dateDisplay={dateDisplay}
+                    isLastStep={isLastStep}
+                    locationInputRef={locationInputRef}
+                    formatDate={formatDate}
+                    onClose={closeOverlay}
+                    onToggleCollapsible={toggleCollapsible}
+                    onSelectLocation={selectLocation}
+                    onClearLocation={clearLocation}
+                    onChangeLocation={setLocation}
+                    onSelectDateRange={setDateRange}
+                    onAdjustPet={adjustPetCount}
+                    onClearAll={clearAll}
+                    onSelectRecentSearch={selectRecentSearch}
+                    onNext={handleNext}
+                    onSearch={handleSearch}
+                    onSetLocationSearchActive={setLocationSearchActive}
+                />
+            )}
         </div>
     );
 }

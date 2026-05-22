@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
 import type { DateRange } from "react-day-picker";
 
@@ -9,6 +10,7 @@ import { LOCATION_SUGGESTIONS, PET_TYPES } from "../lib/constants";
 
 export function useSearchBar() {
     const locale = useLocale();
+    const router = useRouter();
     const containerRef = useRef<HTMLDivElement>(null);
     const locationInputRef = useRef<HTMLInputElement>(null);
 
@@ -76,6 +78,18 @@ export function useSearchBar() {
         locationInputRef.current?.focus();
     }
 
+    function handleSearch() {
+        const params = new URLSearchParams();
+        if (location) params.set("location", location);
+        if (dateRange?.from) params.set("dateFrom", dateRange.from.toISOString().slice(0, 10));
+        if (dateRange?.to) params.set("dateTo", dateRange.to.toISOString().slice(0, 10));
+        PET_TYPES.forEach((type) => {
+            if (petCounts[type] > 0) params.set(type, String(petCounts[type]));
+        });
+        setActivePanel(null);
+        router.push(`/${locale}/explore/results?${params.toString()}`);
+    }
+
     return {
         containerRef,
         locationInputRef,
@@ -96,5 +110,6 @@ export function useSearchBar() {
         selectLocation,
         clearLocation,
         adjustPetCount,
+        handleSearch,
     };
 }

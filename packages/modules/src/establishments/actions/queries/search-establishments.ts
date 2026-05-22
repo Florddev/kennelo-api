@@ -4,8 +4,11 @@ import { ExploreSectionPageDto } from "../../models/dtos/explore-sections-respon
 import type { ExploreCoords } from "./get-explore-establishments";
 
 export type SearchEstablishmentsInput = {
+    location?: string;
     coords?: ExploreCoords;
-    animalTypes?: string[];
+    animalCounts?: Record<string, number>;
+    dateFrom?: string;
+    dateTo?: string;
     hostType?: "pro" | "individual";
     minRating?: number;
     maxPrice?: number;
@@ -25,16 +28,27 @@ export type SearchEstablishmentsResult = {
 export async function searchEstablishments(
     input: SearchEstablishmentsInput,
 ): Promise<SearchEstablishmentsResult> {
-    const params: Record<string, unknown> = {
+    const params: Record<string, string | number | boolean> = {
         page: input.page ?? 1,
     };
 
+    if (input.location) {
+        params.location = input.location;
+    }
     if (input.coords) {
         params.lat = input.coords.lat;
         params.lng = input.coords.lng;
     }
-    if (input.animalTypes?.length) {
-        params.animal_types = input.animalTypes.join(",");
+    if (input.animalCounts) {
+        for (const [type, count] of Object.entries(input.animalCounts)) {
+            if (count > 0) params[type] = count;
+        }
+    }
+    if (input.dateFrom) {
+        params.date_from = input.dateFrom;
+    }
+    if (input.dateTo) {
+        params.date_to = input.dateTo;
     }
     if (input.hostType) {
         params.host_type = input.hostType;

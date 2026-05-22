@@ -7,6 +7,14 @@
     "suggestions": "Destination suggestions",
     "nearby": "Nearby",
     "nearby-description": "Discover kennels near you",
+    "mobile": {
+        "title": "Search",
+        "where": "Where?",
+        "when": "When?",
+        "who": "Who?",
+        "next": "Next",
+        "clear-all": "Clear all"
+    },
     "pets": {
         "label": "Pets",
         "add": "Add pets...",
