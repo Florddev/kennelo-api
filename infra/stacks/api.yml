@@ -1,6 +1,6 @@
 services:
   api:
-    image: ghcr.io/anthony14fr/kennelo-api:feature-infra-swarm-cluster
+    image: ghcr.io/anthony14fr/kennelo-api:main
     environment:
       APP_NAME: Kennelo
       APP_ENV: production
