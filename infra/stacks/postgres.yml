@@ -1,0 +1,36 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: kennelo
+      POSTGRES_USER: kennelo
+      POSTGRES_PASSWORD_FILE: /run/secrets/kennelo_postgres_password
+    secrets:
+      - kennelo_postgres_password
+    volumes:
+      - kennelo-postgres-data:/var/lib/postgresql/data
+    networks:
+      - kennelo-internal
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      restart_policy:
+        condition: any
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kennelo -d kennelo"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  kennelo-internal:
+    external: true
+
+volumes:
+  kennelo-postgres-data:
+
+secrets:
+  kennelo_postgres_password:
+    external: true

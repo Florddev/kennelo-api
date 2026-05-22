@@ -111,16 +111,6 @@ jobs:
         cp .env.example .env
         php artisan key:generate
 
-    - name: Create database
-      working-directory: api
-      run: |
-        mkdir -p database
-        touch database/database.sqlite
-
-    - name: Run migrations
-      working-directory: api
-      run: php artisan migrate --force
-
     - name: Run tests
       working-directory: api
       run: php artisan test

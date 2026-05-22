@@ -1,0 +1,81 @@
+services:
+  reverb:
+    image: ghcr.io/anthony14fr/kennelo-api:feature-infra-swarm-cluster
+    command: ["php", "artisan", "reverb:start", "--host=0.0.0.0", "--port=8080"]
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://127.0.0.1:8080/up"]
+      interval: 30s
+      timeout: 10s
+      start_period: 20s
+      retries: 3
+    environment:
+      APP_NAME: Kennelo
+      APP_ENV: production
+      APP_DEBUG: "false"
+
+      # Reverb server
+      REVERB_SERVER_HOST: 0.0.0.0
+      REVERB_SERVER_PORT: "8080"
+      REVERB_HOST: ws.kennelo.fr
+      REVERB_PORT: "443"
+      REVERB_SCHEME: https
+      REVERB_APP_ID: kennelo
+      REVERB_APP_KEY: kennelo-key
+
+      # Scaling via Redis pub/sub (coordination entre replicas)
+      REVERB_SCALING_ENABLED: "true"
+      REVERB_SCALING_CHANNEL: kennelo-reverb
+      REDIS_CLIENT: predis
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      REDIS_DB: "0"
+
+      # Connexions DB (Reverb peut en avoir besoin pour l'auth des canaux privés)
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_DATABASE: kennelo
+      DB_USERNAME: kennelo
+
+      LOG_CHANNEL: stderr
+      LOG_LEVEL: warning
+    secrets:
+      - kennelo_app_key
+      - kennelo_jwt_secret
+      - kennelo_reverb_app_secret
+      - kennelo_postgres_password
+      - kennelo_redis_password
+      - kennelo_minio_root_user
+      - kennelo_minio_root_password
+    networks:
+      - kennelo-internal
+      - kennelo-public
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: any
+      update_config:
+        parallelism: 1
+        delay: 10s
+
+networks:
+  kennelo-internal:
+    external: true
+  kennelo-public:
+    external: true
+
+secrets:
+  kennelo_app_key:
+    external: true
+  kennelo_jwt_secret:
+    external: true
+  kennelo_reverb_app_secret:
+    external: true
+  kennelo_postgres_password:
+    external: true
+  kennelo_redis_password:
+    external: true
+  kennelo_minio_root_user:
+    external: true
+  kennelo_minio_root_password:
+    external: true
