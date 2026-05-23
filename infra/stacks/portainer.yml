@@ -18,9 +18,10 @@ services:
     image: portainer/portainer-ce:lts
     command: -H tcp://tasks.agent:9001 --tlsskipverify
     ports:
-      # Bind sur 127.0.0.1 uniquement : accessible seulement en local sur le
-      # manager, donc via tunnel SSH. Aucune exposition publique.
-      - "127.0.0.1:9000:9000"
+      - target: 9000
+        published: 9000
+        protocol: tcp
+        mode: host
     volumes:
       - portainer_data:/data
     networks:
