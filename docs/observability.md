@@ -58,7 +58,8 @@ utilisateur, évaluée avant les règles de Docker. Le script
 `infra/scripts/secure-admin-ports.sh` y insère, pour chaque port
 d'administration, une règle qui accepte la loopback (pour le tunnel SSH) et
 rejette tout le reste. Le script est idempotent (rejouable sans accumuler de
-doublons).
+doublons). Les ports protégés sont 9000 (Portainer), 9090 (Prometheus) et
+3000 (Grafana).
 
 ### Persistance au boot
 
@@ -132,4 +133,99 @@ fenêtre d'initialisation :
 
 ```
 docker service update --force portainer_portainer
+```
+
+## Métriques — Prometheus et Grafana
+
+Le cluster est instrumenté pour collecter et visualiser les métriques système
+(CPU, RAM, disque, réseau) des trois nœuds et de chaque conteneur. C'est le
+volet « état de santé » de l'observabilité.
+
+### Architecture
+
+Déployé via `infra/stacks/monitoring.yml` :
+
+- `monitoring_node-exporter` : collecteur des métriques système de chaque nœud
+  (CPU, RAM, disque, réseau de la machine). Mode global, une instance par nœud.
+- `monitoring_cadvisor` : collecteur des métriques par conteneur (consommation
+  CPU/RAM de chaque service). Mode global, une instance par nœud.
+- `monitoring_prometheus` : collecte (scrape) les métriques des deux
+  collecteurs toutes les 15 secondes et les stocke en série temporelle.
+  Contraint sur le manager, données persistées dans le volume `prometheus_data`,
+  rétention de 15 jours.
+- `monitoring_grafana` : interface de visualisation, branchée sur Prometheus
+  comme source de données. Contrainte sur le manager, configuration et
+  dashboards persistés dans le volume `grafana_data`.
+
+Tous ces services communiquent sur le réseau overlay dédié `monitoring`.
+
+### Découverte des cibles
+
+La configuration Prometheus (`infra/config/prometheus.yml`) utilise la
+découverte de services par DNS propre à Swarm : les entrées `tasks.node-exporter`
+et `tasks.cadvisor` résolvent vers les instances de chaque collecteur sur les
+trois nœuds. Prometheus découvre donc automatiquement toutes les cibles, sans
+adresses en dur ; un nœud ajouté au cluster est scrapé automatiquement.
+
+### Accès — tunnel SSH uniquement
+
+Ni Prometheus ni Grafana ne sont exposés publiquement. Les ports 9090 et 3000
+sont publiés en `mode: host` sur le manager mais bloqués au public par le
+pare-feu (voir « Sécurisation des ports d'administration »). L'accès se fait par
+tunnel SSH :
+
+```
+ssh -L 9090:localhost:9090 kennelo@kennelo-manager   # Prometheus
+ssh -L 3000:localhost:3000 kennelo@kennelo-manager   # Grafana
+```
+
+Alias définis côté poste de développement :
+
+```
+alias promkennelo='ssh -L 9090:localhost:9090 kennelo@kennelo-manager'
+alias grafanakennelo='ssh -L 3000:localhost:3000 kennelo@kennelo-manager'
+```
+
+Puis dans le navigateur : http://localhost:9090 (Prometheus) ou
+http://localhost:3000 (Grafana).
+
+### Identifiants Grafana
+
+Le compte administrateur Grafana est créé à partir d'un secret Docker
+(`kennelo_grafana_admin_password`), pas du mot de passe par défaut. L'inscription
+publique est désactivée (`GF_USERS_ALLOW_SIGN_UP=false`). Le mot de passe est
+conservé dans le gestionnaire de mots de passe de l'équipe.
+
+### Source de données et dashboards
+
+La source de données Prometheus est configurée dans Grafana avec l'URL interne
+`http://prometheus:9090` (nom du service sur le réseau monitoring). Les
+dashboards utilisés sont importés depuis la bibliothèque communautaire :
+
+- Node Exporter Full (métriques par nœud)
+- cAdvisor / Docker (métriques par conteneur)
+
+Note : la configuration Grafana (source de données et dashboards) est
+actuellement faite via l'interface et persistée dans le volume `grafana_data`.
+Un provisioning entièrement déclaratif (source et dashboards versionnés dans le
+dépôt) pourra être ajouté ultérieurement pour une reproductibilité complète.
+
+### Vérifier l'état de la collecte
+
+```
+docker service ls | grep monitoring
+docker service ps monitoring_prometheus
+```
+
+Via le tunnel Prometheus, la page Status > Targets (http://localhost:9090/targets)
+doit montrer toutes les cibles « UP » : prometheus (1), node-exporter (3),
+cadvisor (3).
+
+### Vérifier que l'accès public est fermé
+
+Depuis une machine externe (doit renvoyer 000) :
+
+```
+curl -s -o /dev/null -w "%{http_code}" --max-time 5 http://46.101.124.234:9090
+curl -s -o /dev/null -w "%{http_code}" --max-time 5 http://46.101.124.234:3000
 ```
