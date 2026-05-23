@@ -32,5 +32,14 @@
     "notProvided": "Non renseigné",
     "emailVerified": "Email vérifié",
     "idVerified": "Identité vérifiée",
-    "phoneVerified": "Téléphone vérifié"
+    "phoneVerified": "Téléphone vérifié",
+    "selectDate": "Sélectionner une date",
+    "noResults": "Aucun résultat",
+    "day": "Jour",
+    "month": "Mois",
+    "year": "Année",
+    "years": "Ans",
+    "months": "Mois",
+    "exactDate": "Date exacte",
+    "approximateAge": "Âge approximatif"
 }

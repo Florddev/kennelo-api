@@ -4,7 +4,6 @@ import { Providers } from "@/components/providers";
 import { Suspense } from "react";
 import { DEFAULT_LOCALE, DEFAULT_LOCALE_DIR } from "@/dictionaries";
 import { cn } from "@workspace/ui/lib/utils";
-import { cookies } from "next/headers";
 
 const fontHeading = Bricolage_Grotesque({
     subsets: ["latin"],
@@ -24,18 +23,26 @@ const fontMono = Geist_Mono({
     display: "swap",
 });
 
-export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+async function getInitialAuthState(): Promise<boolean> {
+    if (process.env.NEXT_PUBLIC_ROUTE_MODE === "static") return false;
+    const { cookies } = await import("next/headers");
     const cookieStore = await cookies();
-    const initialIsAuthenticated = cookieStore.has("access_token");
+    return cookieStore.has("access_token");
+}
+
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+    const initialIsAuthenticated = await getInitialAuthState();
 
     return (
         <html lang={DEFAULT_LOCALE} dir={DEFAULT_LOCALE_DIR} suppressHydrationWarning>
             <head>
-                <script
-                    async
-                    crossOrigin="anonymous"
-                    src="https://tweakcn.com/live-preview.min.js"
-                />
+                {process.env.NEXT_PUBLIC_PLATFORM !== "mobile" && (
+                    <script
+                        async
+                        crossOrigin="anonymous"
+                        src="https://tweakcn.com/live-preview.min.js"
+                    />
+                )}
             </head>
             <body
                 className={cn(

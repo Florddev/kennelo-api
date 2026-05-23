@@ -41,5 +41,8 @@
     "save-and-quit": "Enregistrer et quitter",
     "help": "Des question ?",
     "download": "Télécharger",
-    "login": "Connexion"
+    "login": "Connexion",
+    "addPhoto": "Ajouter une photo",
+    "finish": "Terminer",
+    "new": "Nouveau"
 }

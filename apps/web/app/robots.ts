@@ -1,6 +1,8 @@
 import { MetadataRoute } from "next";
 import { routing } from "@/lib/i18n/routing";
 
+export const dynamic = "force-static";
+
 export default function robots(): MetadataRoute.Robots {
     const sitemapUrls =
         routing.domains?.map((domain) => `https://${domain.domain}/sitemap.xml`) || [];

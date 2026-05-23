@@ -12,6 +12,8 @@
         "gallery": "Gallery",
         "owner": "Owner",
         "reviews": "Reviews",
+        "reviewsTitle": "What others say",
+        "reviewsCount": "{count, plural, =0 {No reviews yet} =1 {1 review from a host} other {# reviews from hosts}}",
         "reviewsEmpty": "No reviews yet",
         "reviewsEmptyDescription": "Reviews from hosts who have cared for this pet will appear here",
         "photosPlaceholder": "Photos coming soon",
@@ -47,7 +49,12 @@
         "summary": "Summary",
         "socialization": "Socialization",
         "boarding": "Boarding",
-        "otherInformation": "Other information"
+        "otherInformation": "Other information",
+        "findHost": "Find a host for {name}",
+        "overviewSectionTitle": "Character & Habits",
+        "overviewSectionDescription": "Character, habits, and care at a glance",
+        "galleryTitle": "Photo gallery of {name}",
+        "galleryDescription": "Find all photos taken of {name} during their stays."
     },
     "fields": {
         "name": "Name",
@@ -64,7 +71,8 @@
         "adoptionDate": "Adoption date",
         "about": "About",
         "healthNotes": "Health notes",
-        "animalType": "Animal type"
+        "animalType": "Animal type",
+        "gender": "Gender"
     },
     "create": {
         "pageTitle": "Create a new pet",
@@ -100,7 +108,7 @@
                 "error": "Please choose an animal type before continuing."
             },
             "identity": {
-                "title": "What is your pet's name?"
+                "title": "Tell us about your pet."
             },
             "identityDetails": {
                 "title": "Tell us a little more about your pet.",
@@ -149,11 +157,13 @@
             },
             "media": {
                 "title": "Let us add the photos for your pet profile.",
-                "subtitle": "Choose one avatar and optionally add extra photos.",
+                "subtitle": "Choose and add additional photos if necessary.",
                 "avatarLabel": "Profile photo",
                 "imagesLabel": "Additional photos",
                 "pickAvatar": "Choose an avatar",
-                "pickImages": "Choose photos"
+                "pickImages": "Choose photos",
+                "addImages": "Add photos",
+                "avatarUploadError": "Profile photo could not be uploaded, you can set it later from the profile."
             },
             "avatar": {
                 "title": "Let us choose a profile photo for your pet.",
@@ -172,7 +182,7 @@
                 "attributesCount": "Attributes selected: {count}",
                 "imagesCount": "Photos selected: {count}",
                 "submit": "Create my pet profile",
-                "submitting": "Creating your pet profile..."
+                "submitting": "Creating the profile..."
             }
         },
         "upload": {
@@ -209,12 +219,12 @@
     "types": {
         "dog": "Dog",
         "cat": "Cat",
-        "bird": "Bird",
         "rabbit": "Rabbit",
+        "rodent": "Rodent",
+        "ferret": "Ferret",
+        "bird": "Bird",
         "reptile": "Reptile",
-        "amphibian": "Amphibian",
-        "fish": "Fish",
-        "spider": "Spider"
+        "amphibian": "Amphibian"
     },
     "filters": {
         "all": "All",
@@ -247,32 +257,43 @@
             "options": {
                 "low": "Calm and low energy",
                 "medium": "Balanced energy",
-                "high": "Very energetic"
+                "high": "Very energetic",
+                "very_high": "Extremely energetic"
             }
         },
-        "potty_trained": {
-            "question": "How potty trained is {petName}?",
-            "options": {
-                "trained": "Fully potty trained",
-                "learning": "Still learning",
-                "to_determine": "Not sure yet"
-            }
-        },
-        "litter_trained": {
-            "question": "How well does {petName} use the litter box?",
-            "options": {
-                "trained": "Uses the litter box consistently",
-                "learning": "Still learning",
-                "to_determine": "Not sure yet"
-            }
-        },
-        "friendly_with_kids": {
+        "friendly_with_children": {
             "question": "How does {petName} behave around children?",
             "options": {
                 "yes": "Gets along well with children",
+                "supervised_only": "With supervision only",
                 "no": "Does not get along with children",
                 "unknown": "I am not sure"
             }
+        },
+        "feeding_schedule": {
+            "question": "What is {petName}'s feeding schedule?",
+            "options": {
+                "morning_only": "Morning only",
+                "evening_only": "Evening only",
+                "morning_and_evening": "Morning & Evening",
+                "three_times_daily": "Three times a day",
+                "free_feeding": "Free feeding (always available)"
+            }
+        },
+        "feeding_frequency": {
+            "question": "How often should {petName} be fed?",
+            "options": {
+                "daily": "Once a day",
+                "every_2_days": "Every 2 days",
+                "twice_weekly": "Twice a week",
+                "weekly": "Once a week"
+            }
+        },
+        "medications": {
+            "question": "Does {petName} need any medications?"
+        },
+        "special_diet": {
+            "question": "Does {petName} have any special dietary requirements?"
         },
         "friendly_with_dogs": {
             "question": "How does {petName} behave around dogs?",
@@ -290,34 +311,119 @@
                 "unknown": "I am not sure"
             }
         },
-        "potty_break": {
-            "question": "How often does {petName} need a potty break?",
-            "options": {
-                "2h": "About every 2 hours",
-                "4h": "About every 4 hours",
-                "6h_plus": "Can wait 6 hours or more"
-            }
-        },
-        "meal_schedule": {
-            "question": "What is {petName}'s meal schedule?",
-            "options": {
-                "morning": "One meal in the morning",
-                "evening": "One meal in the evening",
-                "morning_evening": "Two meals: morning and evening",
-                "free_feeding": "Free feeding"
-            }
-        },
         "can_be_left_alone": {
             "question": "How long can {petName} be left alone?",
             "options": {
                 "1h": "Up to 1 hour",
                 "4h": "Up to 4 hours",
-                "8h_plus": "8 hours or more",
+                "8h": "Up to 8 hours",
                 "never": "Should not be left alone"
             }
         },
-        "medications": {
-            "question": "Does {petName} need any medications?"
+        "can_be_handled": {
+            "question": "How comfortably can {petName} be handled?",
+            "options": {
+                "yes_easily": "Can be handled easily",
+                "yes_with_care": "Requires care when handled",
+                "requires_experience": "Requires experience",
+                "no": "Prefers not to be handled"
+            }
+        },
+        "litter_trained": {
+            "question": "How well does {petName} use the litter box?",
+            "options": {
+                "yes": "Fully litter trained",
+                "in_training": "Still learning",
+                "no": "Not litter trained"
+            }
+        },
+        "housing_size": {
+            "question": "What size housing does {petName} need?",
+            "options": {
+                "small": "Small",
+                "medium": "Medium",
+                "large": "Large",
+                "extra_large": "Extra Large / Aviary"
+            }
+        },
+        "is_nocturnal": {
+            "question": "Is {petName} mostly nocturnal?"
+        },
+        "humidity_level": {
+            "question": "What humidity level is right for {petName}?",
+            "options": {
+                "low": "Low (30–40%)",
+                "medium": "Medium (50–60%)",
+                "high": "High (70–80%)",
+                "very_high": "Very High (80%+)"
+            }
+        },
+        "diet_type": {
+            "question": "What diet type is best for {petName}?",
+            "options": {
+                "insects": "Insects",
+                "rodents": "Rodents / Pinky mice",
+                "worms": "Worms",
+                "vegetables": "Vegetables / Fruit",
+                "omnivore": "Omnivore",
+                "carnivore": "Carnivore"
+            }
+        },
+        "requires_live_food": {
+            "question": "Does {petName} require live prey?"
+        },
+        "is_venomous": {
+            "question": "Is {petName} venomous or toxic?"
+        },
+        "handling_frequency": {
+            "question": "How often does {petName} need to be handled?",
+            "options": {
+                "daily": "Daily",
+                "few_per_week": "A few times a week",
+                "weekly": "Once a week",
+                "rarely": "Rarely / Never"
+            }
+        },
+        "potty_trained": {
+            "question": "How potty trained is {petName}?",
+            "options": {
+                "fully_trained": "Fully potty trained",
+                "in_training": "Still learning",
+                "not_trained": "Not potty trained"
+            }
+        },
+        "potty_break_frequency": {
+            "question": "How often does {petName} need a potty break?",
+            "options": {
+                "every_2h": "Every 2 hours",
+                "every_4h": "Every 4 hours",
+                "every_6h_plus": "Every 6 hours or more"
+            }
+        },
+        "leash_trained": {
+            "question": "Is {petName} leash trained?",
+            "options": {
+                "yes": "Yes, well trained",
+                "in_training": "Still learning",
+                "no": "Not leash trained"
+            }
+        },
+        "daily_walks": {
+            "question": "How many walks does {petName} need per day?",
+            "options": {
+                "one": "1 walk",
+                "two": "2 walks",
+                "three_plus": "3 or more walks"
+            }
+        },
+        "separation_anxiety": {
+            "question": "Does {petName} have separation anxiety?",
+            "options": {
+                "none": "No anxiety",
+                "mild": "Mild anxiety",
+                "moderate": "Moderate anxiety",
+                "severe": "Severe anxiety"
+            }
         },
         "indoor_outdoor": {
             "question": "Is {petName} indoor, outdoor, or both?",
@@ -330,59 +436,78 @@
         "declawed": {
             "question": "Has {petName} been declawed?"
         },
-        "cage_type": {
-            "question": "What cage or enclosure type is best for {petName}?",
+        "friendly_with_other_cats": {
+            "question": "How does {petName} get along with other cats?",
             "options": {
-                "small": "Small cage",
-                "medium": "Medium cage",
-                "large": "Large cage",
-                "enclosure": "Enclosure",
-                "aviary": "Aviary"
-            }
-        },
-        "is_nocturnal": {
-            "question": "Is {petName} mostly nocturnal?"
-        },
-        "can_be_handled": {
-            "question": "How comfortably can {petName} be handled?",
-            "options": {
-                "yes_easily": "Can be handled easily",
-                "yes_with_care": "Can be handled with care",
-                "no_fearful": "Prefers not to be handled"
-            }
-        },
-        "bites_scratches": {
-            "question": "Does {petName} bite or scratch?",
-            "options": {
-                "never": "Never",
-                "rarely": "Rarely",
-                "often": "Often"
-            }
-        },
-        "friendly_with_same_species": {
-            "question": "How does {petName} behave with the same species?",
-            "options": {
-                "yes": "Gets along with the same species",
-                "no": "Does not get along with the same species",
+                "yes": "Gets along well with other cats",
+                "no": "Does not get along with other cats",
                 "unknown": "I am not sure"
             }
         },
-        "diet_specifics": {
-            "question": "Does {petName} have a specific diet?"
+        "housing_type": {
+            "question": "What type of housing does {petName} have?",
+            "options": {
+                "indoor_cage": "Indoor cage",
+                "outdoor_hutch": "Outdoor hutch",
+                "free_roam": "Free roam",
+                "cage_with_exercise": "Cage with exercise area"
+            }
+        },
+        "hay_type": {
+            "question": "What type of hay does {petName} eat?",
+            "options": {
+                "timothy": "Timothy hay",
+                "orchard": "Orchard grass",
+                "meadow": "Meadow hay",
+                "alfalfa": "Alfalfa (young or ill)"
+            }
+        },
+        "free_roam_time": {
+            "question": "How much free roam time does {petName} need daily?",
+            "options": {
+                "less_than_1h": "Less than 1 hour",
+                "1_to_3h": "1 to 3 hours",
+                "3_to_6h": "3 to 6 hours",
+                "all_day": "All day"
+            }
+        },
+        "rodent_species": {
+            "question": "What species of rodent is {petName}?"
+        },
+        "social_living": {
+            "question": "Does {petName} live alone or with others?",
+            "options": {
+                "alone": "Lives alone",
+                "pair": "Bonded pair",
+                "group": "Group"
+            }
+        },
+        "biting_tendency": {
+            "question": "Does {petName} tend to bite?",
+            "options": {
+                "never": "Never",
+                "rarely": "Rarely",
+                "when_stressed": "When stressed"
+            }
+        },
+        "social_with_ferrets": {
+            "question": "How does {petName} behave with other ferrets?",
+            "options": {
+                "yes": "Gets along well with other ferrets",
+                "no": "Does not get along with other ferrets",
+                "unknown": "I am not sure"
+            }
         },
         "bird_species": {
             "question": "What is {petName}'s bird species?"
         },
-        "can_fly": {
-            "question": "Can {petName} fly?",
+        "flight_status": {
+            "question": "What is {petName}'s flight status?",
             "options": {
-                "yes": "Can fly",
-                "no_clipped": "Cannot fly (wings clipped)",
-                "limited": "Limited flight"
+                "fully_flighted": "Fully flighted",
+                "wings_clipped": "Wings clipped",
+                "limited_flight": "Limited flight"
             }
-        },
-        "wings_clipped": {
-            "question": "Are {petName}'s wings clipped?"
         },
         "noise_level": {
             "question": "What is {petName}'s noise level?",
@@ -396,48 +521,30 @@
         "can_talk": {
             "question": "Can {petName} talk?"
         },
-        "friendly_with_other_birds": {
+        "out_of_cage_time": {
+            "question": "How much daily time outside the cage does {petName} need?",
+            "options": {
+                "not_needed": "Not needed",
+                "less_than_1h": "Less than 1 hour",
+                "1_to_3h": "1 to 3 hours",
+                "more_than_3h": "More than 3 hours"
+            }
+        },
+        "bath_method": {
+            "question": "How is {petName} bathed?",
+            "options": {
+                "misting": "Misting",
+                "shallow_dish": "Shallow dish",
+                "both": "Both methods",
+                "none_needed": "Not needed"
+            }
+        },
+        "friendly_with_birds": {
             "question": "How does {petName} behave with other birds?",
             "options": {
-                "yes": "Gets along with other birds",
+                "yes": "Gets along well with other birds",
                 "no": "Does not get along with other birds",
                 "unknown": "I am not sure"
-            }
-        },
-        "water_type": {
-            "question": "What water type does {petName} live in?",
-            "options": {
-                "freshwater": "Freshwater",
-                "saltwater": "Saltwater",
-                "brackish": "Brackish water"
-            }
-        },
-        "tank_size_liters": {
-            "question": "What tank size in liters is needed for {petName}?"
-        },
-        "water_temperature": {
-            "question": "What water temperature is best for {petName}?"
-        },
-        "compatible_with_other_fish": {
-            "question": "Is {petName} compatible with other fish?",
-            "options": {
-                "yes": "Compatible with most fish",
-                "certain_types": "Compatible with specific species only",
-                "no_aggressive": "Aggressive toward other fish"
-            }
-        },
-        "equipment_needed": {
-            "question": "What equipment is needed for {petName}?"
-        },
-        "feeding_frequency": {
-            "question": "How often should {petName} be fed?",
-            "options": {
-                "once_daily": "Once a day",
-                "twice_daily": "Twice a day",
-                "every_2_days": "Every 2 days",
-                "twice_weekly": "Two to three times a week",
-                "weekly": "Once a week",
-                "biweekly": "Once every two weeks"
             }
         },
         "reptile_species": {
@@ -448,37 +555,15 @@
             "options": {
                 "desert": "Desert terrarium",
                 "tropical": "Tropical terrarium",
+                "woodland": "Woodland terrarium",
                 "aqua_terrarium": "Aqua terrarium"
             }
         },
-        "temperature_range": {
-            "question": "What temperature range is right for {petName}?"
+        "temperature_day": {
+            "question": "What is the required day temperature for {petName} (°C)?"
         },
-        "humidity_level": {
-            "question": "What humidity level is right for {petName}?",
-            "options": {
-                "low": "Low humidity (30-40%)",
-                "medium": "Medium humidity (50-60%)",
-                "high": "High humidity (70-80%)"
-            }
-        },
-        "is_venomous": {
-            "question": "Is {petName} venomous?"
-        },
-        "diet_type": {
-            "question": "What diet type is best for {petName}?",
-            "options": {
-                "insects": "Insect-based diet",
-                "rodents": "Rodent-based diet",
-                "vegetarian": "Vegetarian diet",
-                "omnivore": "Omnivore diet",
-                "carnivore": "Carnivore diet",
-                "worms": "Worm-based diet",
-                "detritivore": "Detritivore diet"
-            }
-        },
-        "requires_live_food": {
-            "question": "Does {petName} require live food?"
+        "temperature_night": {
+            "question": "What is the required night temperature for {petName} (°C)?"
         },
         "uv_light_needed": {
             "question": "Does {petName} need UV lighting?"
@@ -489,33 +574,49 @@
         "habitat_type": {
             "question": "What habitat type is right for {petName}?",
             "options": {
-                "aquatic": "Aquatic habitat",
-                "semi_aquatic": "Semi-aquatic habitat",
-                "terrestrial": "Terrestrial habitat",
-                "dry_terrarium": "Dry terrarium",
-                "humid_terrarium": "Humid terrarium",
-                "aquarium": "Aquarium"
+                "aquatic": "Aquatic",
+                "semi_aquatic": "Semi-aquatic",
+                "terrestrial": "Terrestrial"
             }
         },
-        "is_aquatic": {
-            "question": "Is {petName} aquatic?"
+        "water_quality": {
+            "question": "What are the water quality requirements for {petName}?"
         },
-        "water_quality_requirements": {
-            "question": "What water quality does {petName} need?"
-        },
-        "spider_species": {
-            "question": "What spider species is {petName}?"
-        },
-        "molting_frequency": {
-            "question": "How often does {petName} molt?",
-            "options": {
-                "never": "No molting",
-                "annual": "Yearly molt",
-                "monthly": "Monthly molt",
-                "weekly": "Weekly molt"
-            }
+        "skin_care_notes": {
+            "question": "Are there any specific skin care needs for {petName}?"
         }
     },
     "please-login": "Log in to view the list of your animals",
-    "please-login-description": "Once you log in, your pets' profiles will appear here."
+    "please-login-description": "Once you log in, your pets' profiles will appear here.",
+    "createTitle": "Create a pet",
+    "edit": {
+        "pageTitle": "Edit",
+        "sections": {
+            "general": "General",
+            "profile": "Profile",
+            "health": "Health",
+            "personality": "Personality",
+            "photos": "Photos"
+        },
+        "sectionDescriptions": {
+            "general": "Name, type, breed, sex",
+            "profile": "Age, weight, adoption date",
+            "health": "Sterilization, microchip, health notes",
+            "personality": "Behavioral attributes",
+            "photos": "Avatar and gallery photos"
+        },
+        "generalGroups": {
+            "identity": "Identity",
+            "keyDates": "Key dates",
+            "characteristics": "Characteristics"
+        },
+        "completionLabel": "Profile completion",
+        "delete": "Delete",
+        "deleteTitle": "Delete {name}?",
+        "deleteDescription": "This action cannot be undone. All data for this pet will be permanently deleted.",
+        "deleteConfirm": "Delete permanently",
+        "saveSuccess": "Changes saved",
+        "deleteSuccess": "Pet deleted"
+    },
+    "noDescription": "No description was provided for this animal."
 }

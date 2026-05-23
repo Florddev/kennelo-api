@@ -21,4 +21,8 @@ export class AnimalTypeModel {
                 : null,
         );
     }
+
+    getTailwindColorClass(): string {
+        return this.code ?? "main";
+    }
 }

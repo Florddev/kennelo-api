@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import {
@@ -23,6 +23,7 @@ import {
     useOptimizedPetImageUpload,
     type UploadProgress,
 } from "@/hooks/use-optimized-pet-image-upload";
+import { imageCompressionService } from "@/services/image-compression.service";
 import { CATEGORY_ORDER, Step, StepGroup } from "./create-pet-stepper.constants";
 import {
     applyAttributeDraftPatch,
@@ -33,7 +34,6 @@ import { buildCategoryDefinitions, findSelectedAnimalType } from "./create-pet-s
 import { type AttributeDraft } from "./create-pet-stepper.types";
 import { AnimalTypeStep } from "./step/animal-type-step";
 import { AttributesCategoryStep } from "./step/attributes-category-step";
-import { IdentityDetailsStep } from "./step/identity-details-step";
 import { IdentityStep } from "./step/identity-step";
 import { IntroStep } from "./step/intro-step";
 import { MediaStep } from "./step/media-step";
@@ -43,6 +43,7 @@ export function CreatePetStepper() {
     const t = useTranslations();
     const { routes, router } = useNavigation();
     const { execute, isLoading } = useAsyncState();
+    const queryClient = useQueryClient();
     const { uploadCompressedImages } = useOptimizedPetImageUpload();
     const [formKey, setFormKey] = useState(0);
     const [createdPetId, setCreatedPetId] = useState<string | null>(null);
@@ -122,62 +123,65 @@ export function CreatePetStepper() {
             fields: ["name", "sex", "breed"],
             groupId: StepGroup.GENERAL,
             component: ({ control, isLoading: loading }) => (
-                <IdentityStep control={control} isLoading={loading} />
-            ),
-        },
-        {
-            id: Step.IDENTITY_DETAILS,
-            fields: ["birthDate", "weight", "about"],
-            groupId: StepGroup.GENERAL,
-            component: ({ control, isLoading: loading }) => (
-                <IdentityDetailsStep control={control} isLoading={loading} />
+                <IdentityStep
+                    control={control}
+                    isLoading={loading}
+                    avatarFile={avatarFile}
+                    onAvatarChange={setAvatarFile}
+                />
             ),
         },
         {
             id: Step.PROFILE,
-            fields: ["isSterilized", "hasMicrochip", "microchipNumber"],
+            fields: ["birthDate", "weight", "isSterilized", "microchipNumber", "about"],
             groupId: StepGroup.GENERAL,
             canProceed: async (form) => {
-                const hasMicrochip = form.getValues("hasMicrochip");
-                const microchipNumber = (form.getValues("microchipNumber") ?? "").trim();
-
-                if (hasMicrochip && microchipNumber.length === 0) {
-                    form.setError("microchipNumber", {
-                        message: t("features.pets.create.validation.microchipRequired"),
-                    });
-                    await form.trigger(["microchipNumber"], { shouldFocus: true });
-                    return false;
-                }
-
-                if (!hasMicrochip) {
-                    form.setValue("microchipNumber", "");
-                }
-
                 const payload = buildCreatePetPayload(form.getValues());
                 const setFieldError = (
                     field: FieldPath<CreatePetInput>,
                     error: { message: string },
                 ) => form.setError(field, error);
 
+                let petId: string;
+
                 if (createdPetId) {
                     const updatedPet = await execute(() => updatePet(createdPetId, payload), {
                         displayError: true,
                         setFieldError,
                     });
-
-                    return Boolean(updatedPet);
+                    if (!updatedPet) return false;
+                    petId = createdPetId;
+                } else {
+                    const createdPet = await execute(() => createPet(payload), {
+                        displayError: true,
+                        setFieldError,
+                    });
+                    if (!createdPet) return false;
+                    petId = createdPet.id;
+                    setCreatedPetId(createdPet.id);
                 }
 
-                const createdPet = await execute(() => createPet(payload), {
-                    displayError: true,
-                    setFieldError,
-                });
-
-                if (!createdPet) {
-                    return false;
+                if (avatarFile) {
+                    try {
+                        const compressed = await imageCompressionService.compressImage(avatarFile, {
+                            maxWidth: 800,
+                            maxHeight: 800,
+                            quality: 0.82,
+                        });
+                        const baseName = avatarFile.name.replace(/\.[^.]+$/, "");
+                        const compressedAvatar = new File(
+                            [compressed.blob],
+                            `${baseName}.${compressed.format}`,
+                            { type: `image/${compressed.format}` },
+                        );
+                        await execute(() => uploadPetAvatar(petId, compressedAvatar), {
+                            displayError: true,
+                        });
+                    } catch {
+                        toast.error(t("features.pets.create.steps.media.avatarUploadError"));
+                    }
                 }
 
-                setCreatedPetId(createdPet.id);
                 return true;
             },
             component: ({ control, isLoading: loading }) => (
@@ -230,36 +234,15 @@ export function CreatePetStepper() {
             fields: [],
             groupId: StepGroup.COMPLETION,
             component: () => (
-                <MediaStep
-                    avatarFile={avatarFile}
-                    onAvatarChange={setAvatarFile}
-                    imageFiles={imageFiles}
-                    onImageFilesChange={setImageFiles}
-                />
+                <MediaStep imageFiles={imageFiles} onImageFilesChange={setImageFiles} />
             ),
         },
     ];
 
-    const onSubmit = async (
-        values: CreatePetInput,
-        setFieldError?: (field: FieldPath<CreatePetInput>, error: { message: string }) => void,
-    ) => {
-        let petId = createdPetId;
+    const onSubmit = async () => {
+        if (!createdPetId) return;
 
-        if (!petId) {
-            const createdPet = await execute(() => createPet(buildCreatePetPayload(values)), {
-                displayError: true,
-                setFieldError,
-            });
-
-            if (!createdPet) {
-                return;
-            }
-
-            petId = createdPet.id;
-            setCreatedPetId(createdPet.id);
-        }
-
+        const petId = createdPetId;
         const attributePayload = buildAttributePayload(selectedAnimalAttributes, attributeDrafts);
 
         if (attributePayload) {
@@ -271,16 +254,6 @@ export function CreatePetStepper() {
             );
 
             if (!attributesResult) {
-                return;
-            }
-        }
-
-        if (avatarFile) {
-            const avatarResult = await execute(() => uploadPetAvatar(petId, avatarFile), {
-                displayError: true,
-            });
-
-            if (!avatarResult) {
                 return;
             }
         }
@@ -314,18 +287,20 @@ export function CreatePetStepper() {
             }
         }
 
+        await queryClient.invalidateQueries({ queryKey: ["pets", "list"] });
         setFormKey((previous) => previous + 1);
         setCreatedPetId(null);
         setSelectedAnimalTypeValue(null);
         setAttributeDrafts({});
         setAvatarFile(null);
         setImageFiles([]);
-        router.push(routes.PetDetails({ id: petId }));
+        router.replace(routes.PetDetails({ id: petId }));
     };
 
     return (
         <FormStepper<CreatePetInput>
             key={formKey}
+            stepperName={t("features.pets.createTitle")}
             schema={createPetSchema}
             defaultValues={{
                 animalTypeId: 0,
@@ -348,7 +323,7 @@ export function CreatePetStepper() {
                 next: t("common.actions.next"),
                 submit: isLoading
                     ? t("features.pets.create.steps.final.submitting")
-                    : t("features.pets.create.steps.final.submit"),
+                    : t("common.actions.finish"),
             }}
             onSubmit={onSubmit}
             isLoading={isLoading}

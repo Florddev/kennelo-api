@@ -10,6 +10,7 @@ use App\Enums\PaginationEnum;
 use App\Enums\ReviewerType;
 use App\Models\Booking;
 use App\Models\Establishment;
+use App\Models\Pet;
 use App\Models\Review;
 use App\Models\ReviewCriteriaDefinition;
 use App\Models\User;
@@ -134,6 +135,36 @@ class ReviewService
             ->where('reviewer_type', ReviewerType::ESTABLISHMENT->value)
             ->latest()
             ->paginate($perPage);
+    }
+
+    public function forPet(Pet $pet, array $filters = []): LengthAwarePaginator
+    {
+        $perPage = $filters['per_page'] ?? PaginationEnum::DEFAULT_PAGINATION->value();
+
+        return Review::query()
+            ->with(['reviewer', 'criteriaScores.definition', 'response.responder'])
+            ->whereHas('booking', fn ($q) => $q->whereHas('pets', fn ($pq) => $pq->where('pets.id', $pet->id)))
+            ->where('reviewer_type', ReviewerType::ESTABLISHMENT->value)
+            ->where('is_published', true)
+            ->when(isset($filters['min_rating']), fn ($q) => $q->where('overall_rating', '>=', $filters['min_rating']))
+            ->latest('published_at')
+            ->paginate($perPage);
+    }
+
+    public function aggregatesForPet(Pet $pet): array
+    {
+        $base = Review::query()
+            ->whereHas('booking', fn ($q) => $q->whereHas('pets', fn ($pq) => $pq->where('pets.id', $pet->id)))
+            ->where('reviewer_type', ReviewerType::ESTABLISHMENT->value)
+            ->where('is_published', true);
+
+        $total = (clone $base)->count();
+        $average = $total > 0 ? round((float) (clone $base)->avg('overall_rating'), 2) : null;
+
+        return [
+            'total' => $total,
+            'average' => $average,
+        ];
     }
 
     public function aggregatesForEstablishment(Establishment $establishment): array

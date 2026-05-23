@@ -19,6 +19,8 @@ class AttributeDefinitionResource extends JsonResource
             'label' => $this->label,
             'category' => $this->category,
             'value_type' => $this->value_type,
+            'input_type' => $this->input_type,
+            'icon_name' => $this->icon_name,
             'has_predefined_options' => $this->has_predefined_options,
             'is_required' => $this->is_required,
             'options' => $this->has_predefined_options

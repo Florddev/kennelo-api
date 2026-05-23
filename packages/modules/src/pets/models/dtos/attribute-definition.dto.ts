@@ -6,6 +6,8 @@ export type AttributeDefinitionDto = {
     code: string;
     label: string;
     value_type: string;
+    input_type: string;
+    icon_name: string | null;
     category: PetAttributeCategory;
     has_predefined_options: boolean;
     is_required: boolean;

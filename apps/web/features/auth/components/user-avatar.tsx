@@ -1,15 +1,31 @@
-import { UserModel } from "@workspace/modules/users";
+import { User } from "@solar-icons/react";
 import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/avatar";
 import { cn } from "@workspace/ui/lib/utils";
 
-export function UserAvatar({ user, className }: { user?: UserModel | null; className?: string }) {
+export function UserAvatar({
+    user,
+    className,
+    size,
+}: {
+    user?: {
+        avatarUrl?: string | null;
+        getFullName: () => string;
+    } | null;
+    className?: string;
+    size?: "default" | "sm" | "lg";
+}) {
     return (
-        <Avatar className={cn("cursor-pointer", className)}>
+        <Avatar className={cn("cursor-pointer bg-muted after:border-0", className)} size={size}>
             <AvatarImage
                 src={user?.avatarUrl || undefined}
                 alt={user?.getFullName() || "User profile"}
             />
-            <AvatarFallback className="text-xs">{user?.getInitials() || "U"}</AvatarFallback>
+            <AvatarFallback className="text-xs border-0 bg-transparent">
+                <User
+                    weight="Bold"
+                    className="size-full max-w-2/3 text-muted-foreground/30 border-0"
+                />
+            </AvatarFallback>
         </Avatar>
     );
 }

@@ -19,6 +19,8 @@ class AttributeDefinition extends Model
         'label',
         'category',
         'value_type',
+        'input_type',
+        'icon_name',
         'has_predefined_options',
         'is_required',
         'validation_rules',

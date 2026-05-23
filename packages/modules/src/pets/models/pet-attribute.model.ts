@@ -6,7 +6,7 @@ export class PetAttributeModel {
     private constructor(
         public readonly id: number,
         public readonly attributeDefinitionId: number,
-        public readonly attributeOptionId: number | null,
+        public readonly attributeOptionId: string | null,
         public readonly value: string | number | boolean | null,
         public readonly attributeDefinition: AttributeDefinitionModel | null,
         public readonly attributeOption: AttributeOptionModel | null,
