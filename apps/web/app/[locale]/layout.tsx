@@ -5,6 +5,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { DirectionProvider } from "@workspace/ui/components/direction";
 import { LocaleDirection } from "@/dictionaries";
 import LocaleUpdater from "@/components/i18n/locale-updater";
+import { JSX } from "react";
 
 export function generateStaticParams() {
     return routing.locales.map((locale) => ({ locale }));
@@ -26,7 +27,7 @@ export default async function LocaleLayout({
 }: {
     children: React.ReactNode;
     params: Promise<{ locale: string }>;
-}) {
+}): Promise<JSX.Element> {
     const { locale } = await params;
     if (!hasLocale(routing.locales, locale)) {
         notFound();

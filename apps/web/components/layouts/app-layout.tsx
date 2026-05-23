@@ -27,7 +27,6 @@ export default function AppLayout({ children, className }: AppLayoutProps) {
     const locale = useLocale();
     const { routes } = useNavigation();
     const t = useTranslations();
-
     const { isBottomNavbarVisible } = useNavVisibility();
     const isActive = (href: string) => isActivePath(href, pathname, locale);
 
@@ -65,7 +64,7 @@ export default function AppLayout({ children, className }: AppLayoutProps) {
     ];
 
     return (
-        <div className="bg-card min-h-screen">
+        <div className={cn("bg-card min-h-[100dvh]")}>
             {/* <div className="fixed bottom-8 right-8 flex flex-col items-end gap-4 z-20 sm:block w-fit">
                 <div className="w-24 h-32 rounded-lg border-border shadow-lg mb-2">Chat box</div>
                 <div className="h-fit w-fit">

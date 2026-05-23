@@ -7,12 +7,8 @@
     "boarding": "Boarding",
     "otherInformation": "Other information",
     "health": "Health",
-    "galleryEmpty": "Gallery coming soon",
-    "galleryEmptyDescription": "Profile photo and gallery will be available once the feature is released",
-    "common": {
-        "message": {
-            "system": "System"
-        }
-    },
-    "system": "System"
+    "galleryEmpty": "The gallery is empty",
+    "galleryEmptyDescription": "No additional photos were taken during the stays",
+    "system": "System",
+    "infos": "Info"
 }

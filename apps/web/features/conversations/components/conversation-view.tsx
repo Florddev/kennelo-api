@@ -12,6 +12,8 @@ import { DateSeparator } from "./date-separator";
 import { Loader2 } from "lucide-react";
 import { computeGrouping } from "../lib/utils";
 import { isSameDay } from "@workspace/common";
+import { usePlatform } from "@/hooks/use-platform";
+import { cn } from "@workspace/ui/lib/utils";
 
 function MessagesSkeleton() {
     return (
@@ -53,6 +55,7 @@ export function ConversationView({ onBack }: { onBack?: () => void }) {
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const prevScrollHeightRef = useRef(0);
     const isNearBottomRef = useRef(true);
+    const { isCapacitorApp } = usePlatform();
 
     useEffect(() => {
         if (isLoadingMore) {
@@ -91,7 +94,13 @@ export function ConversationView({ onBack }: { onBack?: () => void }) {
     const grouping = computeGrouping(messages);
 
     return (
-        <div data-slot="conversation-view" className="flex h-full flex-col overflow-hidden">
+        <div
+            data-slot="conversation-view"
+            className={cn(
+                "flex h-full flex-col overflow-hidden",
+                isCapacitorApp && "mt-[var(--mobile-top-margin)]",
+            )}
+        >
             <ConversationHeader name={name} avatarUrl={receiverAvatarUrl} onBack={onBack} />
             <div className="h-full flex flex-col bg-card">
                 <div

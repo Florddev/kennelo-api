@@ -71,6 +71,36 @@ type MyPetsParams = {
     search_params?: Record<string, string | number | boolean>;
 };
 
+type PetEditGeneralParams = {
+    locale?: string | number;
+    id: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type PetEditHealthParams = {
+    locale?: string | number;
+    id: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type PetEditPageParams = {
+    locale?: string | number;
+    id: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type PetEditPersonalityParams = {
+    locale?: string | number;
+    id: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type PetEditPhotosParams = {
+    locale?: string | number;
+    id: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
 type PetDetailsParams = {
     locale?: string | number;
     id: string;
@@ -159,6 +189,26 @@ function MyPets(params?: MyPetsParams): string {
     return buildRoute("/[locale]/pets", params);
 }
 
+function PetEditGeneral(params: PetEditGeneralParams): string {
+    return buildRoute("/[locale]/pets/[id]/edit/general", params);
+}
+
+function PetEditHealth(params: PetEditHealthParams): string {
+    return buildRoute("/[locale]/pets/[id]/edit/health", params);
+}
+
+function PetEditPage(params: PetEditPageParams): string {
+    return buildRoute("/[locale]/pets/[id]/edit", params);
+}
+
+function PetEditPersonality(params: PetEditPersonalityParams): string {
+    return buildRoute("/[locale]/pets/[id]/edit/personality", params);
+}
+
+function PetEditPhotos(params: PetEditPhotosParams): string {
+    return buildRoute("/[locale]/pets/[id]/edit/photos", params);
+}
+
 function PetDetails(params: PetDetailsParams): string {
     return buildRoute("/[locale]/pets/[id]", params);
 }
@@ -201,6 +251,11 @@ export const routes = {
     Messages,
     NewPet,
     MyPets,
+    PetEditGeneral,
+    PetEditHealth,
+    PetEditPage,
+    PetEditPersonality,
+    PetEditPhotos,
     PetDetails,
     Profile,
     MyProfileAbout,

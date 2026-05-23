@@ -7,7 +7,8 @@
     "boarding": "الإقامة",
     "otherInformation": "معلومات أخرى",
     "health": "الصحة",
-    "galleryEmpty": "المعرض سيتوفر قريبًا",
-    "galleryEmptyDescription": "ستتوفر صورة الملف الشخصي والمعرض عند إطلاق الميزة",
-    "system": "نظام"
+    "galleryEmpty": "المعرض فارغ",
+    "galleryEmptyDescription": "لم يتم التقاط أي صور إضافية أثناء الإقامات",
+    "system": "نظام",
+    "infos": "معلومات"
 }

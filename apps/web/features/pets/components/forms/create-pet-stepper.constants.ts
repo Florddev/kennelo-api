@@ -12,7 +12,6 @@ export enum Step {
     GENERAL_INTRO = "general-intro",
     ANIMAL_TYPE = "animal-type",
     IDENTITY_BASICS = "identity-basics",
-    IDENTITY_DETAILS = "identity-details",
     PROFILE = "profile",
     ATTRIBUTES_INTRO = "attributes-intro",
     COMPLETION_INTRO = "completion-intro",
