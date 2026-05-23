@@ -11,9 +11,9 @@ class AttributeAnimalType extends Model
 {
     public $incrementing = false;
 
-    protected $primaryKey = null;
-
     public $keyType = 'string';
+
+    protected $primaryKey = null;
 
     public $timestamps = false;
 

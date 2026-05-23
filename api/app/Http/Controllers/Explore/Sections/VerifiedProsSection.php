@@ -28,11 +28,11 @@ class VerifiedProsSection implements ExploreSection
                 ->whereNotNull('addr_pros.latitude')
                 ->whereNotNull('addr_pros.longitude')
                 ->orderBy('distance')
-                ->orderByRaw('COALESCE(avg_rating, 0) DESC');
+                ->orderByRaw('avg_rating DESC NULLS LAST');
 
             $this->applyDistanceSelect($query, $lat, $lng, 'addr_pros.latitude', 'addr_pros.longitude');
         } else {
-            $query->orderByRaw('COALESCE(avg_rating, 0) DESC');
+            $query->orderByRaw('avg_rating DESC NULLS LAST');
         }
 
         return $query;

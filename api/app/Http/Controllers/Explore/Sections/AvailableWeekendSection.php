@@ -34,11 +34,11 @@ class AvailableWeekendSection implements ExploreSection
                 ->whereNotNull('addr_weekend.latitude')
                 ->whereNotNull('addr_weekend.longitude')
                 ->orderBy('distance')
-                ->orderByRaw('COALESCE(avg_rating, 0) DESC');
+                ->orderByRaw('avg_rating DESC NULLS LAST');
 
             $this->applyDistanceSelect($query, $lat, $lng, 'addr_weekend.latitude', 'addr_weekend.longitude');
         } else {
-            $query->orderByRaw('COALESCE(avg_rating, 0) DESC');
+            $query->orderByRaw('avg_rating DESC NULLS LAST');
         }
 
         return $query;

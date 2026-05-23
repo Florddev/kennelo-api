@@ -16,7 +16,8 @@ import { useSearchResults } from "@/features/explore/hooks/use-search-results";
 import { useMobileSearch } from "@/features/search/hooks/use-mobile-search";
 import { MobileSearchOverlay } from "@/features/search/components/mobile/mobile-search-overlay";
 
-const SNAP_POINTS: (number | string)[] = [0.08, 0.5, 0.95];
+const SNAP_MIN = "100px";
+const SNAP_MID = 0.5;
 
 type ResultsPageProps = {
     location: string;
@@ -124,9 +125,24 @@ export default function ExploreResultsPage({
     const router = useRouter();
     const { setBottomNavbarVisible } = useNavVisibility();
 
+    const [snapMax] = useState<string>(() =>
+        typeof window !== "undefined" ? `${window.innerHeight - 30}px` : "70vh",
+    );
+    const snapPoints: (number | string)[] = [SNAP_MIN, SNAP_MID, snapMax];
+
     const [activeFilter, setActiveFilter] = useState("all");
-    const [snap, setSnap] = useState<number | string | null>(0.5);
+    const [snap, setSnap] = useState<number | string | null>(SNAP_MID);
     const [highlightedId, setHighlightedId] = useState<string | null>(null);
+
+    function handleSetSnap(value: number | string | null) {
+        setSnap(value ?? SNAP_MIN);
+    }
+
+    function handleToggleSnap() {
+        if (snap === SNAP_MIN || snap === snapMax) {
+            setSnap(SNAP_MID);
+        }
+    }
 
     const { establishments } = useSearchResults({
         location,
@@ -200,8 +216,8 @@ export default function ExploreResultsPage({
     }
 
     return (
-        <div className="fixed inset-0 z-40 flex flex-col bg-background overflow-hidden">
-            <div className="shrink-0 bg-background border-b border-border/40 px-3 py-2.5 flex items-center gap-2">
+        <div className="fixed inset-0 z-40 flex flex-col bg-card overflow-hidden">
+            <div className="shrink-0 bg-card border-b border-border/40 px-3 py-2.5 flex items-center gap-2">
                 <button
                     onClick={() => router.back()}
                     className="size-9 rounded-full bg-muted flex items-center justify-center shrink-0 hover:bg-muted/70 transition-colors"
@@ -228,32 +244,47 @@ export default function ExploreResultsPage({
                 <MapPlaceholder onSearchArea={() => {}} />
 
                 <DrawerPrimitive.Root
-                    snapPoints={SNAP_POINTS}
+                    snapPoints={snapPoints}
                     activeSnapPoint={snap}
-                    setActiveSnapPoint={setSnap}
+                    setActiveSnapPoint={handleSetSnap}
                     modal={false}
+                    dismissible={false}
                     open
                 >
                     <DrawerPrimitive.Content
                         className={cn(
-                            "fixed bottom-0 start-0 end-0 z-50 flex flex-col bg-card rounded-t-3xl shadow-2xl ring-1 ring-border/20",
-                            "outline-none",
+                            "fixed bottom-0 start-0 end-0 z-50 flex flex-col bg-card outline-none h-[95vh] shadow-2xl transition-[border-radius] duration-300",
+                            snap === snapMax
+                                ? "rounded-none ring-0 pt-4 shadow-none"
+                                : "rounded-t-3xl ring-1 ring-border/20",
                         )}
+                        onClick={snap !== snapMax ? handleToggleSnap : undefined}
                     >
-                        <div className="mx-auto mt-3 mb-2 w-10 h-1 rounded-full bg-muted shrink-0" />
-
-                        <div className="flex items-center justify-between px-4 pb-3 shrink-0">
-                            <h2 className="font-bold text-base">{filteredHosts.length} hôtes</h2>
-                            <button className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
-                                <span>Pertinence</span>
-                                <span className="text-xs">▼</span>
-                            </button>
-                        </div>
+                        {snap !== snapMax && (
+                            <button
+                                className="mx-auto mt-3 mb-2 w-10 h-1 rounded-full bg-muted shrink-0"
+                                aria-label="Ajuster le panneau"
+                            />
+                        )}
 
                         <div
                             className={cn(
-                                "overflow-y-auto",
-                                snap === SNAP_POINTS[0] ? "hidden" : "flex-1",
+                                "flex items-center justify-center p-4 pt-2 shrink-0 font-bold text-base",
+                                snap === SNAP_MIN && "pt-0 font-bold text-base",
+                                snap === snapMax && "pt-0",
+                            )}
+                        >
+                            <DrawerPrimitive.Title asChild>
+                                <h2>{filteredHosts.length} hôtes disponibles</h2>
+                            </DrawerPrimitive.Title>
+                            <button className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"></button>
+                        </div>
+
+                        <div
+                            {...(snap !== snapMax ? { "data-vaul-no-drag": true } : {})}
+                            className={cn(
+                                "flex-1",
+                                snap === SNAP_MIN ? "hidden" : "overflow-y-auto",
                             )}
                         >
                             {filteredHosts.length === 0 ? (

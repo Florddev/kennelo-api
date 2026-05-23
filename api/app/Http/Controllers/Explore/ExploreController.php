@@ -47,11 +47,11 @@ class ExploreController extends Controller
         return Establishment::select('establishments.*')
             ->with(['address', 'capacities.animalType'])
             ->withAvg(
-                ['reviews as avg_rating' => fn (Builder $q) => $q->where('is_published', true)],
+                ['reviews as avg_rating' => fn (Builder $q) => $q->whereRaw('"is_published" IS TRUE')],
                 'overall_rating'
             )
             ->withCount(
-                ['reviews as review_count' => fn (Builder $q) => $q->where('is_published', true)]
+                ['reviews as review_count' => fn (Builder $q) => $q->whereRaw('"is_published" IS TRUE')]
             )
             ->active()
             ->whereNull('establishments.deleted_at');
@@ -233,7 +233,7 @@ class ExploreController extends Controller
             $minRating = (float) $request->input('min_rating');
             $reviewerType = ReviewerType::USER->value;
             $query->whereRaw(
-                '(SELECT COALESCE(AVG(r.overall_rating), 0) FROM reviews r INNER JOIN bookings b ON b.id = r.booking_id WHERE b.establishment_id = establishments.id AND r.is_published = 1 AND r.reviewer_type = ?) >= ?',
+                '(SELECT COALESCE(AVG(r.overall_rating), 0) FROM reviews r INNER JOIN bookings b ON b.id = r.booking_id WHERE b.establishment_id = establishments.id AND r.is_published IS TRUE AND r.reviewer_type = ?) >= ?',
                 [$reviewerType, $minRating]
             );
         }
@@ -259,9 +259,9 @@ class ExploreController extends Controller
 
         $sort = $request->input('sort', 'rating');
         match ($sort) {
-            'distance' => $geoAvailable ? $query->orderBy('distance') : $query->orderByRaw('COALESCE(avg_rating, 0) DESC'),
+            'distance' => $geoAvailable ? $query->orderBy('distance') : $query->orderByRaw('avg_rating DESC NULLS LAST'),
             'price' => $query->orderByRaw('COALESCE(min_price, 0) ASC'),
-            default => $query->orderByRaw('COALESCE(avg_rating, 0) DESC'),
+            default => $query->orderByRaw('avg_rating DESC NULLS LAST'),
         };
 
         $offset = ($page - 1) * self::PER_PAGE;

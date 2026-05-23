@@ -20,7 +20,7 @@ class NearbySection implements ExploreSection
     {
         if ($lat === null || $lng === null || ! $this->supportsGeo()) {
             return $query
-                ->orderByRaw('COALESCE(avg_rating, 0) DESC')
+                ->orderByRaw('avg_rating DESC NULLS LAST')
                 ->orderByDesc('review_count');
         }
 
@@ -29,7 +29,7 @@ class NearbySection implements ExploreSection
             ->whereNotNull('addr_nearby.latitude')
             ->whereNotNull('addr_nearby.longitude')
             ->orderBy('distance')
-            ->orderByRaw('COALESCE(avg_rating, 0) DESC');
+            ->orderByRaw('avg_rating DESC NULLS LAST');
 
         $this->applyDistanceSelect($query, $lat, $lng, 'addr_nearby.latitude', 'addr_nearby.longitude');
 
