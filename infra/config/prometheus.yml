@@ -1,0 +1,23 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  # Prometheus lui-même
+  - job_name: prometheus
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Métriques des nœuds (node-exporter, une instance par nœud)
+  - job_name: node-exporter
+    dns_sd_configs:
+      - names: ['tasks.node-exporter']
+        type: A
+        port: 9100
+
+  # Métriques des conteneurs (cAdvisor, une instance par nœud)
+  - job_name: cadvisor
+    dns_sd_configs:
+      - names: ['tasks.cadvisor']
+        type: A
+        port: 8080
