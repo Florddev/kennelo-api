@@ -31,12 +31,12 @@ class ReviewResource extends JsonResource
             ),
             'would_recommend' => $this->would_recommend,
             'is_published' => $this->is_published,
-            'published_at' => $this->published_at ? human_date($this->published_at) : null,
+            'published_at' => $this->published_at?->toISOString(),
             'reviewer' => new UserResource($this->whenLoaded('reviewer')),
             'criteria_scores' => ReviewCriteriaScoreResource::collection($this->whenLoaded('criteriaScores')),
             'response' => new ReviewResponseResource($this->whenLoaded('response')),
-            'created_at' => human_date($this->created_at),
-            'updated_at' => human_date($this->updated_at),
+            'created_at' => $this->created_at->toISOString(),
+            'updated_at' => $this->updated_at->toISOString(),
         ];
     }
 

@@ -32,5 +32,14 @@
     "notProvided": "Not provided",
     "emailVerified": "Email Verified",
     "idVerified": "ID Verified",
-    "phoneVerified": "Phone Verified"
+    "phoneVerified": "Phone Verified",
+    "selectDate": "Select a date",
+    "noResults": "No results",
+    "day": "Day",
+    "month": "Month",
+    "year": "Year",
+    "years": "Years",
+    "months": "Months",
+    "exactDate": "Exact date",
+    "approximateAge": "Approximate age"
 }

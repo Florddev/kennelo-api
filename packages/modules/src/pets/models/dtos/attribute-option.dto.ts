@@ -1,5 +1,5 @@
 export type AttributeOptionDto = {
-    id: number;
+    id: string;
     value: string;
     label: string;
     sort_order: number;

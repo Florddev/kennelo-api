@@ -6,7 +6,7 @@ import { EstablishmentModel } from "@workspace/modules/establishments";
 import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/avatar";
 import { Badge } from "@workspace/ui/components/badge";
 import { cn } from "@workspace/ui/lib/utils";
-import { useAuth } from "@/features/auth";
+import { useAuth, UserAvatar } from "@/features/auth";
 import { formatTime } from "@workspace/common";
 import { Skeleton } from "@workspace/ui/components/skeleton";
 import { BookingStatusLine } from "./booking-status-line";
@@ -55,8 +55,6 @@ export function ConversationListItemSkeleton() {
 export function EstablishmentAvatar({ establishment }: { establishment: EstablishmentModel }) {
     const estAvatarUrl = establishment.getAvatarUrl();
     const estInitials = establishment.name.slice(0, 2).toUpperCase();
-    const ownerAvatarUrl = establishment.manager?.avatarUrl;
-    const ownerInitials = establishment.manager?.getFullName().slice(0, 2).toUpperCase() ?? "?";
 
     return (
         <div className="relative size-12 shrink-0">
@@ -70,13 +68,8 @@ export function EstablishmentAvatar({ establishment }: { establishment: Establis
                 )}
                 <AvatarFallback className="rounded-[14px]">{estInitials}</AvatarFallback>
             </Avatar>
-            <div className="absolute -bottom-2 -end-1.5 rounded-full ring-1 ring-background overflow-hidden bg-muted flex items-center justify-center">
-                <Avatar size="sm" className="after:rounded-full !size-7">
-                    {ownerAvatarUrl && (
-                        <AvatarImage src={ownerAvatarUrl} alt={establishment.name} />
-                    )}
-                    <AvatarFallback className="rounded-full">{ownerInitials}</AvatarFallback>
-                </Avatar>
+            <div className="absolute -bottom-2 -end-1.5 rounded-full ring-2 ring-white overflow-hidden bg-muted flex items-center justify-center">
+                <UserAvatar user={establishment.manager} size="sm" className="!size-7" />
             </div>
         </div>
     );
@@ -96,7 +89,6 @@ export function ConversationListItem({
     const locale = useLocale();
 
     const { name, isEstablishment } = getConversationParty(conversation, user?.id);
-    const initials = name.slice(0, 2).toUpperCase();
     const preview = getMessagePreview(
         conversation.latestMessage,
         user?.id,
@@ -118,12 +110,7 @@ export function ConversationListItem({
             {isEstablishment && conversation.establishment ? (
                 <EstablishmentAvatar establishment={conversation.establishment} />
             ) : (
-                <Avatar size="lg">
-                    {conversation.user?.avatarUrl && (
-                        <AvatarImage src={conversation.user.avatarUrl} alt={name} />
-                    )}
-                    <AvatarFallback>{initials}</AvatarFallback>
-                </Avatar>
+                <UserAvatar user={conversation.user} size="lg" />
             )}
             <div className="flex-1 min-w-0">
                 <div className="flex justify-between items-center gap-2">

@@ -10,7 +10,7 @@ export const isNative = () => {
     return Capacitor.isNativePlatform();
 };
 
-export const isCapacitorApp = () => isNative();
+export const isCapacitorApp = () => isNative() || process.env.NEXT_PUBLIC_PLATFORM === "mobile";
 export const isBrowser = () => !isNative();
 
 export const isAndroid = () => getPlatform() === "android";

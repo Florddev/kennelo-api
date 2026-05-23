@@ -9,6 +9,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class AttributeAnimalType extends Model
 {
+    public $incrementing = false;
+
+    protected $primaryKey = null;
+
+    public $keyType = 'string';
+
     public $timestamps = false;
 
     protected $fillable = [

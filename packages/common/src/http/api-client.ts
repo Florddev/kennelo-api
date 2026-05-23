@@ -96,7 +96,7 @@ class ApiClient {
             ...config.options,
             method: config.method ?? "GET",
             headers,
-            credentials: "include",
+            credentials: process.env.NEXT_PUBLIC_PLATFORM === "mobile" ? "omit" : "include",
         });
     }
 

@@ -2,6 +2,8 @@ import { MetadataRoute } from "next";
 import { routing } from "@/lib/i18n/routing";
 import { headers } from "next/headers";
 
+export const dynamic = "force-static";
+
 interface RouteConfig {
     href: string;
     changeFrequency?: "always" | "hourly" | "daily" | "weekly" | "monthly" | "yearly" | "never";
@@ -110,6 +112,8 @@ function createSitemapEntry(
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+    if (process.env.NEXT_PUBLIC_ROUTE_MODE === "static") return [];
+
     const headersList = await headers();
     const host = headersList.get("host") || "";
 

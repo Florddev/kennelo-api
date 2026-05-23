@@ -1,82 +1,68 @@
 import { useTranslations } from "next-intl";
 import { type CreatePetInput } from "@workspace/modules/pets";
-import { ChoiceCards } from "@workspace/ui/components/choice-cards";
-import { Field, FieldDescription, FieldLabel } from "@workspace/ui/components/field";
-import { Control, Controller, useWatch } from "react-hook-form";
+import { Control } from "react-hook-form";
 import { WizardStepShell } from "@/components/forms/stepper/wizard-step-shell";
-import { InputController } from "@/components/forms/input-controller";
+import { InlineController } from "@/components/forms/inline-controller";
+import { CalendarMark, Cpu, InfoSquare, Scissors, Weigher } from "@solar-icons/react";
 
-type ProfileStepProps = {
+export function ProfileStep({
+    control,
+    isLoading,
+}: {
     control: Control<CreatePetInput>;
     isLoading: boolean;
-};
-
-function booleanToChoice(value: unknown): "yes" | "no" | null {
-    if (value === true) return "yes";
-    if (value === false) return "no";
-    return null;
-}
-
-export function ProfileStep({ control, isLoading }: ProfileStepProps) {
+}) {
     const t = useTranslations();
-    const hasMicrochip = useWatch({ control, name: "hasMicrochip" });
 
     return (
         <WizardStepShell title={t("features.pets.create.steps.profile.title")}>
-            <Field className="gap-1.5">
-                <FieldLabel>{t("features.pets.fields.sterilized")}</FieldLabel>
-                <Controller
-                    name="isSterilized"
-                    control={control}
-                    render={({ field }) => (
-                        <ChoiceCards
-                            mode="single"
-                            value={booleanToChoice(field.value)}
-                            onValueChange={(value) => field.onChange(value === "yes")}
-                            optionsClassName="md:grid-cols-2"
-                            options={[
-                                { value: "yes", label: t("common.actions.yes") },
-                                { value: "no", label: t("common.actions.no") },
-                            ]}
-                            layout="grid"
-                        />
-                    )}
-                />
-            </Field>
-            <Field className="gap-1.5">
-                <FieldLabel>{t("features.pets.badges.microchipped")}</FieldLabel>
-                <Controller
-                    name="hasMicrochip"
-                    control={control}
-                    render={({ field }) => (
-                        <ChoiceCards
-                            mode="single"
-                            value={field.value ? "yes" : "no"}
-                            onValueChange={(value) => field.onChange(value === "yes")}
-                            optionsClassName="md:grid-cols-2"
-                            options={[
-                                { value: "yes", label: t("common.actions.yes") },
-                                { value: "no", label: t("common.actions.no") },
-                            ]}
-                            layout="grid"
-                        />
-                    )}
-                />
-            </Field>
-            {hasMicrochip && (
-                <Field className="gap-1.5">
-                    <InputController
-                        control={control}
-                        name="microchipNumber"
-                        isLoading={isLoading}
-                        label={t("features.pets.fields.microchipNumber")}
-                        placeholder={t("features.pets.create.placeholders.microchipNumber")}
-                    />
-                    <FieldDescription>
-                        {t("features.pets.create.steps.profile.microchipHint")}
-                    </FieldDescription>
-                </Field>
-            )}
+            <InlineController
+                name="birthDate"
+                control={control}
+                type="date"
+                label={t("features.pets.fields.birthDate")}
+                Icon={CalendarMark}
+                // placeholder={t("features.pets.create.placeholders.birthDate")}
+                isLoading={isLoading}
+                allowApproximate
+            />
+            <InlineController
+                name="weight"
+                control={control}
+                type="number"
+                label={t("features.pets.fields.weight")}
+                Icon={Weigher}
+                step={1}
+                min={0}
+                isLoading={isLoading}
+                className="shrink-0"
+            />
+            <InlineController
+                name="isSterilized"
+                control={control}
+                type="boolean"
+                label={t("features.pets.fields.sterilized")}
+                Icon={Scissors}
+                isLoading={isLoading}
+            />
+            <InlineController
+                name="microchipNumber"
+                control={control}
+                type="text"
+                label={t("features.pets.fields.microchipNumber")}
+                Icon={Cpu}
+                // placeholder={t("features.pets.create.placeholders.microchipNumber")}
+                isLoading={isLoading}
+            />
+            <InlineController
+                name="about"
+                control={control}
+                type="textarea"
+                label={t("features.pets.fields.about")}
+                Icon={InfoSquare}
+                placeholder={t("features.pets.create.placeholders.about")}
+                isLoading={isLoading}
+            />
         </WizardStepShell>
     );
 }

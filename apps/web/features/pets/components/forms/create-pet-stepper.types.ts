@@ -1,5 +1,5 @@
 export type AttributeDraft = {
     attributeDefinitionId: number;
-    attributeOptionId?: number;
+    attributeOptionId?: string;
     freeText?: string;
 };

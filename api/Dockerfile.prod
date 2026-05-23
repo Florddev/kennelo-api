@@ -1,0 +1,108 @@
+# syntax=docker/dockerfile:1.7
+
+# Stage 1 — deps
+# Installs system packages, PHP extensions, and Composer dependencies.
+FROM php:8.4-fpm-alpine AS deps
+
+RUN apk add --no-cache --virtual .build-deps \
+    $PHPIZE_DEPS \
+    autoconf \
+    g++ \
+    make \
+    linux-headers \
+    && apk add --no-cache \
+    bash \
+    curl \
+    libpq-dev \
+    libpng-dev \
+    libjpeg-turbo-dev \
+    libwebp-dev \
+    freetype-dev \
+    libzip-dev \
+    icu-dev \
+    oniguruma-dev \
+    libxml2-dev \
+    libsodium-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
+    && docker-php-ext-install -j$(nproc) \
+    pdo_pgsql \
+    pgsql \
+    gd \
+    intl \
+    bcmath \
+    exif \
+    zip \
+    opcache \
+    pcntl \
+    sodium \
+    && apk del .build-deps \
+    && rm -rf /var/cache/apk/*
+
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+WORKDIR /app
+
+COPY api/composer.json api/composer.lock ./
+
+RUN composer install \
+    --no-dev \
+    --no-scripts \
+    --no-autoloader \
+    --prefer-dist \
+    --no-interaction \
+    --no-progress
+
+# Stage 2 — builder
+# Copies the full app source and runs the Laravel optimizations.
+FROM deps AS builder
+
+COPY api/. ./
+
+RUN composer dump-autoload --optimize --classmap-authoritative \
+    && php artisan storage:link || true
+
+
+# Stage 3 — runner
+# Final production image: PHP-FPM + nginx + supervisord.
+FROM php:8.4-fpm-alpine AS runner
+
+RUN apk add --no-cache \
+    bash \
+    curl \
+    nginx \
+    supervisor \
+    libpq \
+    libpng \
+    libjpeg-turbo \
+    libwebp \
+    freetype \
+    libzip \
+    icu-libs \
+    oniguruma \
+    libxml2 \
+    libsodium \
+    && rm -rf /var/cache/apk/*
+
+COPY --from=deps /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/
+COPY --from=deps /usr/local/etc/php/conf.d/ /usr/local/etc/php/conf.d/
+
+WORKDIR /app
+
+COPY --from=builder /app /app
+
+COPY api/docker/nginx.conf      /etc/nginx/nginx.conf
+COPY api/docker/php-fpm.conf    /usr/local/etc/php-fpm.d/zz-overrides.conf
+COPY api/docker/supervisord.conf /etc/supervisor/supervisord.conf
+COPY api/docker/entrypoint.sh    /entrypoint.sh
+
+RUN chmod +x /entrypoint.sh \
+    && mkdir -p /run/nginx /var/log/supervisor \
+    && chown -R www-data:www-data /app/storage /app/bootstrap/cache
+
+EXPOSE 80
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=20s --retries=3 \
+    CMD curl --fail http://localhost/up || exit 1
+
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
