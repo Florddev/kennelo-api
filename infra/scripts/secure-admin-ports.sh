@@ -17,7 +17,7 @@
 set -euo pipefail
 
 # Ports d'administration à restreindre à la loopback.
-ADMIN_PORTS=(9000)
+ADMIN_PORTS=(9000 9090 3000)
 
 for port in "${ADMIN_PORTS[@]}"; do
     # Nettoyer les règles existantes pour ce port (idempotence).
