@@ -3,7 +3,7 @@
 Mémo des commandes d'accès SSH et tunnels au cluster Docker Swarm.
 
 Les alias SSH (`kennelo-manager`, `kennelo-worker-1`, `kennelo-worker-2`) et
-l'alias shell `npmkennelo` sont définis côté poste de développement (Mac), pas
+les alias shell de tunnel sont définis côté poste de développement (Mac), pas
 sur les serveurs. Sur une nouvelle machine, il faut donc recréer ces alias
 (voir la section « Configuration » en bas).
 
@@ -27,27 +27,23 @@ La quasi-totalité de l'administration (déploiements, logs, état des services)
 se fait depuis le manager, car c'est le seul nœud d'où les commandes
 `docker service` / `docker stack` fonctionnent.
 
-## Tunnel vers l'administration du reverse proxy (NPM)
+## Tunnels vers les interfaces d'administration
 
-| Commande     | Effet                                                                                                                |
-| ------------ | -------------------------------------------------------------------------------------------------------------------- |
-| `npmkennelo` | Ouvre un tunnel SSH qui expose le port 81 du manager (interface d'admin de Nginx Proxy Manager) sur `localhost:8181` |
+Aucune interface d'administration n'est exposée publiquement. Toutes sont
+publiées en local sur le manager et bloquées au public par le pare-feu ; on y
+accède exclusivement par tunnel SSH. C'est un choix de sécurité cohérent :
+les composants capables de piloter le cluster ou d'exposer des données internes
+ne présentent aucune surface d'attaque publique.
 
-Détail de ce que fait l'alias :
+| Alias              | Tunnel                       | Interface                           | Accès navigateur      |
+| ------------------ | ---------------------------- | ----------------------------------- | --------------------- |
+| `npmkennelo`       | port 81 → `localhost:8181`   | Nginx Proxy Manager (reverse proxy) | http://localhost:8181 |
+| `portainerkennelo` | port 9000 → `localhost:9000` | Portainer (pilotage du cluster)     | http://localhost:9000 |
+| `grafanakennelo`   | port 3000 → `localhost:3000` | Grafana (dashboards de métriques)   | http://localhost:3000 |
+| `promkennelo`      | port 9090 → `localhost:9090` | Prometheus (collecte de métriques)  | http://localhost:9090 |
 
-```
-ssh -L 8181:localhost:81 kennelo@kennelo-manager
-```
-
-Une fois le tunnel ouvert, l'interface d'administration de NPM est accessible
-dans le navigateur à l'adresse : http://localhost:8181
-
-L'interface d'administration de NPM n'est **pas** exposée publiquement (pas de
-sous-domaine). C'est un choix de sécurité : ce composant contrôle tout le
-routage et les certificats du cluster, donc il reste accessible uniquement par
-tunnel SSH, sans surface d'attaque exposée. Tant que le tunnel est ouvert
-(terminal laissé actif), l'accès local fonctionne ; fermer le terminal ferme
-le tunnel.
+Chaque alias ouvre un tunnel SSH vers le manager. Tant que le terminal reste
+ouvert, l'accès local fonctionne ; fermer le terminal ferme le tunnel.
 
 ## Configuration (à recréer sur une nouvelle machine)
 
@@ -69,12 +65,15 @@ Host kennelo-worker-2
     User kennelo
 ```
 
-### Alias du tunnel NPM
+### Alias des tunnels
 
 Dans `~/.zshrc` :
 
 ```
 alias npmkennelo='ssh -L 8181:localhost:81 kennelo@kennelo-manager'
+alias portainerkennelo='ssh -L 9000:localhost:9000 kennelo@kennelo-manager'
+alias grafanakennelo='ssh -L 3000:localhost:3000 kennelo@kennelo-manager'
+alias promkennelo='ssh -L 9090:localhost:9090 kennelo@kennelo-manager'
 ```
 
 Recharger ensuite avec `source ~/.zshrc`.
@@ -86,3 +85,6 @@ Recharger ensuite avec `source ~/.zshrc`.
   ajouter sa clé publique sur les nœuds concernés.
 - Ne jamais se connecter en `root` : fail2ban bannit automatiquement ces
   tentatives.
+- Les interfaces d'administration accessibles par tunnel (NPM, Portainer,
+  Grafana, Prometheus) ont leurs ports bloqués au public par le pare-feu. Voir
+  `docs/observability.md` pour le détail de la sécurisation des ports.
