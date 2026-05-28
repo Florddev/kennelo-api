@@ -33,6 +33,7 @@ export default function SearchBar() {
         selectLocation,
         clearLocation,
         adjustPetCount,
+        handleSearch,
     } = useSearchBar();
 
     return (
@@ -81,7 +82,7 @@ export default function SearchBar() {
                     onClick={() => togglePanel("pets")}
                 />
 
-                <SearchBarSubmit isExpanded={isExpanded} />
+                <SearchBarSubmit isExpanded={isExpanded} onClick={handleSearch} />
             </div>
 
             {activePanel === "location" && (

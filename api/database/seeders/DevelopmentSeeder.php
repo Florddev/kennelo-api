@@ -20,6 +20,7 @@ class DevelopmentSeeder extends Seeder
             EstablishmentCapacitySeeder::class,
             EstablishmentAvailabilitySeeder::class,
             BookingSeeder::class,
+            ExploreSeeder::class,
             ConversationSeeder::class,
             PetReviewSeeder::class,
         ]);

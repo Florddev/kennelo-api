@@ -12,6 +12,7 @@ use App\Http\Controllers\Establishment\EstablishmentCapacityController;
 use App\Http\Controllers\Establishment\EstablishmentController;
 use App\Http\Controllers\Establishment\EstablishmentDashboardController;
 use App\Http\Controllers\Establishment\EstablishmentImageController;
+use App\Http\Controllers\Explore\ExploreController;
 use App\Http\Controllers\Pet\AnimalTypeController;
 use App\Http\Controllers\Pet\PetAttributeController;
 use App\Http\Controllers\Pet\PetController;
@@ -32,6 +33,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/test', [TestController::class, 'index']);
 Route::get('/animal-types', [AnimalTypeController::class, 'index']);
+Route::get('/explore/establishments', [ExploreController::class, 'establishments']);
+Route::get('/explore/establishments/sections/{sectionId}', [ExploreController::class, 'sectionPage']);
+Route::get('/explore/search', [ExploreController::class, 'search']);
 
 Route::middleware(['auth.jwt'])->group(function () {
     // Establishments

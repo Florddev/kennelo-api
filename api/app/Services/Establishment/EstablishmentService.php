@@ -55,6 +55,7 @@ class EstablishmentService
 
             $establishment = Establishment::create([
                 'name' => $data['name'],
+                'type' => $data['type'] ?? null,
                 'description' => $data['description'] ?? null,
                 'phone' => $data['phone'] ?? null,
                 'email' => $data['email'] ?? null,

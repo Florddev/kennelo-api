@@ -1,0 +1,91 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Http\Controllers\Explore;
+
+use App\Enums\ApiStatus;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\ExploreEstablishmentResource;
+use App\Services\Explore\ExploreService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+
+class ExploreController extends Controller
+{
+    public function __construct(private ExploreService $service) {}
+
+    public function establishments(Request $request): JsonResponse
+    {
+        [$lat, $lng] = $this->resolveCoords($request);
+
+        $sections = $this->service->getSections($lat, $lng);
+
+        $sectionsData = array_map(fn ($section) => [
+            'id' => $section['id'],
+            'has_more' => $section['has_more'],
+            'establishments' => ExploreEstablishmentResource::collection($section['establishments'])->resolve($request),
+        ], $sections);
+
+        return response()->json([
+            'data' => ['sections' => $sectionsData],
+            'status' => ApiStatus::SUCCESS->value,
+            'timestamp' => human_date(Carbon::now()),
+        ]);
+    }
+
+    public function sectionPage(Request $request, string $sectionId): JsonResponse
+    {
+        [$lat, $lng] = $this->resolveCoords($request);
+        $page = max(1, (int) $request->input('page', 1));
+
+        $result = $this->service->getSectionPage($sectionId, $lat, $lng, $page);
+
+        if ($result === null) {
+            abort(404);
+        }
+
+        return response()->json([
+            'data' => [
+                'establishments' => ExploreEstablishmentResource::collection($result['establishments'])->resolve($request),
+                'meta' => [
+                    'current_page' => $result['page'],
+                    'per_page' => ExploreService::PER_PAGE,
+                    'has_more' => $result['has_more'],
+                ],
+            ],
+            'status' => ApiStatus::SUCCESS->value,
+            'timestamp' => human_date(Carbon::now()),
+        ]);
+    }
+
+    public function search(Request $request): JsonResponse
+    {
+        [$lat, $lng] = $this->resolveCoords($request);
+        $page = max(1, (int) $request->input('page', 1));
+
+        $result = $this->service->search($request->all(), $lat, $lng, $page);
+
+        return response()->json([
+            'data' => [
+                'establishments' => ExploreEstablishmentResource::collection($result['establishments'])->resolve($request),
+                'meta' => [
+                    'current_page' => $result['page'],
+                    'per_page' => ExploreService::PER_PAGE,
+                    'has_more' => $result['has_more'],
+                ],
+            ],
+            'status' => ApiStatus::SUCCESS->value,
+            'timestamp' => human_date(Carbon::now()),
+        ]);
+    }
+
+    private function resolveCoords(Request $request): array
+    {
+        $lat = $request->filled('lat') ? (float) $request->input('lat') : null;
+        $lng = $request->filled('lng') ? (float) $request->input('lng') : null;
+
+        return [$lat, $lng];
+    }
+}

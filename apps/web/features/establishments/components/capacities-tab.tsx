@@ -92,7 +92,7 @@ export function CapacitiesTab({ establishmentId }: { establishmentId: string }) 
                             </div>
                             <div>
                                 <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                                    {t("features.my-establishments.capacities.title")}
+                                    {t("features.establishments.capacities.title")}
                                 </p>
                                 <p className="text-2xl font-bold tabular-nums mt-0.5">
                                     {capacities.length}
@@ -107,7 +107,7 @@ export function CapacitiesTab({ establishmentId }: { establishmentId: string }) 
                             </div>
                             <div>
                                 <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                                    {t("features.my-establishments.dashboard.totalCapacity")}
+                                    {t("features.establishments.dashboard.totalCapacity")}
                                 </p>
                                 <p className="text-2xl font-bold tabular-nums mt-0.5">
                                     {totalCapacity}
@@ -122,7 +122,7 @@ export function CapacitiesTab({ establishmentId }: { establishmentId: string }) 
                             </div>
                             <div>
                                 <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                                    {t("features.my-establishments.dashboard.occupiedSpots")}
+                                    {t("features.establishments.dashboard.occupiedSpots")}
                                 </p>
                                 <p className="text-2xl font-bold tabular-nums mt-0.5">
                                     {totalOccupied} / {totalCapacity}
@@ -137,7 +137,7 @@ export function CapacitiesTab({ establishmentId }: { establishmentId: string }) 
                 <CardHeader>
                     <div className="flex items-center justify-between">
                         <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
-                            {t("features.my-establishments.capacities.title")}
+                            {t("features.establishments.capacities.title")}
                         </CardTitle>
                         <Button
                             size="sm"
@@ -145,7 +145,7 @@ export function CapacitiesTab({ establishmentId }: { establishmentId: string }) 
                             onClick={() => setShowForm(!showForm)}
                         >
                             <Plus className="size-4" />
-                            {t("features.my-establishments.capacities.addCapacity")}
+                            {t("features.establishments.capacities.addCapacity")}
                         </Button>
                     </div>
                 </CardHeader>
@@ -169,7 +169,7 @@ export function CapacitiesTab({ establishmentId }: { establishmentId: string }) 
                                 <PawPrint className="size-6 text-muted-foreground" />
                             </div>
                             <p className="text-sm text-muted-foreground">
-                                {t("features.my-establishments.capacities.empty")}
+                                {t("features.establishments.capacities.empty")}
                             </p>
                         </div>
                     ) : (
@@ -184,7 +184,7 @@ export function CapacitiesTab({ establishmentId }: { establishmentId: string }) 
                                         {t("common.fields.pricePerNight")}
                                     </TableHead>
                                     <TableHead className="w-[25%]">
-                                        {t("features.my-establishments.dashboard.occupancyRate")}
+                                        {t("features.establishments.dashboard.occupancyRate")}
                                     </TableHead>
                                     <TableHead className="w-10" />
                                 </TableRow>
@@ -212,21 +212,15 @@ export function CapacitiesTab({ establishmentId }: { establishmentId: string }) 
                                             </TableCell>
                                             <TableCell className="text-end">
                                                 <Badge variant="secondary" className="tabular-nums">
-                                                    {t(
-                                                        "features.my-establishments.capacities.spots",
-                                                        {
-                                                            count: capacity.maxCapacity,
-                                                        },
-                                                    )}
+                                                    {t("features.establishments.capacities.spots", {
+                                                        count: capacity.maxCapacity,
+                                                    })}
                                                 </Badge>
                                             </TableCell>
                                             <TableCell className="text-end tabular-nums font-medium">
-                                                {t(
-                                                    "features.my-establishments.capacities.perNight",
-                                                    {
-                                                        price: capacity.pricePerNight.toFixed(2),
-                                                    },
-                                                )}
+                                                {t("features.establishments.capacities.perNight", {
+                                                    price: capacity.pricePerNight.toFixed(2),
+                                                })}
                                             </TableCell>
                                             <TableCell>
                                                 <div className="flex items-center gap-3">
@@ -255,12 +249,12 @@ export function CapacitiesTab({ establishmentId }: { establishmentId: string }) 
                                                         <AlertDialogHeader>
                                                             <AlertDialogTitle>
                                                                 {t(
-                                                                    "features.my-establishments.capacities.deleteCapacity",
+                                                                    "features.establishments.capacities.deleteCapacity",
                                                                 )}
                                                             </AlertDialogTitle>
                                                             <AlertDialogDescription>
                                                                 {t(
-                                                                    "features.my-establishments.capacities.deleteConfirmation",
+                                                                    "features.establishments.capacities.deleteConfirmation",
                                                                 )}
                                                             </AlertDialogDescription>
                                                         </AlertDialogHeader>

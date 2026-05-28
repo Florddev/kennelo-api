@@ -20,21 +20,7 @@
         "establishmentType": {
             "title": "Which of the following best describes your business?",
             "subtitle": "What type of facility do you manage?",
-            "pension": "Boarding",
-            "pensionDescription": "Accommodation and care for pets during stays",
-            "breeding": "Breeding",
-            "breedingDescription": "Professional animal breeding",
-            "daycare": "Daycare",
-            "daycareDescription": "Daytime pet care services",
-            "shelter": "Shelter",
-            "shelterDescription": "Animal rescue and adoption",
-            "other": "Other",
-            "otherDescription": "Other type of animal facility",
-            "error": "Please select an establishment type",
-            "pet-sitter": "Independent pet sitter",
-            "home-care": "Home care",
-            "host-family": "Host family",
-            "mobile-boarding": "Traveling guard"
+            "error": "Please select an establishment type"
         },
         "establishmentInfo": {
             "title": "Your establishment",

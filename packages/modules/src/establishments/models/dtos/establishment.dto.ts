@@ -14,11 +14,18 @@ export type EstablishmentDto = {
     timezone: string | null;
     is_active: boolean;
     manager_id: string;
+    is_professional: boolean;
+    type: string | null;
+    min_price: number | null;
+    animal_types: string[];
     avatar_url: string | null;
     address: AddressDto | null;
     manager?: UserDto | null;
     collaborators?: UserDto[];
     images?: EstablishmentImageDto[];
+    rating: number | null;
+    review_count: number;
+    distance: number | null;
     created_at: string;
     updated_at: string;
 };

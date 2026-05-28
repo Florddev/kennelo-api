@@ -6,6 +6,7 @@ import {
     createEstablishment,
     createEstablishmentSchema,
     type CreateEstablishmentInput,
+    type EstablishmentTypeValue,
 } from "@workspace/modules/establishments";
 import type { FormStepDefinition } from "@/components/forms/stepper/stepper-types";
 import { useAsyncState } from "@/hooks/use-async-state";
@@ -14,7 +15,7 @@ import { AddressStep } from "./step/address-step";
 import { BusinessInfoStep } from "./step/business-info-step";
 import { ContactDetailsStep } from "./step/contact-details-step";
 import { EstablishmentInfoStep } from "./step/establishment-info-step";
-import { EstablishmentTypeStep, type EstablishmentType } from "./step/establishment-type-step";
+import { EstablishmentTypeStep } from "./step/establishment-type-step";
 import { ReviewStep } from "./step/review-step";
 import { WelcomeStep } from "./step/welcome-step";
 import { FormStepper } from "@/components/forms/stepper/form-stepper";
@@ -42,7 +43,7 @@ export function BecomeHostStepper() {
     const { execute, isLoading } = useAsyncState();
     const { refreshUser, user } = useAuth();
     const [formKey, setFormKey] = useState(0);
-    const [establishmentType, setEstablishmentType] = useState<EstablishmentType | null>(null);
+    const [establishmentType, setEstablishmentType] = useState<EstablishmentTypeValue | null>(null);
     const [selectionError, setSelectionError] = useState<string | undefined>();
 
     const steps: FormStepDefinition<CreateEstablishmentInput>[] = [
@@ -56,7 +57,6 @@ export function BecomeHostStepper() {
             id: Step.ESTABLISHMENT_TYPE,
             fields: [],
             groupId: StepGroup.HOST_SELECTION,
-            // isVisible: () => hostType === "professional",
             canProceed: async (form) => {
                 if (!establishmentType) {
                     setSelectionError(t("features.become-host.steps.establishmentType.error"));
@@ -64,6 +64,7 @@ export function BecomeHostStepper() {
                 }
 
                 setSelectionError(undefined);
+                form.setValue("type", establishmentType);
 
                 if (establishmentType === "pet-sitter" && user) {
                     form.setValue("name", user.getFullName());
@@ -88,7 +89,6 @@ export function BecomeHostStepper() {
             id: Step.ESTABLISHMENT_INFO,
             fields: ["name", "description"],
             groupId: StepGroup.HOST_DETAILS,
-            // isVisible: () => hostType === "professional",
             component: ({ control, isLoading: loading }) => (
                 <EstablishmentInfoStep control={control} isLoading={loading} />
             ),
@@ -120,7 +120,6 @@ export function BecomeHostStepper() {
             id: Step.BUSINESS_INFO,
             fields: ["siret"],
             groupId: StepGroup.HOST_DETAILS,
-            // isVisible: () => hostType === "professional",
             component: ({ control, isLoading: loading }) => (
                 <BusinessInfoStep control={control} isLoading={loading} />
             ),

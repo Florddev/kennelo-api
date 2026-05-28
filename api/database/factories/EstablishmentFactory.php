@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Enums\EstablishmentType;
 use App\Models\Address;
 use App\Models\Establishment;
 use App\Models\User;
@@ -24,6 +25,7 @@ class EstablishmentFactory extends Factory
         return [
             'name' => fake()->company(),
             'siret' => fake()->numerify('##############'),
+            'type' => fake()->randomElement(EstablishmentType::cases()),
             'description' => fake()->optional(0.8)->sentence(10),
             'phone' => fake()->phoneNumber(),
             'email' => fake()->companyEmail(),

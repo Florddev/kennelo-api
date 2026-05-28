@@ -3,4 +3,11 @@
  */
 
 export * from "./components/establishment-card";
+export * from "./components/explore-section";
+export * from "./components/filter-chips";
+export * from "./components/host-card";
+export * from "./components/location-prompt";
+export * from "./components/search-trigger";
+export * from "./context/location-context";
 export * from "./hooks/use-explore-establishments";
+export * from "./hooks/use-search-results";

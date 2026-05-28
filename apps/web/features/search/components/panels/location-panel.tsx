@@ -13,6 +13,7 @@ type LocationPanelProps = {
     filteredSuggestions: LocationSuggestion[];
     onSelect: (name: string) => void;
     formatDate: (date: Date) => string;
+    className?: string;
 };
 
 function SectionHeader({ label }: { label: string }) {
@@ -85,6 +86,7 @@ export function LocationPanel({
     filteredSuggestions,
     onSelect,
     formatDate,
+    className,
 }: LocationPanelProps) {
     const t = useTranslations();
     const isSearching = location.trim() !== "";
@@ -92,7 +94,10 @@ export function LocationPanel({
     return (
         <div
             data-slot="search-bar-location-panel"
-            className="absolute z-50 top-full mt-3 start-0 w-96 bg-card rounded-2xl shadow-2xl ring-1 ring-border py-4 overflow-auto max-h-128"
+            className={cn(
+                "absolute z-50 top-full mt-3 start-0 w-96 bg-card rounded-2xl shadow-2xl ring-1 ring-border py-4 overflow-auto max-h-128",
+                className,
+            )}
         >
             {isSearching ? (
                 <div className="px-3">

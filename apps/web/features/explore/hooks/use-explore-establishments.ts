@@ -1,13 +1,26 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { getEstablishments } from "@workspace/modules/establishments";
+import { useState, useEffect, useCallback } from "react";
+import { getExploreEstablishments } from "@workspace/modules/establishments";
+import type { ExploreSectionModel } from "@workspace/modules/establishments";
+import { useAsyncState } from "@/hooks/use-async-state";
+import { useLocation } from "@/features/explore/context/location-context";
 
 export function useExploreEstablishments() {
-    const { data, isLoading, error } = useQuery({
-        queryKey: ["explore", "establishments"],
-        queryFn: getEstablishments,
-    });
+    const { execute, isLoading, error } = useAsyncState();
+    const { coords } = useLocation();
+    const [sections, setSections] = useState<ExploreSectionModel[]>([]);
 
-    return { establishments: data ?? [], isLoading, error };
+    const load = useCallback(() => {
+        execute(() => getExploreEstablishments(coords ?? undefined), {
+            onSuccess: setSections,
+            displayError: false,
+        });
+    }, [coords, execute]);
+
+    useEffect(() => {
+        load();
+    }, [load]);
+
+    return { sections, isLoading, error, retry: load };
 }
