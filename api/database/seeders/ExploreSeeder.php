@@ -27,13 +27,14 @@ class ExploreSeeder extends Seeder
         'cat' => [15, 30],
         'rabbit' => [10, 20],
         'bird' => [8, 18],
-        'hamster' => [6, 12],
-        'guinea_pig' => [6, 14],
+        'rodent' => [6, 12],
         'ferret' => [12, 22],
         'reptile' => [12, 25],
     ];
 
     private array $imageKeywords = ['kennel', 'pet', 'dog', 'cattery', 'animals'];
+
+    private array $imagePool = ['avatar' => [], 'gallery' => []];
 
     private array $proTypes = [
         EstablishmentType::BOARDING,
@@ -51,6 +52,8 @@ class ExploreSeeder extends Seeder
 
     public function run(): void
     {
+        $this->buildImagePool();
+
         $animalTypes = AnimalType::all()->keyBy('code');
         $userRole = Role::where('name', 'user')->first();
 
@@ -85,11 +88,24 @@ class ExploreSeeder extends Seeder
         $this->seedReviews($userRole);
     }
 
+    private function buildImagePool(): void
+    {
+        foreach ($this->imageKeywords as $keyword) {
+            $avatar = $this->fetchImage(600, 600, $keyword);
+            if ($avatar !== null) {
+                $this->imagePool['avatar'][] = $avatar;
+            }
+
+            $gallery = $this->fetchImage(800, 600, $keyword);
+            if ($gallery !== null) {
+                $this->imagePool['gallery'][] = $gallery;
+            }
+        }
+    }
+
     private function seedReviews(?Role $userRole): void
     {
-        $establishments = Establishment::where('is_active', true)
-            ->whereNull('deleted_at')
-            ->get();
+        $establishments = Establishment::where('is_active', true)->get();
 
         $reviewers = User::factory(10)->create()->each(function (User $user) use ($userRole): void {
             if ($userRole) {
@@ -141,15 +157,10 @@ class ExploreSeeder extends Seeder
 
         foreach ($codes->take($count) as $code) {
             [$min, $max] = $this->pricingByCode[$code];
-            $animalType = $animalTypes->get($code);
-
-            if (! $animalType instanceof AnimalType) {
-                continue;
-            }
 
             EstablishmentCapacity::create([
                 'establishment_id' => $establishment->id,
-                'animal_type_id' => $animalType->getKey(),
+                'animal_type_id' => $animalTypes->get($code)->getKey(),
                 'max_capacity' => random_int(2, 10),
                 'price_per_night' => random_int($min * 100, $max * 100) / 100,
             ]);
@@ -158,38 +169,36 @@ class ExploreSeeder extends Seeder
 
     private function seedImages(Establishment $establishment): void
     {
-        $keyword = $this->imageKeywords[array_rand($this->imageKeywords)];
-
-        try {
-            $response = Http::withoutVerifying()
-                ->withOptions(['allow_redirects' => true])
-                ->timeout(15)
-                ->get("https://loremflickr.com/600/600/{$keyword}");
-
-            if ($response->successful()) {
-                $tmp = tempnam(sys_get_temp_dir(), 'explore_avatar_').'.jpg';
-                file_put_contents($tmp, $response->body());
-                $establishment->addMedia($tmp)->toMediaCollection(MediaService::COLLECTION_AVATAR);
-            }
-        } catch (\Throwable) {
+        if (! empty($this->imagePool['avatar'])) {
+            $content = $this->imagePool['avatar'][array_rand($this->imagePool['avatar'])];
+            $tmp = tempnam(sys_get_temp_dir(), 'explore_avatar_').'.jpg';
+            file_put_contents($tmp, $content);
+            $establishment->addMedia($tmp)->toMediaCollection(MediaService::COLLECTION_AVATAR);
         }
 
         $imageCount = random_int(1, 3);
         for ($k = 0; $k < $imageCount; $k++) {
-            try {
-                $response = Http::withoutVerifying()
-                    ->withOptions(['allow_redirects' => true])
-                    ->timeout(15)
-                    ->get("https://loremflickr.com/800/600/{$keyword}");
-
-                if ($response->successful()) {
-                    $tmp = tempnam(sys_get_temp_dir(), 'explore_img_').'.jpg';
-                    file_put_contents($tmp, $response->body());
-                    $establishment->addMedia($tmp)->toMediaCollection(MediaService::COLLECTION_IMAGES);
-                }
-            } catch (\Throwable) {
-                continue;
+            if (empty($this->imagePool['gallery'])) {
+                break;
             }
+            $content = $this->imagePool['gallery'][array_rand($this->imagePool['gallery'])];
+            $tmp = tempnam(sys_get_temp_dir(), 'explore_img_').'.jpg';
+            file_put_contents($tmp, $content);
+            $establishment->addMedia($tmp)->toMediaCollection(MediaService::COLLECTION_IMAGES);
+        }
+    }
+
+    private function fetchImage(int $width, int $height, string $keyword): ?string
+    {
+        try {
+            $response = Http::withoutVerifying()
+                ->withOptions(['allow_redirects' => true])
+                ->timeout(8)
+                ->get("https://loremflickr.com/{$width}/{$height}/{$keyword}");
+
+            return $response->successful() ? $response->body() : null;
+        } catch (\Throwable) {
+            return null;
         }
     }
 }
