@@ -47,6 +47,7 @@ export function useSearchResults({
             cancelled = true;
             clearTimeout(loadingTimer);
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [location, coords?.lat, coords?.lng, radius, dateFrom, dateTo, animalCounts, retryKey]);
 
     return { establishments, isLoading, error, retry: () => setRetryKey((k) => k + 1) };

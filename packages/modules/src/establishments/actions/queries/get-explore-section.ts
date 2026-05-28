@@ -17,7 +17,7 @@ export async function getExploreSection(
     page: number,
     coords?: ExploreCoords,
 ): Promise<ExploreSectionPage> {
-    const params: Record<string, unknown> = { page };
+    const params: Record<string, string | number | boolean> = { page };
     if (coords) {
         params.lat = coords.lat;
         params.lng = coords.lng;

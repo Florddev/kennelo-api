@@ -81,9 +81,11 @@ function useUserLocation(): { lat: number; lng: number } | null {
             return;
 
         navigator.permissions
+            // eslint-disable-next-line sonarjs/no-intrusive-permissions
             .query({ name: "geolocation" })
             .then((result) => {
                 if (result.state === "granted") {
+                    // eslint-disable-next-line sonarjs/no-intrusive-permissions
                     navigator.geolocation.getCurrentPosition(
                         (pos) => setCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
                         () => {},
@@ -194,7 +196,7 @@ function MapController({
         };
         if (positions.length === 1) {
             map.once("moveend", clearProgrammatic);
-            map.flyTo({ center: [positions[0][1], positions[0][0]], zoom: 13 });
+            map.flyTo({ center: [positions[0]![1], positions[0]![0]], zoom: 13 });
         } else {
             const lats = positions.map((p) => p[0]);
             const lngs = positions.map((p) => p[1]);
@@ -303,8 +305,8 @@ function ExploreMap({
                 {validEstablishments.map((e, i) => (
                     <MapMarker
                         key={e.id}
-                        longitude={positions[i][1]}
-                        latitude={positions[i][0]}
+                        longitude={positions[i]![1]}
+                        latitude={positions[i]![0]}
                         onClick={(evt) => {
                             evt.stopPropagation();
                             onMarkerClick(e.id);
@@ -600,7 +602,10 @@ export default function ExploreResultsPage({
         initialPetCounts: petCounts,
     });
 
-    const filteredHosts = filterHosts(establishments, activeFilter, searchParams.bounds);
+    const filteredHosts = useMemo(
+        () => filterHosts(establishments, activeFilter, searchParams.bounds),
+        [establishments, activeFilter, searchParams.bounds],
+    );
     const highlightedHost = findHighlightedHost(filteredHosts, highlightedId);
 
     const userDistanceMap = useMemo(
