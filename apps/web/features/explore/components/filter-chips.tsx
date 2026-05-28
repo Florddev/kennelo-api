@@ -1,19 +1,13 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+import { Button } from "@workspace/ui/components/button";
 import { cn } from "@workspace/ui/lib/utils";
 
 export type FilterChip = {
     id: string;
     label: string;
 };
-
-export const EXPLORE_FILTERS: FilterChip[] = [
-    { id: "all", label: "Tous" },
-    { id: "pro", label: "Professionnels" },
-    { id: "particulier", label: "Particuliers" },
-    { id: "weekend", label: "Ce week-end" },
-    { id: "top-rated", label: "Note 4,5+" },
-];
 
 type FilterChipsProps = {
     activeFilter: string;
@@ -22,32 +16,36 @@ type FilterChipsProps = {
     className?: string;
 };
 
-export function FilterChips({
-    activeFilter,
-    onSelect,
-    filters = EXPLORE_FILTERS,
-    className,
-}: FilterChipsProps) {
+export function FilterChips({ activeFilter, onSelect, filters, className }: FilterChipsProps) {
+    const t = useTranslations();
+
+    const resolvedFilters: FilterChip[] = filters ?? [
+        { id: "all", label: t("features.explore.chips.all") },
+        { id: "pro", label: t("features.explore.chips.pro") },
+        { id: "particulier", label: t("features.explore.chips.particulier") },
+        { id: "top-rated", label: t("features.explore.chips.topRated") },
+    ];
+
     return (
         <div
             data-slot="filter-chips"
-            className={cn("flex items-center gap-2 overflow-x-auto scrollbar-none px-4", className)}
+            className={cn(
+                "flex items-center gap-0.5 overflow-x-auto scrollbar-none px-4",
+                className,
+            )}
         >
-            {filters.map((filter) => {
+            {resolvedFilters.map((filter) => {
                 const isActive = filter.id === activeFilter;
                 return (
-                    <button
+                    <Button
+                        size="sm"
+                        variant={isActive ? "default" : "flat"}
                         key={filter.id}
                         onClick={() => onSelect(filter.id)}
-                        className={cn(
-                            "shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition-all border",
-                            isActive
-                                ? "bg-foreground text-background border-foreground"
-                                : "bg-background text-foreground border-border hover:border-foreground/30",
-                        )}
+                        className="text-xs"
                     >
                         {filter.label}
-                    </button>
+                    </Button>
                 );
             })}
         </div>

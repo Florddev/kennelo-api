@@ -1,14 +1,13 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { ChevronLeft } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { cn } from "@workspace/ui/lib/utils";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@workspace/ui/components/sheet";
 import { getExploreSection } from "@workspace/modules/establishments";
 import type { EstablishmentModel, ExploreSectionModel } from "@workspace/modules/establishments";
 import { useLocation } from "@/features/explore/context/location-context";
 import { HostCard } from "./host-card";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@workspace/ui/components/drawer";
 
 type ExploreSectionProps = {
     section: ExploreSectionModel;
@@ -17,6 +16,7 @@ type ExploreSectionProps = {
 
 function SectionOverlay({
     section,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     onClose,
 }: {
     section: ExploreSectionModel;
@@ -62,22 +62,14 @@ function SectionOverlay({
 
     return (
         <div data-slot="section-overlay" className="flex flex-col h-full">
-            <div className="flex items-center gap-2 px-4 py-3 border-b border-border/40">
-                <button
-                    type="button"
-                    onClick={onClose}
-                    className="flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-                >
-                    <ChevronLeft className="size-4" />
-                    {t("features.explore.overlay.back")}
-                </button>
-                <span className="ms-2 text-sm font-semibold text-foreground">
-                    {t(`features.explore.sections.${section.id}`)}
-                </span>
-            </div>
             <div className="flex-1 overflow-y-auto px-4 py-3 flex flex-col gap-2">
                 {establishments.map((host) => (
-                    <HostCard key={host.id} host={host} variant="horizontal" />
+                    <HostCard
+                        key={host.id}
+                        host={host}
+                        variant="horizontal"
+                        className="p-2 shadow-sm"
+                    />
                 ))}
                 {hasMore && (
                     <div ref={sentinelRef} className="flex items-center justify-center py-4">
@@ -108,7 +100,7 @@ export function ExploreSection({ section, className }: ExploreSectionProps) {
 
     return (
         <>
-            <section data-slot="explore-section" className={cn("flex flex-col gap-3", className)}>
+            <section data-slot="explore-section" className={cn("flex flex-col", className)}>
                 <div className="flex items-center justify-between px-4">
                     <h2 className="text-lg font-bold">
                         {t(`features.explore.sections.${section.id}`)}
@@ -123,21 +115,23 @@ export function ExploreSection({ section, className }: ExploreSectionProps) {
                         </button>
                     )}
                 </div>
-                <div className="flex gap-3 overflow-x-auto scrollbar-none px-4 pb-1">
+                <div className="flex gap-4 overflow-x-auto scrollbar-none px-4 py-2.5">
                     {section.establishments.map((host) => (
                         <HostCard key={host.id} host={host} variant="vertical" />
                     ))}
                 </div>
             </section>
 
-            <Sheet open={isOverlayOpen} onOpenChange={setIsOverlayOpen}>
-                <SheetContent side="bottom" className="h-[92dvh] p-0 flex flex-col">
-                    <SheetHeader className="sr-only">
-                        <SheetTitle>{t(`features.explore.sections.${section.id}`)}</SheetTitle>
-                    </SheetHeader>
-                    <SectionOverlay section={section} onClose={() => setIsOverlayOpen(false)} />
-                </SheetContent>
-            </Sheet>
+            <Drawer open={isOverlayOpen} onOpenChange={setIsOverlayOpen}>
+                <DrawerContent className="p-0">
+                    <DrawerHeader>
+                        <DrawerTitle>{t(`features.explore.sections.${section.id}`)}</DrawerTitle>
+                    </DrawerHeader>
+                    <div className="no-scrollbar overflow-y-auto p-0">
+                        <SectionOverlay section={section} onClose={() => setIsOverlayOpen(false)} />
+                    </div>
+                </DrawerContent>
+            </Drawer>
         </>
     );
 }

@@ -44,7 +44,7 @@ export default function PageLayout({
                     <div className={cn("flex flex-col gap-4", scrolled && "gap-3")}>
                         <h1
                             className={cn(
-                                "flex gap-1.5 items-center tracking-tight transition-all sm:mt-0 h-8",
+                                "flex gap-1.5 items-center tracking-tight transition-all sm:mt-0 h-8 font-heading",
                                 scrolled || hideTitle
                                     ? "text-2xl font-semibold -mt-8"
                                     : "text-3xl font-bold",

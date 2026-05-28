@@ -1,5 +1,5 @@
 {
-    "destination": "Destination",
+    "destination": "Places",
     "dates": "Dates",
     "when": "When?",
     "cta": "Search",
@@ -14,6 +14,12 @@
         "who": "Who?",
         "next": "Next",
         "clear-all": "Clear all"
+    },
+    "trigger": {
+        "where": "Where to host your pet?",
+        "placeholder": "Location · Dates · Pet",
+        "modify": "Modify",
+        "modifySearch": "Modify search"
     },
     "pets": {
         "label": "Pets",

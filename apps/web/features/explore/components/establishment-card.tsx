@@ -22,11 +22,11 @@ export function EstablishmentCard({ establishment, href, className }: Establishm
             href={href}
             data-slot="establishment-card"
             className={cn(
-                "block overflow-hidden rounded-3xl bg-white transition-shadow hover:shadow-lg",
+                "block overflow-hidden rounded-2xl bg-card transition-shadow hover:shadow-lg",
                 className,
             )}
         >
-            <div className="relative h-64 w-full overflow-hidden rounded-3xl bg-muted">
+            <div className="relative h-64 w-full overflow-hidden rounded-2xl bg-muted">
                 {imageUrl ? (
                     <Image
                         src={imageUrl}
@@ -47,11 +47,11 @@ export function EstablishmentCard({ establishment, href, className }: Establishm
                 )}
             </div>
             <div className="flex flex-col gap-2 px-3 py-4">
-                <h3 className="text-xl font-semibold text-black line-clamp-1">
+                <h3 className="text-xl font-semibold text-foreground line-clamp-1">
                     {establishment.name}
                 </h3>
                 {subtitle && (
-                    <p className="text-[15px] font-medium text-slate-500 line-clamp-1">
+                    <p className="text-[15px] font-medium text-muted-foreground line-clamp-1">
                         {subtitle}
                     </p>
                 )}

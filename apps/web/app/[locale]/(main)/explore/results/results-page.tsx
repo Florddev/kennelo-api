@@ -1,23 +1,41 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, SlidersHorizontal, Target, RefreshCw, MapPin } from "lucide-react";
+import { ChevronLeft, SlidersHorizontal, MapPin, X } from "lucide-react";
+import { useTranslations, useFormatter } from "next-intl";
 import { Drawer as DrawerPrimitive } from "vaul";
 
 import { cn } from "@workspace/ui/lib/utils";
 import { Button } from "@workspace/ui/components/button";
+import {
+    Map,
+    MapMarker,
+    MarkerContent,
+    MapControls,
+    useMap,
+    type MapRef,
+} from "@workspace/ui/components/mapcn";
+import type { EstablishmentModel } from "@workspace/modules/establishments";
 
 import { useNavVisibility } from "@/providers/navigation-visibility-provider";
+import { useNavigation } from "@/hooks/use-navigation";
 import { CompactSearchTrigger } from "@/features/explore/components/search-trigger";
 import { FilterChips } from "@/features/explore/components/filter-chips";
 import { HostCard } from "@/features/explore/components/host-card";
 import { useSearchResults } from "@/features/explore/hooks/use-search-results";
 import { useMobileSearch } from "@/features/search/hooks/use-mobile-search";
 import { MobileSearchOverlay } from "@/features/search/components/mobile/mobile-search-overlay";
+import { CrownStar, PointOnMap } from "@solar-icons/react";
 
-const SNAP_MIN = "100px";
-const SNAP_MID = 0.5;
+const SNAP_MIN = "70px";
+const SNAP_MID = 0.45;
+const DEFAULT_CENTER: [number, number] = [1.8883, 46.6034];
+const GEOCODE_DEFAULT_RADIUS = 25;
+
+type SearchCoords = { lat: number; lng: number };
+type MapBounds = { north: number; south: number; east: number; west: number };
+type SearchArea = { coords: SearchCoords; bounds: MapBounds | null; radius: number };
 
 type ResultsPageProps = {
     location: string;
@@ -26,113 +44,486 @@ type ResultsPageProps = {
     petCounts: Record<string, number>;
 };
 
-function MapPlaceholder({ onSearchArea }: { onSearchArea: () => void }) {
-    const [showToast, setShowToast] = useState(false);
+function useGeocodeLocation(query: string): [number, number] | null {
+    const [result, setResult] = useState<{ query: string; center: [number, number] } | null>(null);
 
-    function handleMapInteraction() {
-        setShowToast(true);
-        setTimeout(() => setShowToast(false), 2500);
+    useEffect(() => {
+        if (!query) return;
+        let cancelled = false;
+
+        fetch(
+            `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1`,
+        )
+            .then((res) => res.json())
+            .then((data: Array<{ lat: string; lon: string }>) => {
+                if (!cancelled && data[0]) {
+                    setResult({
+                        query,
+                        center: [parseFloat(data[0].lat), parseFloat(data[0].lon)],
+                    });
+                }
+            })
+            .catch(() => {});
+
+        return () => {
+            cancelled = true;
+        };
+    }, [query]);
+
+    return result?.query === query ? result.center : null;
+}
+
+function useUserLocation(): { lat: number; lng: number } | null {
+    const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
+
+    useEffect(() => {
+        if (typeof navigator === "undefined" || !navigator.geolocation || !navigator.permissions)
+            return;
+
+        navigator.permissions
+            .query({ name: "geolocation" })
+            .then((result) => {
+                if (result.state === "granted") {
+                    navigator.geolocation.getCurrentPosition(
+                        (pos) => setCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+                        () => {},
+                    );
+                }
+            })
+            .catch(() => {});
+    }, []);
+
+    return coords;
+}
+
+function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
+    const R = 6371;
+    const dLat = ((lat2 - lat1) * Math.PI) / 180;
+    const dLng = ((lng2 - lng1) * Math.PI) / 180;
+    const a =
+        Math.sin(dLat / 2) ** 2 +
+        Math.cos((lat1 * Math.PI) / 180) *
+            Math.cos((lat2 * Math.PI) / 180) *
+            Math.sin(dLng / 2) ** 2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+function PriceMarkerIcon({
+    price,
+    highlighted,
+    isProfessional,
+}: {
+    price: number | null;
+    highlighted: boolean;
+    isProfessional: boolean;
+}) {
+    return (
+        <div
+            className={cn(
+                "flex items-center gap-0.5 px-1.5 py-1 rounded-full text-xs font-bold border border-transparent shadow-md whitespace-nowrap cursor-pointer transition-transform bg-card/80 border border-card backdrop-blur-sm",
+                highlighted && "scale-110 ring-2 ring-secondary z-100",
+                isProfessional && "bg-primary/90 border-primary text-primary-foreground",
+            )}
+        >
+            {isProfessional && (
+                <CrownStar weight="Bold" className="size-3 text-secondary shrink-0" />
+            )}
+            {price !== null ? `${Math.round(price)}€` : "···"}
+        </div>
+    );
+}
+
+function MapController({
+    geocodedCenter,
+    positions,
+    skipBoundsFit,
+    onMoved,
+    onCenterSet,
+    onMapClick,
+}: {
+    geocodedCenter: [number, number] | null;
+    positions: [number, number][];
+    skipBoundsFit: boolean;
+    onMoved: () => void;
+    onCenterSet: () => void;
+    onMapClick: () => void;
+}) {
+    const { map, isLoaded } = useMap();
+    const hasGeocodedRef = useRef(false);
+    const hasFittedRef = useRef(false);
+    const isProgrammaticRef = useRef(false);
+    const onMovedRef = useRef(onMoved);
+    const onCenterSetRef = useRef(onCenterSet);
+    const onMapClickRef = useRef(onMapClick);
+
+    useEffect(() => {
+        onMovedRef.current = onMoved;
+    }, [onMoved]);
+
+    useEffect(() => {
+        onCenterSetRef.current = onCenterSet;
+    }, [onCenterSet]);
+
+    useEffect(() => {
+        onMapClickRef.current = onMapClick;
+    }, [onMapClick]);
+
+    useEffect(() => {
+        if (!map || !isLoaded) return;
+        if (geocodedCenter === null) {
+            hasGeocodedRef.current = false;
+            return;
+        }
+        if (hasGeocodedRef.current) return;
+        hasGeocodedRef.current = true;
+        isProgrammaticRef.current = true;
+        map.once("moveend", () => {
+            isProgrammaticRef.current = false;
+            onCenterSetRef.current();
+        });
+        map.flyTo({ center: [geocodedCenter[1], geocodedCenter[0]], zoom: 11 });
+    }, [map, isLoaded, geocodedCenter]);
+
+    useEffect(() => {
+        if (skipBoundsFit || hasFittedRef.current || positions.length === 0 || !map || !isLoaded)
+            return;
+        hasFittedRef.current = true;
+        isProgrammaticRef.current = true;
+        const clearProgrammatic = () => {
+            isProgrammaticRef.current = false;
+        };
+        if (positions.length === 1) {
+            map.once("moveend", clearProgrammatic);
+            map.flyTo({ center: [positions[0][1], positions[0][0]], zoom: 13 });
+        } else {
+            const lats = positions.map((p) => p[0]);
+            const lngs = positions.map((p) => p[1]);
+            map.once("moveend", clearProgrammatic);
+            map.fitBounds(
+                [
+                    [Math.min(...lngs), Math.min(...lats)],
+                    [Math.max(...lngs), Math.max(...lats)],
+                ],
+                { padding: 60 },
+            );
+        }
+    }, [map, isLoaded, positions, skipBoundsFit]);
+
+    useEffect(() => {
+        if (!map || !isLoaded) return;
+        const moveHandler = () => {
+            if (!isProgrammaticRef.current) onMovedRef.current();
+        };
+        const clickHandler = () => onMapClickRef.current();
+        map.on("dragend", moveHandler);
+        map.on("zoomend", moveHandler);
+        map.on("click", clickHandler);
+        return () => {
+            map.off("dragend", moveHandler);
+            map.off("zoomend", moveHandler);
+            map.off("click", clickHandler);
+        };
+    }, [map, isLoaded]);
+
+    return null;
+}
+
+function ExploreMap({
+    establishments,
+    highlightedId,
+    onMarkerClick,
+    onSearchArea,
+    geocodedCenter,
+    onDismissHighlight,
+}: {
+    establishments: EstablishmentModel[];
+    highlightedId: string | null;
+    onMarkerClick: (id: string) => void;
+    onSearchArea: (area: SearchArea) => void;
+    geocodedCenter: [number, number] | null;
+    onDismissHighlight: () => void;
+}) {
+    const t = useTranslations();
+    const [hasMoved, setHasMoved] = useState(false);
+    const mapRef = useRef<MapRef>(null);
+
+    const validEstablishments = useMemo(
+        () =>
+            establishments.filter(
+                (e) =>
+                    e.address !== null &&
+                    e.address.latitude !== null &&
+                    e.address.longitude !== null,
+            ),
+        [establishments],
+    );
+
+    const positions = useMemo(
+        () =>
+            validEstablishments.map(
+                (e) => [e.address!.latitude!, e.address!.longitude!] as [number, number],
+            ),
+        [validEstablishments],
+    );
+
+    function handleSearchInArea() {
+        const map = mapRef.current;
+        if (!map) return;
+        const center = map.getCenter();
+        const b = map.getBounds();
+        const coords = { lat: center.lat, lng: center.lng };
+        const bounds = {
+            north: b.getNorth(),
+            south: b.getSouth(),
+            east: b.getEast(),
+            west: b.getWest(),
+        };
+        const radius = Math.ceil(haversineKm(coords.lat, coords.lng, bounds.north, bounds.east));
+        onSearchArea({ coords, bounds, radius });
+        setHasMoved(false);
     }
 
     return (
-        <div
-            className="relative w-full h-full bg-[#e8e8e0] overflow-hidden cursor-grab active:cursor-grabbing"
-            onPointerDown={handleMapInteraction}
-        >
-            <svg
-                className="absolute inset-0 w-full h-full opacity-30"
-                xmlns="http://www.w3.org/2000/svg"
+        <div className="relative w-full h-full">
+            <Map
+                ref={mapRef}
+                center={DEFAULT_CENTER}
+                zoom={5}
+                className="absolute inset-0 rounded-none"
             >
-                <defs>
-                    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#999" strokeWidth="0.5" />
-                    </pattern>
-                </defs>
-                <rect width="100%" height="100%" fill="url(#grid)" />
-            </svg>
-
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="bg-background/60 backdrop-blur-sm rounded-2xl px-4 py-2">
-                    <p className="text-xs text-muted-foreground font-medium">Carte interactive</p>
-                </div>
-            </div>
-
-            <div className="absolute bottom-20 start-1/2 -translate-x-1/2 flex items-center gap-3 pointer-events-none">
-                <div className="flex items-center justify-center">
-                    <div className="size-6 rounded-full bg-foreground flex items-center justify-center shadow-lg">
-                        <span className="text-[10px] font-bold text-background">28€</span>
-                    </div>
-                </div>
-                <div className="flex items-center justify-center">
-                    <div className="size-6 rounded-full bg-foreground flex items-center justify-center shadow-lg">
-                        <span className="text-[10px] font-bold text-background">32€</span>
-                    </div>
-                </div>
-            </div>
-
-            {showToast && (
-                <div className="absolute top-4 start-1/2 -translate-x-1/2 z-10 pointer-events-none">
-                    <button
-                        onClick={onSearchArea}
-                        className="flex items-center gap-2 bg-foreground text-background text-xs font-semibold px-4 py-2.5 rounded-full shadow-xl pointer-events-auto"
+                <MapController
+                    geocodedCenter={geocodedCenter}
+                    positions={positions}
+                    skipBoundsFit={geocodedCenter !== null}
+                    onMoved={() => setHasMoved(true)}
+                    onCenterSet={handleSearchInArea}
+                    onMapClick={onDismissHighlight}
+                />
+                <MapControls position="top-right" showZoom showLocate className="hidden md:flex" />
+                {validEstablishments.map((e, i) => (
+                    <MapMarker
+                        key={e.id}
+                        longitude={positions[i][1]}
+                        latitude={positions[i][0]}
+                        onClick={(evt) => {
+                            evt.stopPropagation();
+                            onMarkerClick(e.id);
+                        }}
                     >
-                        <RefreshCw className="size-3.5" />
-                        Rechercher dans cette zone
-                    </button>
+                        <MarkerContent>
+                            <PriceMarkerIcon
+                                price={e.minPrice}
+                                highlighted={highlightedId === e.id}
+                                isProfessional={e.isProfessional}
+                            />
+                        </MarkerContent>
+                    </MapMarker>
+                ))}
+            </Map>
+            {hasMoved && (
+                <div className="absolute top-2 start-1/2 -translate-x-1/2 z-50 pointer-events-none">
+                    <Button
+                        size="default"
+                        onClick={handleSearchInArea}
+                        className="pointer-events-auto"
+                    >
+                        <PointOnMap className="size-3.5" weight="Bold" />
+                        {t("features.explore.searchThisArea")}
+                    </Button>
                 </div>
             )}
-
-            <button
-                className="absolute bottom-20 end-4 size-10 bg-background rounded-full shadow-lg flex items-center justify-center hover:bg-muted transition-colors"
-                aria-label="Ma position"
-            >
-                <Target className="size-4 text-foreground" />
-            </button>
         </div>
     );
 }
 
 function EmptyResults({ onExpand, onModify }: { onExpand: () => void; onModify: () => void }) {
+    const t = useTranslations();
+
     return (
         <div className="flex flex-col items-center justify-center gap-4 py-12 px-6 text-center">
             <div className="size-16 rounded-full bg-muted flex items-center justify-center">
                 <MapPin className="size-7 text-muted-foreground" />
             </div>
             <div>
-                <h3 className="font-bold text-base mb-1">Aucun hôte trouvé</h3>
+                <h3 className="font-bold text-base mb-1">
+                    {t("features.explore.emptySearch.title")}
+                </h3>
                 <p className="text-sm text-muted-foreground">
-                    {"Essayez d'élargir votre zone de recherche ou de modifier vos critères."}
+                    {t("features.explore.emptySearch.description")}
                 </p>
             </div>
             <div className="flex flex-col gap-2 w-full max-w-xs">
                 <Button onClick={onExpand} className="rounded-full w-full">
-                    Élargir la zone
+                    {t("features.explore.expandArea")}
                 </Button>
                 <Button onClick={onModify} variant="outline" className="rounded-full w-full">
-                    Modifier les critères
+                    {t("features.explore.modifyCriteria")}
                 </Button>
             </div>
         </div>
     );
 }
 
-export default function ExploreResultsPage({
-    location,
-    dateFrom,
-    dateTo,
-    petCounts,
-}: ResultsPageProps) {
-    const router = useRouter();
-    const { setBottomNavbarVisible } = useNavVisibility();
-
-    const [snapMax] = useState<string>(() =>
-        typeof window !== "undefined" ? `${window.innerHeight - 30}px` : "70vh",
+function HighlightedHostOverlay({
+    host,
+    userDistanceMap,
+    onClose,
+}: {
+    host: EstablishmentModel | null;
+    userDistanceMap: Record<string, number | null>;
+    onClose: () => void;
+}) {
+    return (
+        <div
+            className={cn(
+                "fixed bottom-0 start-0 end-0 z-[51] transition-transform duration-300 ease-out will-change-transform",
+                host ? "translate-y-0" : "translate-y-full pointer-events-none",
+            )}
+        >
+            {host && (
+                <MapDetailCard
+                    host={host}
+                    distanceOverride={userDistanceMap[host.id] ?? null}
+                    onClose={onClose}
+                />
+            )}
+        </div>
     );
-    const snapPoints: (number | string)[] = [SNAP_MIN, SNAP_MID, snapMax];
+}
 
-    const [activeFilter, setActiveFilter] = useState("all");
+function MapDetailCard({
+    host,
+    distanceOverride,
+    onClose,
+}: {
+    host: EstablishmentModel;
+    distanceOverride: number | null;
+    onClose: () => void;
+}) {
+    const t = useTranslations();
+    const { routes, router } = useNavigation();
+
+    return (
+        <div className="p-3" onClick={() => router.push(routes.HostDetail({ id: host.id }))}>
+            <div className="bg-card rounded-3xl shadow-2xl p-2 overflow-hidden">
+                <div className="relative">
+                    <button
+                        type="button"
+                        onClick={onClose}
+                        aria-label={t("common.actions.close")}
+                        className="absolute top-1.5 start-1.5 z-10 size-7 flex items-center justify-center rounded-full bg-card backdrop-blur-sm shadow-sm"
+                    >
+                        <X className="size-3.5 text-muted-foreground" />
+                    </button>
+                    <HostCard
+                        host={host}
+                        variant="horizontal"
+                        distanceOverride={distanceOverride}
+                    />
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function expandSearchArea(
+    searchArea: SearchArea | null,
+    geocodedCenter: [number, number] | null,
+): SearchArea | null {
+    const coords =
+        searchArea?.coords ??
+        (geocodedCenter ? { lat: geocodedCenter[0], lng: geocodedCenter[1] } : null);
+    if (!coords) return null;
+    return { coords, bounds: null, radius: (searchArea?.radius ?? GEOCODE_DEFAULT_RADIUS) * 2 };
+}
+
+function filterHosts(
+    establishments: EstablishmentModel[],
+    activeFilter: string,
+    bounds: MapBounds | null,
+): EstablishmentModel[] {
+    let result = establishments;
+    if (bounds) {
+        result = result.filter(
+            (e) =>
+                e.address !== null &&
+                e.address.latitude !== null &&
+                e.address.longitude !== null &&
+                e.address.latitude >= bounds.south &&
+                e.address.latitude <= bounds.north &&
+                e.address.longitude >= bounds.west &&
+                e.address.longitude <= bounds.east,
+        );
+    }
+    if (activeFilter === "pro") return result.filter((e) => e.isProfessional);
+    if (activeFilter === "particulier") return result.filter((e) => !e.isProfessional);
+    if (activeFilter === "top-rated")
+        return result.filter((e) => e.rating !== null && e.rating >= 4.5);
+    return result;
+}
+
+function findHighlightedHost(
+    hosts: EstablishmentModel[],
+    id: string | null,
+): EstablishmentModel | null {
+    return hosts.find((e) => e.id === id) ?? null;
+}
+
+function buildUserDistanceMap(
+    hosts: EstablishmentModel[],
+    userLocation: { lat: number; lng: number } | null,
+): Record<string, number | null> {
+    const result: Record<string, number | null> = {};
+    for (const host of hosts) {
+        const lat = host.address?.latitude ?? null;
+        const lng = host.address?.longitude ?? null;
+        result[host.id] =
+            userLocation !== null && lat !== null && lng !== null
+                ? Math.round(haversineKm(userLocation.lat, userLocation.lng, lat, lng))
+                : null;
+    }
+    return result;
+}
+
+function buildDateRangeText(dateFrom: string, dateTo: string, format: (d: Date) => string): string {
+    return dateFrom && dateTo ? `${format(new Date(dateFrom))}–${format(new Date(dateTo))}` : "";
+}
+
+function resolveSearchParams(
+    location: string,
+    searchArea: SearchArea | null,
+    geocodedCenter: [number, number] | null,
+): {
+    location: string | undefined;
+    coords: SearchCoords | undefined;
+    radius: number | undefined;
+    bounds: MapBounds | null;
+} {
+    if (searchArea) {
+        return {
+            location: undefined,
+            coords: searchArea.coords,
+            radius: searchArea.radius,
+            bounds: searchArea.bounds,
+        };
+    }
+    if (geocodedCenter) {
+        return {
+            location: undefined,
+            coords: { lat: geocodedCenter[0], lng: geocodedCenter[1] },
+            radius: GEOCODE_DEFAULT_RADIUS,
+            bounds: null,
+        };
+    }
+    return { location, coords: undefined, radius: undefined, bounds: null };
+}
+
+function useSnapPoints() {
+    const [snapMax] = useState<string>(() =>
+        typeof window !== "undefined" ? `${window.innerHeight - 100}px` : "90vh",
+    );
     const [snap, setSnap] = useState<number | string | null>(SNAP_MID);
-    const [highlightedId, setHighlightedId] = useState<string | null>(null);
+    const snapPoints: (number | string)[] = [SNAP_MIN, SNAP_MID, snapMax];
 
     function handleSetSnap(value: number | string | null) {
         setSnap(value ?? SNAP_MIN);
@@ -144,8 +535,33 @@ export default function ExploreResultsPage({
         }
     }
 
-    const { establishments } = useSearchResults({
-        location,
+    return { snap, snapMax, snapPoints, handleSetSnap, handleToggleSnap };
+}
+
+export default function ExploreResultsPage({
+    location,
+    dateFrom,
+    dateTo,
+    petCounts,
+}: ResultsPageProps) {
+    const t = useTranslations();
+    const formatter = useFormatter();
+    const router = useRouter();
+    const { setBottomNavbarVisible } = useNavVisibility();
+    const userLocation = useUserLocation();
+    const { snap, snapMax, snapPoints, handleSetSnap, handleToggleSnap } = useSnapPoints();
+
+    const [activeFilter, setActiveFilter] = useState("all");
+    const [highlightedId, setHighlightedId] = useState<string | null>(null);
+    const [searchArea, setSearchArea] = useState<SearchArea | null>(null);
+
+    const geocodedCenter = useGeocodeLocation(location);
+    const searchParams = resolveSearchParams(location, searchArea, geocodedCenter);
+
+    const { establishments, isLoading } = useSearchResults({
+        location: searchParams.location,
+        coords: searchParams.coords,
+        radius: searchParams.radius,
         dateFrom,
         dateTo,
         animalCounts: petCounts,
@@ -184,12 +600,13 @@ export default function ExploreResultsPage({
         initialPetCounts: petCounts,
     });
 
-    function getFilteredHosts() {
-        if (activeFilter === "pro") return establishments.filter((e) => e.isProfessional);
-        if (activeFilter === "particulier") return establishments.filter((e) => !e.isProfessional);
-        return establishments;
-    }
-    const filteredHosts = getFilteredHosts();
+    const filteredHosts = filterHosts(establishments, activeFilter, searchParams.bounds);
+    const highlightedHost = findHighlightedHost(filteredHosts, highlightedId);
+
+    const userDistanceMap = useMemo(
+        () => buildUserDistanceMap(filteredHosts, userLocation),
+        [filteredHosts, userLocation],
+    );
 
     useEffect(() => {
         setBottomNavbarVisible(false);
@@ -198,50 +615,77 @@ export default function ExploreResultsPage({
 
     const petSummary = Object.entries(petCounts)
         .filter(([, count]) => count > 0)
-        .map(([type, count]) => `${count} ${type}`)
+        .map(([type, count]) => {
+            const label = t(`features.search.pets.${type}` as Parameters<typeof t>[0]);
+            return `${count} ${label}`;
+        })
         .join(", ");
 
+    const dateOpts = { day: "numeric", month: "short" } as const;
+    const dateRangeText = buildDateRangeText(dateFrom, dateTo, (d) =>
+        formatter.dateTime(d, dateOpts),
+    );
+
     const searchSummary = [
-        location || "Carhaix",
-        dateFrom && dateTo ? `${formatShortDate(dateFrom)}–${formatShortDate(dateTo)}` : "",
+        searchParams.bounds !== null ? t("features.explore.mapArea") : location,
+        dateRangeText,
         petSummary,
     ]
         .filter(Boolean)
         .join(" · ");
 
-    function formatShortDate(iso: string) {
-        if (!iso) return "";
-        const d = new Date(iso);
-        return new Intl.DateTimeFormat("fr", { day: "numeric", month: "short" }).format(d);
+    function handleExpandArea() {
+        const expanded = expandSearchArea(searchArea, geocodedCenter);
+        if (expanded) setSearchArea(expanded);
+    }
+
+    function handleSearchAndClearBounds() {
+        setSearchArea(null);
+        handleSearch();
     }
 
     return (
         <div className="fixed inset-0 z-40 flex flex-col bg-card overflow-hidden">
-            <div className="shrink-0 bg-card border-b border-border/40 px-3 py-2.5 flex items-center gap-2">
-                <button
-                    onClick={() => router.back()}
-                    className="size-9 rounded-full bg-muted flex items-center justify-center shrink-0 hover:bg-muted/70 transition-colors"
-                >
-                    <ChevronLeft className="size-4" />
-                </button>
+            <div className="bg-card shadow-sm">
+                <div className="shrink-0 bg-card px-3 py-2.5 pb-0 flex items-center gap-1">
+                    <Button onClick={() => router.back()} variant="flat" size="icon-sm">
+                        <ChevronLeft className="size-4" />
+                    </Button>
 
-                <CompactSearchTrigger summary={searchSummary} onModify={openOverlay} />
+                    <CompactSearchTrigger summary={searchSummary} onModify={openOverlay} />
 
-                <button
-                    className="size-9 rounded-full bg-muted flex items-center justify-center shrink-0 hover:bg-muted/70 transition-colors relative"
-                    aria-label="Filtres"
-                >
-                    <SlidersHorizontal className="size-4" />
-                    <span className="absolute top-1 end-1 size-2 rounded-full bg-secondary" />
-                </button>
-            </div>
+                    <Button
+                        variant="flat"
+                        size="icon-sm"
+                        aria-label={t("features.explore.filters")}
+                    >
+                        <SlidersHorizontal className="size-4" />
+                    </Button>
+                </div>
 
-            <div className="shrink-0 py-2">
-                <FilterChips activeFilter={activeFilter} onSelect={setActiveFilter} />
+                <div className="shrink-0 py-2 shadow-sm">
+                    <FilterChips activeFilter={activeFilter} onSelect={setActiveFilter} />
+                </div>
             </div>
 
             <div className="flex-1 relative overflow-hidden">
-                <MapPlaceholder onSearchArea={() => {}} />
+                <div
+                    className={cn(
+                        "w-full h-full transition-all max-h-[100dvh]",
+                        snap === SNAP_MID && !highlightedHost && "max-h-[50dvh] transition-all",
+                    )}
+                >
+                    <ExploreMap
+                        establishments={filteredHosts}
+                        highlightedId={highlightedId}
+                        onMarkerClick={(id) =>
+                            setHighlightedId((prev) => (prev === id ? null : id))
+                        }
+                        onSearchArea={setSearchArea}
+                        geocodedCenter={geocodedCenter}
+                        onDismissHighlight={() => setHighlightedId(null)}
+                    />
+                </div>
 
                 <DrawerPrimitive.Root
                     snapPoints={snapPoints}
@@ -253,7 +697,8 @@ export default function ExploreResultsPage({
                 >
                     <DrawerPrimitive.Content
                         className={cn(
-                            "fixed bottom-0 start-0 end-0 z-50 flex flex-col bg-card outline-none h-[95vh] shadow-2xl transition-[border-radius] duration-300",
+                            "fixed bottom-0 start-0 end-0 z-50 flex flex-col bg-card outline-none h-full shadow-2xl transition-[border-radius,opacity] duration-300",
+                            highlightedHost && "opacity-0 pointer-events-none",
                             snap === snapMax
                                 ? "rounded-none ring-0 pt-4 shadow-none"
                                 : "rounded-t-3xl ring-1 ring-border/20",
@@ -263,21 +708,28 @@ export default function ExploreResultsPage({
                         {snap !== snapMax && (
                             <button
                                 className="mx-auto mt-3 mb-2 w-10 h-1 rounded-full bg-muted shrink-0"
-                                aria-label="Ajuster le panneau"
+                                aria-label={t("features.explore.adjustPanel")}
                             />
                         )}
 
                         <div
                             className={cn(
-                                "flex items-center justify-center p-4 pt-2 shrink-0 font-bold text-base",
-                                snap === SNAP_MIN && "pt-0 font-bold text-base",
+                                "flex items-center justify-center p-4 pt-2 shrink-0 font-bold text-lg transition-all",
+                                snap === SNAP_MIN && "pt-0 text-base pb-2",
                                 snap === snapMax && "pt-0",
                             )}
                         >
                             <DrawerPrimitive.Title asChild>
-                                <h2>{filteredHosts.length} hôtes disponibles</h2>
+                                <h2>
+                                    {isLoading ? (
+                                        <span className="h-5 w-36 bg-muted animate-pulse rounded-full inline-block align-middle" />
+                                    ) : (
+                                        t("features.explore.hostsAvailable", {
+                                            count: filteredHosts.length,
+                                        })
+                                    )}
+                                </h2>
                             </DrawerPrimitive.Title>
-                            <button className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"></button>
                         </div>
 
                         <div
@@ -288,43 +740,37 @@ export default function ExploreResultsPage({
                             )}
                         >
                             {filteredHosts.length === 0 ? (
-                                <EmptyResults onExpand={() => {}} onModify={openOverlay} />
+                                <EmptyResults onExpand={handleExpandArea} onModify={openOverlay} />
                             ) : (
-                                <>
-                                    <div className="px-4 pb-1 flex items-center justify-between">
-                                        <p className="text-xs text-muted-foreground">
-                                            dans un rayon de 20 km ·{" "}
-                                            <button className="underline underline-offset-2 hover:text-foreground transition-colors">
-                                                Élargir
-                                            </button>
-                                        </p>
-                                        <p className="text-xs text-muted-foreground">
-                                            Trier · Pertinence
-                                        </p>
-                                    </div>
-
-                                    <div className="flex flex-col divide-y divide-border/40 pb-8">
-                                        {filteredHosts.map((host) => (
-                                            <div key={host.id} className="px-2">
-                                                <HostCard
-                                                    host={host}
-                                                    variant="horizontal"
-                                                    highlighted={highlightedId === host.id}
-                                                    onClick={() =>
-                                                        setHighlightedId((prev) =>
-                                                            prev === host.id ? null : host.id,
-                                                        )
-                                                    }
-                                                />
-                                            </div>
-                                        ))}
-                                    </div>
-                                </>
+                                <div className="flex flex-col gap-6">
+                                    {filteredHosts.map((host) => (
+                                        <div key={host.id}>
+                                            <HostCard
+                                                host={host}
+                                                className="px-3 py-1"
+                                                variant="horizontal"
+                                                highlighted={highlightedId === host.id}
+                                                distanceOverride={userDistanceMap[host.id] ?? null}
+                                                onClick={() =>
+                                                    setHighlightedId((prev) =>
+                                                        prev === host.id ? null : host.id,
+                                                    )
+                                                }
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
                             )}
                         </div>
                     </DrawerPrimitive.Content>
                 </DrawerPrimitive.Root>
             </div>
+
+            <HighlightedHostOverlay
+                host={highlightedHost}
+                userDistanceMap={userDistanceMap}
+                onClose={() => setHighlightedId(null)}
+            />
 
             {isOverlayOpen && (
                 <MobileSearchOverlay
@@ -349,7 +795,7 @@ export default function ExploreResultsPage({
                     onClearAll={clearAll}
                     onSelectRecentSearch={selectRecentSearch}
                     onNext={handleNext}
-                    onSearch={handleSearch}
+                    onSearch={handleSearchAndClearBounds}
                     onSetLocationSearchActive={setLocationSearchActive}
                 />
             )}

@@ -1,11 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { MapPin, ImageIcon, Star } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { cn } from "@workspace/ui/lib/utils";
 import { useNavigation } from "@/hooks/use-navigation";
 import type { EstablishmentModel } from "@workspace/modules/establishments";
+import { CrownStar, Gallery, Star, UsersGroupRounded } from "@solar-icons/react";
 
 type HostCardProps = {
     host: EstablishmentModel;
@@ -13,95 +13,49 @@ type HostCardProps = {
     highlighted?: boolean;
     className?: string;
     onClick?: () => void;
+    distanceOverride?: number | null;
 };
 
-function ProBadge({ isPro }: { isPro: boolean }) {
+function ProBadge({ isPro, showText = true }: { isPro: boolean; showText?: boolean }) {
     const t = useTranslations();
     return (
         <div
             className={cn(
-                "flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold backdrop-blur-sm",
+                "inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold backdrop-blur-sm transition-colors",
                 isPro
-                    ? "bg-foreground/85 text-background"
-                    : "bg-background/85 text-foreground border border-border/40",
+                    ? "bg-foreground/90 text-background shadow-sm"
+                    : "bg-background/85 text-foreground shadow-sm",
+                !showText && "px-1.5",
             )}
         >
-            <span
-                className={cn(
-                    "size-2 rounded-full shrink-0",
-                    isPro ? "bg-secondary" : "bg-muted-foreground",
-                )}
-            />
-            {isPro ? t("features.explore.card.pro") : t("features.explore.card.individual")}
-        </div>
-    );
-}
-
-function PetIcons({ types, max = 3 }: { types: string[]; max?: number }) {
-    const t = useTranslations();
-    const visible = types.slice(0, max);
-    const extra = types.length - max;
-
-    return (
-        <div className="flex items-center gap-1">
-            {visible.map((type) => (
-                <div
-                    key={type}
-                    title={t(`features.pets.types.${type}`)}
-                    className="size-6 rounded-full border border-border bg-muted flex items-center justify-center overflow-hidden"
-                >
-                    <Image
-                        src={`/illustrations/pets/${type}.svg`}
-                        alt={t(`features.pets.types.${type}`)}
-                        width={16}
-                        height={16}
-                        className="size-4"
-                    />
-                </div>
-            ))}
-            {extra > 0 && (
-                <div className="size-6 rounded-full border border-border bg-muted flex items-center justify-center text-[9px] font-bold text-muted-foreground">
-                    +{extra}
-                </div>
+            {isPro ? (
+                <CrownStar weight="Bold" className="size-3 text-secondary shrink-0" />
+            ) : (
+                <UsersGroupRounded className="size-3 shrink-0" weight="Bold" />
             )}
+            {showText &&
+                (isPro ? t("features.explore.card.pro") : t("features.explore.card.individual"))}
         </div>
     );
 }
 
-function LocationLine({ host }: { host: EstablishmentModel }) {
+function Distance({
+    host,
+    distanceOverride,
+}: {
+    host: EstablishmentModel;
+    distanceOverride?: number | null;
+}) {
     const t = useTranslations();
-    const typeLabel = host.type
-        ? t(`features.establishments.types.${host.type}` as Parameters<typeof t>[0])
-        : null;
+    const effectiveDistance = distanceOverride !== undefined ? distanceOverride : host.distance;
     const distanceLabel =
-        host.distance !== null
-            ? t("features.explore.card.distanceKm", { distance: host.distance })
+        effectiveDistance !== null && effectiveDistance !== undefined
+            ? t("features.explore.card.distanceKm", { distance: effectiveDistance })
             : null;
     const secondary = distanceLabel ?? host.address?.city ?? null;
 
-    if (!typeLabel && !secondary) return null;
-
     return (
-        <div className="flex items-center gap-1 text-xs text-muted-foreground">
-            <MapPin className="size-3 shrink-0" />
-            {typeLabel && <span className="shrink-0">{typeLabel}</span>}
-            {typeLabel && secondary && <span aria-hidden="true">·</span>}
-            {secondary && (
-                <span className={distanceLabel ? "shrink-0" : "truncate"}>{secondary}</span>
-            )}
-        </div>
-    );
-}
-
-function RatingBadge({ rating, reviewCount }: { rating: number | null; reviewCount: number }) {
-    const t = useTranslations();
-    if (!rating) return null;
-    return (
-        <div className="flex items-center gap-1 text-xs text-muted-foreground">
-            <Star className="size-3 fill-secondary text-secondary shrink-0" />
-            <span className="font-semibold text-foreground">{rating.toFixed(1)}</span>
-            <span>({t("features.explore.card.reviews", { count: reviewCount })})</span>
-        </div>
+        secondary && <span className={distanceLabel ? "shrink-0" : "truncate"}>{secondary}</span>
     );
 }
 
@@ -117,7 +71,7 @@ function HostAvatar({ url, name }: { url: string | undefined; name: string }) {
             />
         );
     }
-    return <ImageIcon className="size-7 text-muted-foreground/50" />;
+    return <Gallery className="size-8 text-muted-foreground/50" />;
 }
 
 export function HostCard({
@@ -126,6 +80,7 @@ export function HostCard({
     highlighted = false,
     className,
     onClick,
+    distanceOverride,
 }: HostCardProps) {
     const t = useTranslations();
     const { routes, router } = useNavigation();
@@ -143,34 +98,44 @@ export function HostCard({
         return (
             <button
                 data-slot="host-card-horizontal"
+                type="button"
                 onClick={handleClick}
                 className={cn(
-                    "w-full flex items-start gap-3 p-3 rounded-2xl text-start transition-colors",
-                    highlighted ? "bg-secondary/8 ring-1 ring-secondary/25" : "hover:bg-muted/50",
+                    "group flex w-full items-stretch gap-3 rounded-[1.75rem] text-start",
+                    highlighted
+                        ? "border-secondary/30 bg-secondary/5 shadow-[0_20px_40px_-30px_hsl(var(--secondary))]"
+                        : "border-border/60 bg-card hover:border-border/90",
                     className,
                 )}
             >
-                <div className="size-20 rounded-xl bg-muted shrink-0 overflow-hidden flex items-center justify-center relative">
+                <div className="relative flex w-24 aspect-5/4 shrink-0 overflow-hidden rounded-[1.25rem] bg-muted">
+                    <div className="absolute inset-0 bg-gradient-to-br from-background/15 via-transparent to-foreground/10" />
                     <HostAvatar url={avatarUrl} name={host.name} />
-                </div>
-                <div className="flex-1 min-w-0 flex flex-col gap-1">
-                    <div className="flex items-start justify-between gap-2">
-                        <span className="font-semibold text-sm leading-tight line-clamp-1">
-                            {host.name}
-                        </span>
-                        {host.minPrice !== null && (
-                            <span className="text-xs font-semibold text-foreground shrink-0">
-                                {t("features.explore.card.from")} {host.minPrice}€
-                                <span className="text-muted-foreground font-normal">
-                                    {t("features.explore.card.perNight")}
-                                </span>
-                            </span>
-                        )}
+                    <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-foreground/35 to-transparent" />
+                    <div className="absolute start-2 top-2">
+                        <ProBadge isPro={host.isProfessional} showText={false} />
                     </div>
-                    <ProBadge isPro={host.isProfessional} />
-                    <LocationLine host={host} />
-                    <RatingBadge rating={host.rating} reviewCount={host.reviewCount} />
-                    <PetIcons types={host.animalTypes} />
+                </div>
+                <div className="flex flex-col justify-between py-2">
+                    <div className="min-w-0 space-y-1">
+                        <div className="block line-clamp-1 text-sm font-semibold leading-tight">
+                            {host.name}
+                        </div>
+
+                        <div className="flex gap-1 text-xs font-medium text-muted-foreground">
+                            {t(`features.establishments.types.${host.type}`)}
+                            <span>·</span>
+                            <Distance host={host} distanceOverride={distanceOverride} />
+                        </div>
+                    </div>
+
+                    <div className="flex gap-1 text-xs text-muted-foreground">
+                        <div className="inline-flex items-center gap-0.5 text-foreground font-semibold">
+                            <Star weight="Bold" className="size-3 shrink-0" />
+                            <span>{host?.rating?.toFixed(1)}</span>(
+                            {t("features.explore.card.reviews", { count: host?.reviewCount })})
+                        </div>
+                    </div>
                 </div>
             </button>
         );
@@ -184,39 +149,51 @@ export function HostCard({
             onClick={handleClick}
             onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && handleClick()}
             className={cn(
-                "flex flex-col overflow-hidden rounded-2xl bg-card border border-border/60 text-start transition-shadow hover:shadow-md shrink-0 w-44 cursor-pointer",
+                "flex w-48 shrink-0 cursor-pointer flex-col overflow-hidden text-start transition-all duration-300",
+                highlighted &&
+                    "border-secondary/30 bg-secondary/5 shadow-[0_28px_60px_-36px_hsl(var(--secondary))]",
                 className,
             )}
         >
-            <div className="relative h-32 w-full bg-muted flex items-center justify-center overflow-hidden">
+            <div className="relative isolate aspect-5/4 w-full overflow-hidden bg-muted rounded-[1rem] shadow-lg">
+                <div className="absolute inset-0 bg-gradient-to-br from-background/10 via-transparent to-foreground/10" />
                 <HostAvatar url={avatarUrl} name={host.name} />
-                <div className="absolute top-2 start-2">
-                    <ProBadge isPro={host.isProfessional} />
-                </div>
-                <button
-                    type="button"
-                    aria-label={t("features.explore.card.addToFavorites")}
-                    onClick={(e) => e.stopPropagation()}
-                    className="absolute top-2 end-2 size-7 rounded-full bg-background/80 backdrop-blur-sm flex items-center justify-center shadow-sm"
-                >
-                    <span className="text-[13px] leading-none">♡</span>
-                </button>
-            </div>
-            <div className="flex flex-col gap-1 p-2.5">
-                <span className="font-semibold text-sm line-clamp-1">{host.name}</span>
-                <LocationLine host={host} />
-                <RatingBadge rating={host.rating} reviewCount={host.reviewCount} />
-                <PetIcons types={host.animalTypes} />
-                {host.minPrice !== null && (
-                    <div className="flex items-center justify-between mt-0.5">
-                        <span className="text-xs font-semibold text-foreground">
-                            {t("features.explore.card.from")} {host.minPrice}€
-                            <span className="text-muted-foreground font-normal">
-                                {t("features.explore.card.perNight")}
-                            </span>
-                        </span>
+                <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-foreground/45 via-foreground/10 to-transparent" />
+
+                {host.isProfessional && (
+                    <div className="absolute start-3 top-3">
+                        <div
+                            className={cn(
+                                "inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold backdrop-blur-sm transition-colors bg-foreground/90 text-background shadow-sm",
+                            )}
+                        >
+                            <CrownStar weight="Bold" className="size-3 text-secondary shrink-0" />
+                            {t("features.explore.card.pro")}
+                        </div>
                     </div>
                 )}
+            </div>
+
+            <div className="flex flex-1 flex-col gap-2 pt-2 px-1">
+                <div className="min-w-0 space-y-1">
+                    <div className="block line-clamp-1 text-sm font-semibold leading-tight">
+                        {host.name}
+                    </div>
+
+                    <div className="flex gap-1 text-xs font-medium text-muted-foreground">
+                        {t(`features.establishments.types.${host.type}`)}
+                        <span>·</span>
+                        <Distance host={host} distanceOverride={distanceOverride} />
+                    </div>
+
+                    <div className="flex gap-1 text-xs text-muted-foreground">
+                        <div className="inline-flex items-center gap-0.5 text-foreground font-semibold">
+                            <Star weight="Bold" className="size-3 shrink-0" />
+                            <span>{host?.rating?.toFixed(1)}</span>(
+                            {t("features.explore.card.reviews", { count: host?.reviewCount })})
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     );

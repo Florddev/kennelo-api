@@ -6,6 +6,23 @@
     "noImageAvailable": "لا توجد صورة متاحة",
     "seeMore": "عرض المزيد",
     "retry": "إعادة المحاولة",
+    "hostsAvailable": "{count, plural, =0 {لا يوجد مضيفون متاحون} =1 {# مضيف متاح} other {# مضيفون متاحون}}",
+    "searchThisArea": "البحث في هذه المنطقة",
+    "adjustPanel": "ضبط اللوحة",
+    "expandArea": "توسيع المنطقة",
+    "modifyCriteria": "تعديل المعايير",
+    "mapArea": "منطقة الخريطة",
+    "emptySearch": {
+        "title": "لم يتم العثور على مضيفين",
+        "description": "حاول توسيع نطاق البحث أو تعديل معاييرك."
+    },
+    "viewProfile": "عرض الملف الشخصي",
+    "chips": {
+        "all": "الكل",
+        "pro": "محترفون",
+        "particulier": "أفراد",
+        "topRated": "تقييم 4.5+"
+    },
     "empty": {
         "title": "لا يوجد مضيفون متاحون",
         "description": "عُد لاحقاً لاكتشاف مضيفين جدد."

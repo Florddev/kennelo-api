@@ -255,6 +255,14 @@ class ExploreController extends Controller
                 ))
                 ->whereNotNull('addr_search.latitude')
                 ->whereNotNull('addr_search.longitude');
+
+            if ($request->filled('radius')) {
+                $radius = (float) $request->input('radius');
+                $query->whereRaw(
+                    "(6371 * acos(LEAST(1.0, cos(radians({$lat})) * cos(radians(addr_search.latitude)) * cos(radians(addr_search.longitude) - radians({$lng})) + sin(radians({$lat})) * sin(radians(addr_search.latitude))))) <= ?",
+                    [$radius]
+                );
+            }
         }
 
         $sort = $request->input('sort', 'rating');

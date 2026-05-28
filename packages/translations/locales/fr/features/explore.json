@@ -6,6 +6,23 @@
     "noImageAvailable": "Aucune image disponible",
     "seeMore": "Voir plus",
     "retry": "Réessayer",
+    "hostsAvailable": "{count, plural, =0 {Aucun hôte disponible} =1 {# hôte disponible} other {# hôtes disponibles}}",
+    "searchThisArea": "Rechercher dans cette zone",
+    "adjustPanel": "Ajuster le panneau",
+    "expandArea": "Élargir la zone",
+    "modifyCriteria": "Modifier les critères",
+    "mapArea": "Zone de la carte",
+    "emptySearch": {
+        "title": "Aucun hôte trouvé",
+        "description": "Essayez d'élargir votre zone de recherche ou de modifier vos critères."
+    },
+    "viewProfile": "Voir le profil",
+    "chips": {
+        "all": "Tous",
+        "pro": "Professionnels",
+        "particulier": "Particuliers",
+        "topRated": "Note 4,5+"
+    },
     "empty": {
         "title": "Aucun hôte disponible",
         "description": "Revenez plus tard pour découvrir de nouveaux hôtes."

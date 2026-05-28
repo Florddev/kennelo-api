@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { getExploreEstablishments } from "@workspace/modules/establishments";
 import type { ExploreSectionModel } from "@workspace/modules/establishments";
 import { useAsyncState } from "@/hooks/use-async-state";
@@ -11,19 +11,16 @@ export function useExploreEstablishments() {
     const { coords } = useLocation();
     const [sections, setSections] = useState<ExploreSectionModel[]>([]);
 
-    useEffect(() => {
+    const load = useCallback(() => {
         execute(() => getExploreEstablishments(coords ?? undefined), {
             onSuccess: setSections,
             displayError: false,
         });
     }, [coords, execute]);
 
-    function retry() {
-        execute(() => getExploreEstablishments(coords ?? undefined), {
-            onSuccess: setSections,
-            displayError: false,
-        });
-    }
+    useEffect(() => {
+        load();
+    }, [load]);
 
-    return { sections, isLoading, error, retry };
+    return { sections, isLoading, error, retry: load };
 }

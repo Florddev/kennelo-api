@@ -2,12 +2,12 @@
 
 import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { Search } from "lucide-react";
 
 import { cn } from "@workspace/ui/lib/utils";
 
 import { useMobileSearch } from "../../hooks/use-mobile-search";
 import { MobileSearchOverlay } from "./mobile-search-overlay";
+import { Magnifier, Tuning2 } from "@solar-icons/react";
 
 function MobileSearchTrigger({
     location,
@@ -35,13 +35,13 @@ function MobileSearchTrigger({
         <button
             data-slot="mobile-search-trigger"
             onClick={onClick}
-            className="w-full flex items-center gap-3 bg-background rounded-full shadow-md ring-1 ring-border p-2 text-start active:scale-[0.98] transition-transform"
+            className="w-full flex items-center bg-card rounded-full shadow-md ring-1 ring-border/30 p-1.5 text-start active:scale-[0.98] transition-transform"
         >
             <div className="size-9 rounded-full bg-primary flex items-center justify-center shrink-0">
-                <Search className="size-4 text-primary-foreground" />
+                <Magnifier className="size-4 text-primary-foreground" />
             </div>
 
-            <div className="flex-1 min-w-0">
+            <div className="flex-1 min-w-0 px-3">
                 <div
                     className={cn(
                         "text-sm font-semibold truncate leading-tight",
@@ -70,6 +70,9 @@ function MobileSearchTrigger({
                     )}
                     <span className="text-xs text-muted-foreground truncate">{subtitle}</span>
                 </div>
+            </div>
+            <div className="size-9 rounded-full flex items-center justify-center shrink-0">
+                <Tuning2 className="size-4" />
             </div>
         </button>
     );

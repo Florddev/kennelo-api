@@ -1,17 +1,17 @@
 "use client";
 
 import { useEffect } from "react";
-import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { AlertCircle } from "lucide-react";
 import { useAuth } from "@/features/auth";
-import { UserAvatar } from "@/features/auth/components/user-avatar";
 import { ExploreSection } from "@/features/explore/components/explore-section";
 import { LocationPrompt } from "@/features/explore/components/location-prompt";
 import { LocationProvider, useLocation } from "@/features/explore/context/location-context";
 import { useExploreEstablishments } from "@/features/explore/hooks/use-explore-establishments";
 import SearchBar from "@/features/search/components/search-bar";
 import MobileSearch from "@/features/search/components/mobile/mobile-search";
+import { Button } from "@workspace/ui/components/button";
+import { Bell } from "@solar-icons/react";
 
 function SectionSkeleton() {
     return (
@@ -94,36 +94,35 @@ function ExploreContent() {
     }
 
     return (
-        <div className="flex flex-col bg-background min-h-full">
-            <header className="sticky top-0 z-10 bg-background/90 backdrop-blur-sm border-b border-border/40 px-4 py-3 flex items-center justify-between">
-                <Image
-                    src="/logo_font.svg"
-                    height={24}
-                    width={80}
-                    alt="Kennelo"
-                    className="h-6 w-auto"
-                />
-                <button className="size-9 rounded-full bg-muted flex items-center justify-center">
-                    {isAuthenticated ? (
-                        <UserAvatar user={user} className="size-8" />
-                    ) : (
-                        <span className="text-sm font-semibold text-muted-foreground">P</span>
-                    )}
-                </button>
-            </header>
-
+        <div className="flex flex-col bg-card min-h-full">
             <div className="px-4 pt-4 pb-3">
-                <div className="hidden md:block">
-                    <SearchBar />
-                </div>
-                <div className="md:hidden">
-                    <MobileSearch />
+                <div className="flex flex-col gap-3">
+                    <div className="flex justify-between items-center">
+                        <div className="flex flex-col">
+                            <h2 className="text-xl font-semibold">
+                                Hey, {user?.firstName ?? "there"}
+                            </h2>
+                            <p className="text-xs text-muted-foreground">
+                                Explore new host for your next booking
+                            </p>
+                        </div>
+                        <Button variant="flat" size="icon-sm">
+                            <Bell className="size-4" />
+                        </Button>
+                    </div>
+
+                    <div className="hidden md:block">
+                        <SearchBar />
+                    </div>
+                    <div className="md:hidden">
+                        <MobileSearch />
+                    </div>
                 </div>
             </div>
 
             {showLocationPrompt && <LocationPrompt className="mb-4" />}
 
-            <div className="flex flex-col gap-8 pb-8 pt-2">{renderBody()}</div>
+            <div className="flex flex-col gap-6 pb-8 pt-2">{renderBody()}</div>
         </div>
     );
 }

@@ -6,6 +6,8 @@ import type { EstablishmentModel } from "@workspace/modules/establishments";
 
 type UseSearchResultsInput = {
     location?: string;
+    coords?: { lat: number; lng: number };
+    radius?: number;
     dateFrom?: string;
     dateTo?: string;
     animalCounts?: Record<string, number>;
@@ -13,6 +15,8 @@ type UseSearchResultsInput = {
 
 export function useSearchResults({
     location,
+    coords,
+    radius,
     dateFrom,
     dateTo,
     animalCounts,
@@ -29,7 +33,7 @@ export function useSearchResults({
             setIsLoading(true);
             setError(null);
         }, 0);
-        searchEstablishments({ location, dateFrom, dateTo, animalCounts })
+        searchEstablishments({ location, coords, radius, dateFrom, dateTo, animalCounts })
             .then((result) => {
                 if (!cancelled) setEstablishments(result.establishments);
             })
@@ -43,7 +47,7 @@ export function useSearchResults({
             cancelled = true;
             clearTimeout(loadingTimer);
         };
-    }, [location, dateFrom, dateTo, animalCounts, retryKey]);
+    }, [location, coords?.lat, coords?.lng, radius, dateFrom, dateTo, animalCounts, retryKey]);
 
     return { establishments, isLoading, error, retry: () => setRetryKey((k) => k + 1) };
 }

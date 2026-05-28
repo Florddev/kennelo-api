@@ -1,5 +1,5 @@
 import "@workspace/ui/globals.css";
-import { Geist_Mono, Bricolage_Grotesque, Plus_Jakarta_Sans } from "next/font/google";
+import { Geist_Mono, Plus_Jakarta_Sans, Bricolage_Grotesque } from "next/font/google"; // Fraunces
 import { Providers } from "@/components/providers";
 import { Suspense } from "react";
 import { DEFAULT_LOCALE, DEFAULT_LOCALE_DIR } from "@/dictionaries";

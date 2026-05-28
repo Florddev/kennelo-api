@@ -6,6 +6,7 @@ import type { ExploreCoords } from "./get-explore-establishments";
 export type SearchEstablishmentsInput = {
     location?: string;
     coords?: ExploreCoords;
+    radius?: number;
     animalCounts?: Record<string, number>;
     dateFrom?: string;
     dateTo?: string;
@@ -38,6 +39,9 @@ export async function searchEstablishments(
     if (input.coords) {
         params.lat = input.coords.lat;
         params.lng = input.coords.lng;
+    }
+    if (input.radius !== undefined) {
+        params.radius = input.radius;
     }
     if (input.animalCounts) {
         for (const [type, count] of Object.entries(input.animalCounts)) {

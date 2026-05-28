@@ -1,5 +1,5 @@
 {
-    "destination": "Destination",
+    "destination": "Lieux",
     "dates": "Dates",
     "when": "Quand ?",
     "cta": "Rechercher",
@@ -14,6 +14,12 @@
         "who": "Qui ?",
         "next": "Suivant",
         "clear-all": "Tout effacer"
+    },
+    "trigger": {
+        "where": "Où garder votre animal ?",
+        "placeholder": "Lieu · Dates · Animal",
+        "modify": "Modifier",
+        "modifySearch": "Modifier la recherche"
     },
     "pets": {
         "label": "Animaux",

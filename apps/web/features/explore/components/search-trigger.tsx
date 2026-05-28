@@ -1,6 +1,7 @@
 "use client";
 
 import { Search } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { cn } from "@workspace/ui/lib/utils";
 
 type SearchTriggerProps = {
@@ -18,6 +19,7 @@ export function SearchTrigger({
     onClick,
     className,
 }: SearchTriggerProps) {
+    const t = useTranslations();
     const hasValues = location || dateDisplay || petDisplay;
 
     return (
@@ -38,14 +40,18 @@ export function SearchTrigger({
                         <div className="text-sm font-semibold text-foreground truncate">
                             {[location, dateDisplay, petDisplay].filter(Boolean).join(" · ")}
                         </div>
-                        <div className="text-xs text-muted-foreground">Modifier la recherche</div>
+                        <div className="text-xs text-muted-foreground">
+                            {t("features.search.trigger.modifySearch")}
+                        </div>
                     </>
                 ) : (
                     <>
                         <div className="text-sm font-semibold text-foreground">
-                            Où garder votre animal ?
+                            {t("features.search.trigger.where")}
                         </div>
-                        <div className="text-xs text-muted-foreground">Lieu · Dates · Animal</div>
+                        <div className="text-xs text-muted-foreground">
+                            {t("features.search.trigger.placeholder")}
+                        </div>
                     </>
                 )}
             </div>
@@ -60,6 +66,8 @@ type CompactSearchTriggerProps = {
 };
 
 export function CompactSearchTrigger({ summary, onModify, className }: CompactSearchTriggerProps) {
+    const t = useTranslations();
+
     return (
         <button
             data-slot="compact-search-trigger"
@@ -71,7 +79,9 @@ export function CompactSearchTrigger({ summary, onModify, className }: CompactSe
         >
             <Search className="size-3.5 text-muted-foreground shrink-0" />
             <span className="text-sm text-foreground font-medium truncate">{summary}</span>
-            <span className="ms-auto text-xs text-secondary font-semibold shrink-0">Modifier</span>
+            <span className="ms-auto text-xs text-secondary font-semibold shrink-0">
+                {t("features.search.trigger.modify")}
+            </span>
         </button>
     );
 }

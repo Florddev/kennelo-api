@@ -6,6 +6,23 @@
     "noImageAvailable": "No image available",
     "seeMore": "See more",
     "retry": "Retry",
+    "hostsAvailable": "{count, plural, =0 {No hosts available} =1 {# host available} other {# hosts available}}",
+    "searchThisArea": "Search in this area",
+    "adjustPanel": "Adjust panel",
+    "expandArea": "Expand area",
+    "modifyCriteria": "Modify criteria",
+    "mapArea": "Map area",
+    "emptySearch": {
+        "title": "No hosts found",
+        "description": "Try expanding your search area or modifying your criteria."
+    },
+    "viewProfile": "View profile",
+    "chips": {
+        "all": "All",
+        "pro": "Professionals",
+        "particulier": "Individuals",
+        "topRated": "Rating 4.5+"
+    },
     "empty": {
         "title": "No hosts available",
         "description": "Check back later to discover new hosts."
