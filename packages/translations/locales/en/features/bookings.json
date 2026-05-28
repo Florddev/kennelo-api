@@ -24,6 +24,7 @@
         "confirmCta": "Book",
         "confirmFooterTotal": "Total: €{amount}",
         "successTitle": "Booking request sent!",
-        "successDescription": "The host will get back to you shortly."
+        "successDescription": "The host will get back to you shortly.",
+        "paymentSetupFailed": "Unable to start payment. Please try again."
     }
 }

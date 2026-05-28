@@ -26,10 +26,21 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Stripe\StripeClient;
 
 class AppServiceProvider extends ServiceProvider
 {
-    public function register(): void {}
+    public function register(): void
+    {
+        $this->app->singleton(StripeClient::class, function (): StripeClient {
+            $secret = (string) config('services.stripe.secret');
+            if ($secret === '') {
+                throw new \RuntimeException('Missing STRIPE_SECRET in environment.');
+            }
+
+            return new StripeClient($secret);
+        });
+    }
 
     public function boot(): void
     {

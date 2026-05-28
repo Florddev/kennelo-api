@@ -43,6 +43,10 @@ class EstablishmentResource extends JsonResource
             'avatar_url' => $this->getFirstMediaUrl(MediaService::COLLECTION_AVATAR, MediaService::CONVERSION_AVATAR_WEBP)
                 ?: $this->getFirstMediaUrl(MediaService::COLLECTION_AVATAR)
                 ?: null,
+            'stripe_account_id' => $this->stripe_account_id,
+            'stripe_onboarding_completed' => (bool) $this->stripe_onboarding_completed,
+            'stripe_charges_enabled' => (bool) $this->stripe_charges_enabled,
+            'stripe_payouts_enabled' => (bool) $this->stripe_payouts_enabled,
             'address' => new AddressResource($this->whenLoaded('address')),
             'manager' => new UserResource($this->whenLoaded('manager')),
             'collaborators' => UserResource::collection($this->whenLoaded('collaborators')),

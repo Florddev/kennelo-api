@@ -24,6 +24,7 @@
         "confirmCta": "Réserver",
         "confirmFooterTotal": "Total : {amount} €",
         "successTitle": "Demande de réservation envoyée !",
-        "successDescription": "L'hôte va vous répondre rapidement."
+        "successDescription": "L'hôte va vous répondre rapidement.",
+        "paymentSetupFailed": "Impossible d'initier le paiement. Veuillez réessayer."
     }
 }

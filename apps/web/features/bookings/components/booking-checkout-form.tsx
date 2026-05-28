@@ -69,12 +69,15 @@ export function BookingCheckoutForm({
                 }),
             { displayError: true },
         );
-        if (result) {
-            toast.success(t("features.bookings.checkout.successTitle"), {
-                description: t("features.bookings.checkout.successDescription"),
-            });
-            router.push(routes.Explore());
+
+        if (!result) return;
+
+        if (!result.checkoutUrl) {
+            toast.error(t("features.bookings.checkout.paymentSetupFailed"));
+            return;
         }
+
+        window.location.href = result.checkoutUrl;
     };
 
     const locale = typeof navigator !== "undefined" ? navigator.language : "fr-FR";

@@ -24,6 +24,7 @@
         "confirmCta": "احجز",
         "confirmFooterTotal": "الإجمالي: {amount} €",
         "successTitle": "تم إرسال طلب الحجز!",
-        "successDescription": "سيرد عليك المضيف قريباً."
+        "successDescription": "سيرد عليك المضيف قريباً.",
+        "paymentSetupFailed": "تعذّر بدء عملية الدفع. يرجى المحاولة مرة أخرى."
     }
 }

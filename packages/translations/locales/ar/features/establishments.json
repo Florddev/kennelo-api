@@ -15,7 +15,22 @@
             "details": "تفاصيل المؤسسة",
             "contact": "معلومات الاتصال",
             "address": "العنوان",
-            "business": "معلومات تجارية"
+            "business": "معلومات تجارية",
+            "payments": "المدفوعات"
+        },
+        "stripe": {
+            "connectedTitle": "تم ربط الحساب البنكي",
+            "connectedDescription": "يمكنك استلام المدفوعات للحجوزات المؤكدة.",
+            "pendingTitle": "جارٍ إكمال الإعداد",
+            "pendingDescription": "أكمل تقديم بيانات نشاطك التجاري للبدء في استلام المدفوعات.",
+            "notConnectedTitle": "اربط حسابك البنكي",
+            "notConnectedDescription": "قم بإعداد Stripe لاستلام المدفوعات عندما يحجز الضيوف مؤسستك.",
+            "startOnboarding": "الاتصال بـ Stripe",
+            "continueOnboarding": "متابعة الإعداد",
+            "chargesOn": "المدفوعات مفعّلة",
+            "chargesOff": "المدفوعات غير مفعّلة",
+            "payoutsOn": "التحويلات مفعّلة",
+            "payoutsOff": "التحويلات غير مفعّلة"
         },
         "empty": {
             "phone": "لا يوجد هاتف",

@@ -21,6 +21,10 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
+/**
+ * @property-read User $manager
+ * @property-read Address|null $address
+ */
 class Establishment extends Model implements HasMedia
 {
     use HasFactory, HasUuids, InteractsWithMedia, SoftDeletes;
@@ -37,6 +41,10 @@ class Establishment extends Model implements HasMedia
         'timezone',
         'is_active',
         'manager_id',
+        'stripe_account_id',
+        'stripe_onboarding_completed',
+        'stripe_charges_enabled',
+        'stripe_payouts_enabled',
     ];
 
     protected function casts(): array
@@ -44,6 +52,9 @@ class Establishment extends Model implements HasMedia
         return [
             'is_active' => 'boolean',
             'type' => EstablishmentType::class,
+            'stripe_onboarding_completed' => 'boolean',
+            'stripe_charges_enabled' => 'boolean',
+            'stripe_payouts_enabled' => 'boolean',
         ];
     }
 

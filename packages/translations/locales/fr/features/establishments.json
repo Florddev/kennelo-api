@@ -15,7 +15,22 @@
             "details": "Détails de l'établissement",
             "contact": "Coordonnées",
             "address": "Adresse",
-            "business": "Informations légales"
+            "business": "Informations légales",
+            "payments": "Paiements"
+        },
+        "stripe": {
+            "connectedTitle": "Compte bancaire connecté",
+            "connectedDescription": "Vous pouvez recevoir les versements pour les réservations confirmées.",
+            "pendingTitle": "Onboarding en cours",
+            "pendingDescription": "Finalisez vos informations professionnelles pour commencer à recevoir des versements.",
+            "notConnectedTitle": "Connectez votre compte bancaire",
+            "notConnectedDescription": "Configurez Stripe pour recevoir des versements lorsque des clients réservent votre établissement.",
+            "startOnboarding": "Connecter avec Stripe",
+            "continueOnboarding": "Finaliser l'onboarding",
+            "chargesOn": "Paiements activés",
+            "chargesOff": "Paiements désactivés",
+            "payoutsOn": "Versements activés",
+            "payoutsOff": "Versements désactivés"
         },
         "empty": {
             "phone": "Aucun téléphone",

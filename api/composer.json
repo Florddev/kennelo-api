@@ -22,7 +22,8 @@
         "sentry/sentry-laravel": "^4.16",
         "spatie/image": "^3.0",
         "spatie/laravel-medialibrary": "^11.21",
-        "spatie/laravel-permission": "^6.21"
+        "spatie/laravel-permission": "^6.21",
+        "stripe/stripe-php": "^20.2"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.16",

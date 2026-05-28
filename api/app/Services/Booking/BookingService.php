@@ -20,11 +20,14 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use Stripe\Checkout\Session;
+use Stripe\StripeClient;
 
 class BookingService
 {
     public function __construct(
-        private ConversationService $conversationService
+        private ConversationService $conversationService,
+        private StripeClient $stripe
     ) {}
 
     public function getUserBookings(User $user, array $filters = []): LengthAwarePaginator
@@ -96,12 +99,77 @@ class BookingService
                 $booking->services()->attach($servicePivots);
             }
 
-            return $booking->load(['establishment', 'pets', 'services']);
+            $session = $this->createCheckoutSession($booking, $totalPrice, $user, $establishment);
+
+            $booking->update([
+                'stripe_payment_intent_id' => is_string($session->payment_intent)
+                    ? $session->payment_intent
+                    : ($session->payment_intent->id ?? null),
+                'payment_status' => 'pending',
+            ]);
+
+            $booking->setAttribute('checkout_url', $session->url);
+
+            return $booking->load([
+                'establishment.address',
+                'establishment.manager',
+                'establishment.collaborators',
+                'pets',
+                'services',
+            ]);
         });
 
         $this->conversationService->getOrCreateForBooking($user, $booking);
 
         return $booking;
+    }
+
+    private function createCheckoutSession(
+        Booking $booking,
+        string $totalPrice,
+        User $user,
+        Establishment $establishment
+    ): Session {
+        $amountInCents = (int) bcmul($totalPrice, '100', 0);
+        $currency = (string) config('services.stripe.currency', 'eur');
+        $frontendUrl = rtrim((string) config('app.frontend_url'), '/');
+
+        $paymentIntentData = [
+            'metadata' => [
+                'booking_id' => $booking->id,
+                'user_id' => $user->id,
+                'establishment_id' => $establishment->id,
+            ],
+        ];
+
+        if ($establishment->stripe_account_id && $establishment->stripe_charges_enabled) {
+            $platformFeeInCents = (int) bcmul((string) $booking->platform_fee, '100', 0);
+            $paymentIntentData['transfer_data'] = ['destination' => $establishment->stripe_account_id];
+            $paymentIntentData['application_fee_amount'] = $platformFeeInCents;
+        }
+
+        return $this->stripe->checkout->sessions->create([
+            'mode' => 'payment',
+            'payment_method_types' => ['card'],
+            'line_items' => [[
+                'price_data' => [
+                    'currency' => $currency,
+                    'product_data' => [
+                        'name' => $establishment->name,
+                        'description' => "Booking {$booking->check_in_date->toDateString()} → {$booking->check_out_date->toDateString()}",
+                    ],
+                    'unit_amount' => $amountInCents,
+                ],
+                'quantity' => 1,
+            ]],
+            'success_url' => $frontendUrl.'/en/explore?booking_success=1',
+            'cancel_url' => $frontendUrl."/en/host/{$establishment->id}/book?check_in={$booking->check_in_date->toDateString()}&check_out={$booking->check_out_date->toDateString()}",
+            'customer_email' => $user->email,
+            'payment_intent_data' => $paymentIntentData,
+            'metadata' => [
+                'booking_id' => $booking->id,
+            ],
+        ]);
     }
 
     public function cancel(Booking $booking): Booking

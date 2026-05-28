@@ -15,7 +15,22 @@
             "details": "Establishment details",
             "contact": "Contact information",
             "address": "Address",
-            "business": "Business information"
+            "business": "Business information",
+            "payments": "Payments"
+        },
+        "stripe": {
+            "connectedTitle": "Bank account connected",
+            "connectedDescription": "You can receive payouts for confirmed bookings.",
+            "pendingTitle": "Onboarding in progress",
+            "pendingDescription": "Finish providing your business details to start receiving payouts.",
+            "notConnectedTitle": "Connect your bank account",
+            "notConnectedDescription": "Set up Stripe to receive payouts when guests book your establishment.",
+            "startOnboarding": "Connect with Stripe",
+            "continueOnboarding": "Continue onboarding",
+            "chargesOn": "Payments enabled",
+            "chargesOff": "Payments disabled",
+            "payoutsOn": "Payouts enabled",
+            "payoutsOff": "Payouts disabled"
         },
         "empty": {
             "phone": "No phone number",
