@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { ArrowLeft, Heart, Share } from "@solar-icons/react";
+import { ArrowLeft, PenNewSquare } from "@solar-icons/react";
 import { PawPrint } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@workspace/ui/components/button";
@@ -13,8 +13,20 @@ import { useNavigation } from "@/hooks/use-navigation";
 import { getAge } from "@/features/pets/lib/pet-age";
 import { isIllustratedType } from "@/features/pets/lib/pet-illustrations";
 import { DetailPageLayout } from "@/components/layouts/detail-page-layout";
+import Link from "next/link";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 type Query = { id: string };
+
+function formatAgeDisplay(
+    birthDate: string | null | undefined,
+    formatYears: (count: number) => string,
+    formatMonths: (count: number) => string,
+): string | null {
+    if (!birthDate) return null;
+    const { years, months } = getAge(birthDate);
+    return years >= 1 ? formatYears(years) : formatMonths(months);
+}
 
 function PetDetailsPageSkeleton() {
     return (
@@ -107,8 +119,9 @@ function PetDetailsPageSkeleton() {
 
 export default function PetDetailsPage() {
     const t = useTranslations();
-    const { params, back } = useNavigation<Query>();
+    const { params, routes } = useNavigation<Query>();
     const { pet, isLoading } = usePet(params.id);
+    const isMobile = useIsMobile();
     const { user } = useAuth();
 
     if (!pet && isLoading) {
@@ -119,13 +132,11 @@ export default function PetDetailsPage() {
         return null;
     }
 
-    const ageDisplay = pet.birthDate
-        ? (() => {
-              const { years, months } = getAge(pet.birthDate);
-              if (years >= 1) return t("features.pets.age.years", { count: years });
-              return t("features.pets.age.months", { count: months });
-          })()
-        : null;
+    const ageDisplay = formatAgeDisplay(
+        pet.birthDate,
+        (count) => t("features.pets.age.years", { count }),
+        (count) => t("features.pets.age.months", { count }),
+    );
 
     const isOwner = user?.id === pet.userId;
     const typeCode = pet.animalType?.code?.toLowerCase() ?? "";
@@ -155,30 +166,44 @@ export default function PetDetailsPage() {
             emptyState={emptyState}
             desktopCtaLabel={t("features.pets.profile.viewPhotos", { count: images.length })}
             headerStart={
-                <Button size="icon-sm" className="text-primary bg-card" onClick={back}>
-                    <ArrowLeft />
+                <Button size="icon-sm" className="text-primary bg-card hover:bg-muted" asChild>
+                    <Link href={routes.MyPets()}>
+                        <ArrowLeft />
+                    </Link>
                 </Button>
             }
             headerEnd={
                 <>
-                    <Button size="icon-sm" className="text-primary bg-card">
-                        <Heart />
-                    </Button>
-                    <Button size="icon-sm" className="text-primary bg-card">
-                        <Share />
-                    </Button>
+                    {isOwner && (
+                        <Button
+                            size="sm"
+                            className="text-primary bg-card hover:bg-muted gap-1.5"
+                            asChild
+                        >
+                            <Link
+                                href={
+                                    isMobile
+                                        ? routes.PetEditPage({ id: pet.id })
+                                        : routes.PetEditGeneral({ id: pet.id })
+                                }
+                            >
+                                <PenNewSquare />
+                                {t("common.actions.edit")}
+                            </Link>
+                        </Button>
+                    )}
                 </>
             }
             footer={
                 isOwner ? (
-                    <div className="h-14 bg-card border-t px-2 flex justify-center items-center sm:hidden">
-                        <Button className="w-full" size="lg">
-                            {t("features.pets.profile.edit")}
+                    <div className="h-16 bg-card border-t px-2 flex justify-center items-center sm:hidden">
+                        <Button className="w-full" size="xl">
+                            {t("features.pets.profile.findHost", { name: pet.name })}
                         </Button>
                     </div>
                 ) : undefined
             }
-            className="pb-20 sm:pb-6"
+            className="pb-6"
         >
             <PetProfileInfo pet={pet} ageDisplay={ageDisplay} />
         </DetailPageLayout>

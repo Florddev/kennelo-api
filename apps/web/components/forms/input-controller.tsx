@@ -16,9 +16,18 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@workspace/ui/components/button";
 import { Calendar } from "@workspace/ui/components/calendar";
+import {
+    Drawer,
+    DrawerContent,
+    DrawerHeader,
+    DrawerTitle,
+    DrawerTrigger,
+} from "@workspace/ui/components/drawer";
 import { Popover, PopoverContent, PopoverTrigger } from "@workspace/ui/components/popover";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { IconProps } from "@solar-icons/react";
+
+import { useIsMobile } from "@/hooks/use-mobile";
 
 type InputControllerProps<TFieldValues extends FieldValues> = {
     name: Path<TFieldValues>;
@@ -87,7 +96,7 @@ function TextInputSection({
         : t("common.fields.passwordShow");
 
     return (
-        <InputGroup className="bg-card py-6 px-0.5 rounded-2xl gap-1">
+        <InputGroup className="bg-card py-5 md:py-6 px-0.5 rounded-2xl gap-1">
             <InputGroupInput
                 {...field}
                 id={fieldId}
@@ -123,7 +132,7 @@ function NumberInputSection({
     fieldId,
 }: NumberInputSectionProps) {
     return (
-        <InputGroup className="bg-card py-6 px-0.5 rounded-2xl gap-1">
+        <InputGroup className="bg-card py-5 md:py-6 px-0.5 rounded-2xl gap-1">
             <InputGroupInput
                 {...field}
                 id={fieldId}
@@ -150,48 +159,73 @@ function DateInputSection({
     isLoading,
     fieldId,
 }: DateInputSectionProps) {
+    const [open, setOpen] = useState(false);
+    const isMobile = useIsMobile();
+    const t = useTranslations();
     const selectedDate = field.value ? new Date(`${field.value}T00:00:00`) : undefined;
 
-    return (
-        <Popover>
-            <PopoverTrigger asChild>
-                <Button
-                    id={fieldId}
-                    type="button"
-                    variant="outline"
-                    disabled={isLoading}
-                    aria-invalid={showError}
-                    className="justify-between rounded-2xl bg-card w-full py-6"
-                >
-                    {selectedDate
-                        ? new Intl.DateTimeFormat(undefined, {
-                              year: "numeric",
-                              month: "long",
-                              day: "numeric",
-                          }).format(selectedDate)
-                        : placeholder}
-                    <CalendarIcon className="size-4 text-muted-foreground" />
-                </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-fit p-0">
-                <Calendar
-                    mode="single"
-                    captionLayout="dropdown"
-                    startMonth={new Date(1950, 0)}
-                    endMonth={new Date()}
-                    selected={selectedDate}
-                    onSelect={(date) => {
-                        if (!date) {
-                            field.onChange("");
-                            return;
-                        }
+    const formattedDate = selectedDate
+        ? new Intl.DateTimeFormat(undefined, {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+          }).format(selectedDate)
+        : placeholder;
 
-                        const formatted = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
-                        field.onChange(formatted);
-                    }}
-                    disabled={{ after: new Date() }}
-                />
-            </PopoverContent>
+    const handleDateSelect = (date: Date | undefined) => {
+        if (!date) {
+            field.onChange("");
+        } else {
+            const formatted = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+            field.onChange(formatted);
+        }
+        setOpen(false);
+    };
+
+    const trigger = (
+        <Button
+            id={fieldId}
+            type="button"
+            variant="outline"
+            disabled={isLoading}
+            aria-invalid={showError}
+            className="justify-between rounded-2xl bg-card w-full py-5 md:py-6"
+        >
+            {formattedDate}
+            <CalendarIcon className="size-4 text-muted-foreground" />
+        </Button>
+    );
+
+    const calendar = (
+        <Calendar
+            mode="single"
+            captionLayout="dropdown"
+            startMonth={new Date(1950, 0)}
+            endMonth={new Date()}
+            selected={selectedDate}
+            onSelect={handleDateSelect}
+            disabled={{ after: new Date() }}
+        />
+    );
+
+    if (isMobile) {
+        return (
+            <Drawer open={open} onOpenChange={setOpen}>
+                <DrawerTrigger asChild>{trigger}</DrawerTrigger>
+                <DrawerContent>
+                    <DrawerHeader>
+                        <DrawerTitle>{t("common.fields.selectDate")}</DrawerTitle>
+                    </DrawerHeader>
+                    <div className="flex justify-center pb-4">{calendar}</div>
+                </DrawerContent>
+            </Drawer>
+        );
+    }
+
+    return (
+        <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>{trigger}</PopoverTrigger>
+            <PopoverContent className="w-fit p-0">{calendar}</PopoverContent>
         </Popover>
     );
 }

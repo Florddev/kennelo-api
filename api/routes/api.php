@@ -17,6 +17,7 @@ use App\Http\Controllers\Pet\AnimalTypeController;
 use App\Http\Controllers\Pet\PetAttributeController;
 use App\Http\Controllers\Pet\PetController;
 use App\Http\Controllers\Pet\PetImageController;
+use App\Http\Controllers\Pet\PetReviewController;
 use App\Http\Controllers\Review\Admin\ReviewReportController as AdminReviewReportController;
 use App\Http\Controllers\Review\BookingReviewController;
 use App\Http\Controllers\Review\EstablishmentReviewController;
@@ -75,6 +76,7 @@ Route::middleware(['auth.jwt'])->group(function () {
     Route::post('/pets/{pet}/images', [PetImageController::class, 'store']);
     Route::post('/pets/{pet}/images/bulk', [PetImageController::class, 'storeBulk']);
     Route::delete('/pets/{pet}/images/{media}', [PetImageController::class, 'destroy']);
+    Route::get('/pets/{pet}/reviews', [PetReviewController::class, 'index']);
 
     // Users (admin)
     Route::apiResource('users', UserController::class)->only(['index', 'show', 'update']);

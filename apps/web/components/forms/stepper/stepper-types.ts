@@ -41,6 +41,7 @@ export type FormStepperProps<TFieldValues extends FieldValues> = {
         groups?: string[];
         groupProgression?: Record<string, number>;
     }) => ReactNode;
+    stepperName?: string;
 };
 
 export type StepperNavigationProps<TFieldValues extends FieldValues> = {

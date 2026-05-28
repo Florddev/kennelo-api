@@ -1,10 +1,11 @@
 /* global process */
 import createNextIntlPlugin from 'next-intl/plugin';
-import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const isMobileBuild = process.env.NEXT_PUBLIC_PLATFORM === 'mobile';
+const isDockerBuild = process.env.NEXT_PUBLIC_PLATFORM === 'docker';
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -25,6 +26,10 @@ const nextConfig = {
 
     ...(isMobileBuild && {
         output: 'export',
+    }),
+    ...(isDockerBuild && {
+        output: 'standalone',
+        outputFileTracingRoot: join(__dirname, '../../'),
     }),
 }
 

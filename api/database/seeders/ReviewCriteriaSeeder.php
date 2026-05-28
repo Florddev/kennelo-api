@@ -10,13 +10,9 @@ use Illuminate\Support\Str;
 
 class ReviewCriteriaSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        // Criteria for evaluating ESTABLISHMENTS (by users)
-        $establishmentCriteria = [
+        $criteria = [
             [
                 'code' => 'cleanliness',
                 'label' => 'Propreté',
@@ -47,10 +43,18 @@ class ReviewCriteriaSeeder extends Seeder
                 'applicable_to' => 'establishment',
                 'sort_order' => 5,
             ],
-        ];
-
-        // Criteria for evaluating USERS (by establishments)
-        $userCriteria = [
+            [
+                'code' => 'environment',
+                'label' => 'Environnement et espace',
+                'applicable_to' => 'establishment',
+                'sort_order' => 6,
+            ],
+            [
+                'code' => 'reactivity',
+                'label' => 'Réactivité et disponibilité',
+                'applicable_to' => 'establishment',
+                'sort_order' => 7,
+            ],
             [
                 'code' => 'info_accuracy',
                 'label' => 'Exactitude des informations',
@@ -69,18 +73,22 @@ class ReviewCriteriaSeeder extends Seeder
                 'applicable_to' => 'user',
                 'sort_order' => 3,
             ],
+            [
+                'code' => 'animal_behavior',
+                'label' => 'Comportement de l\'animal (conforme aux infos)',
+                'applicable_to' => 'user',
+                'sort_order' => 4,
+            ],
         ];
 
-        $allCriteria = array_merge($establishmentCriteria, $userCriteria);
-
-        foreach ($allCriteria as $criteria) {
-            $exists = DB::table('review_criteria_definitions')->where('code', $criteria['code'])->exists();
+        foreach ($criteria as $item) {
+            $exists = DB::table('review_criteria_definitions')->where('code', $item['code'])->exists();
             if ($exists) {
-                DB::table('review_criteria_definitions')->where('code', $criteria['code'])->update(array_merge($criteria, [
-                    'updated_at' => now(),
-                ]));
+                DB::table('review_criteria_definitions')
+                    ->where('code', $item['code'])
+                    ->update(array_merge($item, ['updated_at' => now()]));
             } else {
-                DB::table('review_criteria_definitions')->insert(array_merge($criteria, [
+                DB::table('review_criteria_definitions')->insert(array_merge($item, [
                     'id' => (string) Str::uuid(),
                     'created_at' => now(),
                     'updated_at' => now(),

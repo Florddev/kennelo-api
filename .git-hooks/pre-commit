@@ -9,19 +9,18 @@ if [ "$BRANCH_NAME" = "HEAD" ]; then
     exit 0
 fi
 
-VALID_BRANCH_PATTERN="^(feature|fix)/(api|web)/.+"
+VALID_BRANCH_PATTERN="^(feature|fix|chore)/(api|web|infra)/.+"
 
 if ! echo "$BRANCH_NAME" | grep -qE "$VALID_BRANCH_PATTERN"; then
     echo "❌ Invalid branch name: $BRANCH_NAME"
     echo ""
     echo "Branch name must follow this format:"
-    echo "  - feature/api/description"
-    echo "  - feature/web/description"
-    echo "  - fix/api/description"
-    echo "  - fix/web/description"
+    echo "  - feature/{api|web|infra}/description"
+    echo "  - fix/{api|web|infra}/description"
+    echo "  - chore/{api|web|infra}/description"
     echo ""
     echo "To rename your current branch:"
-    echo "   git branch -m feature/api/description"
+    echo "   git branch -m feature/infra/description"
     echo ""
     echo "❌ Invalid branch name: $BRANCH_NAME"
     echo "😎 Signé: le petit blond relou 😘"
