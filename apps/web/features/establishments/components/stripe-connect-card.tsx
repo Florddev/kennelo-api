@@ -21,6 +21,24 @@ export function StripeConnectCard({ establishment }: StripeConnectCardProps) {
     const isStarted = Boolean(establishment.stripeAccountId);
     const needsAction = isStarted && !isConnected;
 
+    let title: string;
+    let description: string;
+    let buttonLabel: string;
+
+    if (isConnected) {
+        title = t("features.establishments.detail.stripe.connectedTitle");
+        description = t("features.establishments.detail.stripe.connectedDescription");
+        buttonLabel = "";
+    } else if (needsAction) {
+        title = t("features.establishments.detail.stripe.pendingTitle");
+        description = t("features.establishments.detail.stripe.pendingDescription");
+        buttonLabel = t("features.establishments.detail.stripe.continueOnboarding");
+    } else {
+        title = t("features.establishments.detail.stripe.notConnectedTitle");
+        description = t("features.establishments.detail.stripe.notConnectedDescription");
+        buttonLabel = t("features.establishments.detail.stripe.startOnboarding");
+    }
+
     const handleConnect = async () => {
         const url = await execute(() => createStripeOnboardingLink(establishment.id), {
             displayError: true,
@@ -46,22 +64,8 @@ export function StripeConnectCard({ establishment }: StripeConnectCardProps) {
                         <AlertCircle className="mt-0.5 size-5 shrink-0 text-amber-500" />
                     )}
                     <div className="flex-1">
-                        <p className="text-sm font-medium">
-                            {isConnected
-                                ? t("features.establishments.detail.stripe.connectedTitle")
-                                : needsAction
-                                  ? t("features.establishments.detail.stripe.pendingTitle")
-                                  : t("features.establishments.detail.stripe.notConnectedTitle")}
-                        </p>
-                        <p className="text-sm text-muted-foreground mt-1">
-                            {isConnected
-                                ? t("features.establishments.detail.stripe.connectedDescription")
-                                : needsAction
-                                  ? t("features.establishments.detail.stripe.pendingDescription")
-                                  : t(
-                                        "features.establishments.detail.stripe.notConnectedDescription",
-                                    )}
-                        </p>
+                        <p className="text-sm font-medium">{title}</p>
+                        <p className="text-sm text-muted-foreground mt-1">{description}</p>
                     </div>
                 </div>
 
@@ -86,11 +90,7 @@ export function StripeConnectCard({ establishment }: StripeConnectCardProps) {
                             disabled={isLoading}
                             className="rounded-4xl"
                         >
-                            {isLoading
-                                ? t("common.actions.loading")
-                                : needsAction
-                                  ? t("features.establishments.detail.stripe.continueOnboarding")
-                                  : t("features.establishments.detail.stripe.startOnboarding")}
+                            {isLoading ? t("common.actions.loading") : buttonLabel}
                         </Button>
                     )}
                 </div>

@@ -7,6 +7,7 @@ export * from "./components/become-host-stepper";
 export * from "./components/capacities-tab";
 export * from "./components/dashboard-tab";
 export * from "./components/establishment-summary-card";
+export * from "./components/stripe-connect-card";
 export * from "./components/step/address-step";
 export * from "./components/step/business-info-step";
 export * from "./components/step/contact-details-step";
