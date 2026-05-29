@@ -2,45 +2,23 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers;
+namespace App\Services\Stripe;
 
 use App\Enums\BookingStatus;
+use App\Enums\PaymentStatus;
 use App\Models\Booking;
 use App\Models\Establishment;
 use Carbon\Carbon;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Stripe\Account;
 use Stripe\Event;
-use Stripe\Exception\SignatureVerificationException;
 use Stripe\PaymentIntent;
-use Stripe\Webhook;
-use UnexpectedValueException;
 
-class StripeWebhookController extends Controller
+class StripeWebhookService
 {
-    public function handle(Request $request): JsonResponse
+    public function handleEvent(Event $event): void
     {
-        $payload = $request->getContent();
-        $signature = (string) $request->header('Stripe-Signature', '');
-        $secret = (string) config('services.stripe.webhook_secret');
-
-        if ($secret === '') {
-            Log::error('Stripe webhook called but STRIPE_WEBHOOK_SECRET is not configured.');
-
-            return response()->json(['message' => 'Webhook secret not configured.'], 500);
-        }
-
-        try {
-            $event = Webhook::constructEvent($payload, $signature, $secret);
-        } catch (UnexpectedValueException $e) {
-            return response()->json(['message' => 'Invalid payload.'], 400);
-        } catch (SignatureVerificationException $e) {
-            return response()->json(['message' => 'Invalid signature.'], 400);
-        }
-
         match ($event->type) {
             'payment_intent.succeeded' => $this->onPaymentIntentSucceeded($event),
             'payment_intent.payment_failed' => $this->onPaymentIntentFailed($event),
@@ -48,8 +26,6 @@ class StripeWebhookController extends Controller
             'account.updated' => $this->onAccountUpdated($event),
             default => null,
         };
-
-        return response()->json(['received' => true]);
     }
 
     private function onAccountUpdated(Event $event): void
@@ -88,7 +64,7 @@ class StripeWebhookController extends Controller
 
             $booking->update([
                 'stripe_payment_intent_id' => $paymentIntent->id,
-                'payment_status' => 'succeeded',
+                'payment_status' => PaymentStatus::Succeeded,
                 'paid_at' => Carbon::now(),
                 'status' => BookingStatus::CONFIRMED,
             ]);
@@ -102,15 +78,17 @@ class StripeWebhookController extends Controller
             return;
         }
 
-        $booking = $this->findBookingForPaymentIntent($paymentIntent);
-        if ($booking === null) {
-            return;
-        }
+        DB::transaction(function () use ($paymentIntent): void {
+            $booking = $this->findBookingForPaymentIntent($paymentIntent);
+            if ($booking === null) {
+                return;
+            }
 
-        $booking->update([
-            'stripe_payment_intent_id' => $paymentIntent->id,
-            'payment_status' => 'failed',
-        ]);
+            $booking->update([
+                'stripe_payment_intent_id' => $paymentIntent->id,
+                'payment_status' => PaymentStatus::Failed,
+            ]);
+        });
     }
 
     private function onPaymentIntentProcessing(Event $event): void
@@ -120,15 +98,17 @@ class StripeWebhookController extends Controller
             return;
         }
 
-        $booking = $this->findBookingForPaymentIntent($paymentIntent);
-        if ($booking === null) {
-            return;
-        }
+        DB::transaction(function () use ($paymentIntent): void {
+            $booking = $this->findBookingForPaymentIntent($paymentIntent);
+            if ($booking === null) {
+                return;
+            }
 
-        $booking->update([
-            'stripe_payment_intent_id' => $paymentIntent->id,
-            'payment_status' => 'processing',
-        ]);
+            $booking->update([
+                'stripe_payment_intent_id' => $paymentIntent->id,
+                'payment_status' => PaymentStatus::Processing,
+            ]);
+        });
     }
 
     private function findBookingForPaymentIntent(PaymentIntent $paymentIntent): ?Booking

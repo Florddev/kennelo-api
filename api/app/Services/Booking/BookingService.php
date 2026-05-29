@@ -6,6 +6,7 @@ namespace App\Services\Booking;
 
 use App\Enums\AvailabilityStatus;
 use App\Enums\BookingStatus;
+use App\Enums\PaymentStatus;
 use App\Models\Booking;
 use App\Models\BookingThread;
 use App\Models\Conversation;
@@ -105,7 +106,7 @@ class BookingService
                 'stripe_payment_intent_id' => is_string($session->payment_intent)
                     ? $session->payment_intent
                     : ($session->payment_intent->id ?? null),
-                'payment_status' => 'pending',
+                'payment_status' => PaymentStatus::Pending,
             ]);
 
             $booking->setAttribute('checkout_url', $session->url);

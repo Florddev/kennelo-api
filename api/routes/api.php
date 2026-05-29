@@ -28,7 +28,7 @@ use App\Http\Controllers\Review\ReviewCriteriaController;
 use App\Http\Controllers\Review\ReviewReportController;
 use App\Http\Controllers\Review\ReviewResponseController;
 use App\Http\Controllers\Review\UserReviewController;
-use App\Http\Controllers\StripeWebhookController;
+use App\Http\Controllers\Stripe\StripeWebhookController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\User\UserController;
 use Illuminate\Support\Facades\Route;
