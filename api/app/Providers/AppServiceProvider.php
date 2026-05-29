@@ -33,12 +33,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(StripeClient::class, function (): StripeClient {
-            $secret = (string) config('services.stripe.secret');
-            if ($secret === '') {
-                throw new \RuntimeException('Missing STRIPE_SECRET in environment.');
-            }
-
-            return new StripeClient($secret);
+            return new StripeClient((string) config('services.stripe.secret'));
         });
     }
 
