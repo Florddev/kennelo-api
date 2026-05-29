@@ -62,6 +62,15 @@ class StripeWebhookService
                 return;
             }
 
+            if (! in_array($booking->status, [BookingStatus::PENDING, BookingStatus::CONFIRMED], true)) {
+                Log::info('Stripe webhook: ignoring payment_intent.succeeded for booking in terminal state', [
+                    'booking_id' => $booking->id,
+                    'status' => $booking->status,
+                ]);
+
+                return;
+            }
+
             $booking->update([
                 'stripe_payment_intent_id' => $paymentIntent->id,
                 'payment_status' => PaymentStatus::Succeeded,

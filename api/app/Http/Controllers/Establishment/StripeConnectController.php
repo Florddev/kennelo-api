@@ -18,7 +18,7 @@ class StripeConnectController extends Controller
 
     public function onboardingLink(Establishment $establishment): JsonResponse
     {
-        $this->authorize('update', $establishment);
+        $this->authorize('managePayments', $establishment);
 
         $url = $this->stripeConnectService->getOrCreateOnboardingLink($establishment);
 
