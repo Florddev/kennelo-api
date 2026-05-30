@@ -55,7 +55,7 @@ export function DashboardTab({ establishmentId }: { establishmentId: string }) {
                         <PawPrint className="size-6 text-muted-foreground" />
                     </div>
                     <p className="text-sm text-muted-foreground">
-                        {t("features.my-establishments.dashboard.noCapacities")}
+                        {t("features.establishments.dashboard.noCapacities")}
                     </p>
                 </CardContent>
             </Card>
@@ -78,7 +78,7 @@ export function DashboardTab({ establishmentId }: { establishmentId: string }) {
                         </div>
                         <div>
                             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                                {t("features.my-establishments.dashboard.totalCapacity")}
+                                {t("features.establishments.dashboard.totalCapacity")}
                             </p>
                             <p className="text-2xl font-bold tabular-nums mt-0.5">
                                 {summary.totalCapacity}
@@ -94,7 +94,7 @@ export function DashboardTab({ establishmentId }: { establishmentId: string }) {
                         </div>
                         <div>
                             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                                {t("features.my-establishments.dashboard.occupiedSpots")}
+                                {t("features.establishments.dashboard.occupiedSpots")}
                             </p>
                             <p className="text-2xl font-bold tabular-nums mt-0.5">
                                 {summary.occupiedSpots}
@@ -110,7 +110,7 @@ export function DashboardTab({ establishmentId }: { establishmentId: string }) {
                         </div>
                         <div>
                             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                                {t("features.my-establishments.dashboard.availableSpots")}
+                                {t("features.establishments.dashboard.availableSpots")}
                             </p>
                             <p className="text-2xl font-bold tabular-nums mt-0.5">
                                 {summary.availableSpots}
@@ -126,15 +126,15 @@ export function DashboardTab({ establishmentId }: { establishmentId: string }) {
                         </div>
                         <div>
                             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                                {t("features.my-establishments.dashboard.todayStatus")}
+                                {t("features.establishments.dashboard.todayStatus")}
                             </p>
                             <Badge
                                 variant={summary.todayStatus === "open" ? "default" : "secondary"}
                                 className="mt-1.5"
                             >
                                 {summary.todayStatus === "open"
-                                    ? t("features.my-establishments.availabilities.open")
-                                    : t("features.my-establishments.availabilities.closed")}
+                                    ? t("features.establishments.availabilities.open")
+                                    : t("features.establishments.availabilities.closed")}
                             </Badge>
                         </div>
                     </CardContent>
@@ -146,7 +146,7 @@ export function DashboardTab({ establishmentId }: { establishmentId: string }) {
                     <CardHeader className="pb-2">
                         <CardTitle className="flex items-center gap-2 text-sm font-medium text-muted-foreground uppercase tracking-wider">
                             <TrendingUp className="size-4" />
-                            {t("features.my-establishments.dashboard.occupancyRate")}
+                            {t("features.establishments.dashboard.occupancyRate")}
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="flex flex-col items-center justify-center py-6">
@@ -185,7 +185,7 @@ export function DashboardTab({ establishmentId }: { establishmentId: string }) {
                     <Card className="lg:col-span-3">
                         <CardHeader className="pb-2">
                             <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
-                                {t("features.my-establishments.dashboard.occupancyByAnimal")}
+                                {t("features.establishments.dashboard.occupancyByAnimal")}
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
@@ -194,14 +194,10 @@ export function DashboardTab({ establishmentId }: { establishmentId: string }) {
                                     <TableRow>
                                         <TableHead>{t("common.fields.animalType")}</TableHead>
                                         <TableHead className="text-end">
-                                            {t(
-                                                "features.my-establishments.dashboard.occupiedSpots",
-                                            )}
+                                            {t("features.establishments.dashboard.occupiedSpots")}
                                         </TableHead>
                                         <TableHead className="w-[40%]">
-                                            {t(
-                                                "features.my-establishments.dashboard.occupancyRate",
-                                            )}
+                                            {t("features.establishments.dashboard.occupancyRate")}
                                         </TableHead>
                                     </TableRow>
                                 </TableHeader>

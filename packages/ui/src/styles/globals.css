@@ -282,10 +282,18 @@
     body {
         @apply bg-background text-foreground;
     }
+  .marker-cluster div {
+    @apply font-[inherit];
+    }
+  .maplibregl-popup-content {
+    @apply bg-transparent! shadow-none! p-0! rounded-none!;
+    }
+  .maplibregl-popup-tip {
+    @apply hidden!;
+    }
 }
 
 @source inline("{bg,text,border}-{bird,dog,cat,amphibian,rabbit,reptile,horse}-{50,100,200,300,400,500,600,700,800,900,950}");
-
 
 @utility scrollbar-none {
     scrollbar-width: none;

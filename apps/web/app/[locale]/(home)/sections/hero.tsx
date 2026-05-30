@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 
 import SearchBar from "@/features/search/components/search-bar";
+import MobileSearch from "@/features/search/components/mobile/mobile-search";
 
 export default function HomeHero() {
     const t = useTranslations();
@@ -28,7 +29,12 @@ export default function HomeHero() {
                     </div>
                 </div>
             </div>
-            <SearchBar />
+            <div className="hidden md:block w-full">
+                <SearchBar />
+            </div>
+            <div className="md:hidden w-full px-4">
+                <MobileSearch />
+            </div>
         </section>
     );
 }

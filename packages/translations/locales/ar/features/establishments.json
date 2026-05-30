@@ -130,5 +130,16 @@
         "dateRange": "نطاق التاريخ",
         "bulkUpdate": "تحديث جماعي"
     },
-    "host": "يستضيف"
+    "host": "يستضيف",
+    "types": {
+        "boarding": "نزل حيوانات",
+        "breeding": "تربية",
+        "daycare": "حضانة",
+        "shelter": "ملجأ",
+        "other": "أخرى",
+        "pet-sitter": "مربي حيوانات",
+        "home-care": "رعاية منزلية",
+        "host-family": "عائلة مضيفة",
+        "mobile-boarding": "نزل متنقل"
+    }
 }

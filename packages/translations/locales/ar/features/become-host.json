@@ -20,21 +20,7 @@
         "establishmentType": {
             "title": "أي مما يلي يصف عملك بشكل أفضل؟",
             "subtitle": "ما نوع المنشأة التي تديرها؟",
-            "pension": "فندق حيوانات",
-            "pensionDescription": "إقامة ورعاية الحيوانات الأليفة أثناء الإقامات",
-            "breeding": "تربية",
-            "breedingDescription": "تربية حيوانات احترافية",
-            "daycare": "حضانة",
-            "daycareDescription": "خدمات رعاية الحيوانات الأليفة النهارية",
-            "shelter": "ملجأ",
-            "shelterDescription": "إنقاذ وتبني الحيوانات",
-            "other": "أخرى",
-            "otherDescription": "نوع آخر من منشآت الحيوانات",
-            "error": "يرجى اختيار نوع المؤسسة",
-            "pet-sitter": "جليسة حيوانات أليفة مستقلة",
-            "home-care": "الرعاية المنزلية",
-            "host-family": "العائلة المضيفة",
-            "mobile-boarding": "حارس السفر"
+            "error": "يرجى اختيار نوع المؤسسة"
         },
         "establishmentInfo": {
             "title": "مؤسستك",

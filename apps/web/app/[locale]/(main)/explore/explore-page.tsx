@@ -1,105 +1,136 @@
 "use client";
 
+import { useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { ListFilter } from "lucide-react";
-import { Skeleton } from "@workspace/ui/components/skeleton";
-import { KCompass } from "@workspace/ui/icons";
+import { AlertCircle } from "lucide-react";
+import { useAuth } from "@/features/auth";
+import { ExploreSection } from "@/features/explore/components/explore-section";
+import { LocationPrompt } from "@/features/explore/components/location-prompt";
+import { LocationProvider, useLocation } from "@/features/explore/context/location-context";
+import { useExploreEstablishments } from "@/features/explore/hooks/use-explore-establishments";
+import SearchBar from "@/features/search/components/search-bar";
+import MobileSearch from "@/features/search/components/mobile/mobile-search";
+import { Button } from "@workspace/ui/components/button";
+import { Bell } from "@solar-icons/react";
 
-import { useNavigation } from "@/hooks/use-navigation";
-import { EstablishmentCard, useExploreEstablishments } from "@/features/explore";
+function SectionSkeleton() {
+    return (
+        <div className="flex flex-col gap-3">
+            <div className="px-4 flex items-center justify-between">
+                <div className="h-6 w-40 rounded-lg bg-muted animate-pulse" />
+                <div className="h-4 w-14 rounded-lg bg-muted animate-pulse" />
+            </div>
+            <div className="flex gap-3 px-4 overflow-hidden">
+                {[1, 2, 3].map((i) => (
+                    <div key={i} className="shrink-0 w-44 flex flex-col gap-2">
+                        <div className="h-32 w-full rounded-2xl bg-muted animate-pulse" />
+                        <div className="h-4 w-28 rounded bg-muted animate-pulse" />
+                        <div className="h-3 w-20 rounded bg-muted animate-pulse" />
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+}
+
+function ExploreContent() {
+    const t = useTranslations();
+    const { user, isAuthenticated } = useAuth();
+    const { coords, isDismissed, setCoords } = useLocation();
+    const { sections, isLoading, error, retry } = useExploreEstablishments();
+
+    useEffect(() => {
+        if (isAuthenticated && user?.address?.latitude && user.address.longitude && !coords) {
+            setCoords({ lat: user.address.latitude, lng: user.address.longitude });
+        }
+    }, [isAuthenticated, user, coords, setCoords]);
+
+    const showLocationPrompt = !coords && !isDismissed;
+
+    function renderBody() {
+        if (isLoading) {
+            return (
+                <>
+                    <SectionSkeleton />
+                    <SectionSkeleton />
+                    <SectionSkeleton />
+                </>
+            );
+        }
+
+        if (error) {
+            return (
+                <div className="mx-4 flex flex-col items-center gap-3 rounded-2xl bg-muted/40 px-6 py-8 text-center">
+                    <AlertCircle className="size-8 text-muted-foreground" />
+                    <div>
+                        <p className="font-semibold text-sm">{t("features.explore.error.title")}</p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                            {t("features.explore.error.description")}
+                        </p>
+                    </div>
+                    <button
+                        type="button"
+                        onClick={retry}
+                        className="rounded-full bg-foreground text-background text-sm font-semibold px-5 py-2 hover:bg-foreground/90 transition-colors"
+                    >
+                        {t("features.explore.retry")}
+                    </button>
+                </div>
+            );
+        }
+
+        if (sections.length === 0) {
+            return (
+                <div className="mx-4 flex flex-col items-center gap-2 rounded-2xl bg-muted/40 px-6 py-8 text-center">
+                    <p className="font-semibold text-sm">{t("features.explore.empty.title")}</p>
+                    <p className="text-xs text-muted-foreground">
+                        {t("features.explore.empty.description")}
+                    </p>
+                </div>
+            );
+        }
+
+        return sections.map((section) => <ExploreSection key={section.id} section={section} />);
+    }
+
+    return (
+        <div className="flex flex-col bg-card min-h-full">
+            <div className="px-4 pt-4 pb-3">
+                <div className="flex flex-col gap-3">
+                    <div className="flex justify-between items-center">
+                        <div className="flex flex-col">
+                            <h2 className="text-xl font-semibold">
+                                Hey, {user?.firstName ?? "there"}
+                            </h2>
+                            <p className="text-xs text-muted-foreground">
+                                Explore new host for your next booking
+                            </p>
+                        </div>
+                        <Button variant="flat" size="icon-sm">
+                            <Bell className="size-4" />
+                        </Button>
+                    </div>
+
+                    <div className="hidden md:block">
+                        <SearchBar />
+                    </div>
+                    <div className="md:hidden">
+                        <MobileSearch />
+                    </div>
+                </div>
+            </div>
+
+            {showLocationPrompt && <LocationPrompt className="mb-4" />}
+
+            <div className="flex flex-col gap-6 pb-8 pt-2">{renderBody()}</div>
+        </div>
+    );
+}
 
 export default function ExplorePage() {
-    const t = useTranslations();
-    const { routes } = useNavigation();
-    const { establishments, isLoading } = useExploreEstablishments();
-    const count = establishments.length;
-
     return (
-        <div className="flex h-full flex-col">
-            <header className="flex items-center justify-between px-3 py-3">
-                <div className="flex items-center gap-2">
-                    <div className="flex size-12 items-center justify-center rounded-full bg-secondary">
-                        <KCompass
-                            size={28}
-                            primary="text-secondary-foreground"
-                            secondary="text-secondary-foreground"
-                        />
-                    </div>
-                    <h1 className="text-2xl font-semibold text-foreground">
-                        {t("features.explore.title")}
-                    </h1>
-                </div>
-                <button
-                    type="button"
-                    aria-label={t("features.explore.filters")}
-                    className="flex size-10 items-center justify-center rounded-full border border-border text-foreground"
-                >
-                    <ListFilter className="size-4" />
-                </button>
-            </header>
-
-            <div className="flex-1 overflow-y-auto px-3 pb-6">
-                {isLoading && <ListSkeleton />}
-                {!isLoading && count === 0 && <EmptyState />}
-                {!isLoading && count > 0 && (
-                    <>
-                        <p className="pb-2 text-xs text-muted-foreground">
-                            {t("features.explore.results", { count })}
-                        </p>
-                        <ul className="flex flex-col gap-1.5">
-                            {establishments.map((establishment) => (
-                                <li key={establishment.id}>
-                                    <EstablishmentCard
-                                        establishment={establishment}
-                                        href={routes.HostDetail({
-                                            id: establishment.id,
-                                        })}
-                                    />
-                                </li>
-                            ))}
-                        </ul>
-                    </>
-                )}
-            </div>
-        </div>
-    );
-}
-
-function ListSkeleton() {
-    return (
-        <div className="flex flex-col gap-1.5">
-            {Array.from({ length: 3 }).map((_, index) => (
-                <div key={index} className="overflow-hidden rounded-3xl bg-white">
-                    <Skeleton className="h-64 w-full rounded-3xl" />
-                    <div className="flex flex-col gap-3 px-3 py-4">
-                        <Skeleton className="h-6 w-3/4" />
-                        <Skeleton className="h-4 w-1/2" />
-                        <div className="flex items-center justify-between">
-                            <Skeleton className="h-4 w-24" />
-                            <Skeleton className="h-6 w-16" />
-                        </div>
-                    </div>
-                </div>
-            ))}
-        </div>
-    );
-}
-
-function EmptyState() {
-    const t = useTranslations();
-    return (
-        <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
-            <div className="flex size-16 items-center justify-center rounded-full bg-muted">
-                <KCompass
-                    size={32}
-                    primary="text-muted-foreground"
-                    secondary="text-muted-foreground"
-                />
-            </div>
-            <h2 className="text-lg font-semibold">{t("features.explore.empty.title")}</h2>
-            <p className="max-w-sm text-sm text-muted-foreground">
-                {t("features.explore.empty.description")}
-            </p>
-        </div>
+        <LocationProvider>
+            <ExploreContent />
+        </LocationProvider>
     );
 }

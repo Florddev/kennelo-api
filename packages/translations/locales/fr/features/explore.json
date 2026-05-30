@@ -4,8 +4,62 @@
     "results": "{count, plural, =0 {Aucun résultat} =1 {# résultat} other {# résultats}}",
     "filters": "Filtres",
     "noImageAvailable": "Aucune image disponible",
+    "seeMore": "Voir plus",
+    "retry": "Réessayer",
+    "hostsAvailable": "{count, plural, =0 {Aucun hôte disponible} =1 {# hôte disponible} other {# hôtes disponibles}}",
+    "searchThisArea": "Rechercher dans cette zone",
+    "adjustPanel": "Ajuster le panneau",
+    "expandArea": "Élargir la zone",
+    "modifyCriteria": "Modifier les critères",
+    "mapArea": "Zone de la carte",
+    "emptySearch": {
+        "title": "Aucun hôte trouvé",
+        "description": "Essayez d'élargir votre zone de recherche ou de modifier vos critères."
+    },
+    "viewProfile": "Voir le profil",
+    "chips": {
+        "all": "Tous",
+        "pro": "Professionnels",
+        "particulier": "Particuliers",
+        "topRated": "Note 4,5+"
+    },
     "empty": {
         "title": "Aucun hôte disponible",
         "description": "Revenez plus tard pour découvrir de nouveaux hôtes."
+    },
+    "sections": {
+        "nearby": "Hôtes proches de chez vous",
+        "available_weekend": "Disponibles ce week-end",
+        "verified_pros": "Pros vérifiés près de chez vous",
+        "top_rated": "Pet-sitters coup de cœur",
+        "new_hosts": "Nouveaux hôtes dans votre région"
+    },
+    "card": {
+        "pro": "Pro certifié",
+        "individual": "Particulier",
+        "from": "dès",
+        "perNight": "/nuit",
+        "addToFavorites": "Ajouter aux favoris",
+        "reviews": "{count, plural, =0 {Aucun avis} =1 {# avis} other {# avis}}",
+        "distanceKm": "{distance} km"
+    },
+    "location": {
+        "promptTitle": "Activez votre localisation",
+        "promptDescription": "Pour voir les hôtes près de chez vous en premier.",
+        "activate": "Activer",
+        "dismiss": "Plus tard",
+        "denied": "Localisation refusée",
+        "unavailable": "Localisation indisponible"
+    },
+    "overlay": {
+        "allResults": "Tous les résultats",
+        "back": "Retour",
+        "loadMore": "Charger plus",
+        "loading": "Chargement…",
+        "noMore": "Tous les résultats sont affichés"
+    },
+    "error": {
+        "title": "Une erreur est survenue",
+        "description": "Impossible de charger les établissements."
     }
 }

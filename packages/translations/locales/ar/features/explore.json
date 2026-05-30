@@ -4,8 +4,62 @@
     "results": "{count, plural, =0 {لا توجد نتائج} =1 {# نتيجة} other {# نتائج}}",
     "filters": "عوامل التصفية",
     "noImageAvailable": "لا توجد صورة متاحة",
+    "seeMore": "عرض المزيد",
+    "retry": "إعادة المحاولة",
+    "hostsAvailable": "{count, plural, =0 {لا يوجد مضيفون متاحون} =1 {# مضيف متاح} other {# مضيفون متاحون}}",
+    "searchThisArea": "البحث في هذه المنطقة",
+    "adjustPanel": "ضبط اللوحة",
+    "expandArea": "توسيع المنطقة",
+    "modifyCriteria": "تعديل المعايير",
+    "mapArea": "منطقة الخريطة",
+    "emptySearch": {
+        "title": "لم يتم العثور على مضيفين",
+        "description": "حاول توسيع نطاق البحث أو تعديل معاييرك."
+    },
+    "viewProfile": "عرض الملف الشخصي",
+    "chips": {
+        "all": "الكل",
+        "pro": "محترفون",
+        "particulier": "أفراد",
+        "topRated": "تقييم 4.5+"
+    },
     "empty": {
         "title": "لا يوجد مضيفون متاحون",
         "description": "عُد لاحقاً لاكتشاف مضيفين جدد."
+    },
+    "sections": {
+        "nearby": "مضيفون بالقرب منك",
+        "available_weekend": "متاحون هذا الأسبوع",
+        "verified_pros": "محترفون موثّقون بالقرب منك",
+        "top_rated": "حاضنو الحيوانات الأكثر تقييماً",
+        "new_hosts": "مضيفون جدد في منطقتك"
+    },
+    "card": {
+        "pro": "محترف معتمد",
+        "individual": "فرد",
+        "from": "من",
+        "perNight": "/ليلة",
+        "addToFavorites": "إضافة إلى المفضلة",
+        "reviews": "{count, plural, =0 {لا توجد مراجعات} =1 {# مراجعة} other {# مراجعات}}",
+        "distanceKm": "{distance} كم"
+    },
+    "location": {
+        "promptTitle": "فعّل موقعك الجغرافي",
+        "promptDescription": "لرؤية المضيفين الأقرب إليك أولاً.",
+        "activate": "تفعيل",
+        "dismiss": "لاحقاً",
+        "denied": "تم رفض الموقع الجغرافي",
+        "unavailable": "الموقع الجغرافي غير متاح"
+    },
+    "overlay": {
+        "allResults": "جميع النتائج",
+        "back": "رجوع",
+        "loadMore": "تحميل المزيد",
+        "loading": "جارٍ التحميل…",
+        "noMore": "تم عرض جميع النتائج"
+    },
+    "error": {
+        "title": "حدث خطأ ما",
+        "description": "تعذّر تحميل المؤسسات."
     }
 }

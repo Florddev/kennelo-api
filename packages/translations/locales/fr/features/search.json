@@ -1,5 +1,5 @@
 {
-    "destination": "Destination",
+    "destination": "Lieux",
     "dates": "Dates",
     "when": "Quand ?",
     "cta": "Rechercher",
@@ -7,6 +7,20 @@
     "suggestions": "Suggestions de destinations",
     "nearby": "À proximité",
     "nearby-description": "Découvrez les pensions à proximité",
+    "mobile": {
+        "title": "Rechercher",
+        "where": "Où ?",
+        "when": "Quand ?",
+        "who": "Qui ?",
+        "next": "Suivant",
+        "clear-all": "Tout effacer"
+    },
+    "trigger": {
+        "where": "Où garder votre animal ?",
+        "placeholder": "Lieu · Dates · Animal",
+        "modify": "Modifier",
+        "modifySearch": "Modifier la recherche"
+    },
     "pets": {
         "label": "Animaux",
         "add": "Ajouter des animaux...",

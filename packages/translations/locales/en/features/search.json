@@ -1,5 +1,5 @@
 {
-    "destination": "Destination",
+    "destination": "Places",
     "dates": "Dates",
     "when": "When?",
     "cta": "Search",
@@ -7,6 +7,20 @@
     "suggestions": "Destination suggestions",
     "nearby": "Nearby",
     "nearby-description": "Discover kennels near you",
+    "mobile": {
+        "title": "Search",
+        "where": "Where?",
+        "when": "When?",
+        "who": "Who?",
+        "next": "Next",
+        "clear-all": "Clear all"
+    },
+    "trigger": {
+        "where": "Where to host your pet?",
+        "placeholder": "Location · Dates · Pet",
+        "modify": "Modify",
+        "modifySearch": "Modify search"
+    },
     "pets": {
         "label": "Pets",
         "add": "Add pets...",

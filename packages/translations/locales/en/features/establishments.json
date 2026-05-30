@@ -141,5 +141,16 @@
             "host": "Host"
         }
     },
-    "host": "Host"
+    "host": "Host",
+    "types": {
+        "boarding": "Boarding",
+        "breeding": "Breeding",
+        "daycare": "Day care",
+        "shelter": "Shelter",
+        "other": "Other",
+        "pet-sitter": "Pet sitter",
+        "home-care": "Home care",
+        "host-family": "Host family",
+        "mobile-boarding": "Mobile boarding"
+    }
 }
