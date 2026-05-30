@@ -4,10 +4,6 @@
 
 import { buildRoute } from "./config/routes.config";
 
-type RootPageParams = {
-    search_params?: Record<string, string | number | boolean>;
-};
-
 type LoginParams = {
     locale?: string | number;
     search_params?: Record<string, string | number | boolean>;
@@ -23,14 +19,65 @@ type HomeParams = {
     search_params?: Record<string, string | number | boolean>;
 };
 
-type MyEstablishmentsParams = {
+type HostingCalendarParams = {
     locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type EstablishmentAvailabilitiesParams = {
+    locale?: string | number;
+    id: string;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type EstablishmentBookingsParams = {
+    locale?: string | number;
+    id: string;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type EstablishmentCapacitiesParams = {
+    locale?: string | number;
+    id: string;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type EstablishmentCollaboratorsParams = {
+    locale?: string | number;
+    id: string;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type EstablishmentInvoicesParams = {
+    locale?: string | number;
+    id: string;
     search_params?: Record<string, string | number | boolean>;
 };
 
 type EstablishmentDetailParams = {
     locale?: string | number;
     id: string;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type EstablishmentPaymentParams = {
+    locale?: string | number;
+    id: string;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type MyEstablishmentsParams = {
+    locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type HostingMessagesParams = {
+    locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type HostingNowParams = {
+    locale?: string | number;
     search_params?: Record<string, string | number | boolean>;
 };
 
@@ -57,16 +104,6 @@ type HostDetailParams = {
 };
 
 type MessagesParams = {
-    locale?: string | number;
-    search_params?: Record<string, string | number | boolean>;
-};
-
-type NewPetParams = {
-    locale?: string | number;
-    search_params?: Record<string, string | number | boolean>;
-};
-
-type MyPetsParams = {
     locale?: string | number;
     search_params?: Record<string, string | number | boolean>;
 };
@@ -107,6 +144,16 @@ type PetDetailsParams = {
     search_params?: Record<string, string | number | boolean>;
 };
 
+type NewPetParams = {
+    locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type MyPetsParams = {
+    locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
 type ProfileParams = {
     locale?: string | number;
     search_params?: Record<string, string | number | boolean>;
@@ -137,9 +184,9 @@ type MyProfilePreferencesNotificationParams = {
     search_params?: Record<string, string | number | boolean>;
 };
 
-function RootPage(params?: RootPageParams): string {
-    return buildRoute("/", params);
-}
+type RootPageParams = {
+    search_params?: Record<string, string | number | boolean>;
+};
 
 function Login(params?: LoginParams): string {
     return buildRoute("/[locale]/login", params);
@@ -153,12 +200,48 @@ function Home(params?: HomeParams): string {
     return buildRoute("/[locale]", params);
 }
 
-function MyEstablishments(params?: MyEstablishmentsParams): string {
-    return buildRoute("/[locale]/hosting/host", params);
+function HostingCalendar(params?: HostingCalendarParams): string {
+    return buildRoute("/[locale]/hosting/calendar", params);
+}
+
+function EstablishmentAvailabilities(params: EstablishmentAvailabilitiesParams): string {
+    return buildRoute("/[locale]/hosting/host/[id]/availabilities", params);
+}
+
+function EstablishmentBookings(params: EstablishmentBookingsParams): string {
+    return buildRoute("/[locale]/hosting/host/[id]/bookings", params);
+}
+
+function EstablishmentCapacities(params: EstablishmentCapacitiesParams): string {
+    return buildRoute("/[locale]/hosting/host/[id]/capacities", params);
+}
+
+function EstablishmentCollaborators(params: EstablishmentCollaboratorsParams): string {
+    return buildRoute("/[locale]/hosting/host/[id]/collaborators", params);
+}
+
+function EstablishmentInvoices(params: EstablishmentInvoicesParams): string {
+    return buildRoute("/[locale]/hosting/host/[id]/invoices", params);
 }
 
 function EstablishmentDetail(params: EstablishmentDetailParams): string {
     return buildRoute("/[locale]/hosting/host/[id]", params);
+}
+
+function EstablishmentPayment(params: EstablishmentPaymentParams): string {
+    return buildRoute("/[locale]/hosting/host/[id]/payment", params);
+}
+
+function MyEstablishments(params?: MyEstablishmentsParams): string {
+    return buildRoute("/[locale]/hosting/host", params);
+}
+
+function HostingMessages(params?: HostingMessagesParams): string {
+    return buildRoute("/[locale]/hosting/messages", params);
+}
+
+function HostingNow(params?: HostingNowParams): string {
+    return buildRoute("/[locale]/hosting/now", params);
 }
 
 function BecomeHost(params?: BecomeHostParams): string {
@@ -179,14 +262,6 @@ function HostDetail(params: HostDetailParams): string {
 
 function Messages(params?: MessagesParams): string {
     return buildRoute("/[locale]/messages", params);
-}
-
-function NewPet(params?: NewPetParams): string {
-    return buildRoute("/[locale]/pets/new", params);
-}
-
-function MyPets(params?: MyPetsParams): string {
-    return buildRoute("/[locale]/pets", params);
 }
 
 function PetEditGeneral(params: PetEditGeneralParams): string {
@@ -213,6 +288,14 @@ function PetDetails(params: PetDetailsParams): string {
     return buildRoute("/[locale]/pets/[id]", params);
 }
 
+function NewPet(params?: NewPetParams): string {
+    return buildRoute("/[locale]/pets/new", params);
+}
+
+function MyPets(params?: MyPetsParams): string {
+    return buildRoute("/[locale]/pets", params);
+}
+
 function Profile(params?: ProfileParams): string {
     return buildRoute("/[locale]/profile", params);
 }
@@ -237,32 +320,45 @@ function MyProfilePreferencesNotification(params?: MyProfilePreferencesNotificat
     return buildRoute("/[locale]/settings/preferences-notification", params);
 }
 
+function RootPage(params?: RootPageParams): string {
+    return buildRoute("/", params);
+}
+
 export const routes = {
-    RootPage,
     Login,
     Register,
     Home,
-    MyEstablishments,
+    HostingCalendar,
+    EstablishmentAvailabilities,
+    EstablishmentBookings,
+    EstablishmentCapacities,
+    EstablishmentCollaborators,
+    EstablishmentInvoices,
     EstablishmentDetail,
+    EstablishmentPayment,
+    MyEstablishments,
+    HostingMessages,
+    HostingNow,
     BecomeHost,
     Explore,
     HostBook,
     HostDetail,
     Messages,
-    NewPet,
-    MyPets,
     PetEditGeneral,
     PetEditHealth,
     PetEditPage,
     PetEditPersonality,
     PetEditPhotos,
     PetDetails,
+    NewPet,
+    MyPets,
     Profile,
     MyProfileAbout,
     MyProfileChangePassword,
     Settings,
     MyProfileEmailPreferences,
     MyProfilePreferencesNotification,
+    RootPage,
 } as const;
 
 export type RouteName = keyof typeof routes;

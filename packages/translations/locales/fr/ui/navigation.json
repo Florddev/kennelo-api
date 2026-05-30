@@ -27,5 +27,11 @@
     "changePassword": "Changer de mot de passe",
     "comingSoon": "Bientôt",
     "favorites": "Favoris",
-    "personalInformation": "Informations personnelles"
+    "personalInformation": "Informations personnelles",
+    "hosting": {
+        "today": "Aujourd'hui",
+        "calendar": "Calendrier",
+        "establishment": "Établissement",
+        "messages": "Messages"
+    }
 }

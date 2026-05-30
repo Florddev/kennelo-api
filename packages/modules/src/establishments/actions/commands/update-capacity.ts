@@ -6,7 +6,7 @@ import type { UpdateCapacityInput } from "../../validators/capacity.schema";
 
 export async function updateCapacity(
     establishmentId: string,
-    capacityId: number,
+    capacityId: string,
     input: UpdateCapacityInput,
 ): Promise<CapacityModel> {
     const body: Record<string, unknown> = {};

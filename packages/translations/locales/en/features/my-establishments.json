@@ -6,6 +6,71 @@
         "active": "Active",
         "inactive": "Inactive"
     },
+    "card": {
+        "open": "Manage establishment",
+        "species": "Animals hosted",
+        "noSpecies": "No animal type configured"
+    },
+    "manager": {
+        "groups": {
+            "configuration": "Configuration",
+            "activity": "Activity"
+        },
+        "nav": {
+            "info": "Information",
+            "capacities": "Capacities",
+            "bookings": "Bookings",
+            "collaborators": "Collaborators",
+            "availabilities": "Availabilities",
+            "invoices": "Invoices",
+            "payment": "Payment"
+        },
+        "invoices": {
+            "comingSoon": "Coming soon"
+        },
+        "payment": {
+            "comingSoon": "Coming soon"
+        },
+        "bookings": {
+            "title": "Bookings",
+            "description": "Bookings for this establishment",
+            "filter": "Filter by customer...",
+            "empty": "No bookings",
+            "count": "{count, plural, =1 {# booking} other {# bookings}}",
+            "columns": {
+                "customer": "Customer",
+                "checkIn": "Check-in",
+                "checkOut": "Check-out",
+                "pets": "Pets",
+                "status": "Status",
+                "total": "Total"
+            }
+        },
+        "collaborators": {
+            "title": "Collaborators",
+            "description": "Collaborators of this establishment",
+            "filter": "Filter by name...",
+            "empty": "No collaborators",
+            "count": "{count, plural, =1 {# collaborator} other {# collaborators}}",
+            "columns": {
+                "name": "Name",
+                "email": "Email",
+                "phone": "Phone",
+                "role": "Role"
+            }
+        },
+        "availabilities": {
+            "filter": "Filter by note...",
+            "count": "{count, plural, =1 {# day} other {# days}}",
+            "columns": {
+                "date": "Date"
+            }
+        },
+        "capacities": {
+            "filter": "Filter by animal type...",
+            "count": "{count, plural, =1 {# capacity} other {# capacities}}"
+        }
+    },
     "empty": {
         "title": "No establishments yet",
         "description": "Create your first establishment and start welcoming pets!"
@@ -51,7 +116,9 @@
         "deleteConfirmation": "Are you sure you want to delete this capacity?",
         "empty": "No capacities configured. Add animal types and their capacity.",
         "spots": "{count} spots",
-        "perNight": "{price} / night"
+        "perNight": "{price} / night",
+        "occupancy": "{occupied}/{max}",
+        "priceValue": "{price}€"
     },
     "availabilities": {
         "title": "Availabilities",

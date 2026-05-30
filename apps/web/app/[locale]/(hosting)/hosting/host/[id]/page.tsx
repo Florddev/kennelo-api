@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import EstablishmentDetailPage from "./establishment-detail-page";
+import EstablishmentInfoPage from "./establishment-info-page";
 
 export type Query = {
     id: string;
@@ -19,5 +19,5 @@ export async function generateMetadata({ params }: { params: { locale: string } 
 }
 
 export default function EstablishmentDetail() {
-    return <EstablishmentDetailPage />;
+    return <EstablishmentInfoPage />;
 }

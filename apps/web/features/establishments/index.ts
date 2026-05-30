@@ -4,8 +4,17 @@
 
 export * from "./components/availabilities-tab";
 export * from "./components/become-host-stepper";
-export * from "./components/capacities-tab";
+export * from "./components/capacity-card";
 export * from "./components/dashboard-tab";
+export * from "./components/establishment-availabilities-list";
+export * from "./components/establishment-bookings-table";
+export * from "./components/establishment-capacities-grid";
+export * from "./components/establishment-collaborators-table";
+export * from "./components/establishment-data-table";
+export * from "./components/establishment-info-section";
+export * from "./components/establishment-select-card";
+export * from "./components/establishment-sidebar-layout";
+export * from "./components/establishment-species-avatars";
 export * from "./components/establishment-summary-card";
 export * from "./components/step/address-step";
 export * from "./components/step/business-info-step";
@@ -15,3 +24,5 @@ export * from "./components/step/establishment-type-step";
 export * from "./components/step/review-step";
 export * from "./components/step/step-shell";
 export * from "./components/step/welcome-step";
+export * from "./hooks/use-establishment-capacities";
+export * from "./hooks/use-establishment";

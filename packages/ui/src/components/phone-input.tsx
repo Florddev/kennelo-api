@@ -22,6 +22,12 @@ type PhoneInputProps = Omit<React.ComponentProps<"input">, "onChange" | "value" 
         onChange?: (value: RPNInput.Value) => void;
     };
 
+const E164_PATTERN = /^\+[1-9]\d{1,14}$/;
+
+function toE164Value(value: RPNInput.Value | undefined): RPNInput.Value | undefined {
+    return typeof value === "string" && E164_PATTERN.test(value) ? value : undefined;
+}
+
 const PhoneInput: React.ForwardRefExoticComponent<PhoneInputProps> = React.forwardRef<
     React.ElementRef<typeof RPNInput.default>,
     PhoneInputProps
@@ -35,7 +41,7 @@ const PhoneInput: React.ForwardRefExoticComponent<PhoneInputProps> = React.forwa
             inputComponent={InputComponent}
             smartCaret={false}
             international={false}
-            value={value || undefined}
+            value={toE164Value(value as RPNInput.Value | undefined)}
             /**
              * Handles the onChange event.
              *

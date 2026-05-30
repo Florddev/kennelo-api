@@ -1,4 +1,4 @@
-.PHONY: help main update start larastan
+.PHONY: help main update start down infra infra-down larastan
 
 help: ## Show this message
 	@echo "Available commands:"
@@ -12,11 +12,28 @@ update: ## Update/install dependencies Back/Front
 	cd api && php artisan storage:link
 	pnpm install
 
-start: ## Start API and Web
+infra: ## Start dev services (postgres, redis, minio) via Docker
+	docker compose -f docker-compose.dev.yml up -d
+
+infra-down: ## Stop dev services (postgres, redis, minio)
+	docker compose -f docker-compose.dev.yml down
+
+start: infra ## Start API and Web
 	cd api && php -d upload_max_filesize=50M -d post_max_size=55M artisan serve --host=0.0.0.0 --port=8000 &
 	cd api && php artisan queue:work --queue=default --tries=1 --memory=1024 --timeout=180 &
 	cd api && php artisan reverb:start --host=0.0.0.0 --port=8080 &
 	pnpm dev &
+
+down: ## Stop API and Web (serve, queue, reverb, turbo, next)
+	-pkill -f "artisan serve"
+	-pkill -f "artisan queue:work"
+	-pkill -f "artisan reverb:start"
+	-pkill -f "turbo dev"
+	-pkill -f "next dev"
+	-pkill -f "generate-routes-watch"
+	-pkill -f "scripts/watch.mjs"
+	-for p in 8000 8080 3000; do lsof -ti :$$p | xargs kill -9 2>/dev/null || true; done
+	-docker compose -f docker-compose.dev.yml down
 
 larastan: ## Run larastan
 	cd api && ./vendor/bin/phpstan analyse --memory-limit=2G
@@ -25,5 +42,6 @@ setup:
 	cd api && cp .env.example .env
 	cd api && composer install
 	cd api && php artisan key:generate
+	cd api && php artisan jwt:generate
 	cd api && make refresh
 	make update

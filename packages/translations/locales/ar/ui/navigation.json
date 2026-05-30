@@ -27,5 +27,11 @@
     "changePassword": "تغيير كلمة المرور",
     "comingSoon": "قريباً",
     "favorites": "المفضلة",
-    "personalInformation": "معلومات شخصية"
+    "personalInformation": "معلومات شخصية",
+    "hosting": {
+        "today": "اليوم",
+        "calendar": "التقويم",
+        "establishment": "المؤسسة",
+        "messages": "الرسائل"
+    }
 }
