@@ -2,7 +2,7 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
-import { Buildings, Calendar, ChatRoundLine, Sun } from "@solar-icons/react";
+import { Buildings, Calendar, ChatRoundLine, SunFog } from "@solar-icons/react";
 
 import { cn } from "@workspace/ui/lib/utils";
 import { isActivePath } from "@workspace/common";
@@ -30,7 +30,7 @@ export default function HostingLayout({ children, className }: HostingLayoutProp
         {
             href: routes.HostingNow(),
             label: t("ui.navigation.hosting.today"),
-            icon: Sun,
+            icon: SunFog,
             active: isActive(routes.HostingNow()),
         },
         {
@@ -53,7 +53,12 @@ export default function HostingLayout({ children, className }: HostingLayoutProp
         },
     ];
 
-    const desktopLinks = links.map(({ href, label, active }) => ({ href, label, active }));
+    const desktopLinks = links.map(({ href, label, active, icon }) => ({
+        href,
+        label,
+        active,
+        icon,
+    }));
 
     const mobileNavigationItems: NavigationItem[] = links.map(({ icon, label, href, active }) => ({
         icon,

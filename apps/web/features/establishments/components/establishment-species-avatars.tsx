@@ -31,7 +31,7 @@ export function EstablishmentSpeciesAvatars({
     if (capacities.length === 0) {
         return (
             <p className="text-xs text-muted-foreground italic">
-                {t("features.my-establishments.card.noSpecies")}
+                {t("features.establishments.card.noSpecies")}
             </p>
         );
     }

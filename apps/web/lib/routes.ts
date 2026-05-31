@@ -33,13 +33,31 @@ type MyEstablishmentsParams = {
     search_params?: Record<string, string | number | boolean>;
 };
 
-type EstablishmentAvailabilitiesParams = {
+type EstablishmentBookingsParams = {
     locale?: string | number;
     id: string;
     search_params?: Record<string, string | number | boolean>;
 };
 
-type EstablishmentBookingsParams = {
+type EstablishmentInvoicesParams = {
+    locale?: string | number;
+    id: string;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type EstablishmentOverviewParams = {
+    locale?: string | number;
+    id: string;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type EstablishmentDetailsParams = {
+    locale?: string | number;
+    id: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type EstablishmentAvailabilitiesParams = {
     locale?: string | number;
     id: string;
     search_params?: Record<string, string | number | boolean>;
@@ -57,15 +75,15 @@ type EstablishmentCollaboratorsParams = {
     search_params?: Record<string, string | number | boolean>;
 };
 
-type EstablishmentInvoicesParams = {
+type EstablishmentSettingsInformationsParams = {
     locale?: string | number;
-    id: string;
+    id: string | number;
     search_params?: Record<string, string | number | boolean>;
 };
 
-type EstablishmentDetailParams = {
+type EstablishmentSettingsParams = {
     locale?: string | number;
-    id: string;
+    id: string | number;
     search_params?: Record<string, string | number | boolean>;
 };
 
@@ -217,32 +235,46 @@ function MyEstablishments(params?: MyEstablishmentsParams): string {
     return buildRoute("/[locale]/hosting/host", params);
 }
 
-function EstablishmentAvailabilities(params: EstablishmentAvailabilitiesParams): string {
-    return buildRoute("/[locale]/hosting/host/[id]/availabilities", params);
-}
-
 function EstablishmentBookings(params: EstablishmentBookingsParams): string {
     return buildRoute("/[locale]/hosting/host/[id]/bookings", params);
-}
-
-function EstablishmentCapacities(params: EstablishmentCapacitiesParams): string {
-    return buildRoute("/[locale]/hosting/host/[id]/capacities", params);
-}
-
-function EstablishmentCollaborators(params: EstablishmentCollaboratorsParams): string {
-    return buildRoute("/[locale]/hosting/host/[id]/collaborators", params);
 }
 
 function EstablishmentInvoices(params: EstablishmentInvoicesParams): string {
     return buildRoute("/[locale]/hosting/host/[id]/invoices", params);
 }
 
-function EstablishmentDetail(params: EstablishmentDetailParams): string {
+function EstablishmentOverview(params: EstablishmentOverviewParams): string {
+    return buildRoute("/[locale]/hosting/host/[id]/overview", params);
+}
+
+function EstablishmentDetails(params: EstablishmentDetailsParams): string {
     return buildRoute("/[locale]/hosting/host/[id]", params);
 }
 
+function EstablishmentAvailabilities(params: EstablishmentAvailabilitiesParams): string {
+    return buildRoute("/[locale]/hosting/host/[id]/settings/availabilities", params);
+}
+
+function EstablishmentCapacities(params: EstablishmentCapacitiesParams): string {
+    return buildRoute("/[locale]/hosting/host/[id]/settings/capacities", params);
+}
+
+function EstablishmentCollaborators(params: EstablishmentCollaboratorsParams): string {
+    return buildRoute("/[locale]/hosting/host/[id]/settings/collaborators", params);
+}
+
+function EstablishmentSettingsInformations(
+    params: EstablishmentSettingsInformationsParams,
+): string {
+    return buildRoute("/[locale]/hosting/host/[id]/settings/informations", params);
+}
+
+function EstablishmentSettings(params: EstablishmentSettingsParams): string {
+    return buildRoute("/[locale]/hosting/host/[id]/settings", params);
+}
+
 function EstablishmentPayment(params: EstablishmentPaymentParams): string {
-    return buildRoute("/[locale]/hosting/host/[id]/payment", params);
+    return buildRoute("/[locale]/hosting/host/[id]/settings/payment", params);
 }
 
 function HostingMessages(params?: HostingMessagesParams): string {
@@ -340,12 +372,15 @@ export const routes = {
     Home,
     HostingCalendar,
     MyEstablishments,
-    EstablishmentAvailabilities,
     EstablishmentBookings,
+    EstablishmentInvoices,
+    EstablishmentOverview,
+    EstablishmentDetails,
+    EstablishmentAvailabilities,
     EstablishmentCapacities,
     EstablishmentCollaborators,
-    EstablishmentInvoices,
-    EstablishmentDetail,
+    EstablishmentSettingsInformations,
+    EstablishmentSettings,
     EstablishmentPayment,
     HostingMessages,
     HostingNow,

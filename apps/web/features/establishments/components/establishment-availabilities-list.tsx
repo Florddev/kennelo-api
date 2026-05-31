@@ -1,20 +1,23 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { useQuery } from "@tanstack/react-query";
 import { CalendarClock } from "lucide-react";
 import { format } from "date-fns";
 
 import { Badge } from "@workspace/ui/components/badge";
+import { Input } from "@workspace/ui/components/input";
 import { cn } from "@workspace/ui/lib/utils";
 import { getAvailabilities, type AvailabilityModel } from "@workspace/modules/establishments";
 
 import { EstablishmentDataTable, type DataTableColumn } from "./establishment-data-table";
+import { EstablishmentPageHeader } from "./establishment-page-header";
 
 export function EstablishmentAvailabilitiesList({ establishmentId }: { establishmentId: string }) {
     const t = useTranslations();
     const locale = useLocale();
+    const [search, setSearch] = useState("");
 
     const month = useMemo(() => format(new Date(), "yyyy-MM"), []);
 
@@ -32,13 +35,13 @@ export function EstablishmentAvailabilitiesList({ establishmentId }: { establish
 
     const statusLabel = (status: AvailabilityModel["status"]) =>
         status === "open"
-            ? t("features.my-establishments.availabilities.open")
-            : t("features.my-establishments.availabilities.closed");
+            ? t("features.establishments.availabilities.open")
+            : t("features.establishments.availabilities.closed");
 
     const columns: DataTableColumn<AvailabilityModel>[] = [
         {
             key: "date",
-            header: t("features.my-establishments.manager.availabilities.columns.date"),
+            header: t("features.establishments.manager.availabilities.columns.date"),
             cellClassName: "font-medium",
             cell: (availability) => dateFormatter.format(new Date(availability.date)),
         },
@@ -67,22 +70,32 @@ export function EstablishmentAvailabilitiesList({ establishmentId }: { establish
     ];
 
     return (
-        <EstablishmentDataTable
-            data={data ?? []}
-            columns={columns}
-            isLoading={isLoading}
-            getRowKey={(availability) => String(availability.id)}
-            searchPlaceholder={t("features.my-establishments.manager.availabilities.filter")}
-            filterRow={(availability, query) =>
-                (availability.note?.toLowerCase().includes(query) ?? false) ||
-                availability.date.toLowerCase().includes(query) ||
-                statusLabel(availability.status).toLowerCase().includes(query)
-            }
-            emptyIcon={CalendarClock}
-            emptyLabel={t("features.my-establishments.availabilities.empty")}
-            renderCount={(count) =>
-                t("features.my-establishments.manager.availabilities.count", { count })
-            }
-        />
+        <div className="flex flex-col gap-6">
+            <EstablishmentPageHeader>
+                <Input
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder={t("features.establishments.manager.availabilities.filter")}
+                    className="w-64"
+                />
+            </EstablishmentPageHeader>
+            <EstablishmentDataTable
+                data={data ?? []}
+                columns={columns}
+                isLoading={isLoading}
+                getRowKey={(availability) => String(availability.id)}
+                search={search}
+                filterRow={(availability, query) =>
+                    (availability.note?.toLowerCase().includes(query) ?? false) ||
+                    availability.date.toLowerCase().includes(query) ||
+                    statusLabel(availability.status).toLowerCase().includes(query)
+                }
+                emptyIcon={CalendarClock}
+                emptyLabel={t("features.establishments.availabilities.empty")}
+                renderCount={(count) =>
+                    t("features.establishments.manager.availabilities.count", { count })
+                }
+            />
+        </div>
     );
 }

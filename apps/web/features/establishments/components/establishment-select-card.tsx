@@ -28,7 +28,7 @@ export function EstablishmentSelectCard({ establishment }: EstablishmentSelectCa
     const { capacities } = useEstablishmentCapacities(establishment.id);
 
     const avatarUrl = establishment.getAvatarUrl();
-    const detailHref = routes.EstablishmentDetail({ id: establishment.id });
+    const detailHref = routes.EstablishmentDetails({ id: establishment.id });
     const statusKey = establishment.isActive ? "active" : "inactive";
 
     return (
@@ -60,7 +60,7 @@ export function EstablishmentSelectCard({ establishment }: EstablishmentSelectCa
                             variant="outline"
                             className={cn("shrink-0", STATUS_BADGE_CLASS[statusKey])}
                         >
-                            {t(`features.my-establishments.status.${statusKey}`)}
+                            {t(`features.establishments.status.${statusKey}`)}
                         </Badge>
                     </div>
                     {establishment.address && (
@@ -75,7 +75,7 @@ export function EstablishmentSelectCard({ establishment }: EstablishmentSelectCa
 
                 <div className="flex flex-col gap-2">
                     <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                        {t("features.my-establishments.card.species")}
+                        {t("features.establishments.card.species")}
                     </span>
                     <EstablishmentSpeciesAvatars capacities={capacities} />
                 </div>

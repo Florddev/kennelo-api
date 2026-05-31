@@ -36,6 +36,7 @@ import { getAnimalTypes } from "@workspace/modules/pets";
 import { useAsyncState } from "@/hooks/use-async-state";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { CapacityCard } from "./capacity-card";
+import { EstablishmentPageHeader } from "./establishment-page-header";
 
 const DEFAULT_CAPACITY = 10;
 const DEFAULT_PRICE = 20;
@@ -57,16 +58,13 @@ export function EstablishmentCapacitiesGrid({ establishmentId }: { establishment
     }
 
     return (
-        <div className="flex flex-col gap-6 px-6 py-6">
-            <div className="flex flex-wrap items-end justify-between gap-4">
-                <h1 className="text-2xl font-bold tracking-tight">
-                    {t("features.my-establishments.capacities.title")}
-                </h1>
+        <div className="flex flex-col gap-6">
+            <EstablishmentPageHeader>
                 <AddCapacity
                     establishmentId={establishmentId}
                     usedAnimalTypeIds={capacities.map((capacity) => capacity.animalType.id)}
                 />
-            </div>
+            </EstablishmentPageHeader>
 
             {capacities.length === 0 ? (
                 <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed py-16 text-center">
@@ -74,11 +72,11 @@ export function EstablishmentCapacitiesGrid({ establishmentId }: { establishment
                         <PawPrint className="size-6 text-muted-foreground" />
                     </div>
                     <p className="text-sm text-muted-foreground">
-                        {t("features.my-establishments.capacities.empty")}
+                        {t("features.establishments.capacities.empty")}
                     </p>
                 </div>
             ) : (
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+                <div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
                     {capacities.map((capacity) => (
                         <CapacityCard
                             key={capacity.id}
@@ -150,7 +148,7 @@ function AddCapacity({
         }
     };
 
-    const title = t("features.my-establishments.capacities.addCapacity");
+    const title = t("features.establishments.capacities.addCapacity");
 
     const trigger = (
         <Button className="gap-1.5 rounded-4xl" disabled={availableTypes.length === 0}>
@@ -195,7 +193,7 @@ function AddCapacity({
                 min={0}
                 max={MAX_PRICE}
                 formatValue={(price) =>
-                    t("features.my-establishments.capacities.priceValue", { price })
+                    t("features.establishments.capacities.priceValue", { price })
                 }
             />
         </div>

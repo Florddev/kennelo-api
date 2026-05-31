@@ -41,10 +41,10 @@ import { useEstablishment, establishmentQueryKey } from "../hooks/use-establishm
 
 const SECTION_HEADER_CLASS = "text-sm font-medium text-muted-foreground uppercase tracking-wider";
 
-const T_SECTIONS_DETAILS = "features.my-establishments.detail.sections.details" as const;
-const T_SECTIONS_CONTACT = "features.my-establishments.detail.sections.contact" as const;
-const T_SECTIONS_ADDRESS = "features.my-establishments.detail.sections.address" as const;
-const T_SECTIONS_BUSINESS = "features.my-establishments.detail.sections.business" as const;
+const T_SECTIONS_DETAILS = "features.establishments.detail.sections.details" as const;
+const T_SECTIONS_CONTACT = "features.establishments.detail.sections.contact" as const;
+const T_SECTIONS_ADDRESS = "features.establishments.detail.sections.address" as const;
+const T_SECTIONS_BUSINESS = "features.establishments.detail.sections.business" as const;
 
 const STATUS_BADGE_CLASS = {
     active: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/40",
@@ -110,7 +110,7 @@ function ViewMode({ establishment, t }: { establishment: EstablishmentModel; t: 
                             )}
                         >
                             {establishment.description ||
-                                t("features.my-establishments.detail.empty.description")}
+                                t("features.establishments.detail.empty.description")}
                         </p>
                     </div>
                 </CardContent>
@@ -125,21 +125,21 @@ function ViewMode({ establishment, t }: { establishment: EstablishmentModel; t: 
                         icon={Phone}
                         label={t("common.fields.phone")}
                         value={establishment.phone}
-                        empty={t("features.my-establishments.detail.empty.phone")}
+                        empty={t("features.establishments.detail.empty.phone")}
                     />
                     <Separator />
                     <InfoItem
                         icon={Mail}
                         label={t("common.fields.email")}
                         value={establishment.email}
-                        empty={t("features.my-establishments.detail.empty.email")}
+                        empty={t("features.establishments.detail.empty.email")}
                     />
                     <Separator />
                     <InfoItem
                         icon={Globe}
                         label={t("common.fields.website")}
                         value={establishment.website}
-                        empty={t("features.my-establishments.detail.empty.website")}
+                        empty={t("features.establishments.detail.empty.website")}
                     />
                 </CardContent>
             </Card>
@@ -393,10 +393,10 @@ function DeleteDialog({ onDelete, isDeleting }: { onDelete: () => void; isDeleti
             <AlertDialogContent>
                 <AlertDialogHeader>
                     <AlertDialogTitle>
-                        {t("features.my-establishments.detail.deleteTitle")}
+                        {t("features.establishments.detail.deleteTitle")}
                     </AlertDialogTitle>
                     <AlertDialogDescription>
-                        {t("features.my-establishments.detail.deleteDescription")}
+                        {t("features.establishments.detail.deleteDescription")}
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -460,10 +460,10 @@ export function EstablishmentInfoSection({
             <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
                 <Building2 className="size-12 text-muted-foreground" />
                 <h2 className="text-xl font-semibold">
-                    {t("features.my-establishments.detail.notFound")}
+                    {t("features.establishments.detail.notFound")}
                 </h2>
                 <p className="text-muted-foreground">
-                    {t("features.my-establishments.detail.notFoundDescription")}
+                    {t("features.establishments.detail.notFoundDescription")}
                 </p>
             </div>
         );
@@ -477,11 +477,11 @@ export function EstablishmentInfoSection({
                 <div className="flex items-center gap-3">
                     <h1 className="text-2xl font-bold tracking-tight">
                         {isEditing
-                            ? t("features.my-establishments.detail.editTitle")
+                            ? t("features.establishments.detail.editTitle")
                             : establishment.name}
                     </h1>
                     <Badge variant="outline" className={cn(STATUS_BADGE_CLASS[statusKey])}>
-                        {t(`features.my-establishments.status.${statusKey}`)}
+                        {t(`features.establishments.status.${statusKey}`)}
                     </Badge>
                 </div>
                 {!isEditing && (

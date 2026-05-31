@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Building2 } from "lucide-react";
+import { Calendar } from "@solar-icons/react";
 
 import { Badge } from "@workspace/ui/components/badge";
 import { cn } from "@workspace/ui/lib/utils";
@@ -19,6 +20,7 @@ import {
     establishmentColor,
     statusColor,
 } from "@/features/bookings/lib/booking-colors";
+import PageLayout from "@/components/layouts/page-layout";
 
 export default function HostingCalendarPage() {
     const t = useTranslations();
@@ -108,67 +110,74 @@ export default function HostingCalendarPage() {
         );
     }
 
-    return (
-        <div className="flex flex-col min-h-[calc(100dvh-var(--header-height))] px-6 py-6 gap-4">
-            <div className="flex flex-col gap-3">
-                {establishments.length > 1 && (
-                    <div className="flex flex-wrap items-center gap-2">
-                        <span className="text-xs font-medium text-muted-foreground me-1">
-                            {t("features.hosting-calendar.filters.establishments")}
-                        </span>
-                        {establishments.map((establishment) => {
-                            const meta = establishmentMetaById[establishment.id]!;
-                            const color = establishmentColor(meta.colorIndex);
-                            const active = activeEstablishmentIds.includes(establishment.id);
-                            return (
-                                <button
-                                    key={establishment.id}
-                                    type="button"
-                                    onClick={() => toggleEstablishment(establishment.id)}
-                                    className={cn(
-                                        "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition-opacity",
-                                        color.chipBg,
-                                        color.chipBorder,
-                                        color.chipText,
-                                        !active && "opacity-40",
-                                    )}
-                                >
-                                    <span className={cn("size-2 rounded-full", color.dot)} />
-                                    {establishment.name}
-                                </button>
-                            );
-                        })}
-                    </div>
-                )}
-
+    const filters = (
+        <div className="flex flex-col gap-3">
+            {establishments.length > 1 && (
                 <div className="flex flex-wrap items-center gap-2">
                     <span className="text-xs font-medium text-muted-foreground me-1">
-                        {t("features.hosting-calendar.filters.statuses")}
+                        {t("features.hosting-calendar.filters.establishments")}
                     </span>
-                    {SELECTABLE_STATUSES.map((status) => {
-                        const color = statusColor(status);
-                        const active = activeStatuses.includes(status);
+                    {establishments.map((establishment) => {
+                        const meta = establishmentMetaById[establishment.id]!;
+                        const color = establishmentColor(meta.colorIndex);
+                        const active = activeEstablishmentIds.includes(establishment.id);
                         return (
                             <button
-                                key={status}
+                                key={establishment.id}
                                 type="button"
-                                onClick={() => toggleStatus(status)}
-                                className={cn("transition-opacity", !active && "opacity-40")}
+                                onClick={() => toggleEstablishment(establishment.id)}
+                                className={cn(
+                                    "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition-opacity",
+                                    color.chipBg,
+                                    color.chipBorder,
+                                    color.chipText,
+                                    !active && "opacity-40",
+                                )}
                             >
-                                <Badge variant="outline" className={cn(color.badge)}>
-                                    {t(
-                                        `features.hosting-calendar.status.${status}` as Parameters<
-                                            typeof t
-                                        >[0],
-                                    )}
-                                </Badge>
+                                <span className={cn("size-2 rounded-full", color.dot)} />
+                                {establishment.name}
                             </button>
                         );
                     })}
                 </div>
-            </div>
+            )}
 
-            <div className="flex-1">
+            <div className="flex flex-wrap items-center gap-2">
+                <span className="text-xs font-medium text-muted-foreground me-1">
+                    {t("features.hosting-calendar.filters.statuses")}
+                </span>
+                {SELECTABLE_STATUSES.map((status) => {
+                    const color = statusColor(status);
+                    const active = activeStatuses.includes(status);
+                    return (
+                        <button
+                            key={status}
+                            type="button"
+                            onClick={() => toggleStatus(status)}
+                            className={cn("transition-opacity", !active && "opacity-40")}
+                        >
+                            <Badge variant="outline" className={cn(color.badge)}>
+                                {t(
+                                    `features.hosting-calendar.status.${status}` as Parameters<
+                                        typeof t
+                                    >[0],
+                                )}
+                            </Badge>
+                        </button>
+                    );
+                })}
+            </div>
+        </div>
+    );
+
+    return (
+        <PageLayout
+            Icon={Calendar}
+            title={t("ui.navigation.hosting.calendar")}
+            headerBottom={filters}
+            className="px-6 pb-6 pt-2 space-y-0"
+        >
+            <div className="flex flex-col gap-4">
                 <BookingsCalendar
                     focusedMonth={focusedMonth}
                     onFocusedMonthChange={setFocusedMonth}
@@ -176,15 +185,14 @@ export default function HostingCalendarPage() {
                     establishmentMetaById={establishmentMetaById}
                     onDayClick={onDayClick}
                 />
+                <DayBookingsSheet
+                    open={sheetOpen}
+                    onOpenChange={setSheetOpen}
+                    selectedDate={selectedDate}
+                    bookings={dayBookings}
+                    establishmentMetaById={establishmentMetaById}
+                />
             </div>
-
-            <DayBookingsSheet
-                open={sheetOpen}
-                onOpenChange={setSheetOpen}
-                selectedDate={selectedDate}
-                bookings={dayBookings}
-                establishmentMetaById={establishmentMetaById}
-            />
-        </div>
+        </PageLayout>
     );
 }
