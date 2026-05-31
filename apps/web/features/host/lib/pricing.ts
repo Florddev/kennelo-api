@@ -16,7 +16,7 @@ export function sumPetsPricePerNight(pets: PetModel[], capacities: CapacityModel
     }, 0);
 }
 
-export function acceptedAnimalTypeIds(capacities: CapacityModel[]): number[] {
+export function acceptedAnimalTypeIds(capacities: CapacityModel[]): string[] {
     return capacities.map((capacity) => capacity.animalType.id);
 }
 

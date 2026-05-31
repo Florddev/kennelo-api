@@ -13,7 +13,7 @@ export class PetModel {
     private constructor(
         public readonly id: string,
         public readonly userId: string,
-        public readonly animalTypeId: number,
+        public readonly animalTypeId: string,
         public readonly name: string,
         public readonly breed: string | null,
         public readonly birthDate: string | null,

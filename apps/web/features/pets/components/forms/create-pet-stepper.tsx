@@ -303,7 +303,7 @@ export function CreatePetStepper() {
             stepperName={t("features.pets.createTitle")}
             schema={createPetSchema}
             defaultValues={{
-                animalTypeId: 0,
+                animalTypeId: "",
                 name: "",
                 breed: "",
                 birthDate: "",

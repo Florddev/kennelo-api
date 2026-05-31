@@ -1,7 +1,7 @@
 import type { AttributeDefinitionDto } from "./attribute-definition.dto";
 
 export type AnimalTypeDto = {
-    id: number;
+    id: string;
     code: string;
     name: string;
     category: string;
