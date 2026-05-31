@@ -133,9 +133,11 @@ function SplitPageLayoutNav({
     return (
         <div
             data-slot="split-page-layout-nav"
-            className={cn("flex flex-col gap-2", !isRoot && "hidden md:flex", className)}
+            className={cn("flex flex-col gap-2", !isRoot && "hidden md:flex")}
         >
-            <div className="flex flex-col gap-2 px-4 py-2 md:px-0 md:py-4 w-full">{children}</div>
+            <div className={cn("flex flex-col gap-2 px-4 py-2 md:px-0 md:py-4 w-full", className)}>
+                {children}
+            </div>
         </div>
     );
 }
@@ -145,11 +147,13 @@ function SplitPageLayoutContent({
     sectionTitle,
     defaultContent,
     className,
+    cleanContainer = false,
 }: {
     children: React.ReactNode;
     sectionTitle?: string;
     defaultContent?: React.ReactNode;
     className?: string;
+    cleanContainer?: boolean;
 }) {
     const { isRoot } = useSplitPageLayout();
 
@@ -161,7 +165,7 @@ function SplitPageLayoutContent({
             <div className="flex-1">
                 <div
                     className={cn(
-                        "flex flex-col gap-3 pb-8",
+                        !cleanContainer && "flex flex-col gap-3 pb-8",
                         isRoot && "hidden md:block",
                         !isRoot && "px-4 md:p-0",
                     )}

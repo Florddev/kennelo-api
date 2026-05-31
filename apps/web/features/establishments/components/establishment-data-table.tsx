@@ -1,9 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import type { LucideIcon } from "lucide-react";
 
-import { Input } from "@workspace/ui/components/input";
 import { Skeleton } from "@workspace/ui/components/skeleton";
 import {
     Table,
@@ -28,7 +27,7 @@ type EstablishmentDataTableProps<T> = {
     columns: DataTableColumn<T>[];
     isLoading: boolean;
     getRowKey: (row: T) => string;
-    searchPlaceholder: string;
+    search: string;
     filterRow: (row: T, query: string) => boolean;
     emptyIcon: LucideIcon;
     emptyLabel: string;
@@ -40,14 +39,12 @@ export function EstablishmentDataTable<T>({
     columns,
     isLoading,
     getRowKey,
-    searchPlaceholder,
+    search,
     filterRow,
     emptyIcon: EmptyIcon,
     emptyLabel,
     renderCount,
 }: EstablishmentDataTableProps<T>) {
-    const [search, setSearch] = useState("");
-
     const filtered = useMemo(() => {
         const query = search.trim().toLowerCase();
         if (!query) return data;
@@ -92,13 +89,6 @@ export function EstablishmentDataTable<T>({
 
     return (
         <div className="flex flex-col gap-4">
-            <Input
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
-                placeholder={searchPlaceholder}
-                className="max-w-sm"
-            />
-
             <div className="rounded-2xl border overflow-hidden">
                 <Table>
                     <TableHeader>

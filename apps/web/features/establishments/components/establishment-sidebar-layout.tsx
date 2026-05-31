@@ -65,24 +65,24 @@ export function EstablishmentSidebarLayout({
     const { user } = useAuth();
     const { establishment } = useEstablishment(establishmentId);
 
-    const infoHref = routes.EstablishmentDetail({ id: establishmentId });
+    const infoHref = routes.EstablishmentOverview({ id: establishmentId });
 
     const configurationItems = [
         {
             href: infoHref,
-            label: t("features.my-establishments.manager.nav.info"),
+            label: t("features.establishments.manager.nav.info"),
             icon: Building2,
             exact: true,
         },
         {
             href: routes.EstablishmentCapacities({ id: establishmentId }),
-            label: t("features.my-establishments.manager.nav.capacities"),
+            label: t("features.establishments.manager.nav.capacities"),
             icon: PawPrint,
             exact: false,
         },
         {
             href: routes.EstablishmentAvailabilities({ id: establishmentId }),
-            label: t("features.my-establishments.manager.nav.availabilities"),
+            label: t("features.establishments.manager.nav.availabilities"),
             icon: CalendarClock,
             exact: false,
         },
@@ -91,25 +91,25 @@ export function EstablishmentSidebarLayout({
     const activityItems = [
         {
             href: routes.EstablishmentBookings({ id: establishmentId }),
-            label: t("features.my-establishments.manager.nav.bookings"),
+            label: t("features.establishments.manager.nav.bookings"),
             icon: CalendarDays,
             exact: false,
         },
         {
             href: routes.EstablishmentCollaborators({ id: establishmentId }),
-            label: t("features.my-establishments.manager.nav.collaborators"),
+            label: t("features.establishments.manager.nav.collaborators"),
             icon: Users,
             exact: false,
         },
         {
             href: routes.EstablishmentInvoices({ id: establishmentId }),
-            label: t("features.my-establishments.manager.nav.invoices"),
+            label: t("features.establishments.manager.nav.invoices"),
             icon: ReceiptText,
             exact: false,
         },
         {
             href: routes.EstablishmentPayment({ id: establishmentId }),
-            label: t("features.my-establishments.manager.nav.payment"),
+            label: t("features.establishments.manager.nav.payment"),
             icon: CreditCard,
             exact: false,
         },
@@ -183,13 +183,13 @@ export function EstablishmentSidebarLayout({
                 <SidebarContent className="relative">
                     <SidebarGroup>
                         <SidebarGroupLabel>
-                            {t("features.my-establishments.manager.groups.configuration")}
+                            {t("features.establishments.manager.groups.configuration")}
                         </SidebarGroupLabel>
                         <SidebarMenu>{renderItems(configurationItems)}</SidebarMenu>
                     </SidebarGroup>
                     <SidebarGroup>
                         <SidebarGroupLabel>
-                            {t("features.my-establishments.manager.groups.activity")}
+                            {t("features.establishments.manager.groups.activity")}
                         </SidebarGroupLabel>
                         <SidebarMenu>{renderItems(activityItems)}</SidebarMenu>
                     </SidebarGroup>

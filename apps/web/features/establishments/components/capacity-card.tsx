@@ -151,10 +151,10 @@ export function CapacityCard({
                     <DrawerContent>
                         <DrawerHeader className="text-start">
                             <DrawerTitle>
-                                {t("features.my-establishments.capacities.deleteCapacity")}
+                                {t("features.establishments.capacities.deleteCapacity")}
                             </DrawerTitle>
                             <DrawerDescription>
-                                {t("features.my-establishments.capacities.deleteConfirmation")}
+                                {t("features.establishments.capacities.deleteConfirmation")}
                             </DrawerDescription>
                         </DrawerHeader>
                         <DrawerFooter>
@@ -181,10 +181,10 @@ export function CapacityCard({
                     <AlertDialogContent>
                         <AlertDialogHeader>
                             <AlertDialogTitle>
-                                {t("features.my-establishments.capacities.deleteCapacity")}
+                                {t("features.establishments.capacities.deleteCapacity")}
                             </AlertDialogTitle>
                             <AlertDialogDescription>
-                                {t("features.my-establishments.capacities.deleteConfirmation")}
+                                {t("features.establishments.capacities.deleteConfirmation")}
                             </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
@@ -223,7 +223,7 @@ export function CapacityCard({
                 <div className="flex items-center justify-between gap-2">
                     <h3 className="text-lg font-semibold">{capacity.animalType.name}</h3>
                     <span className="text-sm font-medium tabular-nums text-muted-foreground">
-                        {t("features.my-establishments.capacities.occupancy", {
+                        {t("features.establishments.capacities.occupancy", {
                             occupied: capacity.occupiedSpots,
                             max: maxCapacity,
                         })}
@@ -245,7 +245,7 @@ export function CapacityCard({
                         min={0}
                         max={MAX_PRICE}
                         formatValue={(price) =>
-                            t("features.my-establishments.capacities.priceValue", { price })
+                            t("features.establishments.capacities.priceValue", { price })
                         }
                     />
                 </div>

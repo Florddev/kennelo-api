@@ -31,16 +31,16 @@ export default function SelectEstablishmentPage() {
             <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
                 <div className="flex flex-col gap-1">
                     <h1 className="text-3xl font-bold tracking-tight">
-                        {t("features.my-establishments.title")}
+                        {t("features.establishments.title")}
                     </h1>
                     <p className="text-muted-foreground">
-                        {t("features.my-establishments.description")}
+                        {t("features.establishments.description")}
                     </p>
                 </div>
                 <Button asChild className="rounded-4xl gap-2">
                     <Link href={routes.BecomeHost()}>
                         <Plus className="size-4" />
-                        {t("features.my-establishments.addNew")}
+                        {t("features.establishments.addNew")}
                     </Link>
                 </Button>
             </div>
@@ -52,15 +52,15 @@ export default function SelectEstablishmentPage() {
                             <Building2 className="size-8 text-muted-foreground" />
                         </div>
                         <h3 className="text-lg font-semibold mb-2">
-                            {t("features.my-establishments.empty.title")}
+                            {t("features.establishments.empty.title")}
                         </h3>
                         <p className="text-sm text-muted-foreground mb-6 max-w-sm">
-                            {t("features.my-establishments.empty.description")}
+                            {t("features.establishments.empty.description")}
                         </p>
                         <Button asChild className="rounded-4xl gap-2">
                             <Link href={routes.BecomeHost()}>
                                 <Plus className="size-4" />
-                                {t("features.my-establishments.addNew")}
+                                {t("features.establishments.addNew")}
                             </Link>
                         </Button>
                     </div>

@@ -33,5 +33,11 @@
         "calendar": "Calendar",
         "establishment": "Establishment",
         "messages": "Messages"
-    }
+    },
+    "common": {
+        "navigation": {
+            "overview": "Overview"
+        }
+    },
+    "overview": "Overview"
 }

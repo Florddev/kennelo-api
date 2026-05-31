@@ -12,6 +12,7 @@ export * from "./components/establishment-capacities-grid";
 export * from "./components/establishment-collaborators-table";
 export * from "./components/establishment-data-table";
 export * from "./components/establishment-info-section";
+export * from "./components/establishment-page-header";
 export * from "./components/establishment-select-card";
 export * from "./components/establishment-sidebar-layout";
 export * from "./components/establishment-species-avatars";

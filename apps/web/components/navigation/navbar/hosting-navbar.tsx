@@ -3,12 +3,12 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
+import type { IconProps } from "@solar-icons/react";
 
 import { cn } from "@workspace/ui/lib/utils";
-
-import { useScrolled } from "@/hooks/use-scrolled";
 import { useAuth } from "@/features/auth";
 import { useNavigation } from "@/hooks/use-navigation";
+import NavItem from "../nav-item";
 import NavButton from "../nav-button";
 import UserMenu from "../user-menu";
 
@@ -16,27 +16,8 @@ type HostingNavLink = {
     href: string;
     label: string;
     active: boolean;
+    icon?: React.ComponentType<IconProps>;
 };
-
-function HostingNavLink({ href, label, active }: HostingNavLink) {
-    return (
-        <Link
-            href={href}
-            className={cn(
-                "relative inline-flex items-center px-1 py-2 text-sm font-medium transition-colors",
-                active ? "text-foreground" : "text-muted-foreground hover:text-foreground",
-            )}
-        >
-            <span>{label}</span>
-            <span
-                className={cn(
-                    "absolute -bottom-0.5 start-0 end-0 h-[2px] rounded-full bg-foreground transition-opacity",
-                    active ? "opacity-100" : "opacity-0",
-                )}
-            />
-        </Link>
-    );
-}
 
 export function HostingNavbar({
     links,
@@ -47,16 +28,12 @@ export function HostingNavbar({
 }) {
     const { user, hasEstablishment } = useAuth();
     const { routes } = useNavigation();
-    const scrolled = useScrolled(0);
     const t = useTranslations();
 
     return (
         <header
             className={cn(
-                "sticky top-0 start-0 w-full h-[var(--header-height)] flex items-center z-20 transition-backdrop transition-background duration-150",
-                scrolled
-                    ? "bg-card/90 backdrop-blur-sm border-border/50 border-b"
-                    : "border-b border-transparent",
+                "sticky top-0 start-0 w-full h-[var(--header-height)] flex items-center z-20 transition-backdrop transition-background duration-150 border-b bg-card/90 backdrop-blur-sm",
                 className,
             )}
         >
@@ -74,14 +51,19 @@ export function HostingNavbar({
                     />
                 </Link>
 
-                <nav className="justify-self-center flex items-center gap-8">
+                <nav className="justify-self-center flex items-center gap-6">
                     {links.map((link) => (
-                        <HostingNavLink
+                        <NavItem
                             key={link.href}
                             href={link.href}
-                            label={link.label}
                             active={link.active}
-                        />
+                            Icon={link.icon}
+                            iconSize={28}
+                            className="mt-1 flex-row items-center gap-1.5"
+                            classNameIcon="text-primary"
+                        >
+                            {link.label}
+                        </NavItem>
                     ))}
                 </nav>
 

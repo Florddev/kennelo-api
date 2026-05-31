@@ -1,13 +1,5 @@
-import { EstablishmentSidebarLayout } from "@/features/establishments/components/establishment-sidebar-layout";
+import EstablishmentLayout from "./establishments-layout";
 
-export default async function Layout({
-    children,
-    params,
-}: {
-    children: React.ReactNode;
-    params: Promise<{ id: string }>;
-}) {
-    const { id } = await params;
-
-    return <EstablishmentSidebarLayout establishmentId={id}>{children}</EstablishmentSidebarLayout>;
+export default function Layout({ children }: { children: React.ReactNode }) {
+    return <EstablishmentLayout>{children}</EstablishmentLayout>;
 }
