@@ -67,7 +67,7 @@ export default function EstablishmentLayout({ children }: { children: React.Reac
                     <Button variant="flat" size={isMobile ? "icon-sm" : "default"} asChild>
                         <Link
                             href={
-                                isRoot
+                                isRoot || !isMobile
                                     ? routes.EstablishmentDetails({ id: params.id })
                                     : routes.EstablishmentSettings({ id: params.id })
                             }

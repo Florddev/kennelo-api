@@ -167,7 +167,7 @@ function SplitPageLayoutContent({
                     className={cn(
                         !cleanContainer && "flex flex-col gap-3 pb-8",
                         isRoot && "hidden md:block",
-                        !isRoot && "px-4 md:p-0",
+                        !cleanContainer && !isRoot && "px-4 md:p-0",
                     )}
                 >
                     {sectionTitle && !isRoot && (

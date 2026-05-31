@@ -55,7 +55,7 @@ export function EstablishmentPageHeader({ children }: { children?: React.ReactNo
     return (
         <div
             data-slot="establishment-page-header"
-            className="h-8 w-full flex items-center justify-between"
+            className="pt-4 md:pt-0 md:min-h-8 w-full flex flex-col gap-2 md:flex-row md:items-center md:justify-between"
         >
             <Breadcrumb>
                 <BreadcrumbList>
