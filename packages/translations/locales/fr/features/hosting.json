@@ -6,5 +6,13 @@
             "pendingRequests": "Demandes en attente"
         },
         "noEstablishments": "Vous n'avez encore aucun établissement."
+    },
+    "bankAccount": {
+        "connectedAs": "Connecté en tant que {name} ({email})",
+        "coveredEstablishments": "Établissements utilisant ce compte",
+        "noEstablishmentsCovered": "Aucun établissement pour l'instant — votre compte couvrira automatiquement ceux que vous créez.",
+        "usesThisAccount": "Défaut",
+        "perEstablishmentNote": "Vous voulez un compte bancaire différent pour un établissement spécifique ? Cette option arrivera dans une prochaine mise à jour.",
+        "updateDetails": "Modifier les coordonnées bancaires"
     }
 }

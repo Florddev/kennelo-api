@@ -6,5 +6,13 @@
             "pendingRequests": "Pending requests"
         },
         "noEstablishments": "You don't have any establishments yet."
+    },
+    "bankAccount": {
+        "connectedAs": "Connected as {name} ({email})",
+        "coveredEstablishments": "Establishments using this account",
+        "noEstablishmentsCovered": "No establishments yet — your account will cover them automatically once created.",
+        "usesThisAccount": "Default",
+        "perEstablishmentNote": "Want a different bank account for a specific establishment? This option will land in a future update.",
+        "updateDetails": "Update banking details"
     }
 }

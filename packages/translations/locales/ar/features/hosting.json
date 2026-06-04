@@ -6,5 +6,13 @@
             "pendingRequests": "الطلبات المعلقة"
         },
         "noEstablishments": "ليس لديك أي مؤسسة بعد."
+    },
+    "bankAccount": {
+        "connectedAs": "متصل باسم {name} ({email})",
+        "coveredEstablishments": "المؤسسات التي تستخدم هذا الحساب",
+        "noEstablishmentsCovered": "لا توجد مؤسسات بعد — سيغطي حسابك المؤسسات التي تنشئها تلقائياً.",
+        "usesThisAccount": "افتراضي",
+        "perEstablishmentNote": "تريد حساباً بنكياً مختلفاً لمؤسسة معيّنة؟ سيصل هذا الخيار في تحديث قادم.",
+        "updateDetails": "تعديل التفاصيل البنكية"
     }
 }
