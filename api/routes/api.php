@@ -14,6 +14,7 @@ use App\Http\Controllers\Establishment\EstablishmentDashboardController;
 use App\Http\Controllers\Establishment\EstablishmentImageController;
 use App\Http\Controllers\Establishment\StripeConnectController;
 use App\Http\Controllers\Explore\ExploreController;
+use App\Http\Controllers\PaymentMethod\PaymentMethodController;
 use App\Http\Controllers\Pet\AnimalTypeController;
 use App\Http\Controllers\Pet\PetAttributeController;
 use App\Http\Controllers\Pet\PetController;
@@ -31,6 +32,7 @@ use App\Http\Controllers\Review\UserReviewController;
 use App\Http\Controllers\Stripe\StripeWebhookController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\User\UserController;
+use App\Http\Controllers\User\UserStripeController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/test', [TestController::class, 'index']);
@@ -135,6 +137,15 @@ Route::middleware(['auth.jwt'])->group(function () {
     Route::get('/user/identity-verification', [UserController::class, 'getIdentityVerification']);
     Route::post('/user/identity-verification', [UserController::class, 'submitIdentityVerification']);
     Route::delete('/user', [UserController::class, 'destroy']);
+
+    Route::get('/me/payment-methods', [PaymentMethodController::class, 'index']);
+    Route::post('/me/payment-methods/setup-intent', [PaymentMethodController::class, 'setupIntent']);
+    Route::post('/me/payment-methods/setup-checkout-session', [PaymentMethodController::class, 'setupCheckoutSession']);
+    Route::put('/me/payment-methods/{id}/default', [PaymentMethodController::class, 'setDefault']);
+    Route::delete('/me/payment-methods/{id}', [PaymentMethodController::class, 'destroy']);
+
+    Route::post('/users/me/stripe/account-session', [UserStripeController::class, 'accountSession']);
+    Route::get('/users/me/stripe/status', [UserStripeController::class, 'status']);
 });
 
 require __DIR__.'/auth.php';

@@ -25,6 +25,36 @@
         "confirmFooterTotal": "Total: €{amount}",
         "successTitle": "Booking request sent!",
         "successDescription": "The host will get back to you shortly.",
-        "paymentSetupFailed": "Unable to start payment. Please try again."
+        "paymentSetupFailed": "Could not start the payment",
+        "paymentSection": "Payment",
+        "paymentMethodLabel": "Pay with",
+        "selectPaymentMethod": "Please select a payment method",
+        "noPaymentMethod": "You haven't added a payment method yet.",
+        "paymentFailed": "Payment failed",
+        "paymentSuccess": "Payment confirmed",
+        "hostNotConnected": "This host cannot accept bookings yet. Their bank account is not connected."
+    },
+    "status": {
+        "pending": "Pending",
+        "confirmed": "Confirmed",
+        "inProgress": "In progress",
+        "cancelled": "Cancelled",
+        "completed": "Completed",
+        "refunded": "Refunded"
+    },
+    "review": {
+        "title": "Pending requests",
+        "accept": "Accept",
+        "reject": "Reject",
+        "acceptSuccess": "Booking accepted",
+        "acceptFailed": "Could not accept the booking",
+        "rejectConfirmTitle": "Reject and refund?",
+        "rejectConfirmDescription": "The customer will be refunded immediately.",
+        "refundIssued": "Booking rejected and refund issued",
+        "refundFailed": "Refund failed",
+        "paymentHeld": "Payment held",
+        "emptyTitle": "No pending requests",
+        "emptyDescription": "New booking requests will appear here.",
+        "unknownCustomer": "Unknown customer"
     }
 }

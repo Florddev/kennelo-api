@@ -9,12 +9,16 @@ import { computeNights, formatDateRange, toApiDate } from "@workspace/common";
 import type { CapacityModel, EstablishmentModel } from "@workspace/modules/establishments";
 import type { PetModel } from "@workspace/modules/pets";
 
+import { getStripe } from "@/lib/stripe";
 import { useNavigation } from "@/hooks/use-navigation";
 import { useAsyncState } from "@/hooks/use-async-state";
 import { resolvePetsAvailability } from "@/features/host";
 import { EstablishmentSummaryCard } from "@/features/establishments/components/establishment-summary-card";
+import { PaymentMethodPicker } from "@/features/payment-methods/components/payment-method-picker";
 
 import { computeBookingTotals } from "../lib/pricing";
+
+const stripePromise = getStripe();
 import { BookingHeader } from "./booking-header";
 import { BookingTripSection } from "./booking-trip-section";
 import { BookingPetsSection } from "./booking-pets-section";
@@ -41,13 +45,14 @@ export function BookingCheckoutForm({
     const { router, routes } = useNavigation();
     const [selectedPetIds, setSelectedPetIds] = useState<string[]>([]);
     const [specialRequests, setSpecialRequests] = useState("");
+    const [paymentMethodId, setPaymentMethodId] = useState<string | null>(null);
     const { execute, isLoading: isSubmitting } = useAsyncState();
 
     const petsAvailability = resolvePetsAvailability(pets, capacities);
     const selectedPets = pets.filter((pet) => selectedPetIds.includes(pet.id));
     const nights = computeNights(dateRange.from, dateRange.to);
     const totals = computeBookingTotals(selectedPets, capacities, nights);
-    const canSubmit = selectedPetIds.length > 0 && nights > 0;
+    const canSubmit = selectedPetIds.length > 0 && nights > 0 && paymentMethodId !== null;
 
     const togglePet = (petId: string) => {
         setSelectedPetIds((current) =>
@@ -58,6 +63,11 @@ export function BookingCheckoutForm({
     };
 
     const handleSubmit = async () => {
+        if (!paymentMethodId) {
+            toast.error(t("features.bookings.checkout.selectPaymentMethod"));
+            return;
+        }
+
         const result = await execute(
             () =>
                 createBooking({
@@ -66,18 +76,35 @@ export function BookingCheckoutForm({
                     checkOutDate: toApiDate(dateRange.to),
                     petIds: selectedPetIds,
                     specialRequests: specialRequests.trim() || undefined,
+                    paymentMethodId,
+                    savePaymentMethod: false,
                 }),
             { displayError: true },
         );
 
         if (!result) return;
 
-        if (!result.checkoutUrl) {
-            toast.error(t("features.bookings.checkout.paymentSetupFailed"));
-            return;
+        if (result.paymentStatus !== "succeeded" && result.clientSecret) {
+            const stripe = await stripePromise;
+            if (!stripe) {
+                toast.error(t("features.bookings.checkout.paymentSetupFailed"));
+                return;
+            }
+            const actionResult = await stripe.handleNextAction({
+                clientSecret: result.clientSecret,
+            });
+            if (actionResult.error) {
+                toast.error(t("features.bookings.checkout.paymentFailed"), {
+                    description: actionResult.error.message,
+                });
+                return;
+            }
         }
 
-        window.location.href = result.checkoutUrl;
+        toast.success(t("features.bookings.checkout.successTitle"), {
+            description: t("features.bookings.checkout.successDescription"),
+        });
+        router.push(routes.Explore());
     };
 
     const locale = typeof navigator !== "undefined" ? navigator.language : "fr-FR";
@@ -120,6 +147,15 @@ export function BookingCheckoutForm({
                 <Separator />
 
                 <BookingMessageSection value={specialRequests} onChange={setSpecialRequests} />
+
+                <Separator />
+
+                <section className="flex flex-col gap-3">
+                    <h2 className="text-lg font-semibold text-slate-900">
+                        {t("features.bookings.checkout.paymentSection")}
+                    </h2>
+                    <PaymentMethodPicker value={paymentMethodId} onChange={setPaymentMethodId} />
+                </section>
             </div>
 
             <BookingFooter

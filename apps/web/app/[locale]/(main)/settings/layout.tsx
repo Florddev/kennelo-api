@@ -7,6 +7,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { ArrowLeft, Bell, LetterUnread, Password, UserCircle } from "@solar-icons/react";
+import { CreditCard } from "lucide-react";
 import { useHideBottomNavbar } from "@/hooks/use-hide-bottom-navbar";
 import { useScrolled } from "@/hooks/use-scrolled";
 import { NavRow } from "@/components/navigation/nav-row";
@@ -34,6 +35,12 @@ export default function ProfileSettingsLayout({ children }: { children: React.Re
             icon: Password,
             label: t("ui.navigation.changePassword"),
             href: routes.MyProfileChangePassword(),
+            comingSoon: false,
+        },
+        {
+            icon: CreditCard,
+            label: t("ui.navigation.paymentMethods"),
+            href: routes.PaymentMethodsPage(),
             comingSoon: false,
         },
         {

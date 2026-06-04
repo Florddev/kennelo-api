@@ -11,6 +11,8 @@ export async function createBooking(input: CreateBookingInput): Promise<BookingM
         pet_ids: input.petIds,
         service_ids: input.serviceIds,
         special_requests: input.specialRequests,
+        payment_method_id: input.paymentMethodId,
+        save_payment_method: input.savePaymentMethod ?? false,
     });
 
     if (!response.data) {

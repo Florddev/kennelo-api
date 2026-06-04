@@ -41,6 +41,11 @@ class User extends Authenticatable implements HasMedia, JWTSubject, MustVerifyEm
         'password',
         'locale',
         'address_id',
+        'stripe_account_id',
+        'stripe_charges_enabled',
+        'stripe_payouts_enabled',
+        'stripe_onboarding_completed',
+        'stripe_customer_id',
     ];
 
     protected $hidden = [
@@ -55,6 +60,9 @@ class User extends Authenticatable implements HasMedia, JWTSubject, MustVerifyEm
             'is_id_verified' => 'boolean',
             'status' => UserStatus::class,
             'password' => self::PASSWORD_CAST,
+            'stripe_charges_enabled' => 'boolean',
+            'stripe_payouts_enabled' => 'boolean',
+            'stripe_onboarding_completed' => 'boolean',
         ];
     }
 

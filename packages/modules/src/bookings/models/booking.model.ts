@@ -18,6 +18,12 @@ export class BookingModel {
         public readonly status: BookingStatus,
         public readonly paymentStatus: string | null,
         public readonly stripePaymentIntentId: string | null,
+        public readonly stripeChargeId: string | null,
+        public readonly stripeTransferGroup: string | null,
+        public readonly stripeTransferId: string | null,
+        public readonly stripeRefundId: string | null,
+        public readonly refundedAmount: number | null,
+        public readonly refundedAt: string | null,
         public readonly clientSecret: string | null,
         public readonly checkoutUrl: string | null,
         public readonly specialRequests: string | null,
@@ -42,7 +48,13 @@ export class BookingModel {
             dto.establishment_amount,
             dto.status,
             dto.payment_status,
-            dto.stripe_payment_intent_id,
+            dto.stripe_payment_intent_id ?? null,
+            dto.stripe_charge_id ?? null,
+            dto.stripe_transfer_group ?? null,
+            dto.stripe_transfer_id ?? null,
+            dto.stripe_refund_id ?? null,
+            dto.refunded_amount != null ? Number(dto.refunded_amount) : null,
+            dto.refunded_at ?? null,
             dto.client_secret ?? null,
             dto.checkout_url ?? null,
             dto.special_requests,
@@ -74,5 +86,9 @@ export class BookingModel {
 
     isCancelled(): boolean {
         return this.isStatus("cancelled");
+    }
+
+    isRefunded(): boolean {
+        return this.paymentStatus === "refunded";
     }
 }

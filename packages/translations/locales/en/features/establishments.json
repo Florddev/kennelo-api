@@ -30,7 +30,12 @@
             "chargesOn": "Payments enabled",
             "chargesOff": "Payments disabled",
             "payoutsOn": "Payouts enabled",
-            "payoutsOff": "Payouts disabled"
+            "payoutsOff": "Payouts disabled",
+            "embedded": {
+                "title": "Bank account onboarding",
+                "description": "Complete this short form to start receiving payouts from Kennelo.",
+                "sessionFailed": "Could not load the Stripe onboarding session"
+            }
         },
         "empty": {
             "phone": "No phone number",

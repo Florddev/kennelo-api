@@ -18,6 +18,11 @@ export class UserModel {
         public readonly roles: UserRole[],
         public readonly createdAt: string,
         public readonly updatedAt: string,
+        public readonly stripeAccountId: string | null,
+        public readonly stripeCustomerId: string | null,
+        public readonly stripeChargesEnabled: boolean,
+        public readonly stripePayoutsEnabled: boolean,
+        public readonly stripeOnboardingCompleted: boolean,
     ) {}
 
     static from(dto: UserDto): UserModel {
@@ -36,6 +41,11 @@ export class UserModel {
             (dto.roles ?? []) as UserRole[],
             dto.created_at,
             dto.updated_at,
+            dto.stripe_account_id ?? null,
+            dto.stripe_customer_id ?? null,
+            dto.stripe_charges_enabled ?? false,
+            dto.stripe_payouts_enabled ?? false,
+            dto.stripe_onboarding_completed ?? false,
         );
     }
 

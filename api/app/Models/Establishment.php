@@ -22,7 +22,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 /**
- * @property-read User $manager
+ * @property-read User|null $manager
  * @property-read Address|null $address
  */
 class Establishment extends Model implements HasMedia
@@ -134,5 +134,20 @@ class Establishment extends Model implements HasMedia
             ->where('user_id', $user->id)
             ->where('permission', $permission->value)
             ->exists();
+    }
+
+    public function resolveStripeAccountId(): ?string
+    {
+        return $this->stripe_account_id ?? $this->manager?->stripe_account_id;
+    }
+
+    public function resolveChargesEnabled(): bool
+    {
+        return (bool) ($this->stripe_charges_enabled || $this->manager?->stripe_charges_enabled);
+    }
+
+    public function resolvePayoutsEnabled(): bool
+    {
+        return (bool) ($this->stripe_payouts_enabled || $this->manager?->stripe_payouts_enabled);
     }
 }

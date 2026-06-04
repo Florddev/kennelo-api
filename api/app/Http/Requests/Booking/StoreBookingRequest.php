@@ -25,6 +25,8 @@ class StoreBookingRequest extends FormRequest
             'service_ids' => ['sometimes', 'array'],
             'service_ids.*' => ['uuid', Rule::exists('services', 'id')->where('establishment_id', $this->input('establishment_id'))],
             'special_requests' => ['sometimes', 'nullable', 'string', 'max:1000'],
+            'payment_method_id' => ['required', 'string'],
+            'save_payment_method' => ['sometimes', 'boolean'],
         ];
     }
 }

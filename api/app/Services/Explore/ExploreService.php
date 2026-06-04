@@ -51,7 +51,10 @@ class ExploreService
             ->withCount(
                 ['reviews as review_count' => fn (Builder $q) => $q->whereRaw('"is_published" IS TRUE')]
             )
-            ->active();
+            ->active()
+            ->whereHas('manager', function ($q) {
+                $q->where('stripe_charges_enabled', true);
+            });
     }
 
     /**

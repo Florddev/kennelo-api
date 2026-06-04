@@ -8,12 +8,15 @@ use App\Enums\BookingStatus;
 use App\Enums\PaymentStatus;
 use App\Models\Booking;
 use App\Models\Establishment;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Stripe\Account;
+use Stripe\Charge;
 use Stripe\Event;
 use Stripe\PaymentIntent;
+use Stripe\Transfer;
 
 class StripeWebhookService
 {
@@ -24,6 +27,9 @@ class StripeWebhookService
             'payment_intent.payment_failed' => $this->onPaymentIntentFailed($event),
             'payment_intent.processing' => $this->onPaymentIntentProcessing($event),
             'account.updated' => $this->onAccountUpdated($event),
+            'charge.refunded' => $this->onChargeRefunded($event),
+            'transfer.created' => $this->onTransferCreated($event),
+            'transfer.failed' => $this->onTransferFailed($event),
             default => null,
         };
     }
@@ -35,11 +41,20 @@ class StripeWebhookService
             return;
         }
 
+        $onboardingCompleted = $object->details_submitted && $object->charges_enabled;
+
+        User::where('stripe_account_id', $object->id)
+            ->update([
+                'stripe_charges_enabled' => $object->charges_enabled,
+                'stripe_payouts_enabled' => $object->payouts_enabled,
+                'stripe_onboarding_completed' => $onboardingCompleted,
+            ]);
+
         Establishment::where('stripe_account_id', $object->id)
             ->update([
                 'stripe_charges_enabled' => $object->charges_enabled,
                 'stripe_payouts_enabled' => $object->payouts_enabled,
-                'stripe_onboarding_completed' => $object->details_submitted,
+                'stripe_onboarding_completed' => $onboardingCompleted,
             ]);
     }
 
@@ -71,12 +86,17 @@ class StripeWebhookService
                 return;
             }
 
-            $booking->update([
+            $updates = [
                 'stripe_payment_intent_id' => $paymentIntent->id,
                 'payment_status' => PaymentStatus::Succeeded,
                 'paid_at' => Carbon::now(),
-                'status' => BookingStatus::CONFIRMED,
-            ]);
+            ];
+
+            if ($booking->stripe_charge_id === null && $paymentIntent->latest_charge !== null) {
+                $updates['stripe_charge_id'] = $paymentIntent->latest_charge;
+            }
+
+            $booking->update($updates);
         });
     }
 
@@ -118,6 +138,81 @@ class StripeWebhookService
                 'payment_status' => PaymentStatus::Processing,
             ]);
         });
+    }
+
+    private function onChargeRefunded(Event $event): void
+    {
+        $charge = $event->data->object ?? null;
+        if ($charge === null) {
+            return;
+        }
+
+        DB::transaction(function () use ($charge): void {
+            $booking = Booking::where('stripe_charge_id', $charge->id)
+                ->lockForUpdate()
+                ->first();
+
+            if ($booking === null) {
+                Log::warning('Stripe webhook: no booking for charge.refunded', [
+                    'charge_id' => $charge->id,
+                ]);
+
+                return;
+            }
+
+            $refundId = $charge->refunds->data[0]->id ?? null;
+            $amountRefunded = $charge instanceof Charge ? (int) $charge->amount_refunded : 0;
+
+            $booking->update([
+                'stripe_refund_id' => $refundId,
+                'refunded_amount' => bcdiv((string) $amountRefunded, '100', 2),
+                'refunded_at' => Carbon::now(),
+                'payment_status' => PaymentStatus::Refunded,
+            ]);
+        });
+    }
+
+    private function onTransferCreated(Event $event): void
+    {
+        $transfer = $event->data->object ?? null;
+        if ($transfer === null) {
+            return;
+        }
+
+        $bookingId = $transfer->metadata->booking_id ?? null;
+        if ($bookingId === null) {
+            return;
+        }
+
+        DB::transaction(function () use ($transfer, $bookingId): void {
+            $booking = Booking::where('id', $bookingId)->lockForUpdate()->first();
+            if ($booking === null) {
+                return;
+            }
+
+            if ($booking->stripe_transfer_id !== null) {
+                return;
+            }
+
+            $booking->update([
+                'stripe_transfer_id' => $transfer->id,
+            ]);
+        });
+    }
+
+    private function onTransferFailed(Event $event): void
+    {
+        $transfer = $event->data->object ?? null;
+        if ($transfer === null) {
+            return;
+        }
+
+        $metadata = $transfer instanceof Transfer ? $transfer->metadata->toArray() : [];
+
+        Log::warning('Stripe webhook: transfer.failed', [
+            'transfer_id' => $transfer->id,
+            'metadata' => $metadata,
+        ]);
     }
 
     private function findBookingForPaymentIntent(PaymentIntent $paymentIntent): ?Booking

@@ -44,7 +44,14 @@ class BookingController extends Controller
 
     public function store(StoreBookingRequest $request): JsonResponse
     {
-        $booking = $this->bookingService->create($request->user(), $request->validated());
+        $validated = $request->validated();
+
+        $booking = $this->bookingService->create(
+            $request->user(),
+            $validated,
+            $validated['payment_method_id'],
+            (bool) ($validated['save_payment_method'] ?? false),
+        );
 
         return (new BookingResource($booking))
             ->additional([

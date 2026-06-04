@@ -37,7 +37,6 @@ import { useAuth } from "@/features/auth";
 import { DashboardTab } from "@/features/establishments/components/dashboard-tab";
 import { CapacitiesTab } from "@/features/establishments/components/capacities-tab";
 import { AvailabilitiesTab } from "@/features/establishments/components/availabilities-tab";
-import { StripeConnectCard } from "@/features/establishments/components/stripe-connect-card";
 import { useNavigation } from "@/hooks/use-navigation";
 import { useAsyncState } from "@/hooks/use-async-state";
 import { InputController } from "@/components/forms/input-controller";
@@ -181,10 +180,6 @@ function EstablishmentViewMode({
                     </CardContent>
                 </Card>
             )}
-
-            <div className="lg:col-span-2">
-                <StripeConnectCard establishment={establishment} />
-            </div>
         </div>
     );
 }

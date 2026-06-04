@@ -1,0 +1,10 @@
+{
+    "bankAccountShared": "Your bank account is shared across all your establishments — only set it up once.",
+    "temp": {
+        "tabs": {
+            "bankAccount": "Bank account",
+            "pendingRequests": "Pending requests"
+        },
+        "noEstablishments": "You don't have any establishments yet."
+    }
+}

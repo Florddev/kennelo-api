@@ -43,6 +43,11 @@ class Booking extends Model
         'payment_status',
         'paid_at',
         'refunded_at',
+        'stripe_charge_id',
+        'stripe_transfer_group',
+        'stripe_transfer_id',
+        'stripe_refund_id',
+        'refunded_amount',
     ];
 
     protected function casts(): array
@@ -57,6 +62,7 @@ class Booking extends Model
             'payment_status' => PaymentStatus::class,
             'paid_at' => 'datetime',
             'refunded_at' => 'datetime',
+            'refunded_amount' => 'decimal:2',
         ];
     }
 

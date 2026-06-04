@@ -30,7 +30,12 @@
             "chargesOn": "Paiements activés",
             "chargesOff": "Paiements désactivés",
             "payoutsOn": "Versements activés",
-            "payoutsOff": "Versements désactivés"
+            "payoutsOff": "Versements désactivés",
+            "embedded": {
+                "title": "Vérification du compte bancaire",
+                "description": "Remplissez ce court formulaire pour commencer à recevoir vos paiements depuis Kennelo.",
+                "sessionFailed": "Impossible de charger la session d'onboarding Stripe"
+            }
         },
         "empty": {
             "phone": "Aucun téléphone",

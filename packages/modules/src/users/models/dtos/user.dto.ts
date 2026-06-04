@@ -15,4 +15,9 @@ export type UserDto = {
     roles: string[];
     created_at: string;
     updated_at: string;
+    stripe_account_id?: string | null;
+    stripe_customer_id?: string | null;
+    stripe_charges_enabled?: boolean;
+    stripe_payouts_enabled?: boolean;
+    stripe_onboarding_completed?: boolean;
 };

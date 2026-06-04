@@ -5,6 +5,7 @@
 export * from "./actions/commands/change-email";
 export * from "./actions/commands/change-locale";
 export * from "./actions/commands/change-password";
+export * from "./actions/commands/create-stripe-account-session";
 export * from "./actions/commands/destroy-user";
 export * from "./actions/commands/login-user";
 export * from "./actions/commands/logout-user";
@@ -13,6 +14,7 @@ export * from "./actions/commands/register-user";
 export * from "./actions/commands/update-profile";
 export * from "./actions/commands/upload-avatar";
 export * from "./actions/queries/get-current-user";
+export * from "./actions/queries/get-my-stripe-status";
 export * from "./actions/queries/get-user";
 export * from "./models/auth.model";
 export * from "./models/user.model";

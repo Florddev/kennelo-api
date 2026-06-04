@@ -1,0 +1,10 @@
+{
+    "bankAccountShared": "Votre compte bancaire est partagé entre tous vos établissements — vous ne le configurez qu'une fois.",
+    "temp": {
+        "tabs": {
+            "bankAccount": "Compte bancaire",
+            "pendingRequests": "Demandes en attente"
+        },
+        "noEstablishments": "Vous n'avez encore aucun établissement."
+    }
+}

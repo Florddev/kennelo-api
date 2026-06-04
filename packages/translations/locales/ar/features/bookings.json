@@ -25,6 +25,36 @@
         "confirmFooterTotal": "الإجمالي: {amount} €",
         "successTitle": "تم إرسال طلب الحجز!",
         "successDescription": "سيرد عليك المضيف قريباً.",
-        "paymentSetupFailed": "تعذّر بدء عملية الدفع. يرجى المحاولة مرة أخرى."
+        "paymentSetupFailed": "تعذّر بدء عملية الدفع",
+        "paymentSection": "الدفع",
+        "paymentMethodLabel": "ادفع باستخدام",
+        "selectPaymentMethod": "يرجى اختيار طريقة دفع",
+        "noPaymentMethod": "لم تقم بإضافة طريقة دفع بعد.",
+        "paymentFailed": "فشل الدفع",
+        "paymentSuccess": "تم تأكيد الدفع",
+        "hostNotConnected": "لا يمكن لهذا المضيف قبول الحجوزات بعد. لم يتم إعداد حسابه البنكي."
+    },
+    "status": {
+        "pending": "قيد الانتظار",
+        "confirmed": "مؤكّد",
+        "inProgress": "جارٍ",
+        "cancelled": "ملغى",
+        "completed": "مكتمل",
+        "refunded": "مسترد"
+    },
+    "review": {
+        "title": "الطلبات المعلّقة",
+        "accept": "قبول",
+        "reject": "رفض",
+        "acceptSuccess": "تم قبول الحجز",
+        "acceptFailed": "تعذّر قبول الحجز",
+        "rejectConfirmTitle": "رفض وإصدار استرداد؟",
+        "rejectConfirmDescription": "سيتم استرداد المبلغ للعميل فوراً.",
+        "refundIssued": "تم رفض الحجز وإصدار الاسترداد",
+        "refundFailed": "فشل الاسترداد",
+        "paymentHeld": "الدفع محجوز",
+        "emptyTitle": "لا توجد طلبات معلّقة",
+        "emptyDescription": "ستظهر طلبات الحجز الجديدة هنا.",
+        "unknownCustomer": "عميل غير معروف"
     }
 }

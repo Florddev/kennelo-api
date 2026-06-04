@@ -31,5 +31,6 @@
     "login": "Login",
     "addPhoto": "Add a photo",
     "finish": "Finish",
-    "new": "New"
+    "new": "New",
+    "saving": "Saving…"
 }
