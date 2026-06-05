@@ -31,5 +31,7 @@
     "login": "Login",
     "addPhoto": "Add a photo",
     "finish": "Finish",
-    "new": "New"
+    "new": "New",
+    "switchToClient": "Switch to client mode",
+    "backTo": "Back to {value}"
 }

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Database\Seeders;
 
 use App\Models\AnimalType;
-use App\Models\Booking;
 use App\Models\Establishment;
 use App\Models\Pet;
 use App\Models\Service;
@@ -17,264 +16,149 @@ use Illuminate\Support\Str;
 
 class BookingSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
+    private const WALK_PRICE = 15.00;
+
+    private array $petPrices = [
+        'Rex' => 30.00,
+        'Max' => 30.00,
+        'Minou' => 25.00,
+        'Kiwi' => 20.00,
+    ];
+
+    private array $dogPets = ['Rex', 'Max'];
+
+    private array $templates = [
+        ['status' => 'completed', 'startOffset' => -40, 'nights' => 5, 'pets' => ['Rex'], 'requests' => 'Rex adore jouer avec la balle.'],
+        ['status' => 'completed', 'startOffset' => -32, 'nights' => 3, 'pets' => ['Minou'], 'requests' => 'Minou est très calme et reste cachée la journée.'],
+        ['status' => 'completed', 'startOffset' => -22, 'nights' => 7, 'pets' => ['Rex', 'Minou'], 'requests' => 'Prévoir des espaces séparés pour les repas.'],
+        ['status' => 'confirmed', 'startOffset' => 3, 'nights' => 5, 'pets' => ['Max'], 'requests' => 'Max prend ses médicaments matin et soir.'],
+        ['status' => 'confirmed', 'startOffset' => 9, 'nights' => 7, 'pets' => ['Rex', 'Kiwi'], 'requests' => 'Kiwi a besoin de lumière naturelle.'],
+        ['status' => 'confirmed', 'startOffset' => 16, 'nights' => 4, 'pets' => ['Minou', 'Max'], 'requests' => null],
+        ['status' => 'pending', 'startOffset' => 26, 'nights' => 6, 'pets' => ['Kiwi'], 'requests' => 'Kiwi aime chanter le matin !'],
+        ['status' => 'cancelled', 'startOffset' => 12, 'nights' => 3, 'pets' => ['Rex'], 'requests' => null],
+    ];
+
     public function run(): void
     {
-        // Get IDs with validation
         $userId = User::where('email', 'user@orus.com')->value('id');
         if (! $userId) {
             throw new \RuntimeException('User with email user@orus.com not found. Run UsersSeeder first.');
         }
 
-        $establishmentId = Establishment::first()->id;
-        if (! $establishmentId) {
-            throw new \RuntimeException('No establishment found. Run EstablishmentSeeder first.');
+        $managerId = User::where('email', 'manager@orus.com')->value('id');
+        if (! $managerId) {
+            throw new \RuntimeException('User with email manager@orus.com not found. Run UsersSeeder first.');
         }
 
-        // Get pet IDs
+        $establishments = Establishment::where('manager_id', $managerId)
+            ->orderBy('created_at')
+            ->get();
+        if ($establishments->isEmpty()) {
+            throw new \RuntimeException('No establishment found for manager@orus.com. Run EstablishmentSeeder first.');
+        }
+
         $pets = Pet::whereIn('name', ['Rex', 'Minou', 'Kiwi', 'Max'])->pluck('id', 'name')->toArray();
         if (count($pets) !== 4) {
             throw new \RuntimeException('Missing pets. Run PetSeeder first.');
         }
-        $rexId = $pets['Rex'];
-        $minouId = $pets['Minou'];
-        $kiwiId = $pets['Kiwi'];
-        $maxId = $pets['Max'];
 
-        // Get animal type IDs
-        $animalTypes = AnimalType::whereIn('code', ['dog', 'cat', 'bird'])->pluck('id', 'code')->toArray();
-        if (count($animalTypes) !== 3) {
-            throw new \RuntimeException('Missing animal types. Run AnimalTypeSeeder first.');
+        $dogTypeId = AnimalType::where('code', 'dog')->value('id');
+        if (! $dogTypeId) {
+            throw new \RuntimeException('Missing dog animal type. Run AnimalTypeSeeder first.');
         }
-        $dogTypeId = $animalTypes['dog'];
-        $catTypeId = $animalTypes['cat'];
-        $birdTypeId = $animalTypes['bird'];
 
-        // Create services for the establishment (specific to animal types)
-        $walkService = Service::firstOrCreate(
-            [
-                'establishment_id' => $establishmentId,
-                'animal_type_id' => $dogTypeId,
-                'name' => 'Promenade quotidienne',
-            ],
-            [
-                'description' => 'Promenade d\'une heure dans le parc',
-                'is_included' => false,
-                'price' => 15.00,
-            ]
-        );
+        foreach ($establishments as $establishment) {
+            $walkService = Service::firstOrCreate(
+                [
+                    'establishment_id' => $establishment->id,
+                    'animal_type_id' => $dogTypeId,
+                    'name' => 'Promenade quotidienne',
+                ],
+                [
+                    'description' => 'Promenade d\'une heure dans le parc',
+                    'is_included' => false,
+                    'price' => self::WALK_PRICE,
+                ]
+            );
 
-        $groomingService = Service::firstOrCreate(
-            [
-                'establishment_id' => $establishmentId,
-                'animal_type_id' => $dogTypeId,
-                'name' => 'Toilettage',
-            ],
-            [
-                'description' => 'Bain, séchage et brossage complet',
-                'is_included' => false,
-                'price' => 45.00,
-            ]
-        );
+            foreach ($this->templates as $template) {
+                $this->createBooking($userId, $establishment->id, $walkService->id, $pets, $template);
+            }
+        }
+    }
 
-        $medicationService = Service::firstOrCreate(
-            [
-                'establishment_id' => $establishmentId,
-                'animal_type_id' => $dogTypeId,
-                'name' => 'Administration médicaments',
-            ],
-            [
-                'description' => 'Prise en charge de l\'administration des médicaments',
-                'is_included' => true,
-                'price' => 0.00,
-            ]
-        );
+    private function createBooking(string $userId, string $establishmentId, string $walkServiceId, array $pets, array $template): void
+    {
+        $checkIn = Carbon::now()->addDays($template['startOffset'])->startOfDay();
+        $checkOut = $checkIn->copy()->addDays($template['nights']);
 
-        $photoService = Service::firstOrCreate(
-            [
-                'establishment_id' => $establishmentId,
-                'animal_type_id' => $dogTypeId,
-                'name' => 'Photos quotidiennes',
-            ],
-            [
-                'description' => 'Envoi de photos quotidiennes de votre animal',
-                'is_included' => true,
-                'price' => 0.00,
-            ]
-        );
+        $createdAt = Carbon::now()->subDays(10);
+        $updatedAt = $template['status'] === 'completed'
+            ? $checkOut->copy()
+            : Carbon::now()->subDays(1);
 
-        // === BOOKING 1: Completed - Rex only ===
-        $booking1Id = (string) Str::uuid();
-        DB::table('bookings')->insert(['id' => $booking1Id,
+        $petsSubtotal = 0.0;
+        $hasDog = false;
+        $bookingPetsRows = [];
+
+        foreach ($template['pets'] as $petName) {
+            $price = $this->petPrices[$petName];
+            $subtotal = $price * $template['nights'];
+            $petsSubtotal += $subtotal;
+
+            if (in_array($petName, $this->dogPets, true)) {
+                $hasDog = true;
+            }
+
+            $bookingPetsRows[] = [
+                'pet_id' => $pets[$petName],
+                'price_per_night' => $price,
+                'number_of_nights' => $template['nights'],
+                'subtotal' => $subtotal,
+            ];
+        }
+
+        $servicesSubtotal = 0.0;
+        if ($hasDog) {
+            $servicesSubtotal = self::WALK_PRICE * $template['nights'];
+        }
+
+        $bookingId = (string) Str::uuid();
+        DB::table('bookings')->insert([
+            'id' => $bookingId,
             'user_id' => $userId,
             'establishment_id' => $establishmentId,
-            'check_in_date' => Carbon::now()->subDays(20)->format('Y-m-d'),
-            'check_out_date' => Carbon::now()->subDays(15)->format('Y-m-d'),
-            'total_price' => 225.00, // 5 nights * 30€ + 3 walks * 15€
-            'status' => 'completed',
-            'special_requests' => 'Rex adore jouer avec la balle. Merci de bien surveiller ses pauses pipi toutes les 4h.',
-            'created_at' => Carbon::now()->subDays(25),
-            'updated_at' => Carbon::now()->subDays(15),
+            'check_in_date' => $checkIn->format('Y-m-d'),
+            'check_out_date' => $checkOut->format('Y-m-d'),
+            'total_price' => $petsSubtotal + $servicesSubtotal,
+            'status' => $template['status'],
+            'special_requests' => $template['requests'],
+            'created_at' => $createdAt,
+            'updated_at' => $updatedAt,
         ]);
 
-        DB::table('booking_pets')->insert([
-            'booking_id' => $booking1Id,
-            'pet_id' => $rexId,
-            'price_per_night' => 30.00,
-            'number_of_nights' => 5,
-            'subtotal' => 150.00,
-            'created_at' => Carbon::now()->subDays(25),
-            'updated_at' => Carbon::now()->subDays(25),
-        ]);
+        foreach ($bookingPetsRows as $row) {
+            DB::table('booking_pets')->insert([
+                'booking_id' => $bookingId,
+                'pet_id' => $row['pet_id'],
+                'price_per_night' => $row['price_per_night'],
+                'number_of_nights' => $row['number_of_nights'],
+                'subtotal' => $row['subtotal'],
+                'created_at' => $createdAt,
+                'updated_at' => $createdAt,
+            ]);
+        }
 
-        DB::table('booking_services')->insert([
-            'booking_id' => $booking1Id,
-            'service_id' => $walkService->id,
-            'quantity' => 5,
-            'unit_price' => 15.00,
-            'subtotal' => 75.00,
-            'created_at' => Carbon::now()->subDays(25),
-            'updated_at' => Carbon::now()->subDays(25),
-        ]);
-
-        // === BOOKING 2: Confirmed - Rex + Minou ===
-        $booking2Id = (string) Str::uuid();
-        DB::table('bookings')->insert(['id' => $booking2Id,
-            'user_id' => $userId,
-            'establishment_id' => $establishmentId,
-            'check_in_date' => Carbon::now()->addDays(5)->format('Y-m-d'),
-            'check_out_date' => Carbon::now()->addDays(12)->format('Y-m-d'),
-            'total_price' => 445.00, // (7 nights * 30€ Rex) + (7 nights * 25€ Minou) + (7 walks * 15€) + toilettage
-            'status' => 'confirmed',
-            'special_requests' => 'Rex et Minou peuvent cohabiter, mais Minou préfère rester à distance. Merci de prévoir des espaces séparés pour manger.',
-            'created_at' => Carbon::now()->subDays(3),
-            'updated_at' => Carbon::now()->subDays(3),
-        ]);
-
-        DB::table('booking_pets')->insert([
-            [
-                'booking_id' => $booking2Id,
-                'pet_id' => $rexId,
-                'price_per_night' => 30.00,
-                'number_of_nights' => 7,
-                'subtotal' => 210.00,
-                'created_at' => Carbon::now()->subDays(3),
-                'updated_at' => Carbon::now()->subDays(3),
-            ],
-            [
-                'booking_id' => $booking2Id,
-                'pet_id' => $minouId,
-                'price_per_night' => 25.00,
-                'number_of_nights' => 7,
-                'subtotal' => 175.00,
-                'created_at' => Carbon::now()->subDays(3),
-                'updated_at' => Carbon::now()->subDays(3),
-            ],
-        ]);
-
-        DB::table('booking_services')->insert([
-            [
-                'booking_id' => $booking2Id,
-                'service_id' => $walkService->id,
-                'quantity' => 7,
-                'unit_price' => 15.00,
-                'subtotal' => 105.00,
-                'created_at' => Carbon::now()->subDays(3),
-                'updated_at' => Carbon::now()->subDays(3),
-            ],
-            [
-                'booking_id' => $booking2Id,
-                'service_id' => $groomingService->id,
-                'quantity' => 1,
-                'unit_price' => 45.00,
-                'subtotal' => 45.00,
-                'created_at' => Carbon::now()->subDays(3),
-                'updated_at' => Carbon::now()->subDays(3),
-            ],
-        ]);
-
-        // === BOOKING 3: Confirmed - Max with medications ===
-        $booking3Id = (string) Str::uuid();
-        DB::table('bookings')->insert(['id' => $booking3Id,
-            'user_id' => $userId,
-            'establishment_id' => $establishmentId,
-            'check_in_date' => Carbon::now()->addDays(10)->format('Y-m-d'),
-            'check_out_date' => Carbon::now()->addDays(17)->format('Y-m-d'),
-            'total_price' => 240.00, // 8 nights * 30€
-            'status' => 'confirmed',
-            'special_requests' => 'Max a de l\'arthrose et prend des médicaments matin et soir. Merci de respecter strictement les horaires. Il ne peut pas faire de longues promenades.',
-            'created_at' => Carbon::now()->subDays(5),
-            'updated_at' => Carbon::now()->subDays(5),
-        ]);
-
-        DB::table('booking_pets')->insert([
-            'booking_id' => $booking3Id,
-            'pet_id' => $maxId,
-            'price_per_night' => 30.00,
-            'number_of_nights' => 8,
-            'subtotal' => 240.00,
-            'created_at' => Carbon::now()->subDays(5),
-            'updated_at' => Carbon::now()->subDays(5),
-        ]);
-
-        DB::table('booking_services')->insert([
-            'booking_id' => $booking3Id,
-            'service_id' => $medicationService->id,
-            'quantity' => 8,
-            'unit_price' => 0.00,
-            'subtotal' => 0.00,
-            'created_at' => Carbon::now()->subDays(5),
-            'updated_at' => Carbon::now()->subDays(5),
-        ]);
-
-        // === BOOKING 4: Pending - Kiwi (bird) ===
-        $booking4Id = (string) Str::uuid();
-        DB::table('bookings')->insert(['id' => $booking4Id,
-            'user_id' => $userId,
-            'establishment_id' => $establishmentId,
-            'check_in_date' => Carbon::now()->addDays(30)->format('Y-m-d'),
-            'check_out_date' => Carbon::now()->addDays(35)->format('Y-m-d'),
-            'total_price' => 100.00, // 5 nights * 20€ (bird pricing)
-            'status' => 'pending',
-            'special_requests' => 'Kiwi a besoin d\'une cage spacieuse et de lumière naturelle. Il aime chanter le matin !',
-            'created_at' => Carbon::now()->subDays(1),
-            'updated_at' => Carbon::now()->subDays(1),
-        ]);
-
-        DB::table('booking_pets')->insert([
-            'booking_id' => $booking4Id,
-            'pet_id' => $kiwiId,
-            'price_per_night' => 20.00,
-            'number_of_nights' => 5,
-            'subtotal' => 100.00,
-            'created_at' => Carbon::now()->subDays(1),
-            'updated_at' => Carbon::now()->subDays(1),
-        ]);
-
-        // === BOOKING 5: Cancelled - Rex ===
-        $booking5Id = (string) Str::uuid();
-        DB::table('bookings')->insert(['id' => $booking5Id,
-            'user_id' => $userId,
-            'establishment_id' => $establishmentId,
-            'check_in_date' => Carbon::now()->addDays(15)->format('Y-m-d'),
-            'check_out_date' => Carbon::now()->addDays(18)->format('Y-m-d'),
-            'total_price' => 90.00,
-            'status' => 'cancelled',
-            'special_requests' => null,
-            'created_at' => Carbon::now()->subDays(7),
-            'updated_at' => Carbon::now()->subDays(2),
-        ]);
-
-        DB::table('booking_pets')->insert([
-            'booking_id' => $booking5Id,
-            'pet_id' => $rexId,
-            'price_per_night' => 30.00,
-            'number_of_nights' => 3,
-            'subtotal' => 90.00,
-            'created_at' => Carbon::now()->subDays(7),
-            'updated_at' => Carbon::now()->subDays(7),
-        ]);
+        if ($hasDog) {
+            DB::table('booking_services')->insert([
+                'booking_id' => $bookingId,
+                'service_id' => $walkServiceId,
+                'quantity' => $template['nights'],
+                'unit_price' => self::WALK_PRICE,
+                'subtotal' => $servicesSubtotal,
+                'created_at' => $createdAt,
+                'updated_at' => $createdAt,
+            ]);
+        }
     }
 }

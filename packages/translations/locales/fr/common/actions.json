@@ -44,5 +44,7 @@
     "login": "Connexion",
     "addPhoto": "Ajouter une photo",
     "finish": "Terminer",
-    "new": "Nouveau"
+    "new": "Nouveau",
+    "switchToClient": "Passer en mode client",
+    "backTo": "Retour à {value}"
 }

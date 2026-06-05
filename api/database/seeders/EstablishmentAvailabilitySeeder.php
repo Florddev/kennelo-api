@@ -12,8 +12,6 @@ use Illuminate\Database\Seeder;
 
 class EstablishmentAvailabilitySeeder extends Seeder
 {
-    private const DAYS_AHEAD = 120;
-
     public function run(): void
     {
         $establishments = Establishment::all();
@@ -21,30 +19,18 @@ class EstablishmentAvailabilitySeeder extends Seeder
             throw new \RuntimeException('No establishments found. Run EstablishmentSeeder first.');
         }
 
-        $today = CarbonImmutable::now()->startOfDay();
+        $startDate = CarbonImmutable::now()->startOfMonth();
+        $endDate = CarbonImmutable::now()->addMonths(3)->endOfMonth();
 
-        $establishments->each(function (Establishment $establishment) use ($today) {
-            $closedWeekdays = collect([0, 1, 2, 3, 4, 5, 6])
-                ->shuffle()
-                ->take(random_int(0, 1))
-                ->values()
-                ->all();
-
-            for ($offset = 0; $offset < self::DAYS_AHEAD; $offset++) {
-                $date = $today->addDays($offset);
-                $isWeekendClosed = in_array($date->dayOfWeek, $closedWeekdays, true);
-                $isRandomClosed = random_int(1, 100) <= 5;
-                $status = $isWeekendClosed || $isRandomClosed
-                    ? AvailabilityStatus::CLOSED
-                    : AvailabilityStatus::OPEN;
-
+        $establishments->each(function (Establishment $establishment) use ($startDate, $endDate) {
+            for ($date = $startDate; $date->lte($endDate); $date = $date->addDay()) {
                 EstablishmentAvailability::updateOrCreate(
                     [
                         'establishment_id' => $establishment->id,
                         'date' => $date->toDateString(),
                     ],
                     [
-                        'status' => $status,
+                        'status' => AvailabilityStatus::OPEN,
                         'note' => null,
                     ],
                 );

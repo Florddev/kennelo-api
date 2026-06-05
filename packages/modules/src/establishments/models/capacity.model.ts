@@ -2,14 +2,14 @@ import type { CapacityDto } from "./dtos/capacity.dto";
 
 export class AnimalTypeModel {
     private constructor(
-        public readonly id: number,
+        public readonly id: string,
         public readonly code: string,
         public readonly name: string,
         public readonly category: string,
     ) {}
 
     static from(dto: {
-        id: number;
+        id: string;
         code: string;
         name: string;
         category: string;
@@ -20,7 +20,7 @@ export class AnimalTypeModel {
 
 export class CapacityModel {
     private constructor(
-        public readonly id: number,
+        public readonly id: string,
         public readonly animalType: AnimalTypeModel,
         public readonly maxCapacity: number,
         public readonly pricePerNight: number,

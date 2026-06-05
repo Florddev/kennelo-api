@@ -27,5 +27,17 @@
     "changePassword": "Change password",
     "comingSoon": "Soon",
     "favorites": "Favorites",
-    "personalInformation": "Personal information"
+    "personalInformation": "Personal information",
+    "hosting": {
+        "today": "Today",
+        "calendar": "Calendar",
+        "establishment": "Establishment",
+        "messages": "Messages"
+    },
+    "common": {
+        "navigation": {
+            "overview": "Overview"
+        }
+    },
+    "overview": "Overview"
 }

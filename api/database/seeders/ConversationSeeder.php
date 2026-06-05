@@ -406,5 +406,77 @@ class ConversationSeeder extends Seeder
                 'read_at' => Carbon::now()->subDays(30)->addHours(2),
             ],
         ]);
+
+        $this->seedManagerConversations($userId, $managerId);
+    }
+
+    private function seedManagerConversations(string $userId, ?string $managerId): void
+    {
+        if (! $managerId) {
+            return;
+        }
+
+        $establishments = DB::table('establishments')
+            ->where('manager_id', $managerId)
+            ->orderBy('created_at')
+            ->get();
+
+        $exchanges = [
+            [
+                'Bonjour, est-ce que vous proposez des promenades quotidiennes ?',
+                'Bonjour ! Oui, nous proposons des promenades quotidiennes en supplément. Avec plaisir pour votre animal !',
+            ],
+            [
+                'Bonjour, quels sont vos horaires de check-in ?',
+                'Bonjour ! Le check-in se fait entre 9h et 18h. Prévenez-nous simplement de votre heure d\'arrivée.',
+            ],
+        ];
+
+        foreach ($establishments as $index => $establishment) {
+            $existing = DB::table('conversations')
+                ->where('user_id', $userId)
+                ->where('establishment_id', $establishment->id)
+                ->first();
+
+            if ($existing) {
+                continue;
+            }
+
+            $exchange = $exchanges[$index % count($exchanges)];
+
+            $conversationId = (string) Str::uuid();
+            DB::table('conversations')->insert([
+                'id' => $conversationId,
+                'user_id' => $userId,
+                'establishment_id' => $establishment->id,
+                'last_message_at' => Carbon::now()->subDays($index + 1),
+                'created_at' => Carbon::now()->subDays($index + 8),
+                'updated_at' => Carbon::now()->subDays($index + 1),
+            ]);
+
+            DB::table('messages')->insert([
+                'id' => (string) Str::uuid(),
+                'conversation_id' => $conversationId,
+                'booking_id' => null,
+                'sender_id' => $userId,
+                'sender_type' => 'user',
+                'message_type' => 'text',
+                'content' => $exchange[0],
+                'created_at' => Carbon::now()->subDays($index + 8),
+                'updated_at' => Carbon::now()->subDays($index + 8),
+            ]);
+
+            DB::table('messages')->insert([
+                'id' => (string) Str::uuid(),
+                'conversation_id' => $conversationId,
+                'booking_id' => null,
+                'sender_id' => $managerId,
+                'sender_type' => 'establishment',
+                'message_type' => 'text',
+                'content' => $exchange[1],
+                'created_at' => Carbon::now()->subDays($index + 1),
+                'updated_at' => Carbon::now()->subDays($index + 1),
+            ]);
+        }
     }
 }

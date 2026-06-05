@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import MyEstablishmentsPage from "./my-establishments-page";
+import SelectEstablishmentPage from "./select-establishment-page";
 
 export async function generateMetadata({ params }: { params: { locale: string } }) {
     const { locale } = await params;
@@ -12,5 +12,5 @@ export async function generateMetadata({ params }: { params: { locale: string } 
 }
 
 export default function MyEstablishments() {
-    return <MyEstablishmentsPage />;
+    return <SelectEstablishmentPage />;
 }

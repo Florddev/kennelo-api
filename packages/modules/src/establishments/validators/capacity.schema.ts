@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const createCapacitySchema = z.object({
-    animalTypeId: z.coerce.number().int().positive(),
+    animalTypeId: z.string().uuid(),
     maxCapacity: z.coerce.number().int().min(1),
     pricePerNight: z.coerce.number().min(0),
 });

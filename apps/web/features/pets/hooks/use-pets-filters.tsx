@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import type { PetModel } from "@workspace/modules/pets";
 
 type AvailableType = {
-    id: number;
+    id: string;
     name: string;
     code: string;
     count: number;
@@ -12,10 +12,10 @@ type AvailableType = {
 
 export function usePetsFilters(pets: PetModel[]) {
     const [search, setSearch] = useState("");
-    const [typeFilter, setTypeFilter] = useState<number | null>(null);
+    const [typeFilter, setTypeFilter] = useState<string | null>(null);
 
     const availableTypes = useMemo<AvailableType[]>(() => {
-        const map = new Map<number, AvailableType>();
+        const map = new Map<string, AvailableType>();
         pets.forEach((p) => {
             if (p.animalType) {
                 const entry = map.get(p.animalTypeId);

@@ -1,0 +1,45 @@
+{
+    "title": "Calendar",
+    "description": "Booking schedule and availability",
+    "noEstablishment": {
+        "title": "No establishment",
+        "description": "Create an establishment to see your bookings here."
+    },
+    "weekdays": {
+        "monday": "Mon",
+        "tuesday": "Tue",
+        "wednesday": "Wed",
+        "thursday": "Thu",
+        "friday": "Fri",
+        "saturday": "Sat",
+        "sunday": "Sun"
+    },
+    "moreCount": "{count, plural, =1 {+# more} other {+# more}}",
+    "filters": {
+        "establishments": "Establishments",
+        "statuses": "Statuses",
+        "all": "All",
+        "none": "None"
+    },
+    "status": {
+        "pending": "Pending",
+        "confirmed": "Confirmed",
+        "in_progress": "In progress",
+        "completed": "Completed",
+        "cancelled": "Cancelled"
+    },
+    "sheet": {
+        "title": "Bookings on {date}",
+        "empty": "No bookings on this day",
+        "bookingCount": "{count, plural, =1 {# booking} other {# bookings}}",
+        "checkIn": "Check-in",
+        "checkOut": "Check-out",
+        "pets": "Pets",
+        "total": "Total",
+        "actions": {
+            "confirm": "Confirm",
+            "cancel": "Cancel",
+            "complete": "Mark completed"
+        }
+    }
+}

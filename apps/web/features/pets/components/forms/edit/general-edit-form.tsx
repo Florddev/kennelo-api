@@ -81,7 +81,7 @@ export function GeneralEditForm({ pet }: { pet: PetModel }): React.ReactElement 
         resolver: zodResolver(updatePetGeneralSchema),
         defaultValues: {
             name: pet.name,
-            animalTypeId: String(pet.animalTypeId),
+            animalTypeId: pet.animalTypeId,
             breed: pet.breed ?? "",
             sex: pet.sex ?? "",
             birthDate: pet.birthDate ?? null,
@@ -94,7 +94,7 @@ export function GeneralEditForm({ pet }: { pet: PetModel }): React.ReactElement 
     useEffect(() => {
         form.reset({
             name: pet.name,
-            animalTypeId: String(pet.animalTypeId),
+            animalTypeId: pet.animalTypeId,
             breed: pet.breed ?? "",
             sex: pet.sex ?? "",
             birthDate: pet.birthDate ?? null,
@@ -133,7 +133,7 @@ export function GeneralEditForm({ pet }: { pet: PetModel }): React.ReactElement 
             () =>
                 updatePet(pet.id, {
                     name: data.name,
-                    animalTypeId: data.animalTypeId ? Number(data.animalTypeId) : undefined,
+                    animalTypeId: data.animalTypeId || undefined,
                     breed: data.breed || null,
                     sex: (data.sex as "male" | "female" | "unknown") || null,
                     birthDate: data.birthDate,

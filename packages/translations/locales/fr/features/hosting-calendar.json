@@ -1,0 +1,45 @@
+{
+    "title": "Calendrier",
+    "description": "Planning des réservations et disponibilités",
+    "noEstablishment": {
+        "title": "Aucun établissement",
+        "description": "Créez un établissement pour voir vos réservations s'afficher ici."
+    },
+    "weekdays": {
+        "monday": "Lun",
+        "tuesday": "Mar",
+        "wednesday": "Mer",
+        "thursday": "Jeu",
+        "friday": "Ven",
+        "saturday": "Sam",
+        "sunday": "Dim"
+    },
+    "moreCount": "{count, plural, =1 {+# autre} other {+# autres}}",
+    "filters": {
+        "establishments": "Établissements",
+        "statuses": "Statuts",
+        "all": "Tout",
+        "none": "Aucun"
+    },
+    "status": {
+        "pending": "En attente",
+        "confirmed": "Confirmée",
+        "in_progress": "En cours",
+        "completed": "Terminée",
+        "cancelled": "Annulée"
+    },
+    "sheet": {
+        "title": "Réservations du {date}",
+        "empty": "Aucune réservation ce jour",
+        "bookingCount": "{count, plural, =1 {# réservation} other {# réservations}}",
+        "checkIn": "Arrivée",
+        "checkOut": "Départ",
+        "pets": "Animaux",
+        "total": "Total",
+        "actions": {
+            "confirm": "Confirmer",
+            "cancel": "Annuler",
+            "complete": "Marquer terminée"
+        }
+    }
+}
