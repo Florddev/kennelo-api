@@ -6,6 +6,7 @@ export * from "./components/availabilities-tab";
 export * from "./components/become-host-stepper";
 export * from "./components/capacity-card";
 export * from "./components/dashboard-tab";
+export * from "./components/embedded-connect-onboarding";
 export * from "./components/establishment-availabilities-list";
 export * from "./components/establishment-bookings-table";
 export * from "./components/establishment-capacities-grid";

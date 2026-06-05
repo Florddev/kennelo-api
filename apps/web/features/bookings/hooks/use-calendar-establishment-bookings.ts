@@ -7,23 +7,23 @@ import { getEstablishmentBookings, type BookingModel } from "@workspace/modules/
 
 import { getMonthRange } from "../lib/calendar-grid";
 
-type UseEstablishmentBookingsParams = {
+type UseCalendarEstablishmentBookingsParams = {
     establishmentIds: string[];
     focusedMonth: Date;
     weekStartsOn: 0 | 1;
 };
 
-type UseEstablishmentBookingsResult = {
+type UseCalendarEstablishmentBookingsResult = {
     bookingsByEstablishmentId: Record<string, BookingModel[]>;
     isLoading: boolean;
     isError: boolean;
 };
 
-export function useEstablishmentBookings({
+export function useCalendarEstablishmentBookings({
     establishmentIds,
     focusedMonth,
     weekStartsOn,
-}: UseEstablishmentBookingsParams): UseEstablishmentBookingsResult {
+}: UseCalendarEstablishmentBookingsParams): UseCalendarEstablishmentBookingsResult {
     const { gridStart, gridEnd } = getMonthRange(focusedMonth, weekStartsOn);
     const dateFrom = gridStart.toISOString().slice(0, 10);
     const dateTo = gridEnd.toISOString().slice(0, 10);

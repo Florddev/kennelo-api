@@ -9,6 +9,7 @@
     "saveFailed": "Impossible d'enregistrer la carte",
     "saved": "Carte enregistrée",
     "setupFailed": "Impossible de démarrer l'ajout de carte",
+    "setupIntentFailed": "Impossible d'initialiser la configuration du paiement",
     "empty": "Aucune carte enregistrée pour le moment.",
     "expires": "Expire le {value}",
     "default": "Par défaut",

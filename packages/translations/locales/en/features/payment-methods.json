@@ -9,6 +9,7 @@
     "saveFailed": "Could not save card",
     "saved": "Card saved",
     "setupFailed": "Could not start the card setup",
+    "setupIntentFailed": "Could not initialize the payment setup",
     "empty": "No saved cards yet.",
     "expires": "Expires {value}",
     "default": "Default",
