@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
-enum ReviewReportStatus: string
+enum IdentityVerificationStatusEnum: string
 {
     case PENDING = 'pending';
-    case REVIEWED = 'reviewed';
+    case APPROVED = 'approved';
     case REJECTED = 'rejected';
-    case REMOVED = 'removed';
 }

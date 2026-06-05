@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
-enum EstablishmentType: string
+enum EstablishmentTypeEnum: string
 {
     case BOARDING = 'boarding';
     case BREEDING = 'breeding';

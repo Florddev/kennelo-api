@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
-enum EstablishmentPermission: string
+enum EstablishmentPermissionEnum: string
 {
     case UPDATE_ESTABLISHMENT = 'update_establishment';
     case MANAGE_CAPACITIES = 'manage_capacities';
