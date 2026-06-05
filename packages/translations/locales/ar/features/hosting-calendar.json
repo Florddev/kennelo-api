@@ -1,0 +1,45 @@
+{
+    "title": "التقويم",
+    "description": "جدول الحجوزات والتوفر",
+    "noEstablishment": {
+        "title": "لا توجد مؤسسة",
+        "description": "أنشئ مؤسسة لرؤية حجوزاتك هنا."
+    },
+    "weekdays": {
+        "monday": "الإثنين",
+        "tuesday": "الثلاثاء",
+        "wednesday": "الأربعاء",
+        "thursday": "الخميس",
+        "friday": "الجمعة",
+        "saturday": "السبت",
+        "sunday": "الأحد"
+    },
+    "moreCount": "{count, plural, =1 {+# آخر} other {+# آخرى}}",
+    "filters": {
+        "establishments": "المؤسسات",
+        "statuses": "الحالات",
+        "all": "الكل",
+        "none": "لا شيء"
+    },
+    "status": {
+        "pending": "قيد الانتظار",
+        "confirmed": "مؤكد",
+        "in_progress": "قيد التنفيذ",
+        "completed": "مكتمل",
+        "cancelled": "ملغى"
+    },
+    "sheet": {
+        "title": "حجوزات {date}",
+        "empty": "لا توجد حجوزات في هذا اليوم",
+        "bookingCount": "{count, plural, =1 {# حجز} other {# حجوزات}}",
+        "checkIn": "تسجيل الوصول",
+        "checkOut": "تسجيل المغادرة",
+        "pets": "الحيوانات",
+        "total": "المجموع",
+        "actions": {
+            "confirm": "تأكيد",
+            "cancel": "إلغاء",
+            "complete": "وضع علامة مكتمل"
+        }
+    }
+}

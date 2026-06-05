@@ -1,12 +1,12 @@
 export type AnimalTypeDto = {
-    id: number;
+    id: string;
     code: string;
     name: string;
     category: string;
 };
 
 export type CapacityDto = {
-    id: number;
+    id: string;
     animal_type: AnimalTypeDto;
     max_capacity: number;
     price_per_night: string;

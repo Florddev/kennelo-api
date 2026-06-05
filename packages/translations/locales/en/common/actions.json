@@ -32,5 +32,7 @@
     "addPhoto": "Add a photo",
     "finish": "Finish",
     "new": "New",
+    "switchToClient": "Switch to client mode",
+    "backTo": "Back to {value}",
     "saving": "Saving…"
 }

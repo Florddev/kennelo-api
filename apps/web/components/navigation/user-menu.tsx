@@ -48,7 +48,7 @@ function useHostSpaceHref() {
 
     if (!hasEstablishment) return undefined;
     if (establishments.length === 1) {
-        return routes.EstablishmentDetail({ id: establishments[0]!.id });
+        return routes.EstablishmentDetails({ id: establishments[0]!.id });
     }
     return routes.MyEstablishments();
 }

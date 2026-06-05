@@ -45,5 +45,7 @@
     "addPhoto": "Ajouter une photo",
     "finish": "Terminer",
     "new": "Nouveau",
+    "switchToClient": "Passer en mode client",
+    "backTo": "Retour à {value}",
     "saving": "Enregistrement…"
 }

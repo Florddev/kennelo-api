@@ -28,5 +28,12 @@
     "comingSoon": "قريباً",
     "favorites": "المفضلة",
     "personalInformation": "معلومات شخصية",
-    "paymentMethods": "طرق الدفع"
+    "paymentMethods": "طرق الدفع",
+    "hosting": {
+        "today": "اليوم",
+        "calendar": "التقويم",
+        "establishment": "المؤسسة",
+        "messages": "الرسائل"
+    },
+    "overview": "ملخص"
 }

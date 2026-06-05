@@ -66,7 +66,7 @@ export function IdentityStep({
                     maxFiles={1}
                     mode="direct"
                 >
-                    <div className="gap-2 rounded-sm border-2 bg-muted/50 border-dashed min-h-42 w-full p-2 h-fit cursor-pointer flex items-center justify-center text-sm md:text-base font-semibold">
+                    <div className="gap-2 rounded-sm border-2 bg-muted/50 border-dashed min-h-42 w-full p-2 h-fit cursor-pointer flex items-center justify-center text-sm md:text-base font-semibold shadow-sm">
                         {!avatarFile ? (
                             <>
                                 <GallerySend className="size-5" />
@@ -100,6 +100,7 @@ export function IdentityStep({
                 Icon={TextSquare}
                 // placeholder={t("features.pets.create.placeholders.name")}
                 isLoading={isLoading}
+                className="shadow-xs border-border/80"
             />
 
             <InlineController
@@ -113,6 +114,7 @@ export function IdentityStep({
                     { label: t("features.pets.sex.male"), value: "male", Icon: Men },
                     { label: t("features.pets.sex.female"), value: "female", Icon: Women },
                 ]}
+                className="shadow-xs border-border/80"
             />
 
             <InlineController
@@ -123,7 +125,7 @@ export function IdentityStep({
                 Icon={Library}
                 // placeholder={t("features.pets.create.placeholders.breed")}
                 isLoading={isLoading}
-                className="w-full"
+                className="w-full shadow-xs border-border/80"
             />
         </WizardStepShell>
     );

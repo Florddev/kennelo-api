@@ -23,6 +23,11 @@ type HomeParams = {
     search_params?: Record<string, string | number | boolean>;
 };
 
+type HostingCalendarParams = {
+    locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
 type MyEstablishmentsParams = {
     locale?: string | number;
     search_params?: Record<string, string | number | boolean>;
@@ -33,9 +38,73 @@ type TempParams = {
     search_params?: Record<string, string | number | boolean>;
 };
 
-type EstablishmentDetailParams = {
+type EstablishmentBookingsParams = {
     locale?: string | number;
     id: string;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type EstablishmentInvoicesParams = {
+    locale?: string | number;
+    id: string;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type EstablishmentOverviewParams = {
+    locale?: string | number;
+    id: string;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type EstablishmentDetailsParams = {
+    locale?: string | number;
+    id: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type EstablishmentAvailabilitiesParams = {
+    locale?: string | number;
+    id: string;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type EstablishmentCapacitiesParams = {
+    locale?: string | number;
+    id: string;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type EstablishmentCollaboratorsParams = {
+    locale?: string | number;
+    id: string;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type EstablishmentSettingsInformationsParams = {
+    locale?: string | number;
+    id: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type EstablishmentSettingsParams = {
+    locale?: string | number;
+    id: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type EstablishmentPaymentParams = {
+    locale?: string | number;
+    id: string;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type HostingMessagesParams = {
+    locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type HostingNowParams = {
+    locale?: string | number;
     search_params?: Record<string, string | number | boolean>;
 };
 
@@ -168,6 +237,10 @@ function Home(params?: HomeParams): string {
     return buildRoute("/[locale]", params);
 }
 
+function HostingCalendar(params?: HostingCalendarParams): string {
+    return buildRoute("/[locale]/hosting/calendar", params);
+}
+
 function MyEstablishments(params?: MyEstablishmentsParams): string {
     return buildRoute("/[locale]/hosting/host", params);
 }
@@ -176,8 +249,54 @@ function Temp(params?: TempParams): string {
     return buildRoute("/[locale]/hosting/host/temp", params);
 }
 
-function EstablishmentDetail(params: EstablishmentDetailParams): string {
+function EstablishmentBookings(params: EstablishmentBookingsParams): string {
+    return buildRoute("/[locale]/hosting/host/[id]/bookings", params);
+}
+
+function EstablishmentInvoices(params: EstablishmentInvoicesParams): string {
+    return buildRoute("/[locale]/hosting/host/[id]/invoices", params);
+}
+
+function EstablishmentOverview(params: EstablishmentOverviewParams): string {
+    return buildRoute("/[locale]/hosting/host/[id]/overview", params);
+}
+
+function EstablishmentDetails(params: EstablishmentDetailsParams): string {
     return buildRoute("/[locale]/hosting/host/[id]", params);
+}
+
+function EstablishmentAvailabilities(params: EstablishmentAvailabilitiesParams): string {
+    return buildRoute("/[locale]/hosting/host/[id]/settings/availabilities", params);
+}
+
+function EstablishmentCapacities(params: EstablishmentCapacitiesParams): string {
+    return buildRoute("/[locale]/hosting/host/[id]/settings/capacities", params);
+}
+
+function EstablishmentCollaborators(params: EstablishmentCollaboratorsParams): string {
+    return buildRoute("/[locale]/hosting/host/[id]/settings/collaborators", params);
+}
+
+function EstablishmentSettingsInformations(
+    params: EstablishmentSettingsInformationsParams,
+): string {
+    return buildRoute("/[locale]/hosting/host/[id]/settings/informations", params);
+}
+
+function EstablishmentSettings(params: EstablishmentSettingsParams): string {
+    return buildRoute("/[locale]/hosting/host/[id]/settings", params);
+}
+
+function EstablishmentPayment(params: EstablishmentPaymentParams): string {
+    return buildRoute("/[locale]/hosting/host/[id]/settings/payment", params);
+}
+
+function HostingMessages(params?: HostingMessagesParams): string {
+    return buildRoute("/[locale]/hosting/messages", params);
+}
+
+function HostingNow(params?: HostingNowParams): string {
+    return buildRoute("/[locale]/hosting/now", params);
 }
 
 function BecomeHost(params?: BecomeHostParams): string {
@@ -269,9 +388,21 @@ export const routes = {
     Login,
     Register,
     Home,
+    HostingCalendar,
     MyEstablishments,
     Temp,
-    EstablishmentDetail,
+    EstablishmentBookings,
+    EstablishmentInvoices,
+    EstablishmentOverview,
+    EstablishmentDetails,
+    EstablishmentAvailabilities,
+    EstablishmentCapacities,
+    EstablishmentCollaborators,
+    EstablishmentSettingsInformations,
+    EstablishmentSettings,
+    EstablishmentPayment,
+    HostingMessages,
+    HostingNow,
     BecomeHost,
     Explore,
     ExploreResults,

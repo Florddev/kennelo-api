@@ -10,9 +10,12 @@ use App\Models\User;
 use App\Services\MediaService;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 
 class EstablishmentSeeder extends Seeder
 {
+    private const ESTABLISHMENT_COUNT = 4;
+
     private array $imageKeywords = [
         'kennel',
         'pet',
@@ -23,28 +26,28 @@ class EstablishmentSeeder extends Seeder
 
     public function run(): void
     {
-        $addresses = Address::inRandomOrder()->limit(5)->get();
-        if ($addresses->isEmpty()) {
-            throw new \RuntimeException('No addresses found. Run AddressSeeder first.');
+        $manager = User::where('email', 'manager@orus.com')->first();
+        if (! $manager) {
+            throw new \RuntimeException('Manager manager@orus.com not found. Run UsersSeeder first.');
         }
 
-        $managers = User::inRandomOrder()->limit(5)->get();
-        if ($managers->isEmpty()) {
-            throw new \RuntimeException('No users found. Run UsersSeeder first.');
+        $addresses = Address::inRandomOrder()->limit(self::ESTABLISHMENT_COUNT)->get();
+        if ($addresses->count() < self::ESTABLISHMENT_COUNT) {
+            throw new \RuntimeException('Not enough addresses. Run AddressSeeder first.');
         }
 
-        $collaborators = User::inRandomOrder()->limit(10)->get();
+        $collaborators = User::where('id', '!=', $manager->id)->get();
 
-        $addresses->each(function ($address) use ($managers, $collaborators) {
+        $addresses->each(function ($address) use ($manager, $collaborators) {
             /** @var Establishment $establishment */
             $establishment = Establishment::factory()->create([
                 'address_id' => $address->id,
-                'manager_id' => $managers->random()->id,
+                'manager_id' => $manager->id,
             ]);
 
             if ($collaborators->isNotEmpty()) {
                 $establishment->collaborators()->attach(
-                    $collaborators->random(min(3, $collaborators->count()))->pluck('id')
+                    $collaborators->random(min(2, $collaborators->count()))->pluck('id')
                 );
             }
 
@@ -56,30 +59,53 @@ class EstablishmentSeeder extends Seeder
     private function seedEstablishmentImages(Establishment $establishment, string $keyword, int $count, bool $withAvatar): void
     {
         for ($i = 0; $i < $count; $i++) {
-            try {
-                $response = Http::withoutVerifying()->withOptions(['allow_redirects' => true])->timeout(15)->get("https://loremflickr.com/800/600/{$keyword}");
+            $body = $this->fetchRemoteImage("https://loremflickr.com/800/600/{$keyword}")
+                ?? $this->placeholderImage(800, 600, $establishment->name);
 
-                if ($response->successful()) {
-                    $tmpPath = tempnam(sys_get_temp_dir(), 'establishment_image_').'.jpg';
-                    file_put_contents($tmpPath, $response->body());
-                    $establishment->addMedia($tmpPath)->toMediaCollection(MediaService::COLLECTION_IMAGES);
-                }
-            } catch (\Throwable) {
-                continue;
-            }
+            $establishment->addMediaFromString($body)
+                ->usingFileName('establishment_'.Str::uuid()->toString().'.jpg')
+                ->toMediaCollection(MediaService::COLLECTION_IMAGES);
         }
 
         if ($withAvatar) {
-            try {
-                $response = Http::withoutVerifying()->withOptions(['allow_redirects' => true])->timeout(15)->get("https://loremflickr.com/600/600/{$keyword}");
+            $body = $this->fetchRemoteImage("https://loremflickr.com/600/600/{$keyword}")
+                ?? $this->placeholderImage(600, 600, $establishment->name);
 
-                if ($response->successful()) {
-                    $tmpPath = tempnam(sys_get_temp_dir(), 'establishment_avatar_').'.jpg';
-                    file_put_contents($tmpPath, $response->body());
-                    $establishment->addMedia($tmpPath)->toMediaCollection(MediaService::COLLECTION_AVATAR);
-                }
-            } catch (\Throwable) {
-            }
+            $establishment->addMediaFromString($body)
+                ->usingFileName('avatar_'.Str::uuid()->toString().'.jpg')
+                ->toMediaCollection(MediaService::COLLECTION_AVATAR);
         }
+    }
+
+    private function fetchRemoteImage(string $url): ?string
+    {
+        try {
+            $response = Http::withoutVerifying()->withOptions(['allow_redirects' => true])->timeout(8)->get($url);
+
+            if ($response->successful() && $response->body() !== '') {
+                return $response->body();
+            }
+        } catch (\Throwable) {
+        }
+
+        return null;
+    }
+
+    private function placeholderImage(int $width, int $height, string $label): string
+    {
+        $image = imagecreatetruecolor($width, $height);
+        $background = imagecolorallocate($image, random_int(40, 120), random_int(80, 160), random_int(120, 200));
+        imagefill($image, 0, 0, $background);
+
+        $textColor = imagecolorallocate($image, 255, 255, 255);
+        $text = strtoupper(substr(trim($label), 0, 2));
+        imagestring($image, 5, (int) ($width / 2) - 10, (int) ($height / 2) - 8, $text, $textColor);
+
+        ob_start();
+        imagejpeg($image, null, 80);
+        $data = (string) ob_get_clean();
+        imagedestroy($image);
+
+        return $data;
     }
 }

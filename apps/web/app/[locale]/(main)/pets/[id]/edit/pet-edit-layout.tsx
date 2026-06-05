@@ -39,26 +39,23 @@ import {
 } from "@workspace/ui/components/drawer";
 import { Field, FieldLabel } from "@workspace/ui/components/field";
 import { Progress } from "@workspace/ui/components/progress";
-import { Separator } from "@workspace/ui/components/separator";
 import { Skeleton } from "@workspace/ui/components/skeleton";
 import { cn } from "@workspace/ui/lib/utils";
 import { deletePet, PetModel } from "@workspace/modules/pets";
 
 import { useAsyncState } from "@/hooks/use-async-state";
-import { useHideBottomNavbar } from "@/hooks/use-hide-bottom-navbar";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useNavigation } from "@/hooks/use-navigation";
 import { useRouteParams } from "@/hooks/use-route-params";
-import { useScrolled } from "@/hooks/use-scrolled";
 import { NavRow } from "@/components/navigation/nav-row";
+import { SplitPageLayout, SplitPageLayoutNavItem } from "@/components/layouts/split-page-layout";
 import { usePet } from "@/features/pets/hooks/use-pet";
 
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { usePlatform } from "@/hooks/use-platform";
+import { PetEditGeneralPage } from "./general/general-edit-page";
 
 const EDIT_SECTIONS = ["general", "health", "personality", "photos"] as const;
-const HIDDEN_ON_MOBILE = "hidden md:block";
 
 function computeCompletion(pet: PetModel): number {
     const checks = [
@@ -211,110 +208,6 @@ function DeletePetDialog({
     );
 }
 
-function PetEditSidebarTop({
-    scrolled,
-    isEditRoot,
-    backHref,
-    petName,
-    pet,
-    avatarUrl,
-    completion,
-}: {
-    scrolled: boolean;
-    isEditRoot: boolean;
-    backHref: string;
-    petName: string;
-    pet: PetModel | null;
-    avatarUrl: string | undefined;
-    completion: number;
-}) {
-    const t = useTranslations();
-    const { isCapacitorApp } = usePlatform();
-
-    return (
-        <div className="flex flex-col">
-            <div className={cn("bg-card fixed top-0 z-10 w-full", scrolled && "border-b")}>
-                <div
-                    className={cn(
-                        "bg-card flex items-center gap-3 px-4 py-2 w-full md:static md:p-0 md:pb-4",
-                        isCapacitorApp && "mt-[var(--mobile-top-margin)]",
-                    )}
-                >
-                    <Button variant="flat" size="sm" className="px-2 md:px-3" asChild>
-                        <Link href={backHref}>
-                            <ArrowLeft className="size-4" />
-                            <span className={HIDDEN_ON_MOBILE}>{t("common.actions.back")}</span>
-                        </Link>
-                    </Button>
-                    {petName ? (
-                        <h1
-                            className={cn(
-                                "font-semibold text-2xl md:text-3xl",
-                                !isEditRoot && HIDDEN_ON_MOBILE,
-                            )}
-                        >
-                            {petName}
-                        </h1>
-                    ) : (
-                        <Skeleton
-                            className={cn("h-8 w-40 rounded-xl", !isEditRoot && HIDDEN_ON_MOBILE)}
-                        />
-                    )}
-                </div>
-            </div>
-            <div
-                className={cn(
-                    "mt-13 md:mt-0 md:pt-0 px-4 md:px-0",
-                    isCapacitorApp && "pt-[var(--mobile-top-margin)] mt-6",
-                )}
-            >
-                <div className={cn(!isEditRoot && "hidden md:flex")}>
-                    <PetAvatarCard pet={pet} avatarUrl={avatarUrl} completion={completion} />
-                </div>
-            </div>
-        </div>
-    );
-}
-
-function PetEditNavCard({
-    nav,
-    lastSegment,
-    isEditRoot,
-    petName,
-    isDeleting,
-    onDelete,
-}: {
-    nav: { href: string; label: string; icon: React.ComponentType<{ className?: string }> }[];
-    lastSegment: string;
-    isEditRoot: boolean;
-    petName: string;
-    isDeleting: boolean;
-    onDelete: () => void;
-}) {
-    return (
-        <Card className="p-0 ring-0">
-            <CardContent className="p-0 flex flex-col md:gap-1">
-                {nav.map((item, index) => (
-                    <NavRow
-                        key={item.href}
-                        icon={item.icon}
-                        label={item.label}
-                        href={item.href}
-                        displayArrow={true}
-                        className={cn(
-                            "md:hover:bg-muted md:rounded-md md:p-4",
-                            ((item.href?.split("?")[0]?.endsWith(`/${lastSegment}`) ?? false) ||
-                                (isEditRoot && index === 0)) &&
-                                "md:bg-muted",
-                        )}
-                    />
-                ))}
-                <DeletePetDialog petName={petName} isDeleting={isDeleting} onDelete={onDelete} />
-            </CardContent>
-        </Card>
-    );
-}
-
 function computeBackHref(
     isMobile: boolean,
     isEditRoot: boolean,
@@ -329,12 +222,9 @@ export function PetEditLayout({ children }: { children: React.ReactNode }) {
     const { id } = useRouteParams<{ id: string }>();
     const pathname = usePathname();
     const t = useTranslations();
-    const scrolled = useScrolled(100);
     const { routes } = useNavigation();
     const router = useRouter();
     const isMobile = useIsMobile();
-    const { isCapacitorApp } = usePlatform();
-    useHideBottomNavbar();
 
     const { pet } = usePet(id);
     const { execute: executeDelete, isLoading: isDeleting } = useAsyncState();
@@ -345,11 +235,12 @@ export function PetEditLayout({ children }: { children: React.ReactNode }) {
     const lastSegment = pathname.split("/").at(-1) ?? "";
     const isEditRoot = !EDIT_SECTIONS.includes(lastSegment as (typeof EDIT_SECTIONS)[number]);
 
-    const nav = [
+    const nav: SplitPageLayoutNavItem[] = [
         {
             href: routes.PetEditGeneral({ id }),
             label: t("features.pets.edit.sections.general"),
             icon: InfoSquare,
+            default: true,
         },
         {
             href: routes.PetEditHealth({ id }),
@@ -371,6 +262,7 @@ export function PetEditLayout({ children }: { children: React.ReactNode }) {
     const currentPageLabel = nav.find((item) =>
         item.href?.split("?")[0]?.endsWith(`/${lastSegment}`),
     )?.label;
+
     const backHref = computeBackHref(
         isMobile,
         isEditRoot,
@@ -388,57 +280,74 @@ export function PetEditLayout({ children }: { children: React.ReactNode }) {
     };
 
     return (
-        <div
-            className={cn(
-                "flex flex-col md:flex-row w-full justify-between h-fit md:h-[calc(100dvh-var(--header-height))] md:overflow-hidden",
-                isCapacitorApp && "pt-[var(--mobile-top-margin)]",
-            )}
-        >
-            <div className="w-full md:w-1/3 md:p-8 md:overflow-y-auto">
-                <PetEditSidebarTop
-                    scrolled={scrolled}
-                    isEditRoot={isEditRoot}
-                    backHref={backHref}
-                    petName={pet?.name ?? ""}
-                    pet={pet ?? null}
-                    avatarUrl={avatarUrl}
-                    completion={completion}
-                />
-
-                <div className={cn("flex flex-col gap-2", !isEditRoot && "hidden md:flex")}>
-                    <div className="flex flex-col gap-2 p-4 py-2 md:py-4 md:px-0 w-full">
-                        <PetEditNavCard
-                            nav={nav}
-                            lastSegment={lastSegment}
-                            isEditRoot={isEditRoot}
-                            petName={pet?.name ?? ""}
-                            isDeleting={isDeleting}
-                            onDelete={handleDelete}
+        <SplitPageLayout isRoot={isEditRoot}>
+            <SplitPageLayout.Sidebar>
+                <SplitPageLayout.Header>
+                    <Button variant="flat" size="sm" className="px-2 md:px-3" asChild>
+                        <Link href={backHref}>
+                            <ArrowLeft className="size-4" />
+                            <span className="hidden md:inline">{t("common.actions.back")}</span>
+                        </Link>
+                    </Button>
+                    {pet?.name ? (
+                        <h1
+                            className={cn(
+                                "font-semibold text-2xl md:text-3xl",
+                                !isEditRoot && "hidden md:block",
+                            )}
+                        >
+                            {pet.name}
+                        </h1>
+                    ) : (
+                        <Skeleton
+                            className={cn("h-8 w-40 rounded-xl", !isEditRoot && "hidden md:block")}
                         />
-                    </div>
-                </div>
-            </div>
+                    )}
+                </SplitPageLayout.Header>
 
-            <Separator orientation="vertical" className="hidden md:block w-[1px] h-full" />
-
-            <div className="md:w-2/3 md:p-8 md:overflow-y-auto h-full">
-                <div className="flex-1">
-                    <div
-                        className={cn(
-                            "flex flex-col gap-3 pb-8",
-                            isEditRoot && HIDDEN_ON_MOBILE,
-                            !isEditRoot && "px-4 md:p-0",
-                        )}
-                    >
-                        {!isEditRoot && (
-                            <h1 className="font-semibold tracking-tight text-2xl md:text-3xl">
-                                {currentPageLabel}
-                            </h1>
-                        )}
-                        {children}
-                    </div>
+                <div className={cn(!isEditRoot && "hidden md:flex")}>
+                    <PetAvatarCard
+                        pet={pet ?? null}
+                        avatarUrl={avatarUrl}
+                        completion={completion}
+                    />
                 </div>
-            </div>
-        </div>
+
+                <SplitPageLayout.Nav>
+                    <Card className="p-0 ring-0">
+                        <CardContent className="p-0 flex flex-col md:gap-1">
+                            {nav.map((item) => (
+                                <NavRow
+                                    key={item.href}
+                                    icon={item.icon}
+                                    label={item.label}
+                                    href={item.href}
+                                    displayArrow={true}
+                                    className={cn(
+                                        "md:hover:bg-muted md:rounded-md md:p-4",
+                                        ((item.href?.split("?")[0]?.endsWith(`/${lastSegment}`) ??
+                                            false) ||
+                                            (isEditRoot && item.default)) &&
+                                            "md:bg-muted",
+                                    )}
+                                />
+                            ))}
+                            <DeletePetDialog
+                                petName={pet?.name ?? ""}
+                                isDeleting={isDeleting}
+                                onDelete={handleDelete}
+                            />
+                        </CardContent>
+                    </Card>
+                </SplitPageLayout.Nav>
+            </SplitPageLayout.Sidebar>
+
+            <SplitPageLayout.Content
+                sectionTitle={currentPageLabel}
+                defaultContent={<PetEditGeneralPage />}
+            >
+                {children}
+            </SplitPageLayout.Content>
+        </SplitPageLayout>
     );
 }

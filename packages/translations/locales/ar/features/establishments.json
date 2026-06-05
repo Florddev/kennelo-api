@@ -6,6 +6,71 @@
         "active": "نشط",
         "inactive": "غير نشط"
     },
+    "card": {
+        "open": "إدارة المنشأة",
+        "species": "الحيوانات المستضافة",
+        "noSpecies": "لم يتم تكوين أي نوع حيوان"
+    },
+    "manager": {
+        "groups": {
+            "configuration": "الإعدادات",
+            "activity": "النشاط"
+        },
+        "nav": {
+            "info": "المعلومات",
+            "capacities": "السعات",
+            "bookings": "الحجوزات",
+            "collaborators": "المتعاونون",
+            "availabilities": "التوفر",
+            "invoices": "الفواتير",
+            "payment": "الدفع"
+        },
+        "invoices": {
+            "comingSoon": "قريبًا"
+        },
+        "payment": {
+            "comingSoon": "قريبًا"
+        },
+        "bookings": {
+            "title": "الحجوزات",
+            "description": "حجوزات هذه المنشأة",
+            "filter": "تصفية حسب العميل...",
+            "empty": "لا توجد حجوزات",
+            "count": "{count, plural, =1 {# حجز} other {# حجوزات}}",
+            "columns": {
+                "customer": "العميل",
+                "checkIn": "الوصول",
+                "checkOut": "المغادرة",
+                "pets": "الحيوانات",
+                "status": "الحالة",
+                "total": "المبلغ"
+            }
+        },
+        "collaborators": {
+            "title": "المتعاونون",
+            "description": "متعاونو هذه المنشأة",
+            "filter": "تصفية حسب الاسم...",
+            "empty": "لا يوجد متعاونون",
+            "count": "{count, plural, =1 {# متعاون} other {# متعاونون}}",
+            "columns": {
+                "name": "الاسم",
+                "email": "البريد الإلكتروني",
+                "phone": "الهاتف",
+                "role": "الدور"
+            }
+        },
+        "availabilities": {
+            "filter": "تصفية حسب الملاحظة...",
+            "count": "{count, plural, =1 {# يوم} other {# أيام}}",
+            "columns": {
+                "date": "التاريخ"
+            }
+        },
+        "capacities": {
+            "filter": "تصفية حسب نوع الحيوان...",
+            "count": "{count, plural, =1 {# سعة} other {# سعات}}"
+        }
+    },
     "empty": {
         "title": "لا توجد مؤسسات بعد",
         "description": "أنشئ أول مؤسسة لك وابدأ في استقبال الحيوانات الأليفة!"
@@ -71,7 +136,9 @@
         "deleteConfirmation": "هل أنت متأكد أنك تريد حذف هذه السعة؟",
         "empty": "لم يتم تكوين أي سعات. أضف أنواع الحيوانات وسعتها.",
         "spots": "{count} أماكن",
-        "perNight": "{price} / ليلة"
+        "perNight": "{price} / ليلة",
+        "occupancy": "{occupied}/{max}",
+        "priceValue": "{price}€"
     },
     "availabilities": {
         "title": "التوافر",

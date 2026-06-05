@@ -3,7 +3,7 @@ import { AttributeDefinitionModel } from "./attribute-definition.model";
 
 export class AnimalTypeModel {
     private constructor(
-        public readonly id: number,
+        public readonly id: string,
         public readonly code: string,
         public readonly name: string,
         public readonly category: string,

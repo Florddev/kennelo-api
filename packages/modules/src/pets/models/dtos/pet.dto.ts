@@ -5,7 +5,7 @@ import type { PetImageDto } from "./pet-image.dto";
 export type PetDto = {
     id: string;
     user_id: string;
-    animal_type_id: number;
+    animal_type_id: string;
     name: string;
     breed: string | null;
     birth_date: string | null;
