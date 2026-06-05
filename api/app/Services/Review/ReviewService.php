@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Services\Review;
 
-use App\Enums\BookingStatus;
-use App\Enums\EstablishmentPermission;
+use App\Enums\BookingStatusEnum;
+use App\Enums\EstablishmentPermissionEnum;
 use App\Enums\PaginationEnum;
-use App\Enums\ReviewerType;
+use App\Enums\ReviewerTypeEnum;
 use App\Models\Booking;
 use App\Models\Establishment;
 use App\Models\Pet;
@@ -27,7 +27,7 @@ class ReviewService
 
     public function create(User $actor, Booking $booking, array $data): Review
     {
-        if ($booking->status !== BookingStatus::COMPLETED) {
+        if ($booking->status !== BookingStatusEnum::COMPLETED) {
             throw ValidationException::withMessages([
                 'status' => ['You can only review a completed booking.'],
             ]);
@@ -93,7 +93,7 @@ class ReviewService
         return Review::query()
             ->with(['reviewer', 'booking.establishment', 'criteriaScores.definition', 'response.responder'])
             ->whereHas('booking', fn ($q) => $q->where('establishment_id', $establishment->id))
-            ->where('reviewer_type', ReviewerType::USER->value)
+            ->where('reviewer_type', ReviewerTypeEnum::USER->value)
             ->where('is_published', true)
             ->when(isset($filters['min_rating']), fn ($q) => $q->where('overall_rating', '>=', $filters['min_rating']))
             ->latest('published_at')
@@ -107,7 +107,7 @@ class ReviewService
         return Review::query()
             ->with(['reviewer', 'booking.establishment', 'criteriaScores.definition', 'response.responder'])
             ->whereHas('booking', fn ($q) => $q->where('user_id', $user->id))
-            ->where('reviewer_type', ReviewerType::ESTABLISHMENT->value)
+            ->where('reviewer_type', ReviewerTypeEnum::ESTABLISHMENT->value)
             ->where('is_published', true)
             ->when(isset($filters['min_rating']), fn ($q) => $q->where('overall_rating', '>=', $filters['min_rating']))
             ->latest('published_at')
@@ -132,7 +132,7 @@ class ReviewService
         return Review::query()
             ->with(['reviewer', 'booking.establishment', 'criteriaScores.definition', 'response'])
             ->whereHas('booking', fn ($q) => $q->where('user_id', $actor->id))
-            ->where('reviewer_type', ReviewerType::ESTABLISHMENT->value)
+            ->where('reviewer_type', ReviewerTypeEnum::ESTABLISHMENT->value)
             ->latest()
             ->paginate($perPage);
     }
@@ -144,7 +144,7 @@ class ReviewService
         return Review::query()
             ->with(['reviewer', 'criteriaScores.definition', 'response.responder'])
             ->whereHas('booking', fn ($q) => $q->whereHas('pets', fn ($pq) => $pq->where('pets.id', $pet->id)))
-            ->where('reviewer_type', ReviewerType::ESTABLISHMENT->value)
+            ->where('reviewer_type', ReviewerTypeEnum::ESTABLISHMENT->value)
             ->where('is_published', true)
             ->when(isset($filters['min_rating']), fn ($q) => $q->where('overall_rating', '>=', $filters['min_rating']))
             ->latest('published_at')
@@ -155,7 +155,7 @@ class ReviewService
     {
         $base = Review::query()
             ->whereHas('booking', fn ($q) => $q->whereHas('pets', fn ($pq) => $pq->where('pets.id', $pet->id)))
-            ->where('reviewer_type', ReviewerType::ESTABLISHMENT->value)
+            ->where('reviewer_type', ReviewerTypeEnum::ESTABLISHMENT->value)
             ->where('is_published', true);
 
         $total = (clone $base)->count();
@@ -171,7 +171,7 @@ class ReviewService
     {
         $base = Review::query()
             ->whereHas('booking', fn ($q) => $q->where('establishment_id', $establishment->id))
-            ->where('reviewer_type', ReviewerType::USER->value)
+            ->where('reviewer_type', ReviewerTypeEnum::USER->value)
             ->where('is_published', true);
 
         $total = (clone $base)->count();
@@ -187,7 +187,7 @@ class ReviewService
     {
         $base = Review::query()
             ->whereHas('booking', fn ($q) => $q->where('user_id', $user->id))
-            ->where('reviewer_type', ReviewerType::ESTABLISHMENT->value)
+            ->where('reviewer_type', ReviewerTypeEnum::ESTABLISHMENT->value)
             ->where('is_published', true);
 
         $total = (clone $base)->count();
@@ -199,10 +199,10 @@ class ReviewService
         ];
     }
 
-    public function resolveReviewerType(User $actor, Booking $booking): ReviewerType
+    public function resolveReviewerType(User $actor, Booking $booking): ReviewerTypeEnum
     {
         if ((string) $booking->user_id === (string) $actor->id) {
-            return ReviewerType::USER;
+            return ReviewerTypeEnum::USER;
         }
 
         $booking->loadMissing('establishment');
@@ -215,11 +215,11 @@ class ReviewService
         }
 
         if ((string) $establishment->manager_id === (string) $actor->id) {
-            return ReviewerType::ESTABLISHMENT;
+            return ReviewerTypeEnum::ESTABLISHMENT;
         }
 
-        if ($establishment->collaboratorHasPermission($actor, EstablishmentPermission::MANAGE_BOOKINGS)) {
-            return ReviewerType::ESTABLISHMENT;
+        if ($establishment->collaboratorHasPermission($actor, EstablishmentPermissionEnum::MANAGE_BOOKINGS)) {
+            return ReviewerTypeEnum::ESTABLISHMENT;
         }
 
         throw ValidationException::withMessages([
@@ -227,7 +227,7 @@ class ReviewService
         ]);
     }
 
-    private function validateCriteria(array $criteriaScores, ReviewerType $reviewerType): void
+    private function validateCriteria(array $criteriaScores, ReviewerTypeEnum $reviewerType): void
     {
         if (empty($criteriaScores)) {
             return;

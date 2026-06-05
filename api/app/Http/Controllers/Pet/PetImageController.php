@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Pet;
 
-use App\Enums\ApiStatus;
+use App\Enums\ApiStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Pet\StorePetImageRequest;
 use App\Http\Requests\Pet\StorePetImagesRequest;
@@ -35,7 +35,7 @@ class PetImageController extends Controller
         return (new PetResource($pet))
             ->additional([
                 'message' => 'Avatar uploaded successfully',
-                'status' => ApiStatus::SUCCESS,
+                'status' => ApiStatusEnum::SUCCESS,
                 'timestamp' => human_date(now()),
             ])
             ->response();
@@ -49,7 +49,7 @@ class PetImageController extends Controller
 
         return PetImageResource::collection($images)
             ->additional([
-                'status' => ApiStatus::SUCCESS,
+                'status' => ApiStatusEnum::SUCCESS,
                 'timestamp' => human_date(now()),
             ])
             ->response();
@@ -64,7 +64,7 @@ class PetImageController extends Controller
         return (new PetImageResource($media))
             ->additional([
                 'message' => 'Image added successfully',
-                'status' => ApiStatus::SUCCESS,
+                'status' => ApiStatusEnum::SUCCESS,
                 'timestamp' => human_date(now()),
             ])
             ->response()
@@ -80,7 +80,7 @@ class PetImageController extends Controller
         return PetImageResource::collection($mediaItems)
             ->additional([
                 'message' => 'Images added successfully',
-                'status' => ApiStatus::SUCCESS,
+                'status' => ApiStatusEnum::SUCCESS,
                 'timestamp' => human_date(now()),
             ])
             ->response()
@@ -94,7 +94,7 @@ class PetImageController extends Controller
         if ($media->model_id !== $pet->id || $media->collection_name !== MediaService::COLLECTION_IMAGES) {
             return response()->json([
                 'message' => 'Image does not belong to this pet',
-                'status' => ApiStatus::ERROR,
+                'status' => ApiStatusEnum::ERROR,
                 'timestamp' => human_date(now()),
             ], 403);
         }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
-use App\Enums\AvailabilityStatus;
+use App\Enums\AvailabilityStatusEnum;
 use App\Models\Establishment;
 use App\Models\EstablishmentAvailability;
 use Carbon\CarbonImmutable;
@@ -30,7 +30,7 @@ class EstablishmentAvailabilitySeeder extends Seeder
                         'date' => $date->toDateString(),
                     ],
                     [
-                        'status' => AvailabilityStatus::OPEN,
+                        'status' => AvailabilityStatusEnum::OPEN,
                         'note' => null,
                     ],
                 );

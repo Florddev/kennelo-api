@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\User;
 
-use App\Enums\IdentityVerificationStatus;
+use App\Enums\IdentityVerificationStatusEnum;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -18,9 +18,9 @@ class ReviewIdentityVerificationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'status' => ['required', Rule::enum(IdentityVerificationStatus::class)->only([
-                IdentityVerificationStatus::Approved,
-                IdentityVerificationStatus::Rejected,
+            'status' => ['required', Rule::enum(IdentityVerificationStatusEnum::class)->only([
+                IdentityVerificationStatusEnum::APPROVED,
+                IdentityVerificationStatusEnum::REJECTED,
             ])],
         ];
     }

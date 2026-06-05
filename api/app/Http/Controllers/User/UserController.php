@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\User;
 
-use App\Enums\ApiStatus;
+use App\Enums\ApiStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\AdminUpdateUserRequest;
 use App\Http\Requests\User\AssignRolesRequest;
@@ -47,7 +47,7 @@ class UserController extends Controller
 
         return UserResource::collection($users)
             ->additional([
-                'status' => ApiStatus::SUCCESS,
+                'status' => ApiStatusEnum::SUCCESS,
                 'timestamp' => human_date(Carbon::now()),
             ])
             ->response();
@@ -58,7 +58,7 @@ class UserController extends Controller
         if (! Str::isUuid($id)) {
             return response()->json([
                 'message' => 'Invalid UUID format',
-                'status' => ApiStatus::ERROR,
+                'status' => ApiStatusEnum::ERROR,
                 'timestamp' => human_date(Carbon::now()),
             ], 400);
         }
@@ -68,7 +68,7 @@ class UserController extends Controller
         if (! $user) {
             return response()->json([
                 'message' => 'User not found',
-                'status' => ApiStatus::ERROR,
+                'status' => ApiStatusEnum::ERROR,
                 'timestamp' => human_date(Carbon::now()),
             ], 404);
         }
@@ -77,7 +77,7 @@ class UserController extends Controller
 
         return (new UserResource($user))
             ->additional([
-                'status' => ApiStatus::SUCCESS,
+                'status' => ApiStatusEnum::SUCCESS,
                 'timestamp' => human_date(Carbon::now()),
             ])
             ->response();
@@ -88,7 +88,7 @@ class UserController extends Controller
         if (! Str::isUuid($id)) {
             return response()->json([
                 'message' => 'Invalid UUID format',
-                'status' => ApiStatus::ERROR,
+                'status' => ApiStatusEnum::ERROR,
                 'timestamp' => human_date(Carbon::now()),
             ], 400);
         }
@@ -98,7 +98,7 @@ class UserController extends Controller
         if (! $target) {
             return response()->json([
                 'message' => 'User not found',
-                'status' => ApiStatus::ERROR,
+                'status' => ApiStatusEnum::ERROR,
                 'timestamp' => human_date(Carbon::now()),
             ], 404);
         }
@@ -110,7 +110,7 @@ class UserController extends Controller
         return (new UserResource($user))
             ->additional([
                 'message' => 'User updated successfully',
-                'status' => ApiStatus::SUCCESS,
+                'status' => ApiStatusEnum::SUCCESS,
                 'timestamp' => human_date(Carbon::now()),
             ])
             ->response();
@@ -123,7 +123,7 @@ class UserController extends Controller
 
         return (new UserResource($user))
             ->additional([
-                'status' => ApiStatus::SUCCESS,
+                'status' => ApiStatusEnum::SUCCESS,
                 'timestamp' => human_date(Carbon::now()),
             ])
             ->response();
@@ -137,7 +137,7 @@ class UserController extends Controller
         return (new UserResource($updatedUser))
             ->additional([
                 'message' => 'Profile updated successfully',
-                'status' => ApiStatus::SUCCESS,
+                'status' => ApiStatusEnum::SUCCESS,
                 'timestamp' => human_date(Carbon::now()),
             ])
             ->response();
@@ -151,7 +151,7 @@ class UserController extends Controller
         return (new UserResource($updatedUser))
             ->additional([
                 'message' => 'Avatar uploaded successfully',
-                'status' => ApiStatus::SUCCESS,
+                'status' => ApiStatusEnum::SUCCESS,
                 'timestamp' => human_date(Carbon::now()),
             ])
             ->response();
@@ -176,13 +176,13 @@ class UserController extends Controller
 
             return response()->json([
                 'message' => 'Account deleted successfully',
-                'status' => ApiStatus::SUCCESS,
+                'status' => ApiStatusEnum::SUCCESS,
                 'timestamp' => human_date(Carbon::now()),
             ]);
         } catch (UserHasActiveBookingsException $e) {
             return response()->json([
                 'message' => $e->getMessage(),
-                'status' => ApiStatus::ERROR,
+                'status' => ApiStatusEnum::ERROR,
                 'timestamp' => human_date(Carbon::now()),
             ], 422);
         }
@@ -193,7 +193,7 @@ class UserController extends Controller
         if (! Str::isUuid($id)) {
             return response()->json([
                 'message' => 'Invalid UUID format',
-                'status' => ApiStatus::ERROR,
+                'status' => ApiStatusEnum::ERROR,
                 'timestamp' => human_date(Carbon::now()),
             ], 400);
         }
@@ -203,7 +203,7 @@ class UserController extends Controller
         if (! $target) {
             return response()->json([
                 'message' => 'User not found',
-                'status' => ApiStatus::ERROR,
+                'status' => ApiStatusEnum::ERROR,
                 'timestamp' => human_date(Carbon::now()),
             ], 404);
         }
@@ -215,13 +215,13 @@ class UserController extends Controller
 
             return response()->json([
                 'message' => 'User deleted successfully',
-                'status' => ApiStatus::SUCCESS,
+                'status' => ApiStatusEnum::SUCCESS,
                 'timestamp' => human_date(Carbon::now()),
             ]);
         } catch (UserHasActiveBookingsException $e) {
             return response()->json([
                 'message' => $e->getMessage(),
-                'status' => ApiStatus::ERROR,
+                'status' => ApiStatusEnum::ERROR,
                 'timestamp' => human_date(Carbon::now()),
             ], 422);
         }
@@ -234,13 +234,13 @@ class UserController extends Controller
 
             return response()->json([
                 'message' => 'Password changed successfully',
-                'status' => ApiStatus::SUCCESS,
+                'status' => ApiStatusEnum::SUCCESS,
                 'timestamp' => human_date(Carbon::now()),
             ]);
         } catch (InvalidCurrentPasswordException $e) {
             return response()->json([
                 'message' => $e->getMessage(),
-                'status' => ApiStatus::ERROR,
+                'status' => ApiStatusEnum::ERROR,
                 'timestamp' => human_date(Carbon::now()),
             ], 422);
         }
@@ -254,7 +254,7 @@ class UserController extends Controller
             return (new UserResource($user))
                 ->additional([
                     'message' => 'Email updated successfully. Please verify your new email.',
-                    'status' => ApiStatus::SUCCESS,
+                    'status' => ApiStatusEnum::SUCCESS,
                     'timestamp' => human_date(Carbon::now()),
                 ])
                 ->response();
@@ -264,7 +264,7 @@ class UserController extends Controller
                 'errors' => [
                     'password' => [$e->getMessage()],
                 ],
-                'status' => ApiStatus::ERROR,
+                'status' => ApiStatusEnum::ERROR,
                 'timestamp' => human_date(Carbon::now()),
             ], 422);
         }
@@ -277,7 +277,7 @@ class UserController extends Controller
         return (new AddressResource($user->address))
             ->additional([
                 'message' => 'Address updated successfully',
-                'status' => ApiStatus::SUCCESS,
+                'status' => ApiStatusEnum::SUCCESS,
                 'timestamp' => human_date(Carbon::now()),
             ])
             ->response();
@@ -290,7 +290,7 @@ class UserController extends Controller
         if (! $user->address_id) {
             return response()->json([
                 'message' => 'No address to delete',
-                'status' => ApiStatus::ERROR,
+                'status' => ApiStatusEnum::ERROR,
                 'timestamp' => human_date(Carbon::now()),
             ], 404);
         }
@@ -299,7 +299,7 @@ class UserController extends Controller
 
         return response()->json([
             'message' => 'Address deleted successfully',
-            'status' => ApiStatus::SUCCESS,
+            'status' => ApiStatusEnum::SUCCESS,
             'timestamp' => human_date(Carbon::now()),
         ]);
     }
@@ -311,14 +311,14 @@ class UserController extends Controller
         if (! $verification) {
             return response()->json([
                 'data' => null,
-                'status' => ApiStatus::SUCCESS,
+                'status' => ApiStatusEnum::SUCCESS,
                 'timestamp' => human_date(Carbon::now()),
             ]);
         }
 
         return (new IdentityVerificationResource($verification))
             ->additional([
-                'status' => ApiStatus::SUCCESS,
+                'status' => ApiStatusEnum::SUCCESS,
                 'timestamp' => human_date(Carbon::now()),
             ])
             ->response();
@@ -334,7 +334,7 @@ class UserController extends Controller
         return (new IdentityVerificationResource($verification))
             ->additional([
                 'message' => 'Identity verification submitted successfully',
-                'status' => ApiStatus::SUCCESS,
+                'status' => ApiStatusEnum::SUCCESS,
                 'timestamp' => human_date(Carbon::now()),
             ])
             ->response()
@@ -346,7 +346,7 @@ class UserController extends Controller
         if (! Str::isUuid($id)) {
             return response()->json([
                 'message' => 'Invalid UUID format',
-                'status' => ApiStatus::ERROR,
+                'status' => ApiStatusEnum::ERROR,
                 'timestamp' => human_date(Carbon::now()),
             ], 400);
         }
@@ -356,7 +356,7 @@ class UserController extends Controller
         if (! $target) {
             return response()->json([
                 'message' => 'User not found',
-                'status' => ApiStatus::ERROR,
+                'status' => ApiStatusEnum::ERROR,
                 'timestamp' => human_date(Carbon::now()),
             ], 404);
         }
@@ -368,7 +368,7 @@ class UserController extends Controller
         return (new UserResource($user))
             ->additional([
                 'message' => 'User status updated successfully',
-                'status' => ApiStatus::SUCCESS,
+                'status' => ApiStatusEnum::SUCCESS,
                 'timestamp' => human_date(Carbon::now()),
             ])
             ->response();
@@ -379,7 +379,7 @@ class UserController extends Controller
         if (! Str::isUuid($id)) {
             return response()->json([
                 'message' => 'Invalid UUID format',
-                'status' => ApiStatus::ERROR,
+                'status' => ApiStatusEnum::ERROR,
                 'timestamp' => human_date(Carbon::now()),
             ], 400);
         }
@@ -389,7 +389,7 @@ class UserController extends Controller
         if (! $target) {
             return response()->json([
                 'message' => 'User not found',
-                'status' => ApiStatus::ERROR,
+                'status' => ApiStatusEnum::ERROR,
                 'timestamp' => human_date(Carbon::now()),
             ], 404);
         }
@@ -401,7 +401,7 @@ class UserController extends Controller
         return (new UserResource($user))
             ->additional([
                 'message' => 'Roles assigned successfully',
-                'status' => ApiStatus::SUCCESS,
+                'status' => ApiStatusEnum::SUCCESS,
                 'timestamp' => human_date(Carbon::now()),
             ])
             ->response();
@@ -412,7 +412,7 @@ class UserController extends Controller
         if (! Str::isUuid($id)) {
             return response()->json([
                 'message' => 'Invalid UUID format',
-                'status' => ApiStatus::ERROR,
+                'status' => ApiStatusEnum::ERROR,
                 'timestamp' => human_date(Carbon::now()),
             ], 400);
         }
@@ -422,7 +422,7 @@ class UserController extends Controller
         if (! $target) {
             return response()->json([
                 'message' => 'User not found',
-                'status' => ApiStatus::ERROR,
+                'status' => ApiStatusEnum::ERROR,
                 'timestamp' => human_date(Carbon::now()),
             ], 404);
         }
@@ -434,7 +434,7 @@ class UserController extends Controller
         return (new UserResource($user))
             ->additional([
                 'message' => 'Role removed successfully',
-                'status' => ApiStatus::SUCCESS,
+                'status' => ApiStatusEnum::SUCCESS,
                 'timestamp' => human_date(Carbon::now()),
             ])
             ->response();
@@ -445,7 +445,7 @@ class UserController extends Controller
         if (! Str::isUuid($id)) {
             return response()->json([
                 'message' => 'Invalid UUID format',
-                'status' => ApiStatus::ERROR,
+                'status' => ApiStatusEnum::ERROR,
                 'timestamp' => human_date(Carbon::now()),
             ], 400);
         }
@@ -455,7 +455,7 @@ class UserController extends Controller
         if (! $target) {
             return response()->json([
                 'message' => 'User not found',
-                'status' => ApiStatus::ERROR,
+                'status' => ApiStatusEnum::ERROR,
                 'timestamp' => human_date(Carbon::now()),
             ], 404);
         }
@@ -467,7 +467,7 @@ class UserController extends Controller
         return (new UserResource($user))
             ->additional([
                 'message' => 'Identity verification reviewed successfully',
-                'status' => ApiStatus::SUCCESS,
+                'status' => ApiStatusEnum::SUCCESS,
                 'timestamp' => human_date(Carbon::now()),
             ])
             ->response();

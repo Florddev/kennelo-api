@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\PaymentMethod;
 
-use App\Enums\ApiStatus;
+use App\Enums\ApiStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PaymentMethodResource;
 use App\Services\Stripe\StripePaymentMethodService;
@@ -21,7 +21,7 @@ class PaymentMethodController extends Controller
 
         return response()->json([
             'data' => $data,
-            'status' => ApiStatus::SUCCESS,
+            'status' => ApiStatusEnum::SUCCESS,
             'timestamp' => human_date(now()),
         ]);
     }
@@ -32,7 +32,7 @@ class PaymentMethodController extends Controller
 
         return response()->json([
             'data' => $data,
-            'status' => ApiStatus::SUCCESS,
+            'status' => ApiStatusEnum::SUCCESS,
             'timestamp' => human_date(now()),
         ]);
     }
@@ -43,7 +43,7 @@ class PaymentMethodController extends Controller
 
         return PaymentMethodResource::collection($methods)
             ->additional([
-                'status' => ApiStatus::SUCCESS,
+                'status' => ApiStatusEnum::SUCCESS,
                 'timestamp' => human_date(now()),
             ])
             ->response();
@@ -57,7 +57,7 @@ class PaymentMethodController extends Controller
 
         return PaymentMethodResource::collection($methods)
             ->additional([
-                'status' => ApiStatus::SUCCESS,
+                'status' => ApiStatusEnum::SUCCESS,
                 'timestamp' => human_date(now()),
             ])
             ->response();

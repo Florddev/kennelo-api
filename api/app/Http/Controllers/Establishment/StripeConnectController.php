@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Establishment;
 
-use App\Enums\ApiStatus;
+use App\Enums\ApiStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Models\Establishment;
 use App\Services\Establishment\StripeConnectService;
@@ -24,7 +24,7 @@ class StripeConnectController extends Controller
 
         return response()->json([
             'data' => ['url' => $url],
-            'status' => ApiStatus::SUCCESS,
+            'status' => ApiStatusEnum::SUCCESS,
             'timestamp' => human_date(now()),
         ]);
     }
@@ -42,7 +42,7 @@ class StripeConnectController extends Controller
                 'charges_enabled' => (bool) $establishment->stripe_charges_enabled,
                 'payouts_enabled' => (bool) $establishment->stripe_payouts_enabled,
             ],
-            'status' => ApiStatus::SUCCESS,
+            'status' => ApiStatusEnum::SUCCESS,
             'timestamp' => human_date(now()),
         ]);
     }

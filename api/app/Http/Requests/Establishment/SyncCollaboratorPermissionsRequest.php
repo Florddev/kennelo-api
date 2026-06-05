@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Establishment;
 
-use App\Enums\EstablishmentPermission;
+use App\Enums\EstablishmentPermissionEnum;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -19,7 +19,7 @@ class SyncCollaboratorPermissionsRequest extends FormRequest
     {
         return [
             'permissions' => ['required', 'array'],
-            'permissions.*' => ['string', Rule::in(EstablishmentPermission::values())],
+            'permissions.*' => ['string', Rule::in(EstablishmentPermissionEnum::values())],
         ];
     }
 }

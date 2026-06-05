@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Explore\Sections;
 
 use App\Contracts\ExploreSection;
-use App\Enums\ReviewerType;
+use App\Enums\ReviewerTypeEnum;
 use Illuminate\Database\Eloquent\Builder;
 
 class TopRatedSection implements ExploreSection
@@ -17,7 +17,7 @@ class TopRatedSection implements ExploreSection
 
     public function apply(Builder $query, ?float $lat, ?float $lng): Builder
     {
-        $reviewerType = ReviewerType::USER->value;
+        $reviewerType = ReviewerTypeEnum::USER->value;
 
         return $query
             ->whereRaw(

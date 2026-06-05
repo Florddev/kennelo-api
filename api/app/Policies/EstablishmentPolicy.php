@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Policies;
 
-use App\Enums\EstablishmentPermission;
+use App\Enums\EstablishmentPermissionEnum;
 use App\Models\Establishment;
 use App\Models\User;
 
@@ -29,7 +29,7 @@ class EstablishmentPolicy
     {
         return $user->hasRole('admin')
             || $user->id === $establishment->manager_id
-            || $establishment->collaboratorHasPermission($user, EstablishmentPermission::UPDATE_ESTABLISHMENT);
+            || $establishment->collaboratorHasPermission($user, EstablishmentPermissionEnum::UPDATE_ESTABLISHMENT);
     }
 
     public function delete(User $user, Establishment $establishment): bool
@@ -53,7 +53,7 @@ class EstablishmentPolicy
     {
         return $user->hasRole('admin')
             || $user->id === $establishment->manager_id
-            || $establishment->collaboratorHasPermission($user, EstablishmentPermission::MANAGE_AVAILABILITIES);
+            || $establishment->collaboratorHasPermission($user, EstablishmentPermissionEnum::MANAGE_AVAILABILITIES);
     }
 
     public function viewCapacities(User $user, Establishment $establishment): bool
@@ -67,6 +67,6 @@ class EstablishmentPolicy
     {
         return $user->hasRole('admin')
             || $user->id === $establishment->manager_id
-            || $establishment->collaboratorHasPermission($user, EstablishmentPermission::MANAGE_CAPACITIES);
+            || $establishment->collaboratorHasPermission($user, EstablishmentPermissionEnum::MANAGE_CAPACITIES);
     }
 }

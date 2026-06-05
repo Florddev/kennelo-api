@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Enums\EstablishmentPermission;
+use App\Enums\EstablishmentPermissionEnum;
 use App\Models\Establishment;
 use App\Models\User;
 
@@ -118,7 +118,7 @@ it('collaborator with UPDATE_ESTABLISHMENT can update', function () {
     $establishment->collaborators()->attach($collaborator->id);
     $establishment->collaboratorPermissions()->create([
         'user_id' => $collaborator->id,
-        'permission' => EstablishmentPermission::UPDATE_ESTABLISHMENT->value,
+        'permission' => EstablishmentPermissionEnum::UPDATE_ESTABLISHMENT->value,
     ]);
 
     $this->withHeaders(asUser($collaborator))
@@ -204,7 +204,7 @@ it('manager can sync permissions for a collaborator', function () {
 
     $this->withHeaders(asUser($manager))
         ->putJson("/api/establishments/{$establishment->id}/collaborators/{$collaborator->id}/permissions", [
-            'permissions' => [EstablishmentPermission::MANAGE_CAPACITIES->value],
+            'permissions' => [EstablishmentPermissionEnum::MANAGE_CAPACITIES->value],
         ])
         ->assertOk();
 });
@@ -220,7 +220,7 @@ it('admin can sync permissions for a collaborator', function () {
 
     $this->withHeaders(asUser($admin))
         ->putJson("/api/establishments/{$establishment->id}/collaborators/{$collaborator->id}/permissions", [
-            'permissions' => [EstablishmentPermission::MANAGE_AVAILABILITIES->value],
+            'permissions' => [EstablishmentPermissionEnum::MANAGE_AVAILABILITIES->value],
         ])
         ->assertOk();
 });
@@ -234,7 +234,7 @@ it('syncing permissions for a non-collaborator returns 422', function () {
 
     $this->withHeaders(asUser($manager))
         ->putJson("/api/establishments/{$establishment->id}/collaborators/{$stranger->id}/permissions", [
-            'permissions' => [EstablishmentPermission::MANAGE_CAPACITIES->value],
+            'permissions' => [EstablishmentPermissionEnum::MANAGE_CAPACITIES->value],
         ])
         ->assertUnprocessable();
 });
@@ -250,7 +250,7 @@ it('non-manager cannot sync collaborator permissions', function () {
 
     $this->withHeaders(asUser($randomUser))
         ->putJson("/api/establishments/{$establishment->id}/collaborators/{$collaborator->id}/permissions", [
-            'permissions' => [EstablishmentPermission::MANAGE_CAPACITIES->value],
+            'permissions' => [EstablishmentPermissionEnum::MANAGE_CAPACITIES->value],
         ])
         ->assertForbidden();
 });

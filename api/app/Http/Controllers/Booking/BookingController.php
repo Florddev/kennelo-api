@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Booking;
 
-use App\Enums\ApiStatus;
+use App\Enums\ApiStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Booking\ListBookingsRequest;
 use App\Http\Requests\Booking\StoreBookingRequest;
@@ -25,7 +25,7 @@ class BookingController extends Controller
 
         return BookingResource::collection($bookings)
             ->additional([
-                'status' => ApiStatus::SUCCESS,
+                'status' => ApiStatusEnum::SUCCESS,
                 'timestamp' => human_date(now()),
             ])
             ->response();
@@ -38,7 +38,7 @@ class BookingController extends Controller
         $booking->load(['establishment', 'pets', 'services', 'user']);
 
         return (new BookingResource($booking))
-            ->additional(['status' => ApiStatus::SUCCESS, 'timestamp' => human_date(now())])
+            ->additional(['status' => ApiStatusEnum::SUCCESS, 'timestamp' => human_date(now())])
             ->response();
     }
 
@@ -55,7 +55,7 @@ class BookingController extends Controller
 
         return (new BookingResource($booking))
             ->additional([
-                'status' => ApiStatus::SUCCESS,
+                'status' => ApiStatusEnum::SUCCESS,
                 'timestamp' => human_date(now()),
             ])
             ->response()
@@ -70,7 +70,7 @@ class BookingController extends Controller
 
         return (new BookingResource($booking))
             ->additional([
-                'status' => ApiStatus::SUCCESS,
+                'status' => ApiStatusEnum::SUCCESS,
                 'timestamp' => human_date(now()),
             ])
             ->response();

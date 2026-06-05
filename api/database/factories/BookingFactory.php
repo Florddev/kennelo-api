@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
-use App\Enums\BookingStatus;
+use App\Enums\BookingStatusEnum;
 use App\Models\Booking;
 use App\Models\Establishment;
 use App\Models\User;
@@ -30,7 +30,7 @@ class BookingFactory extends Factory
             'total_price' => $totalPrice,
             'platform_fee' => $platformFee,
             'establishment_amount' => round($totalPrice - $platformFee, 2),
-            'status' => BookingStatus::PENDING,
+            'status' => BookingStatusEnum::PENDING,
             'payment_status' => 'pending',
             'special_requests' => fake()->optional(0.4)->sentence(),
         ];
@@ -38,21 +38,21 @@ class BookingFactory extends Factory
 
     public function pending(): static
     {
-        return $this->state(['status' => BookingStatus::PENDING]);
+        return $this->state(['status' => BookingStatusEnum::PENDING]);
     }
 
     public function confirmed(): static
     {
-        return $this->state(['status' => BookingStatus::CONFIRMED]);
+        return $this->state(['status' => BookingStatusEnum::CONFIRMED]);
     }
 
     public function completed(): static
     {
-        return $this->state(['status' => BookingStatus::COMPLETED]);
+        return $this->state(['status' => BookingStatusEnum::COMPLETED]);
     }
 
     public function cancelled(): static
     {
-        return $this->state(['status' => BookingStatus::CANCELLED]);
+        return $this->state(['status' => BookingStatusEnum::CANCELLED]);
     }
 }

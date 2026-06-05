@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Enums\CriteriaApplicableTo;
+use App\Enums\CriteriaApplicableToEnum;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $id
  * @property string $code
  * @property string $label
- * @property CriteriaApplicableTo $applicable_to
+ * @property CriteriaApplicableToEnum $applicable_to
  * @property int $sort_order
  */
 class ReviewCriteriaDefinition extends Model
@@ -30,7 +30,7 @@ class ReviewCriteriaDefinition extends Model
     protected function casts(): array
     {
         return [
-            'applicable_to' => CriteriaApplicableTo::class,
+            'applicable_to' => CriteriaApplicableToEnum::class,
             'sort_order' => 'integer',
         ];
     }

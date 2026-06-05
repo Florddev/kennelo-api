@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services\Review;
 
-use App\Enums\EstablishmentPermission;
-use App\Enums\ReviewerType;
+use App\Enums\EstablishmentPermissionEnum;
+use App\Enums\ReviewerTypeEnum;
 use App\Models\Review;
 use App\Models\ReviewResponse;
 use App\Models\User;
@@ -52,7 +52,7 @@ class ReviewResponseService
             return false;
         }
 
-        if ($review->reviewer_type === ReviewerType::USER) {
+        if ($review->reviewer_type === ReviewerTypeEnum::USER) {
             $establishment = $booking->establishment;
 
             if ($establishment === null) {
@@ -63,7 +63,7 @@ class ReviewResponseService
                 return true;
             }
 
-            return $establishment->collaboratorHasPermission($actor, EstablishmentPermission::MANAGE_BOOKINGS);
+            return $establishment->collaboratorHasPermission($actor, EstablishmentPermissionEnum::MANAGE_BOOKINGS);
         }
 
         return (string) $booking->user_id === (string) $actor->id;

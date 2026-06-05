@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Establishment;
 
-use App\Enums\AvailabilityStatus;
+use App\Enums\AvailabilityStatusEnum;
 use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -32,7 +32,7 @@ class StoreAvailabilityRequest extends FormRequest
                     }
                 },
             ],
-            'status' => ['required', Rule::enum(AvailabilityStatus::class)],
+            'status' => ['required', Rule::enum(AvailabilityStatusEnum::class)],
             'note' => ['nullable', 'string', 'max:255'],
         ];
     }

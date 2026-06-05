@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Enums\ReviewReportStatus;
+use App\Enums\ReviewReportStatusEnum;
 use App\Models\Booking;
 use App\Models\Establishment;
 use App\Models\Review;
@@ -41,7 +41,7 @@ it('any authenticated non-author user can report a review', function () {
             'description' => 'Contenu offensant',
         ])
         ->assertCreated()
-        ->assertJsonPath('data.status', ReviewReportStatus::PENDING->value);
+        ->assertJsonPath('data.status', ReviewReportStatusEnum::PENDING->value);
 });
 
 it('reviewer cannot report their own review', function () {
@@ -61,7 +61,7 @@ it('cannot report the same review twice', function () {
         'review_id' => $review->id,
         'reporter_id' => $manager->id,
         'reason' => 'spam',
-        'status' => ReviewReportStatus::PENDING->value,
+        'status' => ReviewReportStatusEnum::PENDING->value,
     ]);
 
     $this->withHeaders(asUser($manager))
@@ -78,7 +78,7 @@ it('admin can list review reports', function () {
         'review_id' => $review->id,
         'reporter_id' => $manager->id,
         'reason' => 'spam',
-        'status' => ReviewReportStatus::PENDING->value,
+        'status' => ReviewReportStatusEnum::PENDING->value,
     ]);
 
     $admin = User::factory()->create();
@@ -106,7 +106,7 @@ it('admin can update report status', function () {
         'review_id' => $review->id,
         'reporter_id' => $manager->id,
         'reason' => 'spam',
-        'status' => ReviewReportStatus::PENDING->value,
+        'status' => ReviewReportStatusEnum::PENDING->value,
     ]);
 
     $admin = User::factory()->create();
@@ -117,5 +117,5 @@ it('admin can update report status', function () {
             'status' => 'reviewed',
         ])
         ->assertOk()
-        ->assertJsonPath('data.status', ReviewReportStatus::REVIEWED->value);
+        ->assertJsonPath('data.status', ReviewReportStatusEnum::REVIEWED->value);
 });

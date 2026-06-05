@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Enums\EstablishmentPermission;
+use App\Enums\EstablishmentPermissionEnum;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -22,7 +22,7 @@ class EstablishmentCollaboratorPermission extends Model
     protected function casts(): array
     {
         return [
-            'permission' => EstablishmentPermission::class,
+            'permission' => EstablishmentPermissionEnum::class,
         ];
     }
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Establishment;
 
-use App\Enums\EstablishmentType;
+use App\Enums\EstablishmentTypeEnum;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 
@@ -19,7 +19,7 @@ class UpdateEstablishmentRequest extends FormRequest
     {
         return [
             'name' => ['sometimes', 'string', 'max:255'],
-            'type' => ['sometimes', 'nullable', new Enum(EstablishmentType::class)],
+            'type' => ['sometimes', 'nullable', new Enum(EstablishmentTypeEnum::class)],
             'description' => ['sometimes', 'nullable', 'string', 'max:2000'],
             'phone' => ['sometimes', 'nullable', 'string', 'max:20'],
             'email' => ['sometimes', 'nullable', 'email', 'max:255'],

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Review;
 
-use App\Enums\ApiStatus;
+use App\Enums\ApiStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ReviewCriteriaDefinitionResource;
 use App\Models\ReviewCriteriaDefinition;
@@ -27,7 +27,7 @@ class ReviewCriteriaController extends Controller
 
         return ReviewCriteriaDefinitionResource::collection($criteria)
             ->additional([
-                'status' => ApiStatus::SUCCESS,
+                'status' => ApiStatusEnum::SUCCESS,
                 'timestamp' => human_date(now()),
             ])
             ->response();

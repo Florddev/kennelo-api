@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Review;
 
 use App\Enums\PaginationEnum;
-use App\Enums\ReviewReportStatus;
+use App\Enums\ReviewReportStatusEnum;
 use App\Models\Review;
 use App\Models\ReviewReport;
 use App\Models\User;
@@ -38,7 +38,7 @@ class ReviewReportService
             'reporter_id' => $reporter->id,
             'reason' => $data['reason'],
             'description' => $data['description'] ?? null,
-            'status' => ReviewReportStatus::PENDING->value,
+            'status' => ReviewReportStatusEnum::PENDING->value,
         ]);
     }
 

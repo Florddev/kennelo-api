@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Pet;
 
-use App\Enums\ApiStatus;
+use App\Enums\ApiStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Pet\UpsertPetAttributesRequest;
 use App\Http\Resources\PetAttributeResource;
@@ -40,7 +40,7 @@ class PetAttributeController extends Controller
 
         return PetAttributeResource::collection($pet->petAttributes)
             ->additional([
-                'status' => ApiStatus::SUCCESS,
+                'status' => ApiStatusEnum::SUCCESS,
                 'timestamp' => human_date(now()),
             ])
             ->response();

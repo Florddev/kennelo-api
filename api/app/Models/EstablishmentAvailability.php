@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Enums\AvailabilityStatus;
+use App\Enums\AvailabilityStatusEnum;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @property Carbon $date
- * @property AvailabilityStatus $status
+ * @property AvailabilityStatusEnum $status
  * @property-read Establishment $establishment
  */
 class EstablishmentAvailability extends Model
@@ -30,7 +30,7 @@ class EstablishmentAvailability extends Model
     {
         return [
             'date' => 'date',
-            'status' => AvailabilityStatus::class,
+            'status' => AvailabilityStatusEnum::class,
         ];
     }
 

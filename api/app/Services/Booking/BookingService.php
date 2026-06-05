@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services\Booking;
 
-use App\Enums\AvailabilityStatus;
-use App\Enums\BookingStatus;
+use App\Enums\AvailabilityStatusEnum;
+use App\Enums\BookingStatusEnum;
 use App\Models\Booking;
 use App\Models\BookingThread;
 use App\Models\Conversation;
@@ -102,7 +102,7 @@ class BookingService
                 'total_price' => $totalPrice,
                 'platform_fee' => $platformFee,
                 'establishment_amount' => $establishmentAmount,
-                'status' => BookingStatus::PENDING,
+                'status' => BookingStatusEnum::PENDING,
                 'special_requests' => $data['special_requests'] ?? null,
             ]);
 
@@ -185,18 +185,18 @@ class BookingService
 
     public function cancel(Booking $booking): Booking
     {
-        $this->assertStatus($booking, [BookingStatus::PENDING, BookingStatus::CONFIRMED], 'cancel');
+        $this->assertStatus($booking, [BookingStatusEnum::PENDING, BookingStatusEnum::CONFIRMED], 'cancel');
 
-        $booking->update(['status' => BookingStatus::CANCELLED]);
+        $booking->update(['status' => BookingStatusEnum::CANCELLED]);
 
         return $booking->fresh();
     }
 
     public function confirm(Booking $booking, User $actor): Booking
     {
-        $this->assertStatus($booking, [BookingStatus::PENDING], 'confirm');
+        $this->assertStatus($booking, [BookingStatusEnum::PENDING], 'confirm');
 
-        $booking->update(['status' => BookingStatus::CONFIRMED]);
+        $booking->update(['status' => BookingStatusEnum::CONFIRMED]);
 
         $accountId = $booking->establishment->resolveStripeAccountId();
 
@@ -220,9 +220,9 @@ class BookingService
 
     public function complete(Booking $booking): Booking
     {
-        $this->assertStatus($booking, [BookingStatus::CONFIRMED, BookingStatus::IN_PROGRESS], 'complete');
+        $this->assertStatus($booking, [BookingStatusEnum::CONFIRMED, BookingStatusEnum::IN_PROGRESS], 'complete');
 
-        $booking->update(['status' => BookingStatus::COMPLETED]);
+        $booking->update(['status' => BookingStatusEnum::COMPLETED]);
 
         return $booking->fresh();
     }
@@ -248,11 +248,11 @@ class BookingService
 
     public function rejectByEstablishment(Booking $booking, User $actor): Booking
     {
-        $this->assertStatus($booking, [BookingStatus::PENDING], 'reject');
+        $this->assertStatus($booking, [BookingStatusEnum::PENDING], 'reject');
 
         $this->refundOnReject($booking);
 
-        $booking->update(['status' => BookingStatus::CANCELLED]);
+        $booking->update(['status' => BookingStatusEnum::CANCELLED]);
 
         $this->sendBookingReferenceIfConversationExists($booking, $actor);
 
@@ -262,7 +262,7 @@ class BookingService
     private function validateAvailability(Establishment $establishment, Carbon $checkIn, Carbon $checkOut): void
     {
         $closedDays = $establishment->availabilities()
-            ->where('status', AvailabilityStatus::CLOSED)
+            ->where('status', AvailabilityStatusEnum::CLOSED)
             ->whereBetween('date', [$checkIn->toDateString(), $checkOut->copy()->subDay()->toDateString()])
             ->exists();
 
@@ -287,7 +287,7 @@ class BookingService
             ->join('booking_pets', 'booking_pets.pet_id', '=', 'pets.id')
             ->join('bookings', 'bookings.id', '=', 'booking_pets.booking_id')
             ->where('bookings.establishment_id', $establishment->id)
-            ->whereIn('bookings.status', [BookingStatus::CONFIRMED->value, BookingStatus::IN_PROGRESS->value])
+            ->whereIn('bookings.status', [BookingStatusEnum::CONFIRMED->value, BookingStatusEnum::IN_PROGRESS->value])
             ->where('bookings.check_in_date', '<', $checkOut->toDateString())
             ->where('bookings.check_out_date', '>', $checkIn->toDateString())
             ->whereIn('pets.animal_type_id', $animalTypeCounts->keys())

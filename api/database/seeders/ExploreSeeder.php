@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
-use App\Enums\BookingStatus;
-use App\Enums\EstablishmentType;
-use App\Enums\ReviewerType;
+use App\Enums\BookingStatusEnum;
+use App\Enums\EstablishmentTypeEnum;
+use App\Enums\ReviewerTypeEnum;
 use App\Models\AnimalType;
 use App\Models\Booking;
 use App\Models\Establishment;
@@ -37,17 +37,17 @@ class ExploreSeeder extends Seeder
     private array $imagePool = ['avatar' => [], 'gallery' => []];
 
     private array $proTypes = [
-        EstablishmentType::BOARDING,
-        EstablishmentType::BREEDING,
-        EstablishmentType::DAYCARE,
-        EstablishmentType::SHELTER,
+        EstablishmentTypeEnum::BOARDING,
+        EstablishmentTypeEnum::BREEDING,
+        EstablishmentTypeEnum::DAYCARE,
+        EstablishmentTypeEnum::SHELTER,
     ];
 
     private array $individualTypes = [
-        EstablishmentType::PET_SITTER,
-        EstablishmentType::HOME_CARE,
-        EstablishmentType::HOST_FAMILY,
-        EstablishmentType::MOBILE_BOARDING,
+        EstablishmentTypeEnum::PET_SITTER,
+        EstablishmentTypeEnum::HOME_CARE,
+        EstablishmentTypeEnum::HOST_FAMILY,
+        EstablishmentTypeEnum::MOBILE_BOARDING,
     ];
 
     public function run(): void
@@ -126,13 +126,13 @@ class ExploreSeeder extends Seeder
                     'check_in_date' => Carbon::now()->subDays($daysAgo + 7)->format('Y-m-d'),
                     'check_out_date' => Carbon::now()->subDays($daysAgo)->format('Y-m-d'),
                     'total_price' => random_int(50, 300),
-                    'status' => BookingStatus::COMPLETED,
+                    'status' => BookingStatusEnum::COMPLETED,
                 ]);
 
                 Review::create([
                     'booking_id' => $booking->id,
                     'reviewer_id' => $reviewer->id,
-                    'reviewer_type' => ReviewerType::USER,
+                    'reviewer_type' => ReviewerTypeEnum::USER,
                     'overall_rating' => fake()->randomFloat(1, 3.0, 5.0),
                     'comment' => fake()->boolean(70) ? fake()->paragraph() : null,
                     'would_recommend' => fake()->boolean(85),

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services\Stripe;
 
-use App\Enums\BookingStatus;
-use App\Enums\PaymentStatus;
+use App\Enums\BookingStatusEnum;
+use App\Enums\PaymentStatusEnum;
 use App\Models\Booking;
 use App\Models\Establishment;
 use App\Models\User;
@@ -77,7 +77,7 @@ class StripeWebhookService
                 return;
             }
 
-            if (! in_array($booking->status, [BookingStatus::PENDING, BookingStatus::CONFIRMED], true)) {
+            if (! in_array($booking->status, [BookingStatusEnum::PENDING, BookingStatusEnum::CONFIRMED], true)) {
                 Log::info('Stripe webhook: ignoring payment_intent.succeeded for booking in terminal state', [
                     'booking_id' => $booking->id,
                     'status' => $booking->status,
@@ -88,7 +88,7 @@ class StripeWebhookService
 
             $updates = [
                 'stripe_payment_intent_id' => $paymentIntent->id,
-                'payment_status' => PaymentStatus::Succeeded,
+                'payment_status' => PaymentStatusEnum::SUCCEEDED,
                 'paid_at' => Carbon::now(),
             ];
 
@@ -115,7 +115,7 @@ class StripeWebhookService
 
             $booking->update([
                 'stripe_payment_intent_id' => $paymentIntent->id,
-                'payment_status' => PaymentStatus::Failed,
+                'payment_status' => PaymentStatusEnum::FAILED,
             ]);
         });
     }
@@ -135,7 +135,7 @@ class StripeWebhookService
 
             $booking->update([
                 'stripe_payment_intent_id' => $paymentIntent->id,
-                'payment_status' => PaymentStatus::Processing,
+                'payment_status' => PaymentStatusEnum::PROCESSING,
             ]);
         });
     }
@@ -167,7 +167,7 @@ class StripeWebhookService
                 'stripe_refund_id' => $refundId,
                 'refunded_amount' => bcdiv((string) $amountRefunded, '100', 2),
                 'refunded_at' => Carbon::now(),
-                'payment_status' => PaymentStatus::Refunded,
+                'payment_status' => PaymentStatusEnum::REFUNDED,
             ]);
         });
     }

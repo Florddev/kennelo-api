@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use App\Enums\IdentityVerificationStatus;
-use App\Enums\UserStatus;
+use App\Enums\IdentityVerificationStatusEnum;
+use App\Enums\UserStatusEnum;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -313,10 +313,10 @@ it('admin can deactivate a user', function () {
     $target = User::factory()->create();
 
     $this->withHeaders(asUser($admin))
-        ->putJson("/api/users/{$target->id}/status", ['status' => UserStatus::INACTIVE->value])
+        ->putJson("/api/users/{$target->id}/status", ['status' => UserStatusEnum::INACTIVE->value])
         ->assertOk();
 
-    expect(User::withInactive()->find($target->id)->status)->toBe(UserStatus::INACTIVE);
+    expect(User::withInactive()->find($target->id)->status)->toBe(UserStatusEnum::INACTIVE);
 });
 
 it('admin cannot deactivate themselves', function () {
@@ -324,7 +324,7 @@ it('admin cannot deactivate themselves', function () {
     $admin->assignRole('admin');
 
     $this->withHeaders(asUser($admin))
-        ->putJson("/api/users/{$admin->id}/status", ['status' => UserStatus::INACTIVE->value])
+        ->putJson("/api/users/{$admin->id}/status", ['status' => UserStatusEnum::INACTIVE->value])
         ->assertForbidden();
 });
 
@@ -376,7 +376,7 @@ it('admin can approve identity verification', function () {
     $admin->assignRole('admin');
 
     $this->withHeaders(asUser($admin))
-        ->putJson("/api/users/{$user->id}/identity-verification", ['status' => IdentityVerificationStatus::Approved->value])
+        ->putJson("/api/users/{$user->id}/identity-verification", ['status' => IdentityVerificationStatusEnum::APPROVED->value])
         ->assertOk();
 
     expect($user->fresh()->is_id_verified)->toBeTrue();
@@ -395,7 +395,7 @@ it('admin can reject identity verification', function () {
     $admin->assignRole('admin');
 
     $this->withHeaders(asUser($admin))
-        ->putJson("/api/users/{$user->id}/identity-verification", ['status' => IdentityVerificationStatus::Rejected->value])
+        ->putJson("/api/users/{$user->id}/identity-verification", ['status' => IdentityVerificationStatusEnum::REJECTED->value])
         ->assertOk();
 
     expect($user->fresh()->is_id_verified)->toBeFalse();
@@ -406,7 +406,7 @@ it('non-admin cannot review identity verification', function () {
     $other = User::factory()->create();
 
     $this->withHeaders(asUser($user))
-        ->putJson("/api/users/{$other->id}/identity-verification", ['status' => IdentityVerificationStatus::Approved->value])
+        ->putJson("/api/users/{$other->id}/identity-verification", ['status' => IdentityVerificationStatusEnum::APPROVED->value])
         ->assertForbidden();
 });
 
@@ -415,6 +415,6 @@ it('returns 404 when reviewing identity verification of unknown user', function 
     $admin->assignRole('admin');
 
     $this->withHeaders(asUser($admin))
-        ->putJson('/api/users/00000000-0000-0000-0000-000000000000/identity-verification', ['status' => IdentityVerificationStatus::Approved->value])
+        ->putJson('/api/users/00000000-0000-0000-0000-000000000000/identity-verification', ['status' => IdentityVerificationStatusEnum::APPROVED->value])
         ->assertNotFound();
 });
