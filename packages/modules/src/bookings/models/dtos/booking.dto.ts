@@ -15,6 +15,15 @@ export type BookingDto = {
     establishment_amount: string;
     status: BookingStatus;
     payment_status: string | null;
+    stripe_payment_intent_id?: string | null;
+    stripe_charge_id?: string | null;
+    stripe_transfer_group?: string | null;
+    stripe_transfer_id?: string | null;
+    stripe_refund_id?: string | null;
+    refunded_amount?: number | string | null;
+    refunded_at?: string | null;
+    client_secret?: string | null;
+    checkout_url?: string | null;
     special_requests: string | null;
     paid_at: string | null;
     user?: UserDto | null;

@@ -15,16 +15,23 @@ use App\Models\Pet;
 use App\Models\Service;
 use App\Models\User;
 use App\Services\Conversation\ConversationService;
+use App\Services\Stripe\StripeCustomerService;
 use Carbon\Carbon;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use Stripe\Exception\CardException;
+use Stripe\Exception\InvalidRequestException;
+use Stripe\PaymentIntent;
+use Stripe\StripeClient;
 
 class BookingService
 {
     public function __construct(
-        private ConversationService $conversationService
+        private ConversationService $conversationService,
+        private StripeClient $stripe,
+        private StripeCustomerService $customerService
     ) {}
 
     public function getUserBookings(User $user, array $filters = []): LengthAwarePaginator
@@ -51,9 +58,18 @@ class BookingService
             ->paginate($perPage);
     }
 
-    public function create(User $user, array $data): Booking
+    public function create(User $user, array $data, string $paymentMethodId, bool $savePaymentMethod = false): Booking
     {
         $establishment = Establishment::findOrFail($data['establishment_id']);
+
+        $establishment->loadMissing('manager');
+
+        if (! $establishment->resolveChargesEnabled() || $establishment->resolveStripeAccountId() === null) {
+            throw ValidationException::withMessages([
+                'establishment_id' => ['This host cannot accept bookings yet. Their bank account is not connected.'],
+            ]);
+        }
+
         $checkIn = Carbon::parse($data['check_in_date']);
         $checkOut = Carbon::parse($data['check_out_date']);
         $nights = $checkIn->diffInDays($checkOut);
@@ -63,7 +79,7 @@ class BookingService
             ? Service::whereIn('id', $data['service_ids'])->get()
             : collect();
 
-        $booking = DB::transaction(function () use ($user, $data, $establishment, $checkIn, $checkOut, $nights, $pets, $services): Booking {
+        [$booking, $totalPrice] = DB::transaction(function () use ($user, $data, $establishment, $checkIn, $checkOut, $nights, $pets, $services): array {
             $animalTypeIds = $pets->pluck('animal_type_id')->unique()->values();
 
             $capacities = EstablishmentCapacity::where('establishment_id', $establishment->id)
@@ -96,12 +112,75 @@ class BookingService
                 $booking->services()->attach($servicePivots);
             }
 
-            return $booking->load(['establishment', 'pets', 'services']);
+            return [$booking->load([
+                'establishment.address',
+                'establishment.manager',
+                'establishment.collaborators',
+                'pets',
+                'services',
+            ]), $totalPrice];
         });
+
+        try {
+            $pi = $this->createConfirmedPaymentIntent($booking, $totalPrice, $user, $paymentMethodId, $savePaymentMethod);
+        } catch (CardException|InvalidRequestException $e) {
+            throw ValidationException::withMessages([
+                'payment_method_id' => ['The payment could not be processed: '.$e->getMessage()],
+            ]);
+        }
+
+        $booking->update([
+            'stripe_payment_intent_id' => $pi->id,
+            'stripe_charge_id' => $pi->latest_charge ?? null,
+            'stripe_transfer_group' => 'booking_'.$booking->id,
+            'payment_status' => $pi->status === 'succeeded' ? 'succeeded' : 'pending',
+        ]);
+
+        $booking->setAttribute('client_secret', $pi->client_secret);
 
         $this->conversationService->getOrCreateForBooking($user, $booking);
 
-        return $booking;
+        return $booking->load([
+            'establishment.address',
+            'establishment.manager',
+            'establishment.collaborators',
+            'pets',
+            'services',
+        ]);
+    }
+
+    private function createConfirmedPaymentIntent(
+        Booking $booking,
+        string $totalPrice,
+        User $user,
+        string $paymentMethodId,
+        bool $savePaymentMethod
+    ): PaymentIntent {
+        $amountInCents = (int) bcmul($totalPrice, '100', 0);
+        $currency = (string) config('services.stripe.currency', 'eur');
+        $customerId = $this->customerService->getOrCreateCustomer($user);
+
+        $payload = [
+            'amount' => $amountInCents,
+            'currency' => $currency,
+            'customer' => $customerId,
+            'payment_method' => $paymentMethodId,
+            'confirm' => true,
+            'off_session' => false,
+            'payment_method_types' => ['card'],
+            'transfer_group' => 'booking_'.$booking->id,
+            'metadata' => [
+                'booking_id' => $booking->id,
+                'user_id' => $user->id,
+                'establishment_id' => $booking->establishment_id,
+            ],
+        ];
+
+        if ($savePaymentMethod) {
+            $payload['setup_future_usage'] = 'off_session';
+        }
+
+        return $this->stripe->paymentIntents->create($payload);
     }
 
     public function cancel(Booking $booking): Booking
@@ -119,6 +198,21 @@ class BookingService
 
         $booking->update(['status' => BookingStatus::CONFIRMED]);
 
+        $accountId = $booking->establishment->resolveStripeAccountId();
+
+        if ($accountId && $booking->stripe_charge_id && (float) $booking->establishment_amount > 0) {
+            $amountToTransfer = (int) bcmul((string) $booking->establishment_amount, '100', 0);
+            $transfer = $this->stripe->transfers->create([
+                'amount' => $amountToTransfer,
+                'currency' => (string) config('services.stripe.currency', 'eur'),
+                'destination' => $accountId,
+                'source_transaction' => $booking->stripe_charge_id,
+                'transfer_group' => $booking->stripe_transfer_group ?? ('booking_'.$booking->id),
+                'metadata' => ['booking_id' => $booking->id],
+            ]);
+            $booking->update(['stripe_transfer_id' => $transfer->id]);
+        }
+
         $this->sendBookingReferenceIfConversationExists($booking, $actor);
 
         return $booking->fresh();
@@ -133,9 +227,30 @@ class BookingService
         return $booking->fresh();
     }
 
+    public function refundOnReject(Booking $booking): Booking
+    {
+        if (! $booking->stripe_charge_id || $booking->payment_status !== 'succeeded') {
+            return $booking;
+        }
+        $refund = $this->stripe->refunds->create([
+            'charge' => $booking->stripe_charge_id,
+            'metadata' => ['booking_id' => $booking->id],
+        ]);
+        $booking->update([
+            'stripe_refund_id' => $refund->id,
+            'refunded_amount' => bcdiv((string) $refund->amount, '100', 2),
+            'refunded_at' => Carbon::now(),
+            'payment_status' => 'refunded',
+        ]);
+
+        return $booking->fresh();
+    }
+
     public function rejectByEstablishment(Booking $booking, User $actor): Booking
     {
         $this->assertStatus($booking, [BookingStatus::PENDING], 'reject');
+
+        $this->refundOnReject($booking);
 
         $booking->update(['status' => BookingStatus::CANCELLED]);
 

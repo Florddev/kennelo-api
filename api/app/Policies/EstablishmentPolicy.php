@@ -37,6 +37,11 @@ class EstablishmentPolicy
         return $user->hasRole('admin') || $user->id === $establishment->manager_id;
     }
 
+    public function managePayments(User $user, Establishment $establishment): bool
+    {
+        return $user->hasRole('admin') || $user->id === $establishment->manager_id;
+    }
+
     public function viewAvailabilities(User $user, Establishment $establishment): bool
     {
         return $user->hasRole('admin')

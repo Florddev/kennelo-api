@@ -33,6 +33,11 @@ type MyEstablishmentsParams = {
     search_params?: Record<string, string | number | boolean>;
 };
 
+type TempParams = {
+    locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
 type EstablishmentBookingsParams = {
     locale?: string | number;
     id: string;
@@ -201,6 +206,11 @@ type SettingsParams = {
     search_params?: Record<string, string | number | boolean>;
 };
 
+type PaymentMethodsPageParams = {
+    locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
 type MyProfileEmailPreferencesParams = {
     locale?: string | number;
     search_params?: Record<string, string | number | boolean>;
@@ -233,6 +243,10 @@ function HostingCalendar(params?: HostingCalendarParams): string {
 
 function MyEstablishments(params?: MyEstablishmentsParams): string {
     return buildRoute("/[locale]/hosting/host", params);
+}
+
+function Temp(params?: TempParams): string {
+    return buildRoute("/[locale]/hosting/host/temp", params);
 }
 
 function EstablishmentBookings(params: EstablishmentBookingsParams): string {
@@ -357,6 +371,10 @@ function Settings(params?: SettingsParams): string {
     return buildRoute("/[locale]/settings", params);
 }
 
+function PaymentMethodsPage(params?: PaymentMethodsPageParams): string {
+    return buildRoute("/[locale]/settings/payment-methods", params);
+}
+
 function MyProfileEmailPreferences(params?: MyProfileEmailPreferencesParams): string {
     return buildRoute("/[locale]/settings/preferences-email", params);
 }
@@ -372,6 +390,7 @@ export const routes = {
     Home,
     HostingCalendar,
     MyEstablishments,
+    Temp,
     EstablishmentBookings,
     EstablishmentInvoices,
     EstablishmentOverview,
@@ -402,6 +421,7 @@ export const routes = {
     MyProfileAbout,
     MyProfileChangePassword,
     Settings,
+    PaymentMethodsPage,
     MyProfileEmailPreferences,
     MyProfilePreferencesNotification,
 } as const;

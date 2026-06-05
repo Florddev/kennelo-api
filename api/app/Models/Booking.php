@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\BookingStatus;
+use App\Enums\PaymentStatus;
 use App\Enums\ReviewerType;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
@@ -42,6 +43,11 @@ class Booking extends Model
         'payment_status',
         'paid_at',
         'refunded_at',
+        'stripe_charge_id',
+        'stripe_transfer_group',
+        'stripe_transfer_id',
+        'stripe_refund_id',
+        'refunded_amount',
     ];
 
     protected function casts(): array
@@ -53,8 +59,10 @@ class Booking extends Model
             'platform_fee' => 'decimal:2',
             'establishment_amount' => 'decimal:2',
             'status' => BookingStatus::class,
+            'payment_status' => PaymentStatus::class,
             'paid_at' => 'datetime',
             'refunded_at' => 'datetime',
+            'refunded_amount' => 'decimal:2',
         ];
     }
 

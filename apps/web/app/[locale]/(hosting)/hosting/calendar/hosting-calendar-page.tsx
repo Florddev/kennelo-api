@@ -10,7 +10,7 @@ import { cn } from "@workspace/ui/lib/utils";
 import type { BookingStatus } from "@workspace/modules/bookings";
 
 import { useAuth } from "@/features/auth";
-import { useEstablishmentBookings } from "@/features/bookings/hooks/use-establishment-bookings";
+import { useCalendarEstablishmentBookings } from "@/features/bookings/hooks/use-calendar-establishment-bookings";
 import { BookingsCalendar } from "@/features/bookings/components/bookings-calendar";
 import { DayBookingsSheet } from "@/features/bookings/components/day-bookings-sheet";
 import { bookingsForDay } from "@/features/bookings/lib/calendar-grid";
@@ -53,7 +53,7 @@ export default function HostingCalendarPage() {
 
     const weekStartsOn: 0 | 1 = 1;
 
-    const { bookingsByEstablishmentId } = useEstablishmentBookings({
+    const { bookingsByEstablishmentId } = useCalendarEstablishmentBookings({
         establishmentIds: allEstablishmentIds,
         focusedMonth,
         weekStartsOn,

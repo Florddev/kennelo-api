@@ -24,6 +24,37 @@
         "confirmCta": "Réserver",
         "confirmFooterTotal": "Total : {amount} €",
         "successTitle": "Demande de réservation envoyée !",
-        "successDescription": "L'hôte va vous répondre rapidement."
+        "successDescription": "L'hôte va vous répondre rapidement.",
+        "paymentSetupFailed": "Impossible d'initier le paiement",
+        "paymentSection": "Paiement",
+        "paymentMethodLabel": "Payer avec",
+        "selectPaymentMethod": "Veuillez sélectionner un moyen de paiement",
+        "noPaymentMethod": "Vous n'avez encore aucun moyen de paiement.",
+        "paymentFailed": "Le paiement a échoué",
+        "paymentSuccess": "Paiement confirmé",
+        "hostNotConnected": "Cet hôte ne peut pas encore accepter de réservation. Son compte bancaire n'est pas configuré."
+    },
+    "status": {
+        "pending": "En attente",
+        "confirmed": "Confirmée",
+        "inProgress": "En cours",
+        "cancelled": "Annulée",
+        "completed": "Terminée",
+        "refunded": "Remboursée"
+    },
+    "review": {
+        "title": "Demandes en attente",
+        "accept": "Accepter",
+        "reject": "Refuser",
+        "acceptSuccess": "Réservation acceptée",
+        "acceptFailed": "Impossible d'accepter la réservation",
+        "rejectConfirmTitle": "Refuser et rembourser ?",
+        "rejectConfirmDescription": "Le client sera remboursé immédiatement.",
+        "refundIssued": "Réservation refusée, remboursement effectué",
+        "refundFailed": "Le remboursement a échoué",
+        "paymentHeld": "Paiement bloqué",
+        "emptyTitle": "Aucune demande en attente",
+        "emptyDescription": "Les nouvelles demandes de réservation s'afficheront ici.",
+        "unknownCustomer": "Client inconnu"
     }
 }

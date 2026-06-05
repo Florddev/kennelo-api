@@ -8,6 +8,7 @@ export * from "./actions/commands/bulk-availability";
 export * from "./actions/commands/create-availability";
 export * from "./actions/commands/create-capacity";
 export * from "./actions/commands/create-establishment";
+export * from "./actions/commands/create-stripe-onboarding-link";
 export * from "./actions/commands/delete-availability";
 export * from "./actions/commands/delete-capacity";
 export * from "./actions/commands/delete-establishment-image";

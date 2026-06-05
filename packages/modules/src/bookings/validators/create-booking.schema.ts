@@ -7,6 +7,8 @@ export const createBookingSchema = z.object({
     petIds: z.array(z.string().uuid()).min(1),
     serviceIds: z.array(z.string().uuid()).optional(),
     specialRequests: z.union([z.string().max(1000), z.literal("")]).optional(),
+    paymentMethodId: z.string().min(1),
+    savePaymentMethod: z.boolean().optional(),
 });
 
 export type CreateBookingInput = z.infer<typeof createBookingSchema>;

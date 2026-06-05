@@ -74,6 +74,18 @@ importers:
       '@stepperize/react':
         specifier: ^6.1.0
         version: 6.1.0(react@19.2.4)(typescript@5.9.3)
+      '@stripe/connect-js':
+        specifier: ^3.4.5
+        version: 3.4.5
+      '@stripe/react-connect-js':
+        specifier: ^3.4.3
+        version: 3.4.3(@stripe/connect-js@3.4.5)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@stripe/react-stripe-js':
+        specifier: ^6.5.0
+        version: 6.5.0(@stripe/stripe-js@9.7.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@stripe/stripe-js':
+        specifier: ^9.7.0
+        version: 9.7.0
       '@tanstack/react-query':
         specifier: ^5.95.2
         version: 5.95.2(react@19.2.4)
@@ -1787,6 +1799,27 @@ packages:
     peerDependencies:
       react: ^17.0.0 || ^18.0.0 || ^19.0.0
 
+  '@stripe/connect-js@3.4.5':
+    resolution: {integrity: sha512-2GZYc1pO2gYtq5rooZei483oSqeNROTD4XwnKXK8GXILvrLVJjMUCLDXi8Rmu8ojL5DWMnEOtXdnZxs8xxZecQ==}
+
+  '@stripe/react-connect-js@3.4.3':
+    resolution: {integrity: sha512-UNckvWpmVdkUQ4lhPmwAKpB8QD1LNnDz7SDz0qQabdTfk5sLhhOYnN/SRQGhAe57Z6PLuyidaIUzjvDSw2/pYA==}
+    peerDependencies:
+      '@stripe/connect-js': '>=3.4.5'
+      react: '>=16.8.0'
+      react-dom: '>=16.8.0'
+
+  '@stripe/react-stripe-js@6.5.0':
+    resolution: {integrity: sha512-MF+H1dXcmlBxBO56F4GlVK0ArpHrKtaOlSZdppqynTmUHVII9M0MedKJd9bLOfWaYe3fFEhd0cQfU/8srWf8yw==}
+    peerDependencies:
+      '@stripe/stripe-js': '>=9.5.0 <10.0.0'
+      react: '>=16.8.0 <20.0.0'
+      react-dom: '>=16.8.0 <20.0.0'
+
+  '@stripe/stripe-js@9.7.0':
+    resolution: {integrity: sha512-r1ElolvWXM4aYnZZVHvKW3EDL8JcwEuIgTuWxlB5lvC+YsvjkQ0gX35x9d8dTDubX395fViLVqkaolVs1PmIQQ==}
+    engines: {node: '>=12.16'}
+
   '@swc/core-darwin-arm64@1.15.33':
     resolution: {integrity: sha512-N+L0uXhuO7FIfzqwgxmzv0zIpV0qEp8wPX3QQs2p4atjMoywup2JTeDlXPw+z9pWJGCae3JjM+tZ6myclI+2gA==}
     engines: {node: '>=10'}
@@ -2191,7 +2224,7 @@ packages:
   '@xmldom/xmldom@0.7.13':
     resolution: {integrity: sha512-lm2GW5PkosIzccsaZIz7tp8cPADSIlIHWDFTR1N0SzfinhhYgeIQjFMz4rYzanCScr3DqQLeomUDArp6MWKm+g==}
     engines: {node: '>=10.0.0'}
-    deprecated: this version is no longer supported, please update to at least 0.8.*
+    deprecated: this version has critical issues, please update to the latest version
 
   '@xmldom/xmldom@0.8.13':
     resolution: {integrity: sha512-KRYzxepc14G/CEpEGc3Yn+JKaAeT63smlDr+vjB8jRfgTBBI9wRj/nkQEO+ucV8p8I9bfKLWp37uHgFrbntPvw==}
@@ -6884,6 +6917,23 @@ snapshots:
       react: 19.2.4
     transitivePeerDependencies:
       - typescript
+
+  '@stripe/connect-js@3.4.5': {}
+
+  '@stripe/react-connect-js@3.4.3(@stripe/connect-js@3.4.5)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
+    dependencies:
+      '@stripe/connect-js': 3.4.5
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
+
+  '@stripe/react-stripe-js@6.5.0(@stripe/stripe-js@9.7.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
+    dependencies:
+      '@stripe/stripe-js': 9.7.0
+      prop-types: 15.8.1
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
+
+  '@stripe/stripe-js@9.7.0': {}
 
   '@swc/core-darwin-arm64@1.15.33':
     optional: true

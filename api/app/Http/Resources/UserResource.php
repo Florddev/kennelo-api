@@ -14,6 +14,8 @@ class UserResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
+        $isSelf = $request->user()?->id === $this->id;
+
         return [
             'id' => $this->id,
             'first_name' => $this->first_name,
@@ -34,6 +36,11 @@ class UserResource extends JsonResource
             ),
             'roles' => $this->whenLoaded('roles', fn () => $this->getRoleNames()),
             'address' => $this->whenLoaded('address', fn () => new AddressResource($this->address)),
+            'stripe_account_id' => $isSelf ? $this->stripe_account_id : null,
+            'stripe_customer_id' => $isSelf ? $this->stripe_customer_id : null,
+            'stripe_charges_enabled' => $isSelf ? (bool) $this->stripe_charges_enabled : false,
+            'stripe_payouts_enabled' => $isSelf ? (bool) $this->stripe_payouts_enabled : false,
+            'stripe_onboarding_completed' => $isSelf ? (bool) $this->stripe_onboarding_completed : false,
             'created_at' => human_date($this->created_at),
             'updated_at' => human_date($this->updated_at),
         ];

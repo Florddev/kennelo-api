@@ -20,6 +20,9 @@ class EstablishmentService
 
         return Establishment::with(['address', 'manager', 'collaborators'])
             ->active()
+            ->whereHas('manager', function ($q) {
+                $q->where('stripe_charges_enabled', true);
+            })
             ->when(isset($filters['search']), fn ($q) => $q->where('name', 'like', "%{$filters['search']}%"))
             ->when(isset($filters['city']), fn ($q) => $q->whereHas('address', fn ($q) => $q->where('city', $filters['city'])))
             ->when(isset($filters['sort_by']), fn ($q) => $q->orderBy($filters['sort_by'], $filters['sort_dir'] ?? 'asc'))

@@ -21,6 +21,10 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
+/**
+ * @property-read User|null $manager
+ * @property-read Address|null $address
+ */
 class Establishment extends Model implements HasMedia
 {
     use HasFactory, HasUuids, InteractsWithMedia, SoftDeletes;
@@ -37,6 +41,10 @@ class Establishment extends Model implements HasMedia
         'timezone',
         'is_active',
         'manager_id',
+        'stripe_account_id',
+        'stripe_onboarding_completed',
+        'stripe_charges_enabled',
+        'stripe_payouts_enabled',
     ];
 
     protected function casts(): array
@@ -44,6 +52,9 @@ class Establishment extends Model implements HasMedia
         return [
             'is_active' => 'boolean',
             'type' => EstablishmentType::class,
+            'stripe_onboarding_completed' => 'boolean',
+            'stripe_charges_enabled' => 'boolean',
+            'stripe_payouts_enabled' => 'boolean',
         ];
     }
 
@@ -123,5 +134,20 @@ class Establishment extends Model implements HasMedia
             ->where('user_id', $user->id)
             ->where('permission', $permission->value)
             ->exists();
+    }
+
+    public function resolveStripeAccountId(): ?string
+    {
+        return $this->stripe_account_id ?? $this->manager?->stripe_account_id;
+    }
+
+    public function resolveChargesEnabled(): bool
+    {
+        return (bool) ($this->stripe_charges_enabled || $this->manager?->stripe_charges_enabled);
+    }
+
+    public function resolvePayoutsEnabled(): bool
+    {
+        return (bool) ($this->stripe_payouts_enabled || $this->manager?->stripe_payouts_enabled);
     }
 }

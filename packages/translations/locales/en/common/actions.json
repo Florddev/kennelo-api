@@ -33,5 +33,6 @@
     "finish": "Finish",
     "new": "New",
     "switchToClient": "Switch to client mode",
-    "backTo": "Back to {value}"
+    "backTo": "Back to {value}",
+    "saving": "Saving…"
 }

@@ -33,5 +33,6 @@
     "finish": "حتى النهاية",
     "new": "جديد",
     "switchToClient": "التبديل إلى وضع العميل",
-    "backTo": "{value} العودة إلى"
+    "backTo": "{value} العودة إلى",
+    "saving": "جارٍ الحفظ…"
 }

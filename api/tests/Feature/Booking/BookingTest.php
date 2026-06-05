@@ -16,11 +16,18 @@ use App\Models\Message;
 use App\Models\Pet;
 use App\Models\User;
 use Illuminate\Support\Facades\Event;
+use Stripe\StripeClient;
+use Tests\Support\FakeStripeClient;
 
 function makeBookingFixtures(): array
 {
     $manager = User::factory()->create();
-    $establishment = Establishment::factory()->create(['manager_id' => $manager->id, 'is_active' => true]);
+    $establishment = Establishment::factory()->create([
+        'manager_id' => $manager->id,
+        'is_active' => true,
+        'stripe_account_id' => 'acct_test_'.uniqid(),
+        'stripe_charges_enabled' => true,
+    ]);
     $animalType = AnimalType::create(['code' => 'dog_'.uniqid(), 'name' => 'Chien', 'category' => 'mammals']);
 
     EstablishmentCapacity::create([
@@ -31,6 +38,11 @@ function makeBookingFixtures(): array
     ]);
 
     return [$manager, $establishment, $animalType];
+}
+
+function fakeStripe(): void
+{
+    app()->instance(StripeClient::class, new FakeStripeClient);
 }
 
 // ─── index ────────────────────────────────────────────────────────────────────
@@ -88,6 +100,7 @@ it('user cannot view another user booking', function () {
 
 it('authenticated user can create a booking', function () {
     Event::fake();
+    fakeStripe();
 
     $user = User::factory()->create();
     [$manager, $establishment, $animalType] = makeBookingFixtures();
@@ -99,6 +112,7 @@ it('authenticated user can create a booking', function () {
             'check_in_date' => now()->addDays(10)->format('Y-m-d'),
             'check_out_date' => now()->addDays(13)->format('Y-m-d'),
             'pet_ids' => [$pet->id],
+            'payment_method_id' => 'pm_card_visa',
         ])
         ->assertCreated()
         ->assertJsonPath('data.status', BookingStatus::PENDING->value)
@@ -122,6 +136,7 @@ it('booking creation fails if a day is closed', function () {
             'check_in_date' => now()->addDays(10)->format('Y-m-d'),
             'check_out_date' => now()->addDays(13)->format('Y-m-d'),
             'pet_ids' => [$pet->id],
+            'payment_method_id' => 'pm_card_visa',
         ])
         ->assertUnprocessable()
         ->assertJsonValidationErrors(['check_in_date']);
@@ -144,6 +159,7 @@ it('booking creation fails if capacity is exceeded', function () {
             'check_in_date' => now()->addDays(10)->format('Y-m-d'),
             'check_out_date' => now()->addDays(13)->format('Y-m-d'),
             'pet_ids' => [$pet1->id, $pet2->id],
+            'payment_method_id' => 'pm_card_visa',
         ])
         ->assertUnprocessable()
         ->assertJsonValidationErrors(['pet_ids']);
@@ -155,6 +171,7 @@ it('unauthenticated user cannot create a booking', function () {
 
 it('booking creation automatically creates a thread and a booking reference message', function () {
     Event::fake();
+    fakeStripe();
 
     $user = User::factory()->create();
     [$manager, $establishment, $animalType] = makeBookingFixtures();
@@ -166,6 +183,7 @@ it('booking creation automatically creates a thread and a booking reference mess
             'check_in_date' => now()->addDays(10)->format('Y-m-d'),
             'check_out_date' => now()->addDays(13)->format('Y-m-d'),
             'pet_ids' => [$pet->id],
+            'payment_method_id' => 'pm_card_visa',
         ])
         ->assertCreated();
 

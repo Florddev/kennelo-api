@@ -19,6 +19,10 @@ export type EstablishmentDto = {
     min_price: number | null;
     animal_types: string[];
     avatar_url: string | null;
+    stripe_account_id: string | null;
+    stripe_onboarding_completed: boolean;
+    stripe_charges_enabled: boolean;
+    stripe_payouts_enabled: boolean;
     address: AddressDto | null;
     manager?: UserDto | null;
     collaborators?: UserDto[];

@@ -12,7 +12,9 @@ use App\Http\Controllers\Establishment\EstablishmentCapacityController;
 use App\Http\Controllers\Establishment\EstablishmentController;
 use App\Http\Controllers\Establishment\EstablishmentDashboardController;
 use App\Http\Controllers\Establishment\EstablishmentImageController;
+use App\Http\Controllers\Establishment\StripeConnectController;
 use App\Http\Controllers\Explore\ExploreController;
+use App\Http\Controllers\PaymentMethod\PaymentMethodController;
 use App\Http\Controllers\Pet\AnimalTypeController;
 use App\Http\Controllers\Pet\PetAttributeController;
 use App\Http\Controllers\Pet\PetController;
@@ -27,8 +29,10 @@ use App\Http\Controllers\Review\ReviewCriteriaController;
 use App\Http\Controllers\Review\ReviewReportController;
 use App\Http\Controllers\Review\ReviewResponseController;
 use App\Http\Controllers\Review\UserReviewController;
+use App\Http\Controllers\Stripe\StripeWebhookController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\User\UserController;
+use App\Http\Controllers\User\UserStripeController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/test', [TestController::class, 'index']);
@@ -36,6 +40,7 @@ Route::get('/animal-types', [AnimalTypeController::class, 'index']);
 Route::get('/explore/establishments', [ExploreController::class, 'establishments']);
 Route::get('/explore/establishments/sections/{sectionId}', [ExploreController::class, 'sectionPage']);
 Route::get('/explore/search', [ExploreController::class, 'search']);
+Route::post('/webhooks/stripe', [StripeWebhookController::class, 'handle']);
 
 Route::middleware(['auth.jwt'])->group(function () {
     // Establishments
@@ -57,6 +62,9 @@ Route::middleware(['auth.jwt'])->group(function () {
     Route::post('/establishments/{establishment}/images', [EstablishmentImageController::class, 'store']);
     Route::post('/establishments/{establishment}/images/bulk', [EstablishmentImageController::class, 'storeBulk']);
     Route::delete('/establishments/{establishment}/images/{media}', [EstablishmentImageController::class, 'destroy']);
+
+    Route::post('/establishments/{establishment}/stripe/onboarding-link', [StripeConnectController::class, 'onboardingLink']);
+    Route::get('/establishments/{establishment}/stripe/status', [StripeConnectController::class, 'status']);
 
     // Bookings (user)
     Route::apiResource('bookings', BookingController::class)->only(['index', 'show', 'store']);
@@ -129,6 +137,15 @@ Route::middleware(['auth.jwt'])->group(function () {
     Route::get('/user/identity-verification', [UserController::class, 'getIdentityVerification']);
     Route::post('/user/identity-verification', [UserController::class, 'submitIdentityVerification']);
     Route::delete('/user', [UserController::class, 'destroy']);
+
+    Route::get('/me/payment-methods', [PaymentMethodController::class, 'index']);
+    Route::post('/me/payment-methods/setup-intent', [PaymentMethodController::class, 'setupIntent']);
+    Route::post('/me/payment-methods/setup-checkout-session', [PaymentMethodController::class, 'setupCheckoutSession']);
+    Route::put('/me/payment-methods/{id}/default', [PaymentMethodController::class, 'setDefault']);
+    Route::delete('/me/payment-methods/{id}', [PaymentMethodController::class, 'destroy']);
+
+    Route::post('/users/me/stripe/account-session', [UserStripeController::class, 'accountSession']);
+    Route::get('/users/me/stripe/status', [UserStripeController::class, 'status']);
 });
 
 require __DIR__.'/auth.php';

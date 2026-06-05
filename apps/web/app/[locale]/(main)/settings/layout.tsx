@@ -3,7 +3,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { ArrowLeft, Bell, LetterUnread, Password, UserCircle } from "@solar-icons/react";
+import {
+    ArrowLeft,
+    Bell,
+    LetterUnread,
+    Password,
+    UserCircle,
+    Card as CardIcon,
+} from "@solar-icons/react";
 
 import { Button } from "@workspace/ui/components/button";
 import { Card, CardContent } from "@workspace/ui/components/card";
@@ -31,6 +38,13 @@ export default function ProfileSettingsLayout({ children }: { children: React.Re
             icon: Password,
             label: t("ui.navigation.changePassword"),
             href: routes.MyProfileChangePassword(),
+            comingSoon: false,
+        },
+        {
+            icon: CardIcon,
+            label: t("ui.navigation.paymentMethods"),
+            href: routes.PaymentMethodsPage(),
+            comingSoon: false,
         },
         {
             icon: LetterUnread,
