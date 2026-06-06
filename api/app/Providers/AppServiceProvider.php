@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Models\Activity;
 use App\Models\Booking;
 use App\Models\Conversation;
-use App\Models\Establishment;
 use App\Models\Pet;
 use App\Models\Review;
 use App\Models\ReviewReport;
 use App\Models\User;
 use App\Policies\BookingPolicy;
+use App\Policies\ActivityPolicy;
 use App\Policies\ConversationPolicy;
-use App\Policies\EstablishmentPolicy;
 use App\Policies\PetPolicy;
 use App\Policies\ReviewPolicy;
 use App\Policies\ReviewReportPolicy;
@@ -40,7 +40,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Gate::policy(User::class, UserPolicy::class);
-        Gate::policy(Establishment::class, EstablishmentPolicy::class);
+        Gate::policy(Activity::class, ActivityPolicy::class);
         Gate::policy(Pet::class, PetPolicy::class);
         Gate::policy(Booking::class, BookingPolicy::class);
         Gate::policy(Conversation::class, ConversationPolicy::class);

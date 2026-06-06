@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Policies;
 
 use App\Enums\ActivityPermissionEnum;
+use App\Models\Activity;
 use App\Models\Conversation;
-use App\Models\Establishment;
 use App\Models\User;
 
 class ConversationPolicy
@@ -17,18 +17,18 @@ class ConversationPolicy
             return true;
         }
 
-        $conversation->loadMissing('establishment');
-        $establishment = $conversation->establishment;
+        $conversation->loadMissing('activity');
+        $activity = $conversation->activity;
 
-        if ($establishment === null) {
+        if ($activity === null) {
             return false;
         }
 
-        if ((string) $establishment->manager_id === (string) $user->id) {
+        if ((string) $activity->manager_id === (string) $user->id) {
             return true;
         }
 
-        return $establishment->collaboratorHasPermission($user, ActivityPermissionEnum::MANAGE_MESSAGES);
+        return $activity->collaboratorHasPermission($user, ActivityPermissionEnum::MANAGE_MESSAGES);
     }
 
     public function sendMessage(User $user, Conversation $conversation): bool
@@ -36,12 +36,12 @@ class ConversationPolicy
         return $this->view($user, $conversation);
     }
 
-    public function manageForEstablishment(User $user, Establishment $establishment): bool
+    public function manageForActivity(User $user, Activity $activity): bool
     {
-        if ((string) $establishment->manager_id === (string) $user->id) {
+        if ((string) $activity->manager_id === (string) $user->id) {
             return true;
         }
 
-        return $establishment->collaboratorHasPermission($user, ActivityPermissionEnum::MANAGE_MESSAGES);
+        return $activity->collaboratorHasPermission($user, ActivityPermissionEnum::MANAGE_MESSAGES);
     }
 }

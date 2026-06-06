@@ -17,7 +17,7 @@ class ListReviewsRequest extends FormRequest
     {
         return [
             'per_page' => ['sometimes', 'integer', 'min:1', 'max:100'],
-            'reviewer_type' => ['sometimes', 'string', 'in:user,establishment'],
+            'reviewer_type' => ['sometimes', 'string', 'in:user,activity'],
             'min_rating' => ['sometimes', 'numeric', 'between:1,5'],
         ];
     }
