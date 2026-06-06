@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Services\Explore;
 
 use App\Contracts\ExploreSection;
-use App\Enums\AvailabilityStatus;
-use App\Enums\BookingStatus;
-use App\Enums\ReviewerType;
+use App\Enums\AvailabilityStatusEnum;
+use App\Enums\BookingStatusEnum;
+use App\Enums\ReviewerTypeEnum;
 use App\Models\AnimalType;
 use App\Models\Establishment;
 use App\Services\Explore\Sections\AvailableWeekendSection;
@@ -161,7 +161,7 @@ class ExploreService
     private function applyAnimalCountsFilter(Builder $query, array $input): void
     {
         $codes = AnimalType::pluck('code')->all();
-        $excluded = [BookingStatus::CANCELLED->value, BookingStatus::COMPLETED->value];
+        $excluded = [BookingStatusEnum::CANCELLED->value, BookingStatusEnum::COMPLETED->value];
         $dateFrom = $input['date_from'] ?? null;
         $dateTo = $input['date_to'] ?? null;
 
@@ -209,7 +209,7 @@ class ExploreService
         }
 
         $query->whereDoesntHave('availabilities', function (Builder $q) use ($dateFrom, $dateTo): void {
-            $q->where('status', AvailabilityStatus::CLOSED->value)
+            $q->where('status', AvailabilityStatusEnum::CLOSED->value)
                 ->where('date', '>=', $dateFrom)
                 ->where('date', '<', $dateTo);
         });
@@ -234,7 +234,7 @@ class ExploreService
 
         $query->whereRaw(
             '(SELECT COALESCE(AVG(r.overall_rating), 0) FROM reviews r INNER JOIN bookings b ON b.id = r.booking_id WHERE b.establishment_id = establishments.id AND r.is_published IS TRUE AND r.reviewer_type = ?) >= ?',
-            [ReviewerType::USER->value, (float) $input['min_rating']]
+            [ReviewerTypeEnum::USER->value, (float) $input['min_rating']]
         );
     }
 

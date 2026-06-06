@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Enums\SenderType;
+use App\Enums\SenderTypeEnum;
 use App\Events\MessageSent;
 use App\Events\MessagesRead;
 use App\Events\NewMessageNotification;
@@ -77,7 +77,7 @@ it('user can send a text message', function () {
         ])
         ->assertCreated()
         ->assertJsonPath('data.content', 'Hello!')
-        ->assertJsonPath('data.sender_type', SenderType::User->value);
+        ->assertJsonPath('data.sender_type', SenderTypeEnum::USER->value);
 
     Event::assertDispatched(MessageSent::class);
     Event::assertDispatched(NewMessageNotification::class);

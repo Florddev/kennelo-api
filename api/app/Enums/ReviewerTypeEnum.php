@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
-enum ReviewerType: string
+enum ReviewerTypeEnum: string
 {
     case USER = 'user';
     case ESTABLISHMENT = 'establishment';

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Explore\Sections;
 
 use App\Contracts\ExploreSection;
-use App\Enums\AvailabilityStatus;
+use App\Enums\AvailabilityStatusEnum;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 
@@ -25,7 +25,7 @@ class AvailableWeekendSection implements ExploreSection
 
         $query->whereHas('availabilities', function (Builder $q) use ($saturday, $sunday): void {
             $q->whereIn('date', [$saturday, $sunday])
-                ->where('status', AvailabilityStatus::OPEN->value);
+                ->where('status', AvailabilityStatusEnum::OPEN->value);
         });
 
         if ($lat !== null && $lng !== null && $this->supportsGeo()) {

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Establishment;
 
-use App\Enums\BookingStatus;
+use App\Enums\BookingStatusEnum;
 use App\Models\Establishment;
 use App\Models\EstablishmentCapacity;
 use Illuminate\Support\Collection;
@@ -24,7 +24,7 @@ class EstablishmentCapacityService
             ->join('pets', 'booking_pets.pet_id', '=', 'pets.id')
             ->join('bookings', 'bookings.id', '=', 'booking_pets.booking_id')
             ->where('bookings.establishment_id', $establishment->id)
-            ->whereIn('bookings.status', [BookingStatus::CONFIRMED->value, BookingStatus::IN_PROGRESS->value])
+            ->whereIn('bookings.status', [BookingStatusEnum::CONFIRMED->value, BookingStatusEnum::IN_PROGRESS->value])
             ->where('bookings.check_in_date', '<=', $date)
             ->where('bookings.check_out_date', '>=', $date)
             ->groupBy('pets.animal_type_id')

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Establishment;
 
-use App\Enums\AvailabilityStatus;
+use App\Enums\AvailabilityStatusEnum;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -18,7 +18,7 @@ class UpdateAvailabilityRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'status' => ['sometimes', Rule::enum(AvailabilityStatus::class)],
+            'status' => ['sometimes', Rule::enum(AvailabilityStatusEnum::class)],
             'note' => ['sometimes', 'nullable', 'string', 'max:255'],
         ];
     }

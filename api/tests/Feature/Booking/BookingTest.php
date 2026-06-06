@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use App\Enums\AvailabilityStatus;
-use App\Enums\BookingStatus;
-use App\Enums\MessageType;
-use App\Enums\SenderType;
+use App\Enums\AvailabilityStatusEnum;
+use App\Enums\BookingStatusEnum;
+use App\Enums\MessageTypeEnum;
+use App\Enums\SenderTypeEnum;
 use App\Models\AnimalType;
 use App\Models\Booking;
 use App\Models\BookingThread;
@@ -115,7 +115,7 @@ it('authenticated user can create a booking', function () {
             'payment_method_id' => 'pm_card_visa',
         ])
         ->assertCreated()
-        ->assertJsonPath('data.status', BookingStatus::PENDING->value)
+        ->assertJsonPath('data.status', BookingStatusEnum::PENDING->value)
         ->assertJsonPath('data.establishment_id', $establishment->id);
 });
 
@@ -127,7 +127,7 @@ it('booking creation fails if a day is closed', function () {
     EstablishmentAvailability::create([
         'establishment_id' => $establishment->id,
         'date' => now()->addDays(11)->format('Y-m-d'),
-        'status' => AvailabilityStatus::CLOSED,
+        'status' => AvailabilityStatusEnum::CLOSED,
     ]);
 
     $this->withHeaders(asUser($user))
@@ -192,8 +192,8 @@ it('booking creation automatically creates a thread and a booking reference mess
     expect(BookingThread::where('booking_id', $booking->id)->exists())->toBeTrue();
     expect(
         Message::where('booking_id', $booking->id)
-            ->where('message_type', MessageType::BookingReference->value)
-            ->where('sender_type', SenderType::User->value)
+            ->where('message_type', MessageTypeEnum::BOOKING_REFERENCE->value)
+            ->where('sender_type', SenderTypeEnum::USER->value)
             ->exists()
     )->toBeTrue();
 });
@@ -224,7 +224,7 @@ it('user can cancel their pending booking', function () {
     $this->withHeaders(asUser($user))
         ->putJson("/api/bookings/{$booking->id}/cancel")
         ->assertOk()
-        ->assertJsonPath('data.status', BookingStatus::CANCELLED->value);
+        ->assertJsonPath('data.status', BookingStatusEnum::CANCELLED->value);
 });
 
 it('user cannot cancel a completed booking', function () {

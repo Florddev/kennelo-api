@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Enums\BookingStatus;
-use App\Enums\PaymentStatus;
-use App\Enums\ReviewerType;
+use App\Enums\BookingStatusEnum;
+use App\Enums\PaymentStatusEnum;
+use App\Enums\ReviewerTypeEnum;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -20,7 +20,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 /**
  * @property Carbon $check_in_date
  * @property Carbon $check_out_date
- * @property BookingStatus $status
+ * @property BookingStatusEnum $status
  * @property-read Establishment|null $establishment
  * @property-read Collection<int, Pet> $pets
  * @property-read Collection<int, Service> $services
@@ -58,8 +58,8 @@ class Booking extends Model
             'total_price' => 'decimal:2',
             'platform_fee' => 'decimal:2',
             'establishment_amount' => 'decimal:2',
-            'status' => BookingStatus::class,
-            'payment_status' => PaymentStatus::class,
+            'status' => BookingStatusEnum::class,
+            'payment_status' => PaymentStatusEnum::class,
             'paid_at' => 'datetime',
             'refunded_at' => 'datetime',
             'refunded_amount' => 'decimal:2',
@@ -106,11 +106,11 @@ class Booking extends Model
 
     public function userReview(): HasOne
     {
-        return $this->hasOne(Review::class)->where('reviewer_type', ReviewerType::USER->value);
+        return $this->hasOne(Review::class)->where('reviewer_type', ReviewerTypeEnum::USER->value);
     }
 
     public function establishmentReview(): HasOne
     {
-        return $this->hasOne(Review::class)->where('reviewer_type', ReviewerType::ESTABLISHMENT->value);
+        return $this->hasOne(Review::class)->where('reviewer_type', ReviewerTypeEnum::ESTABLISHMENT->value);
     }
 }

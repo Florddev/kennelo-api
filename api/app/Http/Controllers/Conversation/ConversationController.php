@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Conversation;
 
-use App\Enums\ApiStatus;
+use App\Enums\ApiStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Conversation\ListConversationsRequest;
 use App\Http\Resources\ConversationResource;
@@ -26,7 +26,7 @@ class ConversationController extends Controller
 
         return ConversationResource::collection($conversations)
             ->additional([
-                'status' => ApiStatus::SUCCESS,
+                'status' => ApiStatusEnum::SUCCESS,
                 'timestamp' => human_date(now()),
             ])
             ->response();
@@ -39,7 +39,7 @@ class ConversationController extends Controller
         $conversation->load(['user', 'establishment', 'latestMessage.sender', 'bookingThreads.booking']);
 
         return (new ConversationResource($conversation))
-            ->additional(['status' => ApiStatus::SUCCESS, 'timestamp' => human_date(now())])
+            ->additional(['status' => ApiStatusEnum::SUCCESS, 'timestamp' => human_date(now())])
             ->response();
     }
 
@@ -51,7 +51,7 @@ class ConversationController extends Controller
 
         return (new ConversationResource($conversation))
             ->additional([
-                'status' => ApiStatus::SUCCESS,
+                'status' => ApiStatusEnum::SUCCESS,
                 'timestamp' => human_date(now()),
             ])
             ->response()
@@ -63,7 +63,7 @@ class ConversationController extends Controller
         $count = $this->conversationService->getUnreadCount($request->user());
 
         return response()->json([
-            'status' => ApiStatus::SUCCESS,
+            'status' => ApiStatusEnum::SUCCESS,
             'data' => ['unread_count' => $count],
             'timestamp' => human_date(now()),
         ]);

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Establishment;
 
-use App\Enums\ApiStatus;
+use App\Enums\ApiStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Establishment\BulkAvailabilityRequest;
 use App\Http\Requests\Establishment\ListAvailabilitiesRequest;
@@ -33,7 +33,7 @@ class EstablishmentAvailabilityController extends Controller
 
         return EstablishmentAvailabilityResource::collection($availabilities)
             ->additional([
-                'status' => ApiStatus::SUCCESS,
+                'status' => ApiStatusEnum::SUCCESS,
                 'timestamp' => human_date(Carbon::now()),
             ])
             ->response();
@@ -51,7 +51,7 @@ class EstablishmentAvailabilityController extends Controller
 
         return EstablishmentAvailabilityResource::collection($availabilities)
             ->additional([
-                'status' => ApiStatus::SUCCESS,
+                'status' => ApiStatusEnum::SUCCESS,
                 'timestamp' => human_date(Carbon::now()),
             ])
             ->response();
@@ -65,7 +65,7 @@ class EstablishmentAvailabilityController extends Controller
 
         return EstablishmentAvailabilityResource::collection($availabilities)
             ->additional([
-                'status' => ApiStatus::SUCCESS,
+                'status' => ApiStatusEnum::SUCCESS,
                 'timestamp' => human_date(Carbon::now()),
             ])
             ->response()
@@ -80,7 +80,7 @@ class EstablishmentAvailabilityController extends Controller
 
         return EstablishmentAvailabilityResource::collection($availabilities)
             ->additional([
-                'status' => ApiStatus::SUCCESS,
+                'status' => ApiStatusEnum::SUCCESS,
                 'timestamp' => human_date(Carbon::now()),
             ])
             ->response();
@@ -95,7 +95,7 @@ class EstablishmentAvailabilityController extends Controller
 
         return (new EstablishmentAvailabilityResource($availability))
             ->additional([
-                'status' => ApiStatus::SUCCESS,
+                'status' => ApiStatusEnum::SUCCESS,
                 'timestamp' => human_date(Carbon::now()),
             ])
             ->response();

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
-use App\Enums\MessageType;
-use App\Enums\SenderType;
+use App\Enums\MessageTypeEnum;
+use App\Enums\SenderTypeEnum;
 use App\Models\Conversation;
 use App\Models\Message;
 use App\Models\User;
@@ -21,22 +21,22 @@ class MessageFactory extends Factory
         return [
             'conversation_id' => Conversation::factory(),
             'sender_id' => User::factory(),
-            'sender_type' => SenderType::User,
-            'message_type' => MessageType::Text,
+            'sender_type' => SenderTypeEnum::USER,
+            'message_type' => MessageTypeEnum::TEXT,
             'content' => fake()->sentence(),
         ];
     }
 
     public function fromEstablishment(): static
     {
-        return $this->state(['sender_type' => SenderType::Establishment]);
+        return $this->state(['sender_type' => SenderTypeEnum::ESTABLISHMENT]);
     }
 
     public function system(): static
     {
         return $this->state([
-            'sender_type' => SenderType::System,
-            'message_type' => MessageType::System,
+            'sender_type' => SenderTypeEnum::SYSTEM,
+            'message_type' => MessageTypeEnum::SYSTEM,
             'sender_id' => null,
         ]);
     }

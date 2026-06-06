@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use App\Enums\BookingStatus;
-use App\Enums\ReviewerType;
+use App\Enums\BookingStatusEnum;
+use App\Enums\ReviewerTypeEnum;
 use App\Models\Booking;
 use App\Models\Establishment;
 use App\Models\Review;
@@ -49,7 +49,7 @@ it('user can review a completed booking', function () {
             ],
         ])
         ->assertCreated()
-        ->assertJsonPath('data.reviewer_type', ReviewerType::USER->value)
+        ->assertJsonPath('data.reviewer_type', ReviewerTypeEnum::USER->value)
         ->assertJsonPath('data.is_published', false);
 
     expect(Review::where('booking_id', $booking->id)->count())->toBe(1);
@@ -67,12 +67,12 @@ it('establishment manager can review the booking user', function () {
             ],
         ])
         ->assertCreated()
-        ->assertJsonPath('data.reviewer_type', ReviewerType::ESTABLISHMENT->value);
+        ->assertJsonPath('data.reviewer_type', ReviewerTypeEnum::ESTABLISHMENT->value);
 });
 
 it('cannot review a booking that is not completed', function () {
     [$user, $manager, $establishment, $booking] = makeReviewFixtures();
-    $booking->update(['status' => BookingStatus::PENDING]);
+    $booking->update(['status' => BookingStatusEnum::PENDING]);
 
     $this->withHeaders(asUser($user))
         ->postJson("/api/bookings/{$booking->id}/reviews", [

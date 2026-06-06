@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use App\Enums\BookingStatus;
-use App\Enums\MessageType;
-use App\Enums\SenderType;
+use App\Enums\BookingStatusEnum;
+use App\Enums\MessageTypeEnum;
+use App\Enums\SenderTypeEnum;
 use App\Models\Booking;
 use App\Models\BookingThread;
 use App\Models\Conversation;
@@ -54,7 +54,7 @@ it('manager can confirm a pending booking', function () {
     $this->withHeaders(asUser($manager))
         ->putJson("/api/establishments/{$establishment->id}/bookings/{$booking->id}/confirm")
         ->assertOk()
-        ->assertJsonPath('data.status', BookingStatus::CONFIRMED->value);
+        ->assertJsonPath('data.status', BookingStatusEnum::CONFIRMED->value);
 });
 
 it('manager cannot confirm an already confirmed booking', function () {
@@ -77,7 +77,7 @@ it('manager can cancel a pending booking', function () {
     $this->withHeaders(asUser($manager))
         ->putJson("/api/establishments/{$establishment->id}/bookings/{$booking->id}/cancel")
         ->assertOk()
-        ->assertJsonPath('data.status', BookingStatus::CANCELLED->value);
+        ->assertJsonPath('data.status', BookingStatusEnum::CANCELLED->value);
 });
 
 // ─── complete ─────────────────────────────────────────────────────────────────
@@ -90,7 +90,7 @@ it('manager can complete a confirmed booking', function () {
     $this->withHeaders(asUser($manager))
         ->putJson("/api/establishments/{$establishment->id}/bookings/{$booking->id}/complete")
         ->assertOk()
-        ->assertJsonPath('data.status', BookingStatus::COMPLETED->value);
+        ->assertJsonPath('data.status', BookingStatusEnum::COMPLETED->value);
 });
 
 it('manager cannot complete a pending booking', function () {
@@ -123,8 +123,8 @@ it('confirming a booking sends a booking reference message from the establishmen
 
     expect(
         Message::where('booking_id', $booking->id)
-            ->where('message_type', MessageType::BookingReference->value)
-            ->where('sender_type', SenderType::Establishment->value)
+            ->where('message_type', MessageTypeEnum::BOOKING_REFERENCE->value)
+            ->where('sender_type', SenderTypeEnum::ESTABLISHMENT->value)
             ->exists()
     )->toBeTrue();
 });
@@ -149,8 +149,8 @@ it('cancelling a booking sends a booking reference message from the establishmen
 
     expect(
         Message::where('booking_id', $booking->id)
-            ->where('message_type', MessageType::BookingReference->value)
-            ->where('sender_type', SenderType::Establishment->value)
+            ->where('message_type', MessageTypeEnum::BOOKING_REFERENCE->value)
+            ->where('sender_type', SenderTypeEnum::ESTABLISHMENT->value)
             ->exists()
     )->toBeTrue();
 });

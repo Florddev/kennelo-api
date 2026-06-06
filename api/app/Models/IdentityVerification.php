@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Enums\IdentityVerificationStatus;
+use App\Enums\IdentityVerificationStatusEnum;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * @property IdentityVerificationStatus $status
+ * @property IdentityVerificationStatusEnum $status
  */
 class IdentityVerification extends Model
 {
@@ -28,7 +28,7 @@ class IdentityVerification extends Model
     protected function casts(): array
     {
         return [
-            'status' => IdentityVerificationStatus::class,
+            'status' => IdentityVerificationStatusEnum::class,
             'reviewed_at' => 'datetime',
         ];
     }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Enums\UserStatus;
+use App\Enums\UserStatusEnum;
 use App\Services\MediaService;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Builder;
@@ -23,7 +23,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Spatie\Permission\Traits\HasRoles;
 
 /**
- * @property UserStatus $status
+ * @property UserStatusEnum $status
  */
 class User extends Authenticatable implements HasMedia, JWTSubject, MustVerifyEmail
 {
@@ -58,7 +58,7 @@ class User extends Authenticatable implements HasMedia, JWTSubject, MustVerifyEm
         return [
             'email_verified_at' => 'datetime',
             'is_id_verified' => 'boolean',
-            'status' => UserStatus::class,
+            'status' => UserStatusEnum::class,
             'password' => self::PASSWORD_CAST,
             'stripe_charges_enabled' => 'boolean',
             'stripe_payouts_enabled' => 'boolean',
@@ -80,7 +80,7 @@ class User extends Authenticatable implements HasMedia, JWTSubject, MustVerifyEm
     protected static function booted(): void
     {
         static::addGlobalScope('active', function (Builder $query): void {
-            $query->where('status', UserStatus::ACTIVE);
+            $query->where('status', UserStatusEnum::ACTIVE);
         });
     }
 

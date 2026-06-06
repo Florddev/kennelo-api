@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use App\Enums\AvailabilityStatus;
-use App\Enums\EstablishmentPermission;
+use App\Enums\AvailabilityStatusEnum;
+use App\Enums\EstablishmentPermissionEnum;
 use App\Models\Establishment;
 use App\Models\EstablishmentAvailability;
 use App\Models\User;
@@ -84,7 +84,7 @@ it('manager can get availabilities over a date range', function () {
     EstablishmentAvailability::create([
         'establishment_id' => $establishment->id,
         'date' => '2026-04-02',
-        'status' => AvailabilityStatus::CLOSED->value,
+        'status' => AvailabilityStatusEnum::CLOSED->value,
         'note' => 'Fermé',
     ]);
 
@@ -104,7 +104,7 @@ it('range returns OPEN status for dates not stored in the database', function ()
         ->getJson("/api/establishments/{$establishment->id}/availabilities/range?start_date=2026-04-01&end_date=2026-04-01")
         ->assertOk();
 
-    expect($response->json('data.0.status'))->toBe(AvailabilityStatus::OPEN->value);
+    expect($response->json('data.0.status'))->toBe(AvailabilityStatusEnum::OPEN->value);
     expect($response->json('data.0.id'))->toBeNull();
 });
 
@@ -130,7 +130,7 @@ it('manager can store availabilities over a period', function () {
         ->postJson("/api/establishments/{$establishment->id}/availabilities", [
             'start_date' => '2026-05-01',
             'end_date' => '2026-05-03',
-            'status' => AvailabilityStatus::CLOSED->value,
+            'status' => AvailabilityStatusEnum::CLOSED->value,
         ])
         ->assertCreated();
 
@@ -146,7 +146,7 @@ it('admin can store availabilities', function () {
         ->postJson("/api/establishments/{$establishment->id}/availabilities", [
             'start_date' => '2026-05-01',
             'end_date' => '2026-05-01',
-            'status' => AvailabilityStatus::OPEN->value,
+            'status' => AvailabilityStatusEnum::OPEN->value,
         ])
         ->assertCreated();
 });
@@ -159,14 +159,14 @@ it('collaborator with MANAGE_AVAILABILITIES can store availabilities', function 
     $establishment->collaborators()->attach($collaborator->id);
     $establishment->collaboratorPermissions()->create([
         'user_id' => $collaborator->id,
-        'permission' => EstablishmentPermission::MANAGE_AVAILABILITIES->value,
+        'permission' => EstablishmentPermissionEnum::MANAGE_AVAILABILITIES->value,
     ]);
 
     $this->withHeaders(asUser($collaborator))
         ->postJson("/api/establishments/{$establishment->id}/availabilities", [
             'start_date' => '2026-05-01',
             'end_date' => '2026-05-01',
-            'status' => AvailabilityStatus::OPEN->value,
+            'status' => AvailabilityStatusEnum::OPEN->value,
         ])
         ->assertCreated();
 });
@@ -182,7 +182,7 @@ it('collaborator without MANAGE_AVAILABILITIES cannot store availabilities', fun
         ->postJson("/api/establishments/{$establishment->id}/availabilities", [
             'start_date' => '2026-05-01',
             'end_date' => '2026-05-01',
-            'status' => AvailabilityStatus::OPEN->value,
+            'status' => AvailabilityStatusEnum::OPEN->value,
         ])
         ->assertForbidden();
 });
@@ -196,7 +196,7 @@ it('end_date cannot be before start_date', function () {
         ->postJson("/api/establishments/{$establishment->id}/availabilities", [
             'start_date' => '2026-05-10',
             'end_date' => '2026-05-01',
-            'status' => AvailabilityStatus::CLOSED->value,
+            'status' => AvailabilityStatusEnum::CLOSED->value,
         ])
         ->assertUnprocessable()
         ->assertJsonValidationErrors(['end_date']);
@@ -211,7 +211,7 @@ it('date range cannot exceed 365 days', function () {
         ->postJson("/api/establishments/{$establishment->id}/availabilities", [
             'start_date' => '2026-01-01',
             'end_date' => '2027-01-10',
-            'status' => AvailabilityStatus::CLOSED->value,
+            'status' => AvailabilityStatusEnum::CLOSED->value,
         ])
         ->assertUnprocessable()
         ->assertJsonValidationErrors(['end_date']);
@@ -225,7 +225,7 @@ it('storing the same period twice upserts without error', function () {
     $payload = [
         'start_date' => '2026-06-01',
         'end_date' => '2026-06-01',
-        'status' => AvailabilityStatus::CLOSED->value,
+        'status' => AvailabilityStatusEnum::CLOSED->value,
     ];
 
     $this->withHeaders(asUser($manager))
@@ -233,11 +233,11 @@ it('storing the same period twice upserts without error', function () {
         ->assertCreated();
 
     $this->withHeaders(asUser($manager))
-        ->postJson("/api/establishments/{$establishment->id}/availabilities", array_merge($payload, ['status' => AvailabilityStatus::OPEN->value]))
+        ->postJson("/api/establishments/{$establishment->id}/availabilities", array_merge($payload, ['status' => AvailabilityStatusEnum::OPEN->value]))
         ->assertCreated();
 
     expect(EstablishmentAvailability::where('establishment_id', $establishment->id)->count())->toBe(1);
-    expect(EstablishmentAvailability::where('establishment_id', $establishment->id)->first()->status)->toBe(AvailabilityStatus::OPEN);
+    expect(EstablishmentAvailability::where('establishment_id', $establishment->id)->first()->status)->toBe(AvailabilityStatusEnum::OPEN);
 });
 
 // ─── bulk ─────────────────────────────────────────────────────────────────────
@@ -250,7 +250,7 @@ it('manager can bulk set availabilities', function () {
     $this->withHeaders(asUser($manager))
         ->postJson("/api/establishments/{$establishment->id}/availabilities/bulk", [
             'dates' => ['2026-07-01', '2026-07-04', '2026-07-07'],
-            'status' => AvailabilityStatus::CLOSED->value,
+            'status' => AvailabilityStatusEnum::CLOSED->value,
         ])
         ->assertOk();
 
@@ -267,7 +267,7 @@ it('bulk cannot accept more than 365 dates', function () {
     $this->withHeaders(asUser($manager))
         ->postJson("/api/establishments/{$establishment->id}/availabilities/bulk", [
             'dates' => $dates,
-            'status' => AvailabilityStatus::CLOSED->value,
+            'status' => AvailabilityStatusEnum::CLOSED->value,
         ])
         ->assertUnprocessable()
         ->assertJsonValidationErrors(['dates']);
@@ -281,7 +281,7 @@ it('bulk requires valid date format in the dates array', function () {
     $this->withHeaders(asUser($manager))
         ->postJson("/api/establishments/{$establishment->id}/availabilities/bulk", [
             'dates' => ['not-a-date', '2026-07-04'],
-            'status' => AvailabilityStatus::CLOSED->value,
+            'status' => AvailabilityStatusEnum::CLOSED->value,
         ])
         ->assertUnprocessable()
         ->assertJsonValidationErrors(['dates.0']);
@@ -297,16 +297,16 @@ it('manager can update an availability', function () {
     $availability = EstablishmentAvailability::create([
         'establishment_id' => $establishment->id,
         'date' => '2026-08-01',
-        'status' => AvailabilityStatus::OPEN->value,
+        'status' => AvailabilityStatusEnum::OPEN->value,
     ]);
 
     $this->withHeaders(asUser($manager))
         ->putJson("/api/establishments/{$establishment->id}/availabilities/{$availability->id}", [
-            'status' => AvailabilityStatus::CLOSED->value,
+            'status' => AvailabilityStatusEnum::CLOSED->value,
             'note' => 'Vacances',
         ])
         ->assertOk()
-        ->assertJsonPath('data.status', AvailabilityStatus::CLOSED->value)
+        ->assertJsonPath('data.status', AvailabilityStatusEnum::CLOSED->value)
         ->assertJsonPath('data.note', 'Vacances');
 });
 
@@ -319,12 +319,12 @@ it('updating an availability from another establishment returns 404', function (
     $availability = EstablishmentAvailability::create([
         'establishment_id' => $otherEstablishment->id,
         'date' => '2026-08-01',
-        'status' => AvailabilityStatus::OPEN->value,
+        'status' => AvailabilityStatusEnum::OPEN->value,
     ]);
 
     $this->withHeaders(asUser($manager))
         ->putJson("/api/establishments/{$establishment->id}/availabilities/{$availability->id}", [
-            'status' => AvailabilityStatus::CLOSED->value,
+            'status' => AvailabilityStatusEnum::CLOSED->value,
         ])
         ->assertNotFound();
 });
@@ -336,14 +336,14 @@ it('random user cannot update an availability', function () {
     $availability = EstablishmentAvailability::create([
         'establishment_id' => $establishment->id,
         'date' => '2026-08-01',
-        'status' => AvailabilityStatus::OPEN->value,
+        'status' => AvailabilityStatusEnum::OPEN->value,
     ]);
 
     $user = User::factory()->create();
 
     $this->withHeaders(asUser($user))
         ->putJson("/api/establishments/{$establishment->id}/availabilities/{$availability->id}", [
-            'status' => AvailabilityStatus::CLOSED->value,
+            'status' => AvailabilityStatusEnum::CLOSED->value,
         ])
         ->assertForbidden();
 });
@@ -358,7 +358,7 @@ it('manager can delete an availability', function () {
     $availability = EstablishmentAvailability::create([
         'establishment_id' => $establishment->id,
         'date' => '2026-09-01',
-        'status' => AvailabilityStatus::CLOSED->value,
+        'status' => AvailabilityStatusEnum::CLOSED->value,
     ]);
 
     $this->withHeaders(asUser($manager))
@@ -377,7 +377,7 @@ it('deleting an availability from another establishment returns 404', function (
     $availability = EstablishmentAvailability::create([
         'establishment_id' => $otherEstablishment->id,
         'date' => '2026-09-01',
-        'status' => AvailabilityStatus::CLOSED->value,
+        'status' => AvailabilityStatusEnum::CLOSED->value,
     ]);
 
     $this->withHeaders(asUser($manager))
@@ -392,7 +392,7 @@ it('random user cannot delete an availability', function () {
     $availability = EstablishmentAvailability::create([
         'establishment_id' => $establishment->id,
         'date' => '2026-09-01',
-        'status' => AvailabilityStatus::CLOSED->value,
+        'status' => AvailabilityStatusEnum::CLOSED->value,
     ]);
 
     $user = User::factory()->create();

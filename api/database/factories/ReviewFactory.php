@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
-use App\Enums\BookingStatus;
-use App\Enums\ReviewerType;
+use App\Enums\BookingStatusEnum;
+use App\Enums\ReviewerTypeEnum;
 use App\Models\Booking;
 use App\Models\Review;
 use App\Models\User;
@@ -19,9 +19,9 @@ class ReviewFactory extends Factory
     public function definition(): array
     {
         return [
-            'booking_id' => Booking::factory()->state(['status' => BookingStatus::COMPLETED]),
+            'booking_id' => Booking::factory()->state(['status' => BookingStatusEnum::COMPLETED]),
             'reviewer_id' => User::factory(),
-            'reviewer_type' => ReviewerType::USER,
+            'reviewer_type' => ReviewerTypeEnum::USER,
             'overall_rating' => fake()->randomFloat(1, 3, 5),
             'comment' => fake()->optional(0.7)->paragraph(),
             'private_feedback' => fake()->optional(0.3)->sentence(),
@@ -33,12 +33,12 @@ class ReviewFactory extends Factory
 
     public function fromUser(): static
     {
-        return $this->state(['reviewer_type' => ReviewerType::USER]);
+        return $this->state(['reviewer_type' => ReviewerTypeEnum::USER]);
     }
 
     public function fromEstablishment(): static
     {
-        return $this->state(['reviewer_type' => ReviewerType::ESTABLISHMENT]);
+        return $this->state(['reviewer_type' => ReviewerTypeEnum::ESTABLISHMENT]);
     }
 
     public function published(): static

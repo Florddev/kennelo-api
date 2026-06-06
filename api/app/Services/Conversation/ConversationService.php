@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services\Conversation;
 
-use App\Enums\MessageType;
-use App\Enums\SenderType;
+use App\Enums\MessageTypeEnum;
+use App\Enums\SenderTypeEnum;
 use App\Events\MessageSent;
 use App\Events\MessagesRead;
 use App\Events\NewMessageNotification;
@@ -74,7 +74,7 @@ class ConversationService
 
         if ($thread->wasRecentlyCreated) {
             $this->sendMessage($user, $conversation, [
-                'message_type' => MessageType::BookingReference->value,
+                'message_type' => MessageTypeEnum::BOOKING_REFERENCE->value,
                 'booking_id' => $booking->id,
             ]);
         }
@@ -85,7 +85,7 @@ class ConversationService
     public function sendBookingReference(Conversation $conversation, User $actor, Booking $booking): void
     {
         $this->sendMessage($actor, $conversation, [
-            'message_type' => MessageType::BookingReference->value,
+            'message_type' => MessageTypeEnum::BOOKING_REFERENCE->value,
             'booking_id' => $booking->id,
         ]);
     }
@@ -105,12 +105,12 @@ class ConversationService
     {
         return DB::transaction(function () use ($user, $conversation, $data): Message {
             $senderType = (string) $conversation->user_id === (string) $user->id
-                ? SenderType::User
-                : SenderType::Establishment;
+                ? SenderTypeEnum::USER
+                : SenderTypeEnum::ESTABLISHMENT;
 
             $messageType = isset($data['message_type'])
-                ? MessageType::from($data['message_type'])
-                : MessageType::Text;
+                ? MessageTypeEnum::from($data['message_type'])
+                : MessageTypeEnum::TEXT;
 
             $message = Message::create([
                 'conversation_id' => $conversation->id,

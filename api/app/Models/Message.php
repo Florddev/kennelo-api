@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Enums\MessageType;
-use App\Enums\SenderType;
+use App\Enums\MessageTypeEnum;
+use App\Enums\SenderTypeEnum;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -16,8 +16,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $conversation_id
  * @property string|null $booking_id
  * @property string|null $sender_id
- * @property SenderType $sender_type
- * @property MessageType $message_type
+ * @property SenderTypeEnum $sender_type
+ * @property MessageTypeEnum $message_type
  * @property string|null $content
  * @property-read Conversation $conversation
  */
@@ -37,8 +37,8 @@ class Message extends Model
     protected function casts(): array
     {
         return [
-            'sender_type' => SenderType::class,
-            'message_type' => MessageType::class,
+            'sender_type' => SenderTypeEnum::class,
+            'message_type' => MessageTypeEnum::class,
         ];
     }
 

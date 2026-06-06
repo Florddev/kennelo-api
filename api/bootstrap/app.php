@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Enums\ApiStatus;
+use App\Enums\ApiStatusEnum;
 use App\Http\Middleware\AuthenticateJWT;
 use App\Http\Middleware\EnsureEmailIsVerified;
 use App\Http\Middleware\SetLocale;
@@ -62,7 +62,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 return response()->json([
                     'message' => 'Validation failed',
                     'errors' => $e->errors(),
-                    'status' => ApiStatus::ERROR,
+                    'status' => ApiStatusEnum::ERROR,
                     'timestamp' => $timestamp,
                 ], 422);
             }
@@ -70,7 +70,7 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($e instanceof AuthenticationException) {
                 return response()->json([
                     'message' => 'Unauthenticated.',
-                    'status' => ApiStatus::ERROR,
+                    'status' => ApiStatusEnum::ERROR,
                     'timestamp' => $timestamp,
                 ], 401);
             }
@@ -78,7 +78,7 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($e instanceof AuthorizationException || ($e instanceof HttpException && $e->getStatusCode() === 403)) {
                 return response()->json([
                     'message' => 'This action is unauthorized.',
-                    'status' => ApiStatus::ERROR,
+                    'status' => ApiStatusEnum::ERROR,
                     'timestamp' => $timestamp,
                 ], 403);
             }
@@ -86,7 +86,7 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($e instanceof ModelNotFoundException || $e instanceof NotFoundHttpException) {
                 return response()->json([
                     'message' => 'Resource not found.',
-                    'status' => ApiStatus::ERROR,
+                    'status' => ApiStatusEnum::ERROR,
                     'timestamp' => $timestamp,
                 ], 404);
             }
@@ -94,7 +94,7 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($e instanceof MethodNotAllowedHttpException) {
                 return response()->json([
                     'message' => 'Method not allowed.',
-                    'status' => ApiStatus::ERROR,
+                    'status' => ApiStatusEnum::ERROR,
                     'timestamp' => $timestamp,
                 ], 405);
             }
@@ -102,14 +102,14 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($e instanceof HttpException && $e->getStatusCode() < 500) {
                 return response()->json([
                     'message' => $e->getMessage() ?: 'Request failed.',
-                    'status' => ApiStatus::ERROR,
+                    'status' => ApiStatusEnum::ERROR,
                     'timestamp' => $timestamp,
                 ], $e->getStatusCode());
             }
 
             return response()->json([
                 'message' => 'Server error.',
-                'status' => ApiStatus::ERROR,
+                'status' => ApiStatusEnum::ERROR,
                 'timestamp' => $timestamp,
             ], 500);
         });

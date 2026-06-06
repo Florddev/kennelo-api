@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services\User;
 
-use App\Enums\BookingStatus;
-use App\Enums\IdentityVerificationStatus;
+use App\Enums\BookingStatusEnum;
+use App\Enums\IdentityVerificationStatusEnum;
 use App\Enums\PaginationEnum;
 use App\Models\Address;
 use App\Models\Booking;
@@ -65,9 +65,9 @@ class UserService
     {
         $hasActiveBookings = Booking::where('user_id', $user->id)
             ->whereIn('status', [
-                BookingStatus::PENDING->value,
-                BookingStatus::CONFIRMED->value,
-                BookingStatus::IN_PROGRESS->value,
+                BookingStatusEnum::PENDING->value,
+                BookingStatusEnum::CONFIRMED->value,
+                BookingStatusEnum::IN_PROGRESS->value,
             ])
             ->exists();
 
@@ -166,14 +166,14 @@ class UserService
         return IdentityVerification::create([
             'user_id' => $user->id,
             'document_url' => $path,
-            'status' => IdentityVerificationStatus::Pending,
+            'status' => IdentityVerificationStatusEnum::PENDING,
         ]);
     }
 
     public function reviewIdentityVerification(User $user, User $reviewer, array $data): User
     {
         $verification = IdentityVerification::where('user_id', $user->id)
-            ->where('status', IdentityVerificationStatus::Pending)
+            ->where('status', IdentityVerificationStatusEnum::PENDING)
             ->latest()
             ->firstOrFail();
 
@@ -186,7 +186,7 @@ class UserService
                 'reviewed_at' => Carbon::now(),
             ]);
 
-            if ($status === IdentityVerificationStatus::Approved->value) {
+            if ($status === IdentityVerificationStatusEnum::APPROVED->value) {
                 $user->update(['is_id_verified' => true]);
             }
         });

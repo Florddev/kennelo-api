@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Enums\AnimalAttributeCategory;
+use App\Enums\AnimalAttributeCategoryEnum;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('attribute_definitions', function (Blueprint $table): void {
             $table->string('category', 50)
-                ->default(AnimalAttributeCategory::INFO->value)
+                ->default(AnimalAttributeCategoryEnum::INFO->value)
                 ->after('label')
                 ->index();
         });

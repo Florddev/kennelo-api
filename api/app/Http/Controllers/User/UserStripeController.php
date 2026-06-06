@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\User;
 
-use App\Enums\ApiStatus;
+use App\Enums\ApiStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Services\Establishment\StripeConnectService;
 use Illuminate\Http\JsonResponse;
@@ -20,7 +20,7 @@ class UserStripeController extends Controller
 
         return response()->json([
             'data' => $data,
-            'status' => ApiStatus::SUCCESS,
+            'status' => ApiStatusEnum::SUCCESS,
             'timestamp' => human_date(now()),
         ]);
     }
@@ -36,7 +36,7 @@ class UserStripeController extends Controller
                 'charges_enabled' => (bool) $user->stripe_charges_enabled,
                 'payouts_enabled' => (bool) $user->stripe_payouts_enabled,
             ],
-            'status' => ApiStatus::SUCCESS,
+            'status' => ApiStatusEnum::SUCCESS,
             'timestamp' => human_date(now()),
         ]);
     }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Pet;
 
-use App\Enums\ApiStatus;
+use App\Enums\ApiStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Pet\StorePetRequest;
 use App\Http\Requests\Pet\UpdatePetRequest;
@@ -28,7 +28,7 @@ class PetController extends Controller
 
         return PetResource::collection($pets)
             ->additional([
-                'status' => ApiStatus::SUCCESS,
+                'status' => ApiStatusEnum::SUCCESS,
                 'timestamp' => human_date(now()),
             ])
             ->response();
@@ -41,7 +41,7 @@ class PetController extends Controller
         $pet->load(['animalType', 'petAttributes.attributeDefinition', 'petAttributes.attributeOption', 'media']);
 
         return (new PetResource($pet))
-            ->additional(['status' => ApiStatus::SUCCESS, 'timestamp' => human_date(now())])
+            ->additional(['status' => ApiStatusEnum::SUCCESS, 'timestamp' => human_date(now())])
             ->response();
     }
 
@@ -51,7 +51,7 @@ class PetController extends Controller
 
         return (new PetResource($pet))
             ->additional([
-                'status' => ApiStatus::SUCCESS,
+                'status' => ApiStatusEnum::SUCCESS,
                 'timestamp' => human_date(now()),
             ])
             ->response()
@@ -66,7 +66,7 @@ class PetController extends Controller
 
         return (new PetResource($pet))
             ->additional([
-                'status' => ApiStatus::SUCCESS,
+                'status' => ApiStatusEnum::SUCCESS,
                 'timestamp' => human_date(now()),
             ])
             ->response();

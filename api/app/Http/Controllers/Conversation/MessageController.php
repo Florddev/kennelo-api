@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Conversation;
 
-use App\Enums\ApiStatus;
+use App\Enums\ApiStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Conversation\ListMessagesRequest;
 use App\Http\Requests\Conversation\StoreMessageRequest;
@@ -28,7 +28,7 @@ class MessageController extends Controller
 
         return MessageResource::collection($messages)
             ->additional([
-                'status' => ApiStatus::SUCCESS,
+                'status' => ApiStatusEnum::SUCCESS,
                 'timestamp' => human_date(now()),
             ])
             ->response();
@@ -42,7 +42,7 @@ class MessageController extends Controller
 
         return (new MessageResource($message))
             ->additional([
-                'status' => ApiStatus::SUCCESS,
+                'status' => ApiStatusEnum::SUCCESS,
                 'timestamp' => human_date(now()),
             ])
             ->response()
@@ -56,7 +56,7 @@ class MessageController extends Controller
         $count = $this->conversationService->markAsRead($request->user(), $conversation);
 
         return response()->json([
-            'status' => ApiStatus::SUCCESS,
+            'status' => ApiStatusEnum::SUCCESS,
             'data' => ['marked_count' => $count],
             'timestamp' => human_date(now()),
         ]);

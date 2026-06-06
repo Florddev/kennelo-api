@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Enums\EstablishmentPermission;
+use App\Enums\EstablishmentPermissionEnum;
 use App\Models\AnimalType;
 use App\Models\Establishment;
 use App\Models\EstablishmentCapacity;
@@ -95,7 +95,7 @@ it('collaborator with MANAGE_CAPACITIES can create a capacity', function () {
     $establishment->collaborators()->attach($collaborator->id);
     $establishment->collaboratorPermissions()->create([
         'user_id' => $collaborator->id,
-        'permission' => EstablishmentPermission::MANAGE_CAPACITIES->value,
+        'permission' => EstablishmentPermissionEnum::MANAGE_CAPACITIES->value,
     ]);
 
     $this->withHeaders(asUser($collaborator))
@@ -255,7 +255,7 @@ it('collaborator with MANAGE_CAPACITIES can update a capacity', function () {
     $establishment->collaborators()->attach($collaborator->id);
     $establishment->collaboratorPermissions()->create([
         'user_id' => $collaborator->id,
-        'permission' => EstablishmentPermission::MANAGE_CAPACITIES->value,
+        'permission' => EstablishmentPermissionEnum::MANAGE_CAPACITIES->value,
     ]);
 
     $this->withHeaders(asUser($collaborator))

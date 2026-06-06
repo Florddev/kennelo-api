@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Establishment;
 
-use App\Enums\ApiStatus;
+use App\Enums\ApiStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Establishment\StoreEstablishmentImageRequest;
 use App\Http\Requests\Establishment\StoreEstablishmentImagesRequest;
@@ -35,7 +35,7 @@ class EstablishmentImageController extends Controller
         return (new EstablishmentResource($establishment))
             ->additional([
                 'message' => 'Avatar uploaded successfully',
-                'status' => ApiStatus::SUCCESS,
+                'status' => ApiStatusEnum::SUCCESS,
                 'timestamp' => human_date(now()),
             ])
             ->response();
@@ -49,7 +49,7 @@ class EstablishmentImageController extends Controller
 
         return EstablishmentImageResource::collection($images)
             ->additional([
-                'status' => ApiStatus::SUCCESS,
+                'status' => ApiStatusEnum::SUCCESS,
                 'timestamp' => human_date(now()),
             ])
             ->response();
@@ -64,7 +64,7 @@ class EstablishmentImageController extends Controller
         return (new EstablishmentImageResource($media))
             ->additional([
                 'message' => 'Image added successfully',
-                'status' => ApiStatus::SUCCESS,
+                'status' => ApiStatusEnum::SUCCESS,
                 'timestamp' => human_date(now()),
             ])
             ->response()
@@ -80,7 +80,7 @@ class EstablishmentImageController extends Controller
         return EstablishmentImageResource::collection($mediaItems)
             ->additional([
                 'message' => 'Images added successfully',
-                'status' => ApiStatus::SUCCESS,
+                'status' => ApiStatusEnum::SUCCESS,
                 'timestamp' => human_date(now()),
             ])
             ->response()
@@ -94,7 +94,7 @@ class EstablishmentImageController extends Controller
         if ($media->model_id !== $establishment->id || $media->collection_name !== MediaService::COLLECTION_IMAGES) {
             return response()->json([
                 'message' => 'Image does not belong to this establishment',
-                'status' => ApiStatus::ERROR,
+                'status' => ApiStatusEnum::ERROR,
                 'timestamp' => human_date(now()),
             ], 403);
         }

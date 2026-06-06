@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Conversation;
 
-use App\Enums\MessageType;
+use App\Enums\MessageTypeEnum;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Log;
@@ -22,9 +22,9 @@ class StoreMessageRequest extends FormRequest
         return [
             'content' => ['nullable', 'string', 'max:5000'],
             'message_type' => ['sometimes', 'string', Rule::in([
-                MessageType::Text->value,
-                MessageType::File->value,
-                MessageType::BookingReference->value,
+                MessageTypeEnum::TEXT->value,
+                MessageTypeEnum::FILE->value,
+                MessageTypeEnum::BOOKING_REFERENCE->value,
             ])],
             'booking_id' => ['sometimes', 'nullable', 'uuid', 'exists:bookings,id'],
             'files' => ['sometimes', 'nullable', 'array', 'max:10'],

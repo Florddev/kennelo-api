@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Explore;
 
-use App\Enums\ApiStatus;
+use App\Enums\ApiStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ExploreEstablishmentResource;
 use App\Services\Explore\ExploreService;
@@ -30,7 +30,7 @@ class ExploreController extends Controller
 
         return response()->json([
             'data' => ['sections' => $sectionsData],
-            'status' => ApiStatus::SUCCESS->value,
+            'status' => ApiStatusEnum::SUCCESS->value,
             'timestamp' => human_date(Carbon::now()),
         ]);
     }
@@ -55,7 +55,7 @@ class ExploreController extends Controller
                     'has_more' => $result['has_more'],
                 ],
             ],
-            'status' => ApiStatus::SUCCESS->value,
+            'status' => ApiStatusEnum::SUCCESS->value,
             'timestamp' => human_date(Carbon::now()),
         ]);
     }
@@ -76,7 +76,7 @@ class ExploreController extends Controller
                     'has_more' => $result['has_more'],
                 ],
             ],
-            'status' => ApiStatus::SUCCESS->value,
+            'status' => ApiStatusEnum::SUCCESS->value,
             'timestamp' => human_date(Carbon::now()),
         ]);
     }

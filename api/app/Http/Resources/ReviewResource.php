@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Resources;
 
-use App\Enums\EstablishmentPermission;
-use App\Enums\ReviewerType;
+use App\Enums\EstablishmentPermissionEnum;
+use App\Enums\ReviewerTypeEnum;
 use App\Models\Review;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -56,7 +56,7 @@ class ReviewResource extends JsonResource
             return false;
         }
 
-        if ($this->reviewer_type === ReviewerType::USER) {
+        if ($this->reviewer_type === ReviewerTypeEnum::USER) {
             $establishment = $booking->establishment;
 
             if ($establishment === null) {
@@ -67,7 +67,7 @@ class ReviewResource extends JsonResource
                 return true;
             }
 
-            return $establishment->collaboratorHasPermission($authUser, EstablishmentPermission::MANAGE_BOOKINGS);
+            return $establishment->collaboratorHasPermission($authUser, EstablishmentPermissionEnum::MANAGE_BOOKINGS);
         }
 
         return (string) $booking->user_id === (string) $authUser->id;

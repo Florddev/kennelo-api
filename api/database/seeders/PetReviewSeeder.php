@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
-use App\Enums\BookingStatus;
-use App\Enums\ReviewerType;
+use App\Enums\BookingStatusEnum;
+use App\Enums\ReviewerTypeEnum;
 use App\Models\Booking;
 use App\Models\Establishment;
 use App\Models\Pet;
@@ -80,7 +80,7 @@ class PetReviewSeeder extends Seeder
                 'check_in_date' => Carbon::now()->subDays($daysAgo + $nights)->format('Y-m-d'),
                 'check_out_date' => Carbon::now()->subDays($daysAgo)->format('Y-m-d'),
                 'total_price' => $nights * 30.00,
-                'status' => BookingStatus::COMPLETED,
+                'status' => BookingStatusEnum::COMPLETED,
             ]);
 
             $booking->pets()->attach($petId, [
@@ -92,7 +92,7 @@ class PetReviewSeeder extends Seeder
             Review::create([
                 'booking_id' => $booking->id,
                 'reviewer_id' => $host->id,
-                'reviewer_type' => ReviewerType::ESTABLISHMENT,
+                'reviewer_type' => ReviewerTypeEnum::ESTABLISHMENT,
                 'overall_rating' => $data['rating'],
                 'comment' => $data['comment'],
                 'would_recommend' => true,

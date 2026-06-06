@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Establishment;
 
-use App\Enums\ApiStatus;
+use App\Enums\ApiStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Establishment\StoreCapacityRequest;
 use App\Http\Requests\Establishment\UpdateCapacityRequest;
@@ -31,7 +31,7 @@ class EstablishmentCapacityController extends Controller
 
         return EstablishmentCapacityResource::collection($capacities)
             ->additional([
-                'status' => ApiStatus::SUCCESS,
+                'status' => ApiStatusEnum::SUCCESS,
                 'timestamp' => human_date(Carbon::now()),
             ])
             ->response();
@@ -45,7 +45,7 @@ class EstablishmentCapacityController extends Controller
 
         return (new EstablishmentCapacityResource($capacity))
             ->additional([
-                'status' => ApiStatus::SUCCESS,
+                'status' => ApiStatusEnum::SUCCESS,
                 'timestamp' => human_date(Carbon::now()),
             ])
             ->response()
@@ -61,7 +61,7 @@ class EstablishmentCapacityController extends Controller
 
         return (new EstablishmentCapacityResource($capacity))
             ->additional([
-                'status' => ApiStatus::SUCCESS,
+                'status' => ApiStatusEnum::SUCCESS,
                 'timestamp' => human_date(Carbon::now()),
             ])
             ->response();

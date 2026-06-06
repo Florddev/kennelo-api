@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Establishment;
 
-use App\Enums\AvailabilityStatus;
+use App\Enums\AvailabilityStatusEnum;
 use App\Models\Establishment;
 use App\Models\EstablishmentAvailability;
 use Carbon\Carbon;
@@ -75,7 +75,7 @@ class EstablishmentAvailabilityService
                 ?? new EstablishmentAvailability([
                     'establishment_id' => $establishment->id,
                     'date' => $date->toDateString(),
-                    'status' => AvailabilityStatus::OPEN,
+                    'status' => AvailabilityStatusEnum::OPEN,
                     'note' => null,
                 ])
             );

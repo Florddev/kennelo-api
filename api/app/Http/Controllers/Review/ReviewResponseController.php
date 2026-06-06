@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Review;
 
-use App\Enums\ApiStatus;
+use App\Enums\ApiStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Review\StoreReviewResponseRequest;
 use App\Http\Resources\ReviewResponseResource;
@@ -26,7 +26,7 @@ class ReviewResponseController extends Controller
 
         return (new ReviewResponseResource($response))
             ->additional([
-                'status' => ApiStatus::SUCCESS,
+                'status' => ApiStatusEnum::SUCCESS,
                 'timestamp' => human_date(now()),
             ])
             ->response()

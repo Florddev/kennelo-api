@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Conversation;
 
-use App\Enums\ApiStatus;
+use App\Enums\ApiStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Conversation\ListConversationsRequest;
 use App\Http\Resources\ConversationResource;
@@ -31,7 +31,7 @@ class EstablishmentConversationController extends Controller
 
         return ConversationResource::collection($conversations)
             ->additional([
-                'status' => ApiStatus::SUCCESS,
+                'status' => ApiStatusEnum::SUCCESS,
                 'timestamp' => human_date(now()),
             ])
             ->response();

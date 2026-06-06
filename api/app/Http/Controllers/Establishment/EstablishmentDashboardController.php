@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Establishment;
 
-use App\Enums\ApiStatus;
+use App\Enums\ApiStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Models\Establishment;
 use App\Services\Establishment\EstablishmentDashboardService;
@@ -26,7 +26,7 @@ class EstablishmentDashboardController extends Controller
 
         return response()->json([
             'data' => $dashboard,
-            'status' => ApiStatus::SUCCESS,
+            'status' => ApiStatusEnum::SUCCESS,
             'timestamp' => human_date(Carbon::now()),
         ]);
     }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Review\Admin;
 
-use App\Enums\ApiStatus;
+use App\Enums\ApiStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Review\ListReviewReportsRequest;
 use App\Http\Requests\Review\UpdateReviewReportRequest;
@@ -27,7 +27,7 @@ class ReviewReportController extends Controller
 
         return ReviewReportResource::collection($reports)
             ->additional([
-                'status' => ApiStatus::SUCCESS,
+                'status' => ApiStatusEnum::SUCCESS,
                 'timestamp' => human_date(now()),
             ])
             ->response();
@@ -41,7 +41,7 @@ class ReviewReportController extends Controller
 
         return (new ReviewReportResource($report))
             ->additional([
-                'status' => ApiStatus::SUCCESS,
+                'status' => ApiStatusEnum::SUCCESS,
                 'timestamp' => human_date(now()),
             ])
             ->response();

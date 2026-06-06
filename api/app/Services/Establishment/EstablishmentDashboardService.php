@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Establishment;
 
-use App\Enums\AvailabilityStatus;
+use App\Enums\AvailabilityStatusEnum;
 use App\Models\Establishment;
 use App\Models\EstablishmentAvailability;
 use App\Models\EstablishmentCapacity;
@@ -24,7 +24,7 @@ class EstablishmentDashboardService
 
         $todayStatus = EstablishmentAvailability::where('establishment_id', $establishment->id)
             ->where('date', $today)
-            ->value('status') ?? AvailabilityStatus::OPEN->value;
+            ->value('status') ?? AvailabilityStatusEnum::OPEN->value;
 
         $occupancyByAnimal = $capacities->map(function (EstablishmentCapacity $capacity): array {
             $occupiedSpots = $capacity->occupied_spots;

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Enums\EstablishmentPermission;
-use App\Enums\EstablishmentType;
-use App\Enums\ReviewerType;
+use App\Enums\EstablishmentPermissionEnum;
+use App\Enums\EstablishmentTypeEnum;
+use App\Enums\ReviewerTypeEnum;
 use App\Services\MediaService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -51,7 +51,7 @@ class Establishment extends Model implements HasMedia
     {
         return [
             'is_active' => 'boolean',
-            'type' => EstablishmentType::class,
+            'type' => EstablishmentTypeEnum::class,
             'stripe_onboarding_completed' => 'boolean',
             'stripe_charges_enabled' => 'boolean',
             'stripe_payouts_enabled' => 'boolean',
@@ -121,10 +121,10 @@ class Establishment extends Model implements HasMedia
     public function reviews(): HasManyThrough
     {
         return $this->hasManyThrough(Review::class, Booking::class)
-            ->where('reviews.reviewer_type', ReviewerType::USER->value);
+            ->where('reviews.reviewer_type', ReviewerTypeEnum::USER->value);
     }
 
-    public function collaboratorHasPermission(User $user, EstablishmentPermission $permission): bool
+    public function collaboratorHasPermission(User $user, EstablishmentPermissionEnum $permission): bool
     {
         if (! $this->collaborators()->where('users.id', $user->id)->exists()) {
             return false;

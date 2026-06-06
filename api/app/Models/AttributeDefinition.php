@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Enums\AnimalAttributeCategory;
+use App\Enums\AnimalAttributeCategoryEnum;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -27,7 +27,7 @@ class AttributeDefinition extends Model
     ];
 
     protected $casts = [
-        'category' => AnimalAttributeCategory::class,
+        'category' => AnimalAttributeCategoryEnum::class,
         'has_predefined_options' => 'boolean',
         'is_required' => 'boolean',
     ];

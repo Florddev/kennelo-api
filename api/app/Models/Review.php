@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Enums\ReviewerType;
+use App\Enums\ReviewerTypeEnum;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -18,7 +18,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property string $id
  * @property string $booking_id
  * @property string $reviewer_id
- * @property ReviewerType $reviewer_type
+ * @property ReviewerTypeEnum $reviewer_type
  * @property string $overall_rating
  * @property string|null $comment
  * @property string|null $private_feedback
@@ -52,7 +52,7 @@ class Review extends Model
     protected function casts(): array
     {
         return [
-            'reviewer_type' => ReviewerType::class,
+            'reviewer_type' => ReviewerTypeEnum::class,
             'overall_rating' => 'decimal:1',
             'would_recommend' => 'boolean',
             'is_published' => 'boolean',
