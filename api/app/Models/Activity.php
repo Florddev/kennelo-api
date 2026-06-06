@@ -25,7 +25,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read User|null $manager
  * @property-read Address|null $address
  */
-class Establishment extends Model implements HasMedia
+class Activity extends Model implements HasMedia
 {
     use HasFactory, HasUuids, InteractsWithMedia, SoftDeletes;
 
@@ -90,22 +90,22 @@ class Establishment extends Model implements HasMedia
 
     public function collaborators(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'establishment_collaborators', 'establishment_id', 'user_id');
+        return $this->belongsToMany(User::class, 'activity_collaborators', 'activity_id', 'user_id');
     }
 
     public function collaboratorPermissions(): HasMany
     {
-        return $this->hasMany(EstablishmentCollaboratorPermission::class);
+        return $this->hasMany(ActivityCollaboratorPermission::class);
     }
 
-    public function capacities(): HasMany
+    public function cycles(): HasMany
     {
-        return $this->hasMany(EstablishmentCapacity::class);
+        return $this->hasMany(ActivityCycle::class);
     }
 
     public function availabilities(): HasMany
     {
-        return $this->hasMany(EstablishmentAvailability::class);
+        return $this->hasMany(ActivityAvailability::class);
     }
 
     public function bookings(): HasMany

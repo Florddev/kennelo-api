@@ -9,12 +9,12 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class EstablishmentCollaboratorPermission extends Model
+class ActivityCollaboratorPermission extends Model
 {
     use HasUuids;
 
     protected $fillable = [
-        'establishment_id',
+        'activity_id',
         'user_id',
         'permission',
     ];
@@ -26,9 +26,9 @@ class EstablishmentCollaboratorPermission extends Model
         ];
     }
 
-    public function establishment(): BelongsTo
+    public function activity(): BelongsTo
     {
-        return $this->belongsTo(Establishment::class);
+        return $this->belongsTo(Activity::class);
     }
 
     public function user(): BelongsTo

@@ -99,14 +99,14 @@ class User extends Authenticatable implements HasMedia, JWTSubject, MustVerifyEm
         return $this->hasMany(IdentityVerification::class);
     }
 
-    public function managedEstablishments(): HasMany
+    public function managedActivities(): HasMany
     {
-        return $this->hasMany(Establishment::class, 'manager_id');
+        return $this->hasMany(Activity::class, 'manager_id');
     }
 
-    public function collaboratedEstablishments(): BelongsToMany
+    public function collaboratedActivities(): BelongsToMany
     {
-        return $this->belongsToMany(Establishment::class, 'establishment_collaborators', 'user_id', 'establishment_id');
+        return $this->belongsToMany(Activity::class, 'activity_collaborators', 'user_id', 'activity_id');
     }
 
     public function conversations(): HasMany

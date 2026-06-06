@@ -13,14 +13,16 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 /**
  * @property Carbon $date
  * @property AvailabilityStatusEnum $status
- * @property-read Establishment $establishment
+ * @property-read Activity $activity
  */
-class EstablishmentAvailability extends Model
+class ActivityAvailability extends Model
 {
     use HasUuids;
 
+    protected $table = 'activities_availabilities';
+
     protected $fillable = [
-        'establishment_id',
+        'activity_id',
         'date',
         'status',
         'note',
@@ -34,8 +36,8 @@ class EstablishmentAvailability extends Model
         ];
     }
 
-    public function establishment(): BelongsTo
+    public function activity(): BelongsTo
     {
-        return $this->belongsTo(Establishment::class);
+        return $this->belongsTo(Activity::class);
     }
 }
