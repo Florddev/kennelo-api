@@ -20,18 +20,18 @@ Broadcast::channel('conversation.{conversationId}', function (User $user, string
         return true;
     }
 
-    $conversation->loadMissing('establishment');
-    $establishment = $conversation->establishment;
+    $conversation->loadMissing('activity');
+    $activity = $conversation->activity;
 
-    if (! $establishment) {
+    if (! $activity) {
         return false;
     }
 
-    if ((string) $establishment->manager_id === (string) $user->id) {
+    if ((string) $activity->manager_id === (string) $user->id) {
         return true;
     }
 
-    return $establishment->collaboratorHasPermission($user, ActivityPermissionEnum::MANAGE_MESSAGES);
+    return $activity->collaboratorHasPermission($user, ActivityPermissionEnum::MANAGE_MESSAGES);
 });
 
 Broadcast::channel('user.{userId}', function (User $user, string $userId) {
