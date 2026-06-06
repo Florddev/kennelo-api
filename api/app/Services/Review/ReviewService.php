@@ -8,8 +8,8 @@ use App\Enums\ActivityPermissionEnum;
 use App\Enums\BookingStatusEnum;
 use App\Enums\PaginationEnum;
 use App\Enums\ReviewerTypeEnum;
+use App\Models\Activity;
 use App\Models\Booking;
-use App\Models\Establishment;
 use App\Models\Pet;
 use App\Models\Review;
 use App\Models\ReviewCriteriaDefinition;
@@ -86,13 +86,13 @@ class ReviewService
         return $review->load(['reviewer', 'criteriaScores.definition', 'response.responder', 'booking']);
     }
 
-    public function forEstablishment(Establishment $establishment, array $filters = []): LengthAwarePaginator
+    public function forActivity(Activity $activity, array $filters = []): LengthAwarePaginator
     {
         $perPage = $filters['per_page'] ?? PaginationEnum::DEFAULT_PAGINATION->value();
 
         return Review::query()
-            ->with(['reviewer', 'booking.establishment', 'criteriaScores.definition', 'response.responder'])
-            ->whereHas('booking', fn ($q) => $q->where('establishment_id', $establishment->id))
+            ->with(['reviewer', 'booking.activity', 'criteriaScores.definition', 'response.responder'])
+            ->whereHas('booking', fn ($q) => $q->where('activity_id', $activity->id))
             ->where('reviewer_type', ReviewerTypeEnum::USER->value)
             ->where('is_published', true)
             ->when(isset($filters['min_rating']), fn ($q) => $q->where('overall_rating', '>=', $filters['min_rating']))
@@ -105,9 +105,9 @@ class ReviewService
         $perPage = $filters['per_page'] ?? PaginationEnum::DEFAULT_PAGINATION->value();
 
         return Review::query()
-            ->with(['reviewer', 'booking.establishment', 'criteriaScores.definition', 'response.responder'])
+            ->with(['reviewer', 'booking.activity', 'criteriaScores.definition', 'response.responder'])
             ->whereHas('booking', fn ($q) => $q->where('user_id', $user->id))
-            ->where('reviewer_type', ReviewerTypeEnum::ESTABLISHMENT->value)
+            ->where('reviewer_type', ReviewerTypeEnum::ACTIVITY->value)
             ->where('is_published', true)
             ->when(isset($filters['min_rating']), fn ($q) => $q->where('overall_rating', '>=', $filters['min_rating']))
             ->latest('published_at')
@@ -119,7 +119,7 @@ class ReviewService
         $perPage = $filters['per_page'] ?? PaginationEnum::DEFAULT_PAGINATION->value();
 
         return Review::query()
-            ->with(['booking.establishment', 'criteriaScores.definition', 'response'])
+            ->with(['booking.activity', 'criteriaScores.definition', 'response'])
             ->where('reviewer_id', $actor->id)
             ->latest()
             ->paginate($perPage);
@@ -130,9 +130,9 @@ class ReviewService
         $perPage = $filters['per_page'] ?? PaginationEnum::DEFAULT_PAGINATION->value();
 
         return Review::query()
-            ->with(['reviewer', 'booking.establishment', 'criteriaScores.definition', 'response'])
+            ->with(['reviewer', 'booking.activity', 'criteriaScores.definition', 'response'])
             ->whereHas('booking', fn ($q) => $q->where('user_id', $actor->id))
-            ->where('reviewer_type', ReviewerTypeEnum::ESTABLISHMENT->value)
+            ->where('reviewer_type', ReviewerTypeEnum::ACTIVITY->value)
             ->latest()
             ->paginate($perPage);
     }
@@ -144,7 +144,7 @@ class ReviewService
         return Review::query()
             ->with(['reviewer', 'criteriaScores.definition', 'response.responder'])
             ->whereHas('booking', fn ($q) => $q->whereHas('pets', fn ($pq) => $pq->where('pets.id', $pet->id)))
-            ->where('reviewer_type', ReviewerTypeEnum::ESTABLISHMENT->value)
+            ->where('reviewer_type', ReviewerTypeEnum::ACTIVITY->value)
             ->where('is_published', true)
             ->when(isset($filters['min_rating']), fn ($q) => $q->where('overall_rating', '>=', $filters['min_rating']))
             ->latest('published_at')
@@ -155,7 +155,7 @@ class ReviewService
     {
         $base = Review::query()
             ->whereHas('booking', fn ($q) => $q->whereHas('pets', fn ($pq) => $pq->where('pets.id', $pet->id)))
-            ->where('reviewer_type', ReviewerTypeEnum::ESTABLISHMENT->value)
+            ->where('reviewer_type', ReviewerTypeEnum::ACTIVITY->value)
             ->where('is_published', true);
 
         $total = (clone $base)->count();
@@ -167,10 +167,10 @@ class ReviewService
         ];
     }
 
-    public function aggregatesForEstablishment(Establishment $establishment): array
+    public function aggregatesForActivity(Activity $activity): array
     {
         $base = Review::query()
-            ->whereHas('booking', fn ($q) => $q->where('establishment_id', $establishment->id))
+            ->whereHas('booking', fn ($q) => $q->where('activity_id', $activity->id))
             ->where('reviewer_type', ReviewerTypeEnum::USER->value)
             ->where('is_published', true);
 
@@ -187,7 +187,7 @@ class ReviewService
     {
         $base = Review::query()
             ->whereHas('booking', fn ($q) => $q->where('user_id', $user->id))
-            ->where('reviewer_type', ReviewerTypeEnum::ESTABLISHMENT->value)
+            ->where('reviewer_type', ReviewerTypeEnum::ACTIVITY->value)
             ->where('is_published', true);
 
         $total = (clone $base)->count();
@@ -205,21 +205,21 @@ class ReviewService
             return ReviewerTypeEnum::USER;
         }
 
-        $booking->loadMissing('establishment');
-        $establishment = $booking->establishment;
+        $booking->loadMissing('activity');
+        $activity = $booking->activity;
 
-        if ($establishment === null) {
+        if ($activity === null) {
             throw ValidationException::withMessages([
                 'booking_id' => ['You are not allowed to review this booking.'],
             ]);
         }
 
-        if ((string) $establishment->manager_id === (string) $actor->id) {
-            return ReviewerTypeEnum::ESTABLISHMENT;
+        if ((string) $activity->manager_id === (string) $actor->id) {
+            return ReviewerTypeEnum::ACTIVITY;
         }
 
-        if ($establishment->collaboratorHasPermission($actor, ActivityPermissionEnum::MANAGE_BOOKINGS)) {
-            return ReviewerTypeEnum::ESTABLISHMENT;
+        if ($activity->collaboratorHasPermission($actor, ActivityPermissionEnum::MANAGE_BOOKINGS)) {
+            return ReviewerTypeEnum::ACTIVITY;
         }
 
         throw ValidationException::withMessages([

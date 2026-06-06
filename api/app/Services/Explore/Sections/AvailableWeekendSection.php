@@ -30,7 +30,7 @@ class AvailableWeekendSection implements ExploreSection
 
         if ($lat !== null && $lng !== null && $this->supportsGeo()) {
             $query
-                ->join('addresses as addr_weekend', 'addr_weekend.id', '=', 'establishments.address_id')
+                ->join('addresses as addr_weekend', 'addr_weekend.id', '=', 'activities.address_id')
                 ->whereNotNull('addr_weekend.latitude')
                 ->whereNotNull('addr_weekend.longitude')
                 ->orderBy('distance')

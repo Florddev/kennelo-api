@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
+ * @property int $occupied_spots
  * @property-read AnimalType $animalType
  * @property-read ActivityCycle $cycle
  */

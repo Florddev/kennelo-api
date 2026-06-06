@@ -53,17 +53,17 @@ class ReviewResponseService
         }
 
         if ($review->reviewer_type === ReviewerTypeEnum::USER) {
-            $establishment = $booking->establishment;
+            $activity = $booking->activity;
 
-            if ($establishment === null) {
+            if ($activity === null) {
                 return false;
             }
 
-            if ((string) $establishment->manager_id === (string) $actor->id) {
+            if ((string) $activity->manager_id === (string) $actor->id) {
                 return true;
             }
 
-            return $establishment->collaboratorHasPermission($actor, ActivityPermissionEnum::MANAGE_BOOKINGS);
+            return $activity->collaboratorHasPermission($actor, ActivityPermissionEnum::MANAGE_BOOKINGS);
         }
 
         return (string) $booking->user_id === (string) $actor->id;

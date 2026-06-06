@@ -19,12 +19,12 @@ class VerifiedProsSection implements ExploreSection
     public function apply(Builder $query, ?float $lat, ?float $lng): Builder
     {
         $query
-            ->whereNotNull('establishments.siret')
+            ->whereNotNull('activities.siret')
             ->whereHas('manager', fn (Builder $q) => $q->where('is_id_verified', true));
 
         if ($lat !== null && $lng !== null && $this->supportsGeo()) {
             $query
-                ->join('addresses as addr_pros', 'addr_pros.id', '=', 'establishments.address_id')
+                ->join('addresses as addr_pros', 'addr_pros.id', '=', 'activities.address_id')
                 ->whereNotNull('addr_pros.latitude')
                 ->whereNotNull('addr_pros.longitude')
                 ->orderBy('distance')

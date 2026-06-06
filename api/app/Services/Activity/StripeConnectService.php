@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Services\Establishment;
+namespace App\Services\Activity;
 
-use App\Models\Establishment;
+use App\Models\Activity;
 use App\Models\User;
 use Stripe\StripeClient;
 
@@ -14,10 +14,10 @@ class StripeConnectService
         private StripeClient $stripe
     ) {}
 
-    public function getOrCreateOnboardingLink(Establishment $establishment): string
+    public function getOrCreateOnboardingLink(Activity $activity): string
     {
-        $establishment->loadMissing('manager');
-        $manager = $establishment->manager;
+        $activity->loadMissing('manager');
+        $manager = $activity->manager;
 
         if (! $manager->stripe_account_id) {
             $account = $this->callStripe(fn () => $this->stripe->accounts->create([
@@ -29,8 +29,8 @@ class StripeConnectService
                     'transfers' => ['requested' => true],
                 ],
                 'business_profile' => array_filter([
-                    'name' => $establishment->name,
-                    'url' => $establishment->website,
+                    'name' => $activity->name,
+                    'url' => $activity->website,
                 ]),
                 'metadata' => [
                     'manager_id' => $manager->id,
@@ -39,39 +39,39 @@ class StripeConnectService
 
             $manager->update(['stripe_account_id' => $account->id]);
 
-            if ($establishment->stripe_account_id) {
-                $establishment->update(['stripe_account_id' => $account->id]);
+            if ($activity->stripe_account_id) {
+                $activity->update(['stripe_account_id' => $account->id]);
             }
         }
 
-        $accountId = $establishment->resolveStripeAccountId();
+        $accountId = $activity->resolveStripeAccountId();
         $frontendUrl = rtrim((string) config('app.frontend_url'), '/');
 
         $accountLink = $this->callStripe(fn () => $this->stripe->accountLinks->create([
             'account' => $accountId,
-            'return_url' => $frontendUrl."/hosting/host/{$establishment->id}",
-            'refresh_url' => $frontendUrl."/hosting/host/{$establishment->id}",
+            'return_url' => $frontendUrl."/hosting/host/{$activity->id}",
+            'refresh_url' => $frontendUrl."/hosting/host/{$activity->id}",
             'type' => 'account_onboarding',
         ]));
 
         return $accountLink->url;
     }
 
-    public function syncAndGetStatus(Establishment $establishment): Establishment
+    public function syncAndGetStatus(Activity $activity): Activity
     {
-        $establishment->loadMissing('manager');
-        $accountId = $establishment->resolveStripeAccountId();
+        $activity->loadMissing('manager');
+        $accountId = $activity->resolveStripeAccountId();
 
         if ($accountId === null) {
-            return $establishment;
+            return $activity;
         }
 
-        $needsRefresh = ! $establishment->resolveChargesEnabled();
+        $needsRefresh = ! $activity->resolveChargesEnabled();
 
         if ($needsRefresh) {
             $account = $this->callStripe(fn () => $this->stripe->accounts->retrieve($accountId));
 
-            $manager = $establishment->manager;
+            $manager = $activity->manager;
             if ($manager !== null && $manager->stripe_account_id === $accountId) {
                 $manager->update([
                     'stripe_charges_enabled' => $account->charges_enabled,
@@ -80,18 +80,18 @@ class StripeConnectService
                 ]);
             }
 
-            if ($establishment->stripe_account_id !== null) {
-                $establishment->update([
+            if ($activity->stripe_account_id !== null) {
+                $activity->update([
                     'stripe_charges_enabled' => $account->charges_enabled,
                     'stripe_payouts_enabled' => $account->payouts_enabled,
                     'stripe_onboarding_completed' => $account->details_submitted,
                 ]);
             }
 
-            $establishment->refresh();
+            $activity->refresh();
         }
 
-        return $establishment;
+        return $activity;
     }
 
     private function callStripe(callable $fn): mixed
