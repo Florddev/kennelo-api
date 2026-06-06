@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Requests\Establishment;
+namespace App\Http\Requests\Activity;
 
 use App\Enums\ActivityTypeEnum;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 
-class StoreEstablishmentRequest extends FormRequest
+class UpdateActivityRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -18,7 +18,7 @@ class StoreEstablishmentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['sometimes', 'string', 'max:255'],
             'type' => ['sometimes', 'nullable', new Enum(ActivityTypeEnum::class)],
             'description' => ['sometimes', 'nullable', 'string', 'max:2000'],
             'phone' => ['sometimes', 'nullable', 'string', 'max:20'],

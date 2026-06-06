@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Requests\Establishment;
+namespace App\Http\Requests\Activity;
 
 use App\Enums\ActivityPermissionEnum;
 use Illuminate\Foundation\Http\FormRequest;

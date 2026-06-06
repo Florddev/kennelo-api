@@ -2,29 +2,29 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Requests\Establishment;
+namespace App\Http\Requests\Activity;
 
-use App\Models\Establishment;
+use App\Models\Activity;
 use App\Services\MediaService;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\ValidationException;
 
-class StoreEstablishmentImagesRequest extends FormRequest
+class StoreActivityImagesRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        $establishment = $this->route('establishment');
+        $activity = $this->route('activity');
 
-        if (! $establishment instanceof Establishment) {
+        if (! $activity instanceof Activity) {
             return false;
         }
 
         $incomingImagesCount = count($this->file('images', []));
-        $existingImagesCount = $establishment->getMedia(MediaService::COLLECTION_IMAGES)->count();
+        $existingImagesCount = $activity->getMedia(MediaService::COLLECTION_IMAGES)->count();
 
         if ($existingImagesCount + $incomingImagesCount > 15) {
             throw ValidationException::withMessages([
-                'images' => ['This establishment has reached the maximum number of images (15).'],
+                'images' => ['This activity has reached the maximum number of images (15).'],
             ]);
         }
 

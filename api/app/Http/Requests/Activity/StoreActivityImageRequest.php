@@ -2,24 +2,24 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Requests\Establishment;
+namespace App\Http\Requests\Activity;
 
-use App\Models\Establishment;
+use App\Models\Activity;
 use App\Services\MediaService;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
-class StoreEstablishmentImageRequest extends FormRequest
+class StoreActivityImageRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        $establishment = $this->route('establishment');
+        $activity = $this->route('activity');
 
-        if ($establishment instanceof Establishment && $establishment->getMedia(MediaService::COLLECTION_IMAGES)->count() >= 15) {
+        if ($activity instanceof Activity && $activity->getMedia(MediaService::COLLECTION_IMAGES)->count() >= 15) {
             throw ValidationException::withMessages([
-                'image' => ['This establishment has reached the maximum number of images (15).'],
+                'image' => ['This activity has reached the maximum number of images (15).'],
             ]);
         }
 
@@ -39,8 +39,8 @@ class StoreEstablishmentImageRequest extends FormRequest
 
     protected function failedValidation(Validator $validator): void
     {
-        Log::warning('establishment_image_upload.validation_failed', [
-            'establishment_id' => $this->route('establishment') instanceof Establishment ? (string) $this->route('establishment')->id : null,
+        Log::warning('activity_image_upload.validation_failed', [
+            'activity_id' => $this->route('activity') instanceof Activity ? (string) $this->route('activity')->id : null,
             'user_id' => $this->user()?->id,
             'errors' => $validator->errors()->toArray(),
             'uploaded_size_bytes' => $this->file('image')?->getSize(),

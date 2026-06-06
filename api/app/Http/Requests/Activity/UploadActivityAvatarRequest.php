@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Requests\Establishment;
+namespace App\Http\Requests\Activity;
 
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Log;
 
-class UploadEstablishmentAvatarRequest extends FormRequest
+class UploadActivityAvatarRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -28,8 +28,8 @@ class UploadEstablishmentAvatarRequest extends FormRequest
 
     protected function failedValidation(Validator $validator): void
     {
-        Log::warning('establishment_avatar_upload.validation_failed', [
-            'establishment_id' => $this->route('establishment')?->id,
+        Log::warning('activity_avatar_upload.validation_failed', [
+            'activity_id' => $this->route('activity')?->id,
             'user_id' => $this->user()?->id,
             'errors' => $validator->errors()->toArray(),
             'uploaded_size_bytes' => $this->file('avatar')?->getSize(),
