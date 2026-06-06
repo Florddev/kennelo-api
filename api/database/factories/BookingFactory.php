@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Database\Factories;
 
 use App\Enums\BookingStatusEnum;
-use App\Models\Booking;
 use App\Models\Activity;
+use App\Models\Booking;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 

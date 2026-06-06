@@ -9,6 +9,7 @@ use App\Enums\ActivityTypeEnum;
 use App\Enums\ReviewerTypeEnum;
 use App\Services\MediaService;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -24,6 +25,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 /**
  * @property-read User|null $manager
  * @property-read Address|null $address
+ * @property-read Collection<int, ActivityCycle> $cycles
  */
 class Activity extends Model implements HasMedia
 {

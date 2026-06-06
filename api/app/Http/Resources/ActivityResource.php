@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Resources;
 
 use App\Models\Activity;
+use App\Models\ActivityCycleSetting;
 use App\Services\MediaService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -14,16 +15,20 @@ class ActivityResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
-        $settings = $this->relationLoaded('cycles')
-            ? $this->cycles->flatMap(fn ($cycle) => $cycle->settings)
-            : collect();
+        $settings = collect();
+
+        if ($this->relationLoaded('cycles')) {
+            foreach ($this->cycles as $cycle) {
+                $settings = $settings->merge($cycle->settings);
+            }
+        }
 
         $minPrice = $settings->isNotEmpty()
             ? (float) $settings->min('price')
             : null;
 
         $animalTypes = $settings->isNotEmpty()
-            ? $settings->map(fn ($setting) => $setting->animalType?->code)->filter()->unique()->values()->all()
+            ? $settings->map(fn (ActivityCycleSetting $setting) => $setting->animalType->code)->filter()->unique()->values()->all()
             : [];
 
         return [

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
-use App\Models\AnimalType;
 use App\Models\Activity;
+use App\Models\AnimalType;
 use App\Models\Pet;
 use App\Models\Service;
 use App\Models\User;

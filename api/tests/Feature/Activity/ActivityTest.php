@@ -3,192 +3,192 @@
 declare(strict_types=1);
 
 use App\Enums\ActivityPermissionEnum;
-use App\Models\Establishment;
+use App\Models\Activity;
 use App\Models\User;
 
 // ─── index ────────────────────────────────────────────────────────────────────
 
-it('authenticated user can list establishments', function () {
+it('authenticated user can list activities', function () {
     $user = User::factory()->create();
-    Establishment::factory()->count(3)->create();
+    Activity::factory()->count(3)->create();
 
     $this->withHeaders(asUser($user))
-        ->getJson('/api/establishments')
+        ->getJson('/api/activities')
         ->assertOk()
         ->assertJsonStructure(['data']);
 });
 
-it('unauthenticated user cannot list establishments', function () {
-    $this->getJson('/api/establishments')
+it('unauthenticated user cannot list activities', function () {
+    $this->getJson('/api/activities')
         ->assertUnauthorized();
 });
 
 // ─── show ─────────────────────────────────────────────────────────────────────
 
-it('any authenticated user can view an establishment', function () {
+it('any authenticated user can view an activity', function () {
     $user = User::factory()->create();
-    $establishment = Establishment::factory()->create();
+    $activity = Activity::factory()->create();
 
     $this->withHeaders(asUser($user))
-        ->getJson("/api/establishments/{$establishment->id}")
+        ->getJson("/api/activities/{$activity->id}")
         ->assertOk()
-        ->assertJsonPath('data.id', $establishment->id);
+        ->assertJsonPath('data.id', $activity->id);
 });
 
-it('returns 404 for unknown establishment', function () {
+it('returns 404 for unknown activity', function () {
     $user = User::factory()->create();
 
     $this->withHeaders(asUser($user))
-        ->getJson('/api/establishments/00000000-0000-0000-0000-000000000000')
+        ->getJson('/api/activities/00000000-0000-0000-0000-000000000000')
         ->assertNotFound();
 });
 
 // ─── store ────────────────────────────────────────────────────────────────────
 
-it('manager can create an establishment', function () {
+it('manager can create an activity', function () {
     $manager = User::factory()->create();
     $manager->assignRole('manager');
 
     $this->withHeaders(asUser($manager))
-        ->postJson('/api/establishments', ['name' => 'Mon Chenil'])
+        ->postJson('/api/activities', ['name' => 'Mon Chenil'])
         ->assertCreated()
         ->assertJsonPath('data.name', 'Mon Chenil');
 });
 
-it('admin can create an establishment', function () {
+it('admin can create an activity', function () {
     $admin = User::factory()->create();
     $admin->assignRole('admin');
 
     $this->withHeaders(asUser($admin))
-        ->postJson('/api/establishments', ['name' => 'Chenil Admin'])
+        ->postJson('/api/activities', ['name' => 'Chenil Admin'])
         ->assertCreated();
 });
 
-it('regular user without role cannot create an establishment', function () {
+it('regular user without role cannot create an activity', function () {
     $user = User::factory()->create();
 
     $this->withHeaders(asUser($user))
-        ->postJson('/api/establishments', ['name' => 'Mon Chenil'])
+        ->postJson('/api/activities', ['name' => 'Mon Chenil'])
         ->assertForbidden();
 });
 
-it('unauthenticated user cannot create an establishment', function () {
-    $this->postJson('/api/establishments', ['name' => 'Mon Chenil'])
+it('unauthenticated user cannot create an activity', function () {
+    $this->postJson('/api/activities', ['name' => 'Mon Chenil'])
         ->assertUnauthorized();
 });
 
-it('establishment creation requires a name', function () {
+it('activity creation requires a name', function () {
     $manager = User::factory()->create();
     $manager->assignRole('manager');
 
     $this->withHeaders(asUser($manager))
-        ->postJson('/api/establishments', [])
+        ->postJson('/api/activities', [])
         ->assertUnprocessable()
         ->assertJsonValidationErrors(['name']);
 });
 
 // ─── update ───────────────────────────────────────────────────────────────────
 
-it('manager (owner) can update their establishment', function () {
+it('manager (owner) can update their activity', function () {
     $manager = User::factory()->create();
     $manager->assignRole('manager');
-    $establishment = Establishment::factory()->create(['manager_id' => $manager->id]);
+    $activity = Activity::factory()->create(['manager_id' => $manager->id]);
 
     $this->withHeaders(asUser($manager))
-        ->putJson("/api/establishments/{$establishment->id}", ['name' => 'Nouveau Nom'])
+        ->putJson("/api/activities/{$activity->id}", ['name' => 'Nouveau Nom'])
         ->assertOk()
         ->assertJsonPath('data.name', 'Nouveau Nom');
 });
 
-it('admin can update any establishment', function () {
+it('admin can update any activity', function () {
     $admin = User::factory()->create();
     $admin->assignRole('admin');
-    $establishment = Establishment::factory()->create();
+    $activity = Activity::factory()->create();
 
     $this->withHeaders(asUser($admin))
-        ->putJson("/api/establishments/{$establishment->id}", ['name' => 'Modifié par admin'])
+        ->putJson("/api/activities/{$activity->id}", ['name' => 'Modifié par admin'])
         ->assertOk();
 });
 
-it('collaborator with UPDATE_ESTABLISHMENT can update', function () {
+it('collaborator with UPDATE_ACTIVITY can update', function () {
     $manager = User::factory()->create();
-    $establishment = Establishment::factory()->create(['manager_id' => $manager->id]);
+    $activity = Activity::factory()->create(['manager_id' => $manager->id]);
 
     $collaborator = User::factory()->create();
-    $establishment->collaborators()->attach($collaborator->id);
-    $establishment->collaboratorPermissions()->create([
+    $activity->collaborators()->attach($collaborator->id);
+    $activity->collaboratorPermissions()->create([
         'user_id' => $collaborator->id,
         'permission' => ActivityPermissionEnum::UPDATE_ACTIVITY->value,
     ]);
 
     $this->withHeaders(asUser($collaborator))
-        ->putJson("/api/establishments/{$establishment->id}", ['name' => 'Modifié par collab'])
+        ->putJson("/api/activities/{$activity->id}", ['name' => 'Modifié par collab'])
         ->assertOk();
 });
 
-it('random user cannot update an establishment', function () {
-    $establishment = Establishment::factory()->create();
+it('random user cannot update an activity', function () {
+    $activity = Activity::factory()->create();
     $user = User::factory()->create();
 
     $this->withHeaders(asUser($user))
-        ->putJson("/api/establishments/{$establishment->id}", ['name' => 'Hack'])
+        ->putJson("/api/activities/{$activity->id}", ['name' => 'Hack'])
         ->assertForbidden();
 });
 
-it('collaborator without UPDATE_ESTABLISHMENT cannot update', function () {
+it('collaborator without UPDATE_ACTIVITY cannot update', function () {
     $manager = User::factory()->create();
-    $establishment = Establishment::factory()->create(['manager_id' => $manager->id]);
+    $activity = Activity::factory()->create(['manager_id' => $manager->id]);
 
     $collaborator = User::factory()->create();
-    $establishment->collaborators()->attach($collaborator->id);
+    $activity->collaborators()->attach($collaborator->id);
 
     $this->withHeaders(asUser($collaborator))
-        ->putJson("/api/establishments/{$establishment->id}", ['name' => 'Hack'])
+        ->putJson("/api/activities/{$activity->id}", ['name' => 'Hack'])
         ->assertForbidden();
 });
 
 // ─── destroy ──────────────────────────────────────────────────────────────────
 
-it('manager can delete their establishment', function () {
+it('manager can delete their activity', function () {
     $manager = User::factory()->create();
     $manager->assignRole('manager');
-    $establishment = Establishment::factory()->create(['manager_id' => $manager->id]);
+    $activity = Activity::factory()->create(['manager_id' => $manager->id]);
 
     $this->withHeaders(asUser($manager))
-        ->deleteJson("/api/establishments/{$establishment->id}")
+        ->deleteJson("/api/activities/{$activity->id}")
         ->assertNoContent();
 
-    expect(Establishment::withTrashed()->find($establishment->id)->deleted_at)->not->toBeNull();
+    expect(Activity::withTrashed()->find($activity->id)->deleted_at)->not->toBeNull();
 });
 
-it('admin can delete any establishment', function () {
+it('admin can delete any activity', function () {
     $admin = User::factory()->create();
     $admin->assignRole('admin');
-    $establishment = Establishment::factory()->create();
+    $activity = Activity::factory()->create();
 
     $this->withHeaders(asUser($admin))
-        ->deleteJson("/api/establishments/{$establishment->id}")
+        ->deleteJson("/api/activities/{$activity->id}")
         ->assertNoContent();
 });
 
-it('collaborator cannot delete an establishment', function () {
+it('collaborator cannot delete an activity', function () {
     $manager = User::factory()->create();
-    $establishment = Establishment::factory()->create(['manager_id' => $manager->id]);
+    $activity = Activity::factory()->create(['manager_id' => $manager->id]);
 
     $collaborator = User::factory()->create();
-    $establishment->collaborators()->attach($collaborator->id);
+    $activity->collaborators()->attach($collaborator->id);
 
     $this->withHeaders(asUser($collaborator))
-        ->deleteJson("/api/establishments/{$establishment->id}")
+        ->deleteJson("/api/activities/{$activity->id}")
         ->assertForbidden();
 });
 
-it('random user cannot delete an establishment', function () {
-    $establishment = Establishment::factory()->create();
+it('random user cannot delete an activity', function () {
+    $activity = Activity::factory()->create();
     $user = User::factory()->create();
 
     $this->withHeaders(asUser($user))
-        ->deleteJson("/api/establishments/{$establishment->id}")
+        ->deleteJson("/api/activities/{$activity->id}")
         ->assertForbidden();
 });
 
@@ -197,13 +197,13 @@ it('random user cannot delete an establishment', function () {
 it('manager can sync permissions for a collaborator', function () {
     $manager = User::factory()->create();
     $manager->assignRole('manager');
-    $establishment = Establishment::factory()->create(['manager_id' => $manager->id]);
+    $activity = Activity::factory()->create(['manager_id' => $manager->id]);
 
     $collaborator = User::factory()->create();
-    $establishment->collaborators()->attach($collaborator->id);
+    $activity->collaborators()->attach($collaborator->id);
 
     $this->withHeaders(asUser($manager))
-        ->putJson("/api/establishments/{$establishment->id}/collaborators/{$collaborator->id}/permissions", [
+        ->putJson("/api/activities/{$activity->id}/collaborators/{$collaborator->id}/permissions", [
             'permissions' => [ActivityPermissionEnum::MANAGE_CYCLES->value],
         ])
         ->assertOk();
@@ -213,13 +213,13 @@ it('admin can sync permissions for a collaborator', function () {
     $admin = User::factory()->create();
     $admin->assignRole('admin');
     $manager = User::factory()->create();
-    $establishment = Establishment::factory()->create(['manager_id' => $manager->id]);
+    $activity = Activity::factory()->create(['manager_id' => $manager->id]);
 
     $collaborator = User::factory()->create();
-    $establishment->collaborators()->attach($collaborator->id);
+    $activity->collaborators()->attach($collaborator->id);
 
     $this->withHeaders(asUser($admin))
-        ->putJson("/api/establishments/{$establishment->id}/collaborators/{$collaborator->id}/permissions", [
+        ->putJson("/api/activities/{$activity->id}/collaborators/{$collaborator->id}/permissions", [
             'permissions' => [ActivityPermissionEnum::MANAGE_AVAILABILITIES->value],
         ])
         ->assertOk();
@@ -228,12 +228,12 @@ it('admin can sync permissions for a collaborator', function () {
 it('syncing permissions for a non-collaborator returns 422', function () {
     $manager = User::factory()->create();
     $manager->assignRole('manager');
-    $establishment = Establishment::factory()->create(['manager_id' => $manager->id]);
+    $activity = Activity::factory()->create(['manager_id' => $manager->id]);
 
     $stranger = User::factory()->create();
 
     $this->withHeaders(asUser($manager))
-        ->putJson("/api/establishments/{$establishment->id}/collaborators/{$stranger->id}/permissions", [
+        ->putJson("/api/activities/{$activity->id}/collaborators/{$stranger->id}/permissions", [
             'permissions' => [ActivityPermissionEnum::MANAGE_CYCLES->value],
         ])
         ->assertUnprocessable();
@@ -241,15 +241,15 @@ it('syncing permissions for a non-collaborator returns 422', function () {
 
 it('non-manager cannot sync collaborator permissions', function () {
     $manager = User::factory()->create();
-    $establishment = Establishment::factory()->create(['manager_id' => $manager->id]);
+    $activity = Activity::factory()->create(['manager_id' => $manager->id]);
 
     $collaborator = User::factory()->create();
-    $establishment->collaborators()->attach($collaborator->id);
+    $activity->collaborators()->attach($collaborator->id);
 
     $randomUser = User::factory()->create();
 
     $this->withHeaders(asUser($randomUser))
-        ->putJson("/api/establishments/{$establishment->id}/collaborators/{$collaborator->id}/permissions", [
+        ->putJson("/api/activities/{$activity->id}/collaborators/{$collaborator->id}/permissions", [
             'permissions' => [ActivityPermissionEnum::MANAGE_CYCLES->value],
         ])
         ->assertForbidden();
@@ -258,13 +258,13 @@ it('non-manager cannot sync collaborator permissions', function () {
 it('syncing with an invalid permission value returns 422', function () {
     $manager = User::factory()->create();
     $manager->assignRole('manager');
-    $establishment = Establishment::factory()->create(['manager_id' => $manager->id]);
+    $activity = Activity::factory()->create(['manager_id' => $manager->id]);
 
     $collaborator = User::factory()->create();
-    $establishment->collaborators()->attach($collaborator->id);
+    $activity->collaborators()->attach($collaborator->id);
 
     $this->withHeaders(asUser($manager))
-        ->putJson("/api/establishments/{$establishment->id}/collaborators/{$collaborator->id}/permissions", [
+        ->putJson("/api/activities/{$activity->id}/collaborators/{$collaborator->id}/permissions", [
             'permissions' => ['invalid_permission'],
         ])
         ->assertUnprocessable();

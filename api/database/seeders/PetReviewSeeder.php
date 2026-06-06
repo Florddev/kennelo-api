@@ -6,8 +6,8 @@ namespace Database\Seeders;
 
 use App\Enums\BookingStatusEnum;
 use App\Enums\ReviewerTypeEnum;
-use App\Models\Booking;
 use App\Models\Activity;
+use App\Models\Booking;
 use App\Models\Pet;
 use App\Models\Review;
 use App\Models\User;

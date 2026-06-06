@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
+use App\Models\Activity;
+use App\Models\ActivityCycle;
+use App\Models\ActivityCycleSetting;
 use App\Models\AnimalType;
-use App\Models\Establishment;
-use App\Models\EstablishmentCapacity;
 use App\Models\User;
 
 // ─── show ─────────────────────────────────────────────────────────────────────
@@ -12,10 +13,10 @@ use App\Models\User;
 it('manager can view the dashboard', function () {
     $manager = User::factory()->create();
     $manager->assignRole('manager');
-    $establishment = Establishment::factory()->create(['manager_id' => $manager->id]);
+    $activity = Activity::factory()->create(['manager_id' => $manager->id]);
 
     $this->withHeaders(asUser($manager))
-        ->getJson("/api/establishments/{$establishment->id}/dashboard")
+        ->getJson("/api/activities/{$activity->id}/dashboard")
         ->assertOk()
         ->assertJsonStructure([
             'data' => [
@@ -29,48 +30,48 @@ it('manager can view the dashboard', function () {
 it('admin can view the dashboard', function () {
     $admin = User::factory()->create();
     $admin->assignRole('admin');
-    $establishment = Establishment::factory()->create();
+    $activity = Activity::factory()->create();
 
     $this->withHeaders(asUser($admin))
-        ->getJson("/api/establishments/{$establishment->id}/dashboard")
+        ->getJson("/api/activities/{$activity->id}/dashboard")
         ->assertOk();
 });
 
 it('collaborator can view the dashboard without specific permission', function () {
     $manager = User::factory()->create();
-    $establishment = Establishment::factory()->create(['manager_id' => $manager->id]);
+    $activity = Activity::factory()->create(['manager_id' => $manager->id]);
 
     $collaborator = User::factory()->create();
-    $establishment->collaborators()->attach($collaborator->id);
+    $activity->collaborators()->attach($collaborator->id);
 
     $this->withHeaders(asUser($collaborator))
-        ->getJson("/api/establishments/{$establishment->id}/dashboard")
+        ->getJson("/api/activities/{$activity->id}/dashboard")
         ->assertOk();
 });
 
 it('random user cannot view the dashboard', function () {
-    $establishment = Establishment::factory()->create();
+    $activity = Activity::factory()->create();
     $user = User::factory()->create();
 
     $this->withHeaders(asUser($user))
-        ->getJson("/api/establishments/{$establishment->id}/dashboard")
+        ->getJson("/api/activities/{$activity->id}/dashboard")
         ->assertForbidden();
 });
 
 it('unauthenticated user cannot view the dashboard', function () {
-    $establishment = Establishment::factory()->create();
+    $activity = Activity::factory()->create();
 
-    $this->getJson("/api/establishments/{$establishment->id}/dashboard")
+    $this->getJson("/api/activities/{$activity->id}/dashboard")
         ->assertUnauthorized();
 });
 
 it('dashboard summary shows zero capacity when no capacities are configured', function () {
     $manager = User::factory()->create();
     $manager->assignRole('manager');
-    $establishment = Establishment::factory()->create(['manager_id' => $manager->id]);
+    $activity = Activity::factory()->create(['manager_id' => $manager->id]);
 
     $response = $this->withHeaders(asUser($manager))
-        ->getJson("/api/establishments/{$establishment->id}/dashboard")
+        ->getJson("/api/activities/{$activity->id}/dashboard")
         ->assertOk();
 
     expect($response->json('data.summary.total_capacity'))->toBe(0);
@@ -81,18 +82,24 @@ it('dashboard summary shows zero capacity when no capacities are configured', fu
 it('dashboard summary reflects configured capacities', function () {
     $manager = User::factory()->create();
     $manager->assignRole('manager');
-    $establishment = Establishment::factory()->create(['manager_id' => $manager->id]);
+    $activity = Activity::factory()->create(['manager_id' => $manager->id]);
     $animalType = AnimalType::create(['code' => 'dog', 'name' => 'Chien', 'category' => 'mammals']);
 
-    EstablishmentCapacity::create([
-        'establishment_id' => $establishment->id,
+    $cycle = ActivityCycle::create([
+        'activity_id' => $activity->id,
+        'priority' => 0,
+        'is_active' => true,
+    ]);
+
+    ActivityCycleSetting::create([
+        'activity_cycle_id' => $cycle->id,
         'animal_type_id' => $animalType->id,
         'max_capacity' => 10,
-        'price_per_night' => 25.00,
+        'price' => 25.00,
     ]);
 
     $response = $this->withHeaders(asUser($manager))
-        ->getJson("/api/establishments/{$establishment->id}/dashboard")
+        ->getJson("/api/activities/{$activity->id}/dashboard")
         ->assertOk();
 
     expect($response->json('data.summary.total_capacity'))->toBe(10);
