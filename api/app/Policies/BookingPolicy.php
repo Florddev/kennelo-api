@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Policies;
 
+use App\Enums\ActivityPermissionEnum;
 use App\Enums\BookingStatusEnum;
-use App\Enums\EstablishmentPermissionEnum;
 use App\Models\Booking;
 use App\Models\Establishment;
 use App\Models\User;
@@ -29,7 +29,7 @@ class BookingPolicy
             return true;
         }
 
-        return $establishment->collaboratorHasPermission($user, EstablishmentPermissionEnum::MANAGE_BOOKINGS);
+        return $establishment->collaboratorHasPermission($user, ActivityPermissionEnum::MANAGE_BOOKINGS);
     }
 
     public function cancel(User $user, Booking $booking): bool
@@ -47,6 +47,6 @@ class BookingPolicy
             return true;
         }
 
-        return $establishment->collaboratorHasPermission($user, EstablishmentPermissionEnum::MANAGE_BOOKINGS);
+        return $establishment->collaboratorHasPermission($user, ActivityPermissionEnum::MANAGE_BOOKINGS);
     }
 }

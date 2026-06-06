@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
+use App\Enums\ActivityTypeEnum;
 use App\Enums\BookingStatusEnum;
-use App\Enums\EstablishmentTypeEnum;
 use App\Enums\ReviewerTypeEnum;
 use App\Models\AnimalType;
 use App\Models\Booking;
@@ -37,17 +37,17 @@ class ExploreSeeder extends Seeder
     private array $imagePool = ['avatar' => [], 'gallery' => []];
 
     private array $proTypes = [
-        EstablishmentTypeEnum::BOARDING,
-        EstablishmentTypeEnum::BREEDING,
-        EstablishmentTypeEnum::DAYCARE,
-        EstablishmentTypeEnum::SHELTER,
+        ActivityTypeEnum::BOARDING,
+        ActivityTypeEnum::BREEDING,
+        ActivityTypeEnum::DAYCARE,
+        ActivityTypeEnum::SHELTER,
     ];
 
     private array $individualTypes = [
-        EstablishmentTypeEnum::PET_SITTER,
-        EstablishmentTypeEnum::HOME_CARE,
-        EstablishmentTypeEnum::HOST_FAMILY,
-        EstablishmentTypeEnum::MOBILE_BOARDING,
+        ActivityTypeEnum::PET_SITTER,
+        ActivityTypeEnum::HOME_CARE,
+        ActivityTypeEnum::HOST_FAMILY,
+        ActivityTypeEnum::MOBILE_BOARDING,
     ];
 
     public function run(): void

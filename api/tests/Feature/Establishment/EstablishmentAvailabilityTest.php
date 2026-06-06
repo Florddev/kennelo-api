@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Enums\ActivityPermissionEnum;
 use App\Enums\AvailabilityStatusEnum;
-use App\Enums\EstablishmentPermissionEnum;
 use App\Models\Establishment;
 use App\Models\EstablishmentAvailability;
 use App\Models\User;
@@ -159,7 +159,7 @@ it('collaborator with MANAGE_AVAILABILITIES can store availabilities', function 
     $establishment->collaborators()->attach($collaborator->id);
     $establishment->collaboratorPermissions()->create([
         'user_id' => $collaborator->id,
-        'permission' => EstablishmentPermissionEnum::MANAGE_AVAILABILITIES->value,
+        'permission' => ActivityPermissionEnum::MANAGE_AVAILABILITIES->value,
     ]);
 
     $this->withHeaders(asUser($collaborator))

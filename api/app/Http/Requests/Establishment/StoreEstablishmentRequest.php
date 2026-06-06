@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Establishment;
 
-use App\Enums\EstablishmentTypeEnum;
+use App\Enums\ActivityTypeEnum;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 
@@ -19,7 +19,7 @@ class StoreEstablishmentRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'type' => ['sometimes', 'nullable', new Enum(EstablishmentTypeEnum::class)],
+            'type' => ['sometimes', 'nullable', new Enum(ActivityTypeEnum::class)],
             'description' => ['sometimes', 'nullable', 'string', 'max:2000'],
             'phone' => ['sometimes', 'nullable', 'string', 'max:20'],
             'email' => ['sometimes', 'nullable', 'email', 'max:255'],

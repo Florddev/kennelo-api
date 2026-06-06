@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Policies;
 
-use App\Enums\EstablishmentPermissionEnum;
+use App\Enums\ActivityPermissionEnum;
 use App\Models\Conversation;
 use App\Models\Establishment;
 use App\Models\User;
@@ -28,7 +28,7 @@ class ConversationPolicy
             return true;
         }
 
-        return $establishment->collaboratorHasPermission($user, EstablishmentPermissionEnum::MANAGE_MESSAGES);
+        return $establishment->collaboratorHasPermission($user, ActivityPermissionEnum::MANAGE_MESSAGES);
     }
 
     public function sendMessage(User $user, Conversation $conversation): bool
@@ -42,6 +42,6 @@ class ConversationPolicy
             return true;
         }
 
-        return $establishment->collaboratorHasPermission($user, EstablishmentPermissionEnum::MANAGE_MESSAGES);
+        return $establishment->collaboratorHasPermission($user, ActivityPermissionEnum::MANAGE_MESSAGES);
     }
 }

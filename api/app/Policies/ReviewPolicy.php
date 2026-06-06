@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Policies;
 
+use App\Enums\ActivityPermissionEnum;
 use App\Enums\BookingStatusEnum;
-use App\Enums\EstablishmentPermissionEnum;
 use App\Enums\ReviewerTypeEnum;
 use App\Models\Booking;
 use App\Models\Review;
@@ -48,7 +48,7 @@ class ReviewPolicy
             return true;
         }
 
-        return $establishment->collaboratorHasPermission($user, EstablishmentPermissionEnum::MANAGE_BOOKINGS);
+        return $establishment->collaboratorHasPermission($user, ActivityPermissionEnum::MANAGE_BOOKINGS);
     }
 
     public function create(User $user, Booking $booking): bool
@@ -72,7 +72,7 @@ class ReviewPolicy
             return true;
         }
 
-        return $establishment->collaboratorHasPermission($user, EstablishmentPermissionEnum::MANAGE_BOOKINGS);
+        return $establishment->collaboratorHasPermission($user, ActivityPermissionEnum::MANAGE_BOOKINGS);
     }
 
     public function respond(User $user, Review $review): bool
@@ -95,7 +95,7 @@ class ReviewPolicy
                 return true;
             }
 
-            return $establishment->collaboratorHasPermission($user, EstablishmentPermissionEnum::MANAGE_BOOKINGS);
+            return $establishment->collaboratorHasPermission($user, ActivityPermissionEnum::MANAGE_BOOKINGS);
         }
 
         return (string) $booking->user_id === (string) $user->id;

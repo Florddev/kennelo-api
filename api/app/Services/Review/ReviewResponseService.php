@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Review;
 
-use App\Enums\EstablishmentPermissionEnum;
+use App\Enums\ActivityPermissionEnum;
 use App\Enums\ReviewerTypeEnum;
 use App\Models\Review;
 use App\Models\ReviewResponse;
@@ -63,7 +63,7 @@ class ReviewResponseService
                 return true;
             }
 
-            return $establishment->collaboratorHasPermission($actor, EstablishmentPermissionEnum::MANAGE_BOOKINGS);
+            return $establishment->collaboratorHasPermission($actor, ActivityPermissionEnum::MANAGE_BOOKINGS);
         }
 
         return (string) $booking->user_id === (string) $actor->id;

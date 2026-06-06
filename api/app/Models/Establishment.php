@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Enums\EstablishmentPermissionEnum;
-use App\Enums\EstablishmentTypeEnum;
+use App\Enums\ActivityPermissionEnum;
+use App\Enums\ActivityTypeEnum;
 use App\Enums\ReviewerTypeEnum;
 use App\Services\MediaService;
 use Illuminate\Database\Eloquent\Builder;
@@ -51,7 +51,7 @@ class Establishment extends Model implements HasMedia
     {
         return [
             'is_active' => 'boolean',
-            'type' => EstablishmentTypeEnum::class,
+            'type' => ActivityTypeEnum::class,
             'stripe_onboarding_completed' => 'boolean',
             'stripe_charges_enabled' => 'boolean',
             'stripe_payouts_enabled' => 'boolean',
@@ -124,7 +124,7 @@ class Establishment extends Model implements HasMedia
             ->where('reviews.reviewer_type', ReviewerTypeEnum::USER->value);
     }
 
-    public function collaboratorHasPermission(User $user, EstablishmentPermissionEnum $permission): bool
+    public function collaboratorHasPermission(User $user, ActivityPermissionEnum $permission): bool
     {
         if (! $this->collaborators()->where('users.id', $user->id)->exists()) {
             return false;

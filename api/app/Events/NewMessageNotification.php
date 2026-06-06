@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Events;
 
-use App\Enums\EstablishmentPermissionEnum;
+use App\Enums\ActivityPermissionEnum;
 use App\Models\Message;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
@@ -40,7 +40,7 @@ class NewMessageNotification implements ShouldBroadcast
 
         if ($establishment) {
             $collaboratorIds = $establishment->collaboratorPermissions
-                ->where('permission', EstablishmentPermissionEnum::MANAGE_MESSAGES->value)
+                ->where('permission', ActivityPermissionEnum::MANAGE_MESSAGES->value)
                 ->pluck('user_id')
                 ->unique()
                 ->reject(fn (string $id) => $id === $senderId);

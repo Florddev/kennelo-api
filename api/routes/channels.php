@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Enums\EstablishmentPermissionEnum;
+use App\Enums\ActivityPermissionEnum;
 use App\Models\Conversation;
 use App\Models\User;
 use Illuminate\Support\Facades\Broadcast;
@@ -31,7 +31,7 @@ Broadcast::channel('conversation.{conversationId}', function (User $user, string
         return true;
     }
 
-    return $establishment->collaboratorHasPermission($user, EstablishmentPermissionEnum::MANAGE_MESSAGES);
+    return $establishment->collaboratorHasPermission($user, ActivityPermissionEnum::MANAGE_MESSAGES);
 });
 
 Broadcast::channel('user.{userId}', function (User $user, string $userId) {

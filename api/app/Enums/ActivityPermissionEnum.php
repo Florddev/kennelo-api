@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
-enum EstablishmentPermissionEnum: string
+enum ActivityPermissionEnum: string
 {
-    case UPDATE_ESTABLISHMENT = 'update_establishment';
-    case MANAGE_CAPACITIES = 'manage_capacities';
+    case UPDATE_ACTIVITY = 'update_activity';
+    case MANAGE_CYCLES = 'manage_cycles';
     case MANAGE_AVAILABILITIES = 'manage_availabilities';
     case MANAGE_BOOKINGS = 'manage_bookings';
     case MANAGE_MESSAGES = 'manage_messages';

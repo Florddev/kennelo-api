@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services\Review;
 
+use App\Enums\ActivityPermissionEnum;
 use App\Enums\BookingStatusEnum;
-use App\Enums\EstablishmentPermissionEnum;
 use App\Enums\PaginationEnum;
 use App\Enums\ReviewerTypeEnum;
 use App\Models\Booking;
@@ -218,7 +218,7 @@ class ReviewService
             return ReviewerTypeEnum::ESTABLISHMENT;
         }
 
-        if ($establishment->collaboratorHasPermission($actor, EstablishmentPermissionEnum::MANAGE_BOOKINGS)) {
+        if ($establishment->collaboratorHasPermission($actor, ActivityPermissionEnum::MANAGE_BOOKINGS)) {
             return ReviewerTypeEnum::ESTABLISHMENT;
         }
 

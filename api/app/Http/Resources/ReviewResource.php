@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Resources;
 
-use App\Enums\EstablishmentPermissionEnum;
+use App\Enums\ActivityPermissionEnum;
 use App\Enums\ReviewerTypeEnum;
 use App\Models\Review;
 use App\Models\User;
@@ -67,7 +67,7 @@ class ReviewResource extends JsonResource
                 return true;
             }
 
-            return $establishment->collaboratorHasPermission($authUser, EstablishmentPermissionEnum::MANAGE_BOOKINGS);
+            return $establishment->collaboratorHasPermission($authUser, ActivityPermissionEnum::MANAGE_BOOKINGS);
         }
 
         return (string) $booking->user_id === (string) $authUser->id;
