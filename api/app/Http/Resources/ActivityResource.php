@@ -4,24 +4,26 @@ declare(strict_types=1);
 
 namespace App\Http\Resources;
 
-use App\Models\Establishment;
+use App\Models\Activity;
 use App\Services\MediaService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-/** @mixin Establishment */
-class EstablishmentResource extends JsonResource
+/** @mixin Activity */
+class ActivityResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
-        $loadedCapacities = $this->relationLoaded('capacities') ? $this->capacities : collect();
+        $settings = $this->relationLoaded('cycles')
+            ? $this->cycles->flatMap(fn ($cycle) => $cycle->settings)
+            : collect();
 
-        $minPrice = $loadedCapacities->isNotEmpty()
-            ? (float) $loadedCapacities->min('price_per_night')
+        $minPrice = $settings->isNotEmpty()
+            ? (float) $settings->min('price')
             : null;
 
-        $animalTypes = $loadedCapacities->isNotEmpty()
-            ? $loadedCapacities->map(fn ($c) => $c->animalType?->code)->filter()->values()->all()
+        $animalTypes = $settings->isNotEmpty()
+            ? $settings->map(fn ($setting) => $setting->animalType?->code)->filter()->unique()->values()->all()
             : [];
 
         return [
@@ -50,7 +52,7 @@ class EstablishmentResource extends JsonResource
             'address' => new AddressResource($this->whenLoaded('address')),
             'manager' => new UserResource($this->whenLoaded('manager')),
             'collaborators' => UserResource::collection($this->whenLoaded('collaborators')),
-            'images' => EstablishmentImageResource::collection($this->getMedia(MediaService::COLLECTION_IMAGES)),
+            'images' => ActivityImageResource::collection($this->getMedia(MediaService::COLLECTION_IMAGES)),
             'created_at' => human_date($this->created_at),
             'updated_at' => human_date($this->updated_at),
         ];

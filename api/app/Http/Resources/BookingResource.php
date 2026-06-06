@@ -18,12 +18,12 @@ class BookingResource extends JsonResource
         return [
             'id' => $this->id,
             'user_id' => $this->user_id,
-            'establishment_id' => $this->establishment_id,
+            'activity_id' => $this->activity_id,
             'check_in_date' => $this->check_in_date->toDateString(),
             'check_out_date' => $this->check_out_date->toDateString(),
             'total_price' => $this->total_price,
             'platform_fee' => $this->platform_fee,
-            'establishment_amount' => $this->establishment_amount,
+            'activity_amount' => $this->activity_amount,
             'status' => $this->status->value,
             'payment_status' => $this->payment_status,
             'stripe_payment_intent_id' => $this->stripe_payment_intent_id,
@@ -38,7 +38,7 @@ class BookingResource extends JsonResource
             'special_requests' => $this->special_requests,
             'paid_at' => $this->paid_at ? human_date($this->paid_at) : null,
             'user' => new UserResource($this->whenLoaded('user')),
-            'establishment' => new EstablishmentResource($this->whenLoaded('establishment')),
+            'activity' => new ActivityResource($this->whenLoaded('activity')),
             'pets' => $this->whenLoaded('pets', fn () => $this->pets->map(fn (Pet $pet) => [
                 'id' => $pet->id,
                 'name' => $pet->name,

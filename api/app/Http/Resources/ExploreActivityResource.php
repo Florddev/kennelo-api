@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace App\Http\Resources;
 
-use App\Models\Establishment;
+use App\Models\Activity;
 use Illuminate\Http\Request;
 
-class ExploreEstablishmentResource extends EstablishmentResource
+class ExploreActivityResource extends ActivityResource
 {
     public function toArray(Request $request): array
     {
         $base = parent::toArray($request);
 
-        /** @var Establishment $model */
+        /** @var Activity $model */
         $model = $this->resource;
 
         $avgRating = $model->getAttribute('avg_rating');

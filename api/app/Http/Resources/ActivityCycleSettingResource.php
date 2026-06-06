@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\Http\Resources;
 
-use App\Models\EstablishmentCapacity;
+use App\Enums\WeekDayEnum;
+use App\Models\ActivityCycleSetting;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-/** @mixin EstablishmentCapacity */
-class EstablishmentCapacityResource extends JsonResource
+/** @mixin ActivityCycleSetting */
+class ActivityCycleSettingResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
@@ -24,7 +25,9 @@ class EstablishmentCapacityResource extends JsonResource
                 'category' => $this->animalType->category,
             ],
             'max_capacity' => $this->max_capacity,
-            'price_per_night' => $this->price_per_night,
+            'price' => $this->price,
+            'sum_weekdays' => $this->sum_weekdays,
+            'week_days' => array_map(fn (WeekDayEnum $day): int => $day->value, WeekDayEnum::fromMask($this->sum_weekdays)),
             'occupied_spots' => $occupiedSpots,
             'available_spots' => $this->max_capacity - $occupiedSpots,
         ];

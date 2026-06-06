@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Http\Resources;
 
-use App\Models\EstablishmentAvailability;
+use App\Models\ActivityAvailability;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-/** @mixin EstablishmentAvailability */
-class EstablishmentAvailabilityResource extends JsonResource
+/** @mixin ActivityAvailability */
+class ActivityAvailabilityResource extends JsonResource
 {
     public function toArray(Request $request): array
     {

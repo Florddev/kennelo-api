@@ -10,7 +10,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 /** @mixin Media */
-class EstablishmentImageResource extends JsonResource
+class ActivityImageResource extends JsonResource
 {
     public function toArray(Request $request): array
     {

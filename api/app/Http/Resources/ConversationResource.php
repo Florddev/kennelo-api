@@ -16,10 +16,10 @@ class ConversationResource extends JsonResource
         return [
             'id' => $this->id,
             'user_id' => $this->user_id,
-            'establishment_id' => $this->establishment_id,
+            'activity_id' => $this->activity_id,
             'last_message_at' => $this->last_message_at?->toISOString(),
             'user' => new UserResource($this->whenLoaded('user')),
-            'establishment' => new EstablishmentResource($this->whenLoaded('establishment')),
+            'activity' => new ActivityResource($this->whenLoaded('activity')),
             'latest_message' => new MessageResource($this->whenLoaded('latestMessage')),
             'unread_count' => $this->whenHas('unread_count'),
             'booking_threads' => BookingThreadResource::collection($this->whenLoaded('bookingThreads')),
