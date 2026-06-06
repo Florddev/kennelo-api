@@ -4,22 +4,23 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
-use App\Models\Conversation;
 use App\Models\Activity;
-use App\Models\User;
+use App\Models\ActivityCycle;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<Conversation>
+ * @extends Factory<ActivityCycle>
  */
-class ConversationFactory extends Factory
+class ActivityCycleFactory extends Factory
 {
     public function definition(): array
     {
         return [
-            'user_id' => User::factory(),
             'activity_id' => Activity::factory(),
-            'last_message_at' => now(),
+            'start_date' => null,
+            'end_date' => null,
+            'priority' => 0,
+            'is_active' => true,
         ];
     }
 }

@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
+use App\Models\Activity;
 use App\Models\Address;
-use App\Models\Establishment;
 use App\Models\User;
 use App\Services\MediaService;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 
-class EstablishmentSeeder extends Seeder
+class ActivitySeeder extends Seeder
 {
-    private const ESTABLISHMENT_COUNT = 4;
+    private const ACTIVITY_COUNT = 4;
 
     private array $imageKeywords = [
         'kennel',
@@ -31,47 +31,47 @@ class EstablishmentSeeder extends Seeder
             throw new \RuntimeException('Manager manager@orus.com not found. Run UsersSeeder first.');
         }
 
-        $addresses = Address::inRandomOrder()->limit(self::ESTABLISHMENT_COUNT)->get();
-        if ($addresses->count() < self::ESTABLISHMENT_COUNT) {
+        $addresses = Address::inRandomOrder()->limit(self::ACTIVITY_COUNT)->get();
+        if ($addresses->count() < self::ACTIVITY_COUNT) {
             throw new \RuntimeException('Not enough addresses. Run AddressSeeder first.');
         }
 
         $collaborators = User::where('id', '!=', $manager->id)->get();
 
         $addresses->each(function ($address) use ($manager, $collaborators) {
-            /** @var Establishment $establishment */
-            $establishment = Establishment::factory()->create([
+            /** @var Activity $activity */
+            $activity = Activity::factory()->create([
                 'address_id' => $address->id,
                 'manager_id' => $manager->id,
             ]);
 
             if ($collaborators->isNotEmpty()) {
-                $establishment->collaborators()->attach(
+                $activity->collaborators()->attach(
                     $collaborators->random(min(2, $collaborators->count()))->pluck('id')
                 );
             }
 
             $keyword = $this->imageKeywords[array_rand($this->imageKeywords)];
-            $this->seedEstablishmentImages($establishment, $keyword, rand(2, 4), true);
+            $this->seedActivityImages($activity, $keyword, rand(2, 4), true);
         });
     }
 
-    private function seedEstablishmentImages(Establishment $establishment, string $keyword, int $count, bool $withAvatar): void
+    private function seedActivityImages(Activity $activity, string $keyword, int $count, bool $withAvatar): void
     {
         for ($i = 0; $i < $count; $i++) {
             $body = $this->fetchRemoteImage("https://loremflickr.com/800/600/{$keyword}")
-                ?? $this->placeholderImage(800, 600, $establishment->name);
+                ?? $this->placeholderImage(800, 600, $activity->name);
 
-            $establishment->addMediaFromString($body)
-                ->usingFileName('establishment_'.Str::uuid()->toString().'.jpg')
+            $activity->addMediaFromString($body)
+                ->usingFileName('activity_'.Str::uuid()->toString().'.jpg')
                 ->toMediaCollection(MediaService::COLLECTION_IMAGES);
         }
 
         if ($withAvatar) {
             $body = $this->fetchRemoteImage("https://loremflickr.com/600/600/{$keyword}")
-                ?? $this->placeholderImage(600, 600, $establishment->name);
+                ?? $this->placeholderImage(600, 600, $activity->name);
 
-            $establishment->addMediaFromString($body)
+            $activity->addMediaFromString($body)
                 ->usingFileName('avatar_'.Str::uuid()->toString().'.jpg')
                 ->toMediaCollection(MediaService::COLLECTION_AVATAR);
         }

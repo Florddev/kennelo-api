@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Database\Seeders;
 
 use App\Models\AnimalType;
-use App\Models\Establishment;
+use App\Models\Activity;
 use App\Models\Pet;
 use App\Models\Service;
 use App\Models\User;
@@ -50,11 +50,11 @@ class BookingSeeder extends Seeder
             throw new \RuntimeException('User with email manager@orus.com not found. Run UsersSeeder first.');
         }
 
-        $establishments = Establishment::where('manager_id', $managerId)
+        $activities = Activity::where('manager_id', $managerId)
             ->orderBy('created_at')
             ->get();
-        if ($establishments->isEmpty()) {
-            throw new \RuntimeException('No establishment found for manager@orus.com. Run EstablishmentSeeder first.');
+        if ($activities->isEmpty()) {
+            throw new \RuntimeException('No activity found for manager@orus.com. Run ActivitySeeder first.');
         }
 
         $pets = Pet::whereIn('name', ['Rex', 'Minou', 'Kiwi', 'Max'])->pluck('id', 'name')->toArray();
@@ -67,10 +67,10 @@ class BookingSeeder extends Seeder
             throw new \RuntimeException('Missing dog animal type. Run AnimalTypeSeeder first.');
         }
 
-        foreach ($establishments as $establishment) {
+        foreach ($activities as $activity) {
             $walkService = Service::firstOrCreate(
                 [
-                    'establishment_id' => $establishment->id,
+                    'activity_id' => $activity->id,
                     'animal_type_id' => $dogTypeId,
                     'name' => 'Promenade quotidienne',
                 ],
@@ -82,12 +82,12 @@ class BookingSeeder extends Seeder
             );
 
             foreach ($this->templates as $template) {
-                $this->createBooking($userId, $establishment->id, $walkService->id, $pets, $template);
+                $this->createBooking($userId, $activity->id, $walkService->id, $pets, $template);
             }
         }
     }
 
-    private function createBooking(string $userId, string $establishmentId, string $walkServiceId, array $pets, array $template): void
+    private function createBooking(string $userId, string $activityId, string $walkServiceId, array $pets, array $template): void
     {
         $checkIn = Carbon::now()->addDays($template['startOffset'])->startOfDay();
         $checkOut = $checkIn->copy()->addDays($template['nights']);
@@ -127,7 +127,7 @@ class BookingSeeder extends Seeder
         DB::table('bookings')->insert([
             'id' => $bookingId,
             'user_id' => $userId,
-            'establishment_id' => $establishmentId,
+            'activity_id' => $activityId,
             'check_in_date' => $checkIn->format('Y-m-d'),
             'check_out_date' => $checkOut->format('Y-m-d'),
             'total_price' => $petsSubtotal + $servicesSubtotal,

@@ -8,9 +8,11 @@ use App\Enums\ActivityTypeEnum;
 use App\Enums\BookingStatusEnum;
 use App\Enums\ReviewerTypeEnum;
 use App\Models\AnimalType;
+use App\Enums\WeekDayEnum;
+use App\Models\Activity;
+use App\Models\ActivityCycle;
+use App\Models\ActivityCycleSetting;
 use App\Models\Booking;
-use App\Models\Establishment;
-use App\Models\EstablishmentCapacity;
 use App\Models\Review;
 use App\Models\User;
 use App\Services\MediaService;
@@ -73,15 +75,15 @@ class ExploreSeeder extends Seeder
             for ($j = 0; $j < $estabCount; $j++) {
                 $type = fake()->randomElement($isProHost ? $this->proTypes : $this->individualTypes);
 
-                $establishment = Establishment::factory()->create([
+                $activity = Activity::factory()->create([
                     'manager_id' => $user->id,
                     'siret' => $isProHost ? fake()->numerify('##############') : null,
                     'type' => $type,
                     'is_active' => true,
                 ]);
 
-                $this->seedCapacities($establishment, $animalTypes);
-                $this->seedImages($establishment);
+                $this->seedCapacities($activity, $animalTypes);
+                $this->seedImages($activity);
             }
         }
 
@@ -105,7 +107,7 @@ class ExploreSeeder extends Seeder
 
     private function seedReviews(?Role $userRole): void
     {
-        $establishments = Establishment::where('is_active', true)->get();
+        $activities = Activity::where('is_active', true)->get();
 
         $reviewers = User::factory(10)->create()->each(function (User $user) use ($userRole): void {
             if ($userRole) {
@@ -113,7 +115,7 @@ class ExploreSeeder extends Seeder
             }
         });
 
-        foreach ($establishments as $establishment) {
+        foreach ($activities as $activity) {
             $count = random_int(3, 8);
 
             for ($i = 0; $i < $count; $i++) {
@@ -122,7 +124,7 @@ class ExploreSeeder extends Seeder
 
                 $booking = Booking::create([
                     'user_id' => $reviewer->id,
-                    'establishment_id' => $establishment->id,
+                    'activity_id' => $activity->id,
                     'check_in_date' => Carbon::now()->subDays($daysAgo + 7)->format('Y-m-d'),
                     'check_out_date' => Carbon::now()->subDays($daysAgo)->format('Y-m-d'),
                     'total_price' => random_int(50, 300),
@@ -143,7 +145,7 @@ class ExploreSeeder extends Seeder
         }
     }
 
-    private function seedCapacities(Establishment $establishment, Collection $animalTypes): void
+    private function seedCapacities(Activity $activity, Collection $animalTypes): void
     {
         if ($animalTypes->isEmpty()) {
             return;
@@ -155,25 +157,34 @@ class ExploreSeeder extends Seeder
 
         $count = random_int(2, min(4, $codes->count()));
 
+        $cycle = ActivityCycle::create([
+            'activity_id' => $activity->id,
+            'start_date' => null,
+            'end_date' => null,
+            'priority' => 0,
+            'is_active' => true,
+        ]);
+
         foreach ($codes->take($count) as $code) {
             [$min, $max] = $this->pricingByCode[$code];
 
-            EstablishmentCapacity::create([
-                'establishment_id' => $establishment->id,
+            ActivityCycleSetting::create([
+                'activity_cycle_id' => $cycle->id,
                 'animal_type_id' => $animalTypes->get($code)->getKey(),
                 'max_capacity' => random_int(2, 10),
-                'price_per_night' => random_int($min * 100, $max * 100) / 100,
+                'price' => random_int($min * 100, $max * 100) / 100,
+                'sum_weekdays' => WeekDayEnum::ALL,
             ]);
         }
     }
 
-    private function seedImages(Establishment $establishment): void
+    private function seedImages(Activity $activity): void
     {
         if (! empty($this->imagePool['avatar'])) {
             $content = $this->imagePool['avatar'][array_rand($this->imagePool['avatar'])];
             $tmp = tempnam(sys_get_temp_dir(), 'explore_avatar_').'.jpg';
             file_put_contents($tmp, $content);
-            $establishment->addMedia($tmp)->toMediaCollection(MediaService::COLLECTION_AVATAR);
+            $activity->addMedia($tmp)->toMediaCollection(MediaService::COLLECTION_AVATAR);
         }
 
         $imageCount = random_int(1, 3);
@@ -184,7 +195,7 @@ class ExploreSeeder extends Seeder
             $content = $this->imagePool['gallery'][array_rand($this->imagePool['gallery'])];
             $tmp = tempnam(sys_get_temp_dir(), 'explore_img_').'.jpg';
             file_put_contents($tmp, $content);
-            $establishment->addMedia($tmp)->toMediaCollection(MediaService::COLLECTION_IMAGES);
+            $activity->addMedia($tmp)->toMediaCollection(MediaService::COLLECTION_IMAGES);
         }
     }
 

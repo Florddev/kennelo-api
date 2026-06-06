@@ -6,14 +6,14 @@ namespace Database\Factories;
 
 use App\Enums\ActivityTypeEnum;
 use App\Models\Address;
-use App\Models\Establishment;
+use App\Models\Activity;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<Establishment>
+ * @extends Factory<Activity>
  */
-class EstablishmentFactory extends Factory
+class ActivityFactory extends Factory
 {
     public function definition(): array
     {
