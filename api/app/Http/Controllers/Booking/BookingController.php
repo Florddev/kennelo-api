@@ -35,7 +35,7 @@ class BookingController extends Controller
     {
         $this->authorize('view', $booking);
 
-        $booking->load(['establishment', 'pets', 'services', 'user']);
+        $booking->load(['activity', 'pets', 'services', 'user']);
 
         return (new BookingResource($booking))
             ->additional(['status' => ApiStatusEnum::SUCCESS, 'timestamp' => human_date(now())])

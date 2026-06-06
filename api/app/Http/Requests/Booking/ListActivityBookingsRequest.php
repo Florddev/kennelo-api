@@ -6,7 +6,7 @@ namespace App\Http\Requests\Booking;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ListEstablishmentBookingsRequest extends FormRequest
+class ListActivityBookingsRequest extends FormRequest
 {
     public function authorize(): bool
     {

@@ -6,25 +6,25 @@ namespace App\Http\Controllers\Booking;
 
 use App\Enums\ApiStatusEnum;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Booking\ListEstablishmentBookingsRequest;
+use App\Http\Requests\Booking\ListActivityBookingsRequest;
 use App\Http\Resources\BookingResource;
+use App\Models\Activity;
 use App\Models\Booking;
-use App\Models\Establishment;
 use App\Services\Booking\BookingService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class EstablishmentBookingController extends Controller
+class ActivityBookingController extends Controller
 {
     public function __construct(
         private BookingService $bookingService
     ) {}
 
-    public function index(ListEstablishmentBookingsRequest $request, Establishment $establishment): JsonResponse
+    public function index(ListActivityBookingsRequest $request, Activity $activity): JsonResponse
     {
-        $this->authorize('manageForEstablishment', [Booking::class, $establishment]);
+        $this->authorize('manageForActivity', [Booking::class, $activity]);
 
-        $bookings = $this->bookingService->getEstablishmentBookings($establishment, $request->validated());
+        $bookings = $this->bookingService->getActivityBookings($activity, $request->validated());
 
         return BookingResource::collection($bookings)
             ->additional([
@@ -34,10 +34,10 @@ class EstablishmentBookingController extends Controller
             ->response();
     }
 
-    public function confirm(Request $request, Establishment $establishment, Booking $booking): JsonResponse
+    public function confirm(Request $request, Activity $activity, Booking $booking): JsonResponse
     {
-        $this->authorize('manageForEstablishment', [Booking::class, $establishment]);
-        abort_if((string) $booking->establishment_id !== (string) $establishment->id, 404);
+        $this->authorize('manageForActivity', [Booking::class, $activity]);
+        abort_if((string) $booking->activity_id !== (string) $activity->id, 404);
 
         $booking = $this->bookingService->confirm($booking, $request->user());
 
@@ -49,12 +49,12 @@ class EstablishmentBookingController extends Controller
             ->response();
     }
 
-    public function cancel(Request $request, Establishment $establishment, Booking $booking): JsonResponse
+    public function cancel(Request $request, Activity $activity, Booking $booking): JsonResponse
     {
-        $this->authorize('manageForEstablishment', [Booking::class, $establishment]);
-        abort_if((string) $booking->establishment_id !== (string) $establishment->id, 404);
+        $this->authorize('manageForActivity', [Booking::class, $activity]);
+        abort_if((string) $booking->activity_id !== (string) $activity->id, 404);
 
-        $booking = $this->bookingService->rejectByEstablishment($booking, $request->user());
+        $booking = $this->bookingService->rejectByActivity($booking, $request->user());
 
         return (new BookingResource($booking))
             ->additional([
@@ -64,10 +64,10 @@ class EstablishmentBookingController extends Controller
             ->response();
     }
 
-    public function complete(Establishment $establishment, Booking $booking): JsonResponse
+    public function complete(Activity $activity, Booking $booking): JsonResponse
     {
-        $this->authorize('manageForEstablishment', [Booking::class, $establishment]);
-        abort_if((string) $booking->establishment_id !== (string) $establishment->id, 404);
+        $this->authorize('manageForActivity', [Booking::class, $activity]);
+        abort_if((string) $booking->activity_id !== (string) $activity->id, 404);
 
         $booking = $this->bookingService->complete($booking);
 

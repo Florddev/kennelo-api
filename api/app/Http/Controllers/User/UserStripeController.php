@@ -6,7 +6,7 @@ namespace App\Http\Controllers\User;
 
 use App\Enums\ApiStatusEnum;
 use App\Http\Controllers\Controller;
-use App\Services\Establishment\StripeConnectService;
+use App\Services\Activity\StripeConnectService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 

@@ -8,23 +8,23 @@ use App\Enums\ApiStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Conversation\ListConversationsRequest;
 use App\Http\Resources\ConversationResource;
+use App\Models\Activity;
 use App\Models\Conversation;
-use App\Models\Establishment;
 use App\Services\Conversation\ConversationService;
 use Illuminate\Http\JsonResponse;
 
-class EstablishmentConversationController extends Controller
+class ActivityConversationController extends Controller
 {
     public function __construct(
         private ConversationService $conversationService
     ) {}
 
-    public function index(ListConversationsRequest $request, Establishment $establishment): JsonResponse
+    public function index(ListConversationsRequest $request, Activity $activity): JsonResponse
     {
-        $this->authorize('manageForEstablishment', [Conversation::class, $establishment]);
+        $this->authorize('manageForActivity', [Conversation::class, $activity]);
 
-        $conversations = $this->conversationService->getEstablishmentConversations(
-            $establishment,
+        $conversations = $this->conversationService->getActivityConversations(
+            $activity,
             $request->user(),
             $request->validated()
         );
