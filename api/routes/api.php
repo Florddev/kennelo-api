@@ -69,6 +69,7 @@ Route::middleware(['auth.jwt'])->group(function () {
     Route::get('/activities/{activity}/stripe/status', [StripeConnectController::class, 'status']);
 
     // Bookings (user)
+    Route::post('/bookings/quote', [BookingController::class, 'quote']);
     Route::apiResource('bookings', BookingController::class)->only(['index', 'show', 'store']);
     Route::put('/bookings/{booking}/cancel', [BookingController::class, 'cancel']);
 

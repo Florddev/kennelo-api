@@ -148,6 +148,61 @@ class BookingService
         ]);
     }
 
+    /**
+     * @return array{check_in_date: string, check_out_date: string, nights: int, total_price: string, platform_fee: string, activity_amount: string, pets: array<int, array<string, mixed>>, services: array<int, array<string, mixed>>}
+     */
+    public function quote(array $data): array
+    {
+        $activity = Activity::findOrFail($data['activity_id']);
+
+        $checkIn = Carbon::parse($data['check_in_date']);
+        $checkOut = Carbon::parse($data['check_out_date']);
+        $nights = (int) $checkIn->diffInDays($checkOut);
+
+        $pets = Pet::whereIn('id', $data['pet_ids'])->get();
+        $services = ! empty($data['service_ids'])
+            ? Service::whereIn('id', $data['service_ids'])->get()
+            : collect();
+
+        $cycle = $this->cycleService->resolveActiveCycle($activity, $checkIn->toDateString());
+        $capacities = $cycle === null ? collect() : $cycle->settings->keyBy('animal_type_id');
+
+        foreach ($pets as $pet) {
+            if (! $capacities->has($pet->animal_type_id)) {
+                throw ValidationException::withMessages([
+                    'pet_ids' => ['The activity does not accept this animal type.'],
+                ]);
+            }
+        }
+
+        [$totalPrice, $platformFee, $activityAmount, $petPivots, $servicePivots] =
+            $this->calculatePrice($pets, $services, $capacities, $nights);
+
+        return [
+            'check_in_date' => $checkIn->toDateString(),
+            'check_out_date' => $checkOut->toDateString(),
+            'nights' => $nights,
+            'total_price' => $totalPrice,
+            'platform_fee' => $platformFee,
+            'activity_amount' => $activityAmount,
+            'pets' => $pets->map(fn (Pet $pet): array => [
+                'id' => $pet->id,
+                'name' => $pet->name,
+                'animal_type_id' => $pet->animal_type_id,
+                'price_per_night' => $petPivots[$pet->id]['price_per_night'],
+                'number_of_nights' => $petPivots[$pet->id]['number_of_nights'],
+                'subtotal' => $petPivots[$pet->id]['subtotal'],
+            ])->values()->all(),
+            'services' => $services->map(fn (Service $service): array => [
+                'id' => $service->id,
+                'name' => $service->name,
+                'quantity' => $servicePivots[$service->id]['quantity'],
+                'unit_price' => $servicePivots[$service->id]['unit_price'],
+                'subtotal' => $servicePivots[$service->id]['subtotal'],
+            ])->values()->all(),
+        ];
+    }
+
     private function createConfirmedPaymentIntent(
         Booking $booking,
         string $totalPrice,
