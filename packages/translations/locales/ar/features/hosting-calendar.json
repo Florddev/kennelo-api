@@ -1,9 +1,9 @@
 {
     "title": "التقويم",
     "description": "جدول الحجوزات والتوفر",
-    "noEstablishment": {
-        "title": "لا توجد مؤسسة",
-        "description": "أنشئ مؤسسة لرؤية حجوزاتك هنا."
+    "noActivity": {
+        "title": "لا توجد نشاط",
+        "description": "أنشئ نشاط لرؤية حجوزاتك هنا."
     },
     "weekdays": {
         "monday": "الإثنين",
@@ -16,7 +16,7 @@
     },
     "moreCount": "{count, plural, =1 {+# آخر} other {+# آخرى}}",
     "filters": {
-        "establishments": "المؤسسات",
+        "activities": "الأنشطة",
         "statuses": "الحالات",
         "all": "الكل",
         "none": "لا شيء"

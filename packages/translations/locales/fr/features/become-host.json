@@ -1,11 +1,11 @@
 {
     "title": "Devenir Hôte",
-    "description": "Référencez votre établissement d'accueil pour animaux sur Kennelo",
+    "description": "Référencez votre activité d'accueil pour animaux sur Kennelo",
     "steps": {
         "welcome": {
             "title": "Etape 1",
             "subtitle": "Parlez-nous de votre activité",
-            "description": "En quelques étapes, vous serez prêt à accueillir des animaux dans votre établissement. Nous vous guidons tout au long de la configuration.",
+            "description": "En quelques étapes, vous serez prêt à accueillir des animaux dans votre activité. Nous vous guidons tout au long de la configuration.",
             "cta": "C'est parti"
         },
         "hostType": {
@@ -17,13 +17,13 @@
             "individualDescription": "Pet-sitter, garde à domicile ou hébergement occasionnel",
             "error": "Veuillez sélectionner un type de profil"
         },
-        "establishmentType": {
+        "activityType": {
             "title": "Parmi les propositions suivantes, laquelle décrit le mieux votre activité ?",
             "subtitle": "Quel type de structure gérez-vous ?",
-            "error": "Veuillez sélectionner un type d’établissement"
+            "error": "Veuillez sélectionner un type d’activité"
         },
-        "establishmentInfo": {
-            "title": "Votre établissement",
+        "activityInfo": {
+            "title": "Votre activité",
             "subtitle": "Parlez-nous de votre lieu"
         },
         "contactDetails": {
@@ -32,7 +32,7 @@
         },
         "address": {
             "title": "Localisation",
-            "subtitle": "Où se trouve votre établissement ?"
+            "subtitle": "Où se trouve votre activité ?"
         },
         "businessInfo": {
             "title": "Informations légales",
@@ -41,14 +41,14 @@
         "review": {
             "title": "Vérification & confirmation",
             "subtitle": "Assurez-vous que tout est correct",
-            "submitButton": "Créer mon établissement",
+            "submitButton": "Créer mon activité",
             "submitting": "Création...",
             "autoFilledFromProfile": "Renseigné depuis votre profil"
         }
     },
     "success": {
         "title": "Félicitations !",
-        "description": "Votre établissement a été créé avec succès. Vous pouvez maintenant commencer à accueillir des animaux !",
-        "cta": "Voir mon établissement"
+        "description": "Votre activité a été créé avec succès. Vous pouvez maintenant commencer à accueillir des animaux !",
+        "cta": "Voir mon activité"
     }
 }

@@ -1,13 +1,13 @@
 {
-    "title": "مؤسساتي",
-    "description": "إدارة مؤسسات إيواء الحيوانات الأليفة الخاصة بك",
-    "addNew": "إضافة مؤسسة",
+    "title": "أنشطتي",
+    "description": "إدارة أنشطة إيواء الحيوانات الأليفة الخاصة بك",
+    "addNew": "إضافة نشاط",
     "status": {
         "active": "نشط",
         "inactive": "غير نشط"
     },
     "card": {
-        "open": "إدارة المنشأة",
+        "open": "إدارة النشاط",
         "species": "الحيوانات المستضافة",
         "noSpecies": "لم يتم تكوين أي نوع حيوان"
     },
@@ -18,7 +18,7 @@
         },
         "nav": {
             "info": "المعلومات",
-            "capacities": "السعات",
+            "cycles": "الدورات",
             "bookings": "الحجوزات",
             "collaborators": "المتعاونون",
             "availabilities": "التوفر",
@@ -33,7 +33,7 @@
         },
         "bookings": {
             "title": "الحجوزات",
-            "description": "حجوزات هذه المنشأة",
+            "description": "حجوزات هذه النشاط",
             "filter": "تصفية حسب العميل...",
             "empty": "لا توجد حجوزات",
             "count": "{count, plural, =1 {# حجز} other {# حجوزات}}",
@@ -48,7 +48,7 @@
         },
         "collaborators": {
             "title": "المتعاونون",
-            "description": "متعاونو هذه المنشأة",
+            "description": "متعاونو هذه النشاط",
             "filter": "تصفية حسب الاسم...",
             "empty": "لا يوجد متعاونون",
             "count": "{count, plural, =1 {# متعاون} other {# متعاونون}}",
@@ -72,12 +72,12 @@
         }
     },
     "empty": {
-        "title": "لا توجد مؤسسات بعد",
-        "description": "أنشئ أول مؤسسة لك وابدأ في استقبال الحيوانات الأليفة!"
+        "title": "لا توجد أنشطة بعد",
+        "description": "أنشئ أول نشاط لك وابدأ في استقبال الحيوانات الأليفة!"
     },
     "detail": {
         "sections": {
-            "details": "تفاصيل المؤسسة",
+            "details": "تفاصيل النشاط",
             "contact": "معلومات الاتصال",
             "address": "العنوان",
             "business": "معلومات تجارية",
@@ -89,7 +89,7 @@
             "pendingTitle": "جارٍ إكمال الإعداد",
             "pendingDescription": "أكمل تقديم بيانات نشاطك التجاري للبدء في استلام المدفوعات.",
             "notConnectedTitle": "اربط حسابك البنكي",
-            "notConnectedDescription": "قم بإعداد Stripe لاستلام المدفوعات عندما يحجز الضيوف مؤسستك.",
+            "notConnectedDescription": "قم بإعداد Stripe لاستلام المدفوعات عندما يحجز الضيوف نشاطك.",
             "startOnboarding": "الاتصال بـ Stripe",
             "continueOnboarding": "متابعة الإعداد",
             "chargesOn": "المدفوعات مفعّلة",
@@ -109,14 +109,14 @@
             "siret": "لا يوجد رقم SIRET",
             "description": "لا يوجد وصف"
         },
-        "notFound": "المؤسسة غير موجودة",
-        "notFoundDescription": "هذه المؤسسة غير موجودة أو ليس لديك صلاحية الوصول إليها.",
-        "editTitle": "تعديل المؤسسة",
-        "editDescription": "قم بتحديث تفاصيل مؤسستك",
-        "updateSuccess": "تم تحديث المؤسسة بنجاح",
-        "deleteTitle": "حذف المؤسسة",
-        "deleteDescription": "هل أنت متأكد أنك تريد حذف هذه المؤسسة؟ لا يمكن التراجع عن هذا الإجراء.",
-        "deleteSuccess": "تم حذف المؤسسة بنجاح"
+        "notFound": "النشاط غير موجودة",
+        "notFoundDescription": "هذه النشاط غير موجودة أو ليس لديك صلاحية الوصول إليها.",
+        "editTitle": "تعديل النشاط",
+        "editDescription": "قم بتحديث تفاصيل نشاطك",
+        "updateSuccess": "تم تحديث النشاط بنجاح",
+        "deleteTitle": "حذف النشاط",
+        "deleteDescription": "هل أنت متأكد أنك تريد حذف هذه النشاط؟ لا يمكن التراجع عن هذا الإجراء.",
+        "deleteSuccess": "تم حذف النشاط بنجاح"
     },
     "dashboard": {
         "title": "لوحة التحكم",
@@ -128,17 +128,36 @@
         "occupancyRate": "معدل الإشغال",
         "noCapacities": "لم يتم تكوين أي سعات بعد"
     },
-    "capacities": {
-        "title": "السعات",
-        "addCapacity": "إضافة سعة",
-        "editCapacity": "تعديل السعة",
-        "deleteCapacity": "حذف السعة",
-        "deleteConfirmation": "هل أنت متأكد أنك تريد حذف هذه السعة؟",
-        "empty": "لم يتم تكوين أي سعات. أضف أنواع الحيوانات وسعتها.",
-        "spots": "{count} أماكن",
-        "perNight": "{price} / ليلة",
-        "occupancy": "{occupied}/{max}",
-        "priceValue": "{price}€"
+    "cycles": {
+        "title": "الدورات",
+        "addCycle": "إضافة دورة",
+        "empty": "لا توجد دورات بعد. أضف دورة لتحديد السعة والأسعار.",
+        "defaultPeriod": "الدورة الافتراضية",
+        "active": "نشط",
+        "inactive": "غير نشط",
+        "activeLabel": "نشط",
+        "priority": "الأولوية",
+        "startDate": "تاريخ البدء",
+        "endDate": "تاريخ الانتهاء",
+        "settingsTitle": "السعة والأسعار",
+        "settingsEmpty": "لا يوجد نوع حيوان مهيأ لهذه الدورة.",
+        "settingSummary": "{capacity} أماكن · {price}€/ليلة",
+        "editSettings": "تعديل الإعدادات",
+        "addSpecies": "إضافة نوع حيوان",
+        "applicableDays": "الأيام المطبقة",
+        "priceValue": "{price}€",
+        "closedDays": "أيام الإغلاق",
+        "deleteCycle": "حذف الدورة",
+        "deleteConfirmation": "هل أنت متأكد أنك تريد حذف هذه الدورة؟",
+        "weekdaysShort": {
+            "monday": "إثن",
+            "tuesday": "ثلا",
+            "wednesday": "أرب",
+            "thursday": "خمي",
+            "friday": "جمع",
+            "saturday": "سبت",
+            "sunday": "أحد"
+        }
     },
     "availabilities": {
         "title": "التوافر",

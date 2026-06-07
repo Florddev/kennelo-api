@@ -1,9 +1,9 @@
 {
     "title": "Calendrier",
     "description": "Planning des réservations et disponibilités",
-    "noEstablishment": {
-        "title": "Aucun établissement",
-        "description": "Créez un établissement pour voir vos réservations s'afficher ici."
+    "noActivity": {
+        "title": "Aucune activité",
+        "description": "Créez une activité pour voir vos réservations s'afficher ici."
     },
     "weekdays": {
         "monday": "Lun",
@@ -16,7 +16,7 @@
     },
     "moreCount": "{count, plural, =1 {+# autre} other {+# autres}}",
     "filters": {
-        "establishments": "Établissements",
+        "activities": "Activités",
         "statuses": "Statuts",
         "all": "Tout",
         "none": "Aucun"

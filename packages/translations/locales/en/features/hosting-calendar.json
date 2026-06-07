@@ -1,9 +1,9 @@
 {
     "title": "Calendar",
     "description": "Booking schedule and availability",
-    "noEstablishment": {
-        "title": "No establishment",
-        "description": "Create an establishment to see your bookings here."
+    "noActivity": {
+        "title": "No activity",
+        "description": "Create an activity to see your bookings here."
     },
     "weekdays": {
         "monday": "Mon",
@@ -16,7 +16,7 @@
     },
     "moreCount": "{count, plural, =1 {+# more} other {+# more}}",
     "filters": {
-        "establishments": "Establishments",
+        "activities": "Activities",
         "statuses": "Statuses",
         "all": "All",
         "none": "None"

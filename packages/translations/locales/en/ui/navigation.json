@@ -32,7 +32,7 @@
     "hosting": {
         "today": "Today",
         "calendar": "Calendar",
-        "establishment": "Establishment",
+        "activity": "Activity",
         "messages": "Messages"
     },
     "overview": "Overview"
