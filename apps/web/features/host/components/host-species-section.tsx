@@ -1,10 +1,10 @@
 import { useTranslations } from "next-intl";
-import type { CapacityModel } from "@workspace/modules/establishments";
+import type { ActivityCycleSettingModel } from "@workspace/modules/activities";
 
 import { HostSpeciesList } from "./host-species-list";
 
 type HostSpeciesSectionProps = {
-    capacities: CapacityModel[];
+    capacities: ActivityCycleSettingModel[];
 };
 
 export function HostSpeciesSection({ capacities }: HostSpeciesSectionProps) {

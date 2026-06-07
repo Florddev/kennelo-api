@@ -16,17 +16,17 @@ import {
 } from "@workspace/ui/components/sheet";
 import { cn } from "@workspace/ui/lib/utils";
 import {
-    cancelEstablishmentBooking,
-    completeEstablishmentBooking,
-    confirmEstablishmentBooking,
+    cancelActivityBooking,
+    completeActivityBooking,
+    confirmActivityBooking,
     type BookingModel,
 } from "@workspace/modules/bookings";
 
 import { UserAvatar } from "@/features/auth/components/user-avatar";
 import { useAsyncState } from "@/hooks/use-async-state";
-import { establishmentColor, statusColor } from "../lib/booking-colors";
+import { activityColor, statusColor } from "../lib/booking-colors";
 
-type EstablishmentMeta = {
+type ActivityMeta = {
     id: string;
     name: string;
     colorIndex: number;
@@ -37,7 +37,7 @@ type DayBookingsSheetProps = {
     onOpenChange: (open: boolean) => void;
     selectedDate: Date | null;
     bookings: BookingModel[];
-    establishmentMetaById: Record<string, EstablishmentMeta>;
+    activityMetaById: Record<string, ActivityMeta>;
 };
 
 export function DayBookingsSheet({
@@ -45,7 +45,7 @@ export function DayBookingsSheet({
     onOpenChange,
     selectedDate,
     bookings,
-    establishmentMetaById,
+    activityMetaById,
 }: DayBookingsSheetProps) {
     const locale = useLocale();
     const t = useTranslations();
@@ -83,7 +83,7 @@ export function DayBookingsSheet({
                             <BookingCard
                                 key={booking.id}
                                 booking={booking}
-                                establishmentMeta={establishmentMetaById[booking.establishmentId]}
+                                activityMeta={activityMetaById[booking.activityId]}
                             />
                         ))
                     )}
@@ -95,16 +95,16 @@ export function DayBookingsSheet({
 
 function BookingCard({
     booking,
-    establishmentMeta,
+    activityMeta,
 }: {
     booking: BookingModel;
-    establishmentMeta?: EstablishmentMeta;
+    activityMeta?: ActivityMeta;
 }) {
     const locale = useLocale();
     const t = useTranslations();
 
     const status = statusColor(booking.status);
-    const color = establishmentColor(establishmentMeta?.colorIndex ?? 0);
+    const color = activityColor(activityMeta?.colorIndex ?? 0);
 
     const dateFormatter = new Intl.DateTimeFormat(locale, {
         day: "numeric",
@@ -132,7 +132,7 @@ function BookingCard({
                     <UserAvatar user={customer ?? undefined} className="size-10" />
                     <div className="flex flex-col min-w-0">
                         <span className="font-medium truncate">{customerName}</span>
-                        {establishmentMeta && (
+                        {activityMeta && (
                             <span
                                 className={cn(
                                     "text-xs font-medium px-1.5 py-0.5 rounded-md w-fit",
@@ -140,7 +140,7 @@ function BookingCard({
                                     color.chipText,
                                 )}
                             >
-                                {establishmentMeta.name}
+                                {activityMeta.name}
                             </span>
                         )}
                     </div>
@@ -221,17 +221,17 @@ function BookingCardActions({ booking }: { booking: BookingModel }) {
     };
 
     const onConfirm = () =>
-        runConfirm(() => confirmEstablishmentBooking(booking.establishmentId, booking.id), {
+        runConfirm(() => confirmActivityBooking(booking.activityId, booking.id), {
             onSuccess: invalidate,
         });
 
     const onCancel = () =>
-        runCancel(() => cancelEstablishmentBooking(booking.establishmentId, booking.id), {
+        runCancel(() => cancelActivityBooking(booking.activityId, booking.id), {
             onSuccess: invalidate,
         });
 
     const onComplete = () =>
-        runComplete(() => completeEstablishmentBooking(booking.establishmentId, booking.id), {
+        runComplete(() => completeActivityBooking(booking.activityId, booking.id), {
             onSuccess: invalidate,
         });
 

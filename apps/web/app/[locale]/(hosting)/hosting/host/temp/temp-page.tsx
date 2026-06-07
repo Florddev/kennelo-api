@@ -8,12 +8,12 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@workspace/ui/componen
 
 import { useAuth } from "@/features/auth";
 import { useNavigation } from "@/hooks/use-navigation";
-import { EmbeddedConnectOnboarding } from "@/features/establishments/components/embedded-connect-onboarding";
+import { EmbeddedConnectOnboarding } from "@/features/activities/components/embedded-connect-onboarding";
 import { ReservationReviewList } from "@/features/bookings/components/reservation-review-list";
 
 export default function TempPage() {
     const t = useTranslations();
-    const { isLoaded, isAuthenticated, establishments } = useAuth();
+    const { isLoaded, isAuthenticated, activities } = useAuth();
     const { routes, router } = useNavigation();
 
     useEffect(() => {
@@ -46,17 +46,17 @@ export default function TempPage() {
                     <EmbeddedConnectOnboarding />
                 </TabsContent>
                 <TabsContent value="pending" className="pt-6 flex flex-col gap-6">
-                    {establishments.length === 0 && (
+                    {activities.length === 0 && (
                         <p className="text-sm text-muted-foreground text-center py-8">
-                            {t("features.hosting.temp.noEstablishments")}
+                            {t("features.hosting.temp.noActivities")}
                         </p>
                     )}
-                    {establishments.map((establishment) => (
-                        <section key={establishment.id} className="flex flex-col gap-2">
+                    {activities.map((activity) => (
+                        <section key={activity.id} className="flex flex-col gap-2">
                             <h3 className="text-sm font-semibold text-foreground">
-                                {establishment.name}
+                                {activity.name}
                             </h3>
-                            <ReservationReviewList establishmentId={establishment.id} />
+                            <ReservationReviewList activityId={activity.id} />
                         </section>
                     ))}
                 </TabsContent>

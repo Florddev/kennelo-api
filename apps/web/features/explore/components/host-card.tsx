@@ -4,11 +4,11 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { cn } from "@workspace/ui/lib/utils";
 import { useNavigation } from "@/hooks/use-navigation";
-import type { EstablishmentModel } from "@workspace/modules/establishments";
+import type { ActivityModel } from "@workspace/modules/activities";
 import { CrownStar, Gallery, Star, UsersGroupRounded } from "@solar-icons/react";
 
 type HostCardProps = {
-    host: EstablishmentModel;
+    host: ActivityModel;
     variant?: "vertical" | "horizontal";
     highlighted?: boolean;
     className?: string;
@@ -43,7 +43,7 @@ function Distance({
     host,
     distanceOverride,
 }: {
-    host: EstablishmentModel;
+    host: ActivityModel;
     distanceOverride?: number | null;
 }) {
     const t = useTranslations();
@@ -123,7 +123,7 @@ export function HostCard({
                         </div>
 
                         <div className="flex gap-1 text-xs font-medium text-muted-foreground">
-                            {t(`features.establishments.types.${host.type}`)}
+                            {t(`features.activities.types.${host.type}`)}
                             <span>·</span>
                             <Distance host={host} distanceOverride={distanceOverride} />
                         </div>
@@ -181,7 +181,7 @@ export function HostCard({
                     </div>
 
                     <div className="flex gap-1 text-xs font-medium text-muted-foreground">
-                        {t(`features.establishments.types.${host.type}`)}
+                        {t(`features.activities.types.${host.type}`)}
                         <span>·</span>
                         <Distance host={host} distanceOverride={distanceOverride} />
                     </div>

@@ -48,7 +48,7 @@ export function MessageSenderHeader({
                             {message.senderType === "activity" && (
                                 <>
                                     <Dot className="w-2" />
-                                    {t("features.establishments.host")}
+                                    {t("features.activities.host")}
                                 </>
                             )}
                         </p>

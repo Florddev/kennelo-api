@@ -18,7 +18,7 @@ export function MainNavbar({
     navigationItems: NavigationItem[];
     className?: string;
 }) {
-    const { user, isAuthenticated, isLoaded, hasEstablishment } = useAuth();
+    const { user, isAuthenticated, isLoaded, hasActivity } = useAuth();
     const { routes } = useNavigation();
     const scrolled = useScrolled(0);
     const t = useTranslations();
@@ -74,7 +74,7 @@ export function MainNavbar({
                         </div>
                     ) : (
                         <div className="flex items-center gap-3">
-                            {isLoaded && !hasEstablishment && (
+                            {isLoaded && !hasActivity && (
                                 <Link href={routes.BecomeHost()}>
                                     <NavButton variant="ghost">
                                         {t("common.actions.becomeHost")}
@@ -97,7 +97,7 @@ export function MainNavbar({
                                 ))}
                                 <UserMenu
                                     user={user ?? undefined}
-                                    hasEstablishment={hasEstablishment}
+                                    hasActivity={hasActivity}
                                     className="size-9 shadow-lg"
                                 />
                             </div>

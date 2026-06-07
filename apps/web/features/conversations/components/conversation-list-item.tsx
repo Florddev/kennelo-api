@@ -2,7 +2,7 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { ConversationModel, MessageModel } from "@workspace/modules/conversations";
-import { EstablishmentModel } from "@workspace/modules/establishments";
+import { ActivityModel } from "@workspace/modules/activities";
 import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/avatar";
 import { Badge } from "@workspace/ui/components/badge";
 import { cn } from "@workspace/ui/lib/utils";
@@ -14,13 +14,13 @@ import { BookingStatusLine } from "./booking-status-line";
 function getConversationParty(
     conversation: ConversationModel,
     currentUserId: string | undefined,
-): { name: string; isEstablishment: boolean } {
+): { name: string; isActivity: boolean } {
     const isOwner = conversation.userId === currentUserId;
     return {
         name: isOwner
-            ? (conversation.establishment?.name ?? "—")
+            ? (conversation.activity?.name ?? "—")
             : (conversation.user?.getFullName() ?? "—"),
-        isEstablishment: isOwner,
+        isActivity: isOwner,
     };
 }
 
@@ -52,9 +52,9 @@ export function ConversationListItemSkeleton() {
     );
 }
 
-export function EstablishmentAvatar({ establishment }: { establishment: EstablishmentModel }) {
-    const estAvatarUrl = establishment.getAvatarUrl();
-    const estInitials = establishment.name.slice(0, 2).toUpperCase();
+export function ActivityAvatar({ activity }: { activity: ActivityModel }) {
+    const estAvatarUrl = activity.getAvatarUrl();
+    const estInitials = activity.name.slice(0, 2).toUpperCase();
 
     return (
         <div className="relative size-12 shrink-0">
@@ -62,14 +62,14 @@ export function EstablishmentAvatar({ establishment }: { establishment: Establis
                 {estAvatarUrl && (
                     <AvatarImage
                         src={estAvatarUrl}
-                        alt={establishment.name}
+                        alt={activity.name}
                         className="rounded-[14px]"
                     />
                 )}
                 <AvatarFallback className="rounded-[14px]">{estInitials}</AvatarFallback>
             </Avatar>
             <div className="absolute -bottom-2 -end-1.5 rounded-full ring-2 ring-white overflow-hidden bg-muted flex items-center justify-center">
-                <UserAvatar user={establishment.manager} size="sm" className="!size-7" />
+                <UserAvatar user={activity.manager} size="sm" className="!size-7" />
             </div>
         </div>
     );
@@ -88,7 +88,7 @@ export function ConversationListItem({
     const t = useTranslations();
     const locale = useLocale();
 
-    const { name, isEstablishment } = getConversationParty(conversation, user?.id);
+    const { name, isActivity } = getConversationParty(conversation, user?.id);
     const preview = getMessagePreview(
         conversation.latestMessage,
         user?.id,
@@ -107,8 +107,8 @@ export function ConversationListItem({
             )}
             onClick={onClick}
         >
-            {isEstablishment && conversation.establishment ? (
-                <EstablishmentAvatar establishment={conversation.establishment} />
+            {isActivity && conversation.activity ? (
+                <ActivityAvatar activity={conversation.activity} />
             ) : (
                 <UserAvatar user={conversation.user} size="lg" />
             )}

@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import EstablishmentCapacitiesPage from "./establishment-capacities-page";
+import ActivityCapacitiesPage from "./activity-capacities-page";
 
 export type Query = {
     id: string;
@@ -14,10 +14,10 @@ export async function generateMetadata({ params }: { params: { locale: string } 
     const t = await getTranslations({ locale });
 
     return {
-        title: t("features.establishments.capacities.title"),
+        title: t("features.activities.capacities.title"),
     };
 }
 
-export default function EstablishmentCapacities() {
-    return <EstablishmentCapacitiesPage />;
+export default function ActivityCapacities() {
+    return <ActivityCapacitiesPage />;
 }

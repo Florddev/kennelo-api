@@ -79,10 +79,10 @@ export function ConversationView({ onBack }: { onBack?: () => void }) {
 
     if (!selectedConversation) return null;
 
-    const establishment = selectedConversation.establishment;
-    const name = establishment?.name ?? selectedConversation.user?.getFullName() ?? "—";
+    const activity = selectedConversation.activity;
+    const name = activity?.name ?? selectedConversation.user?.getFullName() ?? "—";
     const receiverAvatarUrl =
-        establishment?.getAvatarUrl() ?? selectedConversation.user?.avatarUrl ?? "";
+        activity?.getAvatarUrl() ?? selectedConversation.user?.avatarUrl ?? "";
 
     const handleScroll = () => {
         const el = scrollContainerRef.current;

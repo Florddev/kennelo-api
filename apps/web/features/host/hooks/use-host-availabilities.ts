@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { getAvailabilitiesRange } from "@workspace/modules/establishments";
+import { getAvailabilitiesRange } from "@workspace/modules/activities";
 import { toApiDate } from "@workspace/common";
 
 function firstDayOfMonth(date: Date): Date {
@@ -19,15 +19,15 @@ function lastDayOfNextMonth(date: Date): Date {
     return result;
 }
 
-export function useHostAvailabilities(establishmentId: string) {
+export function useHostAvailabilities(activityId: string) {
     const today = new Date();
     const startDate = toApiDate(firstDayOfMonth(today));
     const endDate = toApiDate(lastDayOfNextMonth(today));
 
     const { data, isLoading } = useQuery({
-        queryKey: ["host", "availabilities", establishmentId, startDate, endDate],
-        queryFn: () => getAvailabilitiesRange(establishmentId, startDate, endDate),
-        enabled: Boolean(establishmentId),
+        queryKey: ["host", "availabilities", activityId, startDate, endDate],
+        queryFn: () => getAvailabilitiesRange(activityId, startDate, endDate),
+        enabled: Boolean(activityId),
     });
 
     return {

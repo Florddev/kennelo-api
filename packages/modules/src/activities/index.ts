@@ -23,6 +23,7 @@ export * from "./actions/queries/get-activities";
 export * from "./actions/queries/get-activity-images";
 export * from "./actions/queries/get-activity";
 export * from "./actions/queries/get-availabilities";
+export * from "./actions/queries/get-cycle-settings";
 export * from "./actions/queries/get-cycles";
 export * from "./actions/queries/get-dashboard";
 export * from "./actions/queries/get-explore-activities";

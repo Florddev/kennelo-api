@@ -10,16 +10,16 @@ import {
     EmptyDescription,
 } from "@workspace/ui/components/empty";
 
-import { useEstablishmentBookings } from "@/features/bookings/hooks/use-establishment-bookings";
+import { useActivityBookings } from "@/features/bookings/hooks/use-activity-bookings";
 import { ReservationReviewCard } from "./reservation-review-card";
 
 type ReservationReviewListProps = {
-    establishmentId: string;
+    activityId: string;
 };
 
-export function ReservationReviewList({ establishmentId }: ReservationReviewListProps) {
+export function ReservationReviewList({ activityId }: ReservationReviewListProps) {
     const t = useTranslations();
-    const { bookings, isLoading } = useEstablishmentBookings(establishmentId, {
+    const { bookings, isLoading } = useActivityBookings(activityId, {
         status: "pending",
     });
 
@@ -55,11 +55,7 @@ export function ReservationReviewList({ establishmentId }: ReservationReviewList
                 {t("features.bookings.review.title")}
             </h2>
             {bookings.map((booking) => (
-                <ReservationReviewCard
-                    key={booking.id}
-                    booking={booking}
-                    establishmentId={establishmentId}
-                />
+                <ReservationReviewCard key={booking.id} booking={booking} activityId={activityId} />
             ))}
         </section>
     );

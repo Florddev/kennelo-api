@@ -3,7 +3,7 @@
 import { useCallback, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { Calendar } from "@workspace/ui/components/calendar";
-import type { AvailabilityModel } from "@workspace/modules/establishments";
+import type { AvailabilityModel } from "@workspace/modules/activities";
 import type { DateRange } from "react-day-picker";
 
 import { isDateDisabledForBooking } from "../lib/availability-helpers";

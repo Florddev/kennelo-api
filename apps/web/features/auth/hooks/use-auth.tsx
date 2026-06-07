@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 import { useQueryClient } from "@tanstack/react-query";
 import { UserModel } from "@workspace/modules/users";
 import { getCurrentUser, logoutUser, authService } from "@workspace/modules/users";
-import { getEstablishments, EstablishmentModel } from "@workspace/modules/establishments";
+import { getActivities, ActivityModel } from "@workspace/modules/activities";
 import { api } from "@workspace/common";
 import { useRouter } from "next/navigation";
 import { logger } from "@/lib/logger";
@@ -13,11 +13,11 @@ import { getAppStorage } from "@/lib/storage";
 
 interface AuthContextValue {
     user: UserModel | null;
-    establishments: EstablishmentModel[];
+    activities: ActivityModel[];
     isLoading: boolean;
     isLoaded: boolean;
     isAuthenticated: boolean;
-    hasEstablishment: boolean;
+    hasActivity: boolean;
     logout: () => Promise<void>;
     refreshUser: () => Promise<UserModel | null>;
 }
@@ -32,7 +32,7 @@ export function AuthProvider({
     initialIsAuthenticated?: boolean;
 }) {
     const [user, setUser] = useState<UserModel | null>(null);
-    const [establishments, setEstablishments] = useState<EstablishmentModel[]>([]);
+    const [activities, setActivities] = useState<ActivityModel[]>([]);
     const [isLoading, setIsLoading] = useState(initialIsAuthenticated);
     const [isAuthenticated, setIsAuthenticated] = useState(initialIsAuthenticated);
     const queryClient = useQueryClient();
@@ -47,7 +47,7 @@ export function AuthProvider({
         if (!(await authService.isAuthenticated())) {
             setIsAuthenticated(false);
             setUser(null);
-            setEstablishments([]);
+            setActivities([]);
             setIsLoading(false);
             return null;
         }
@@ -55,18 +55,18 @@ export function AuthProvider({
         setIsAuthenticated(true);
 
         try {
-            const [currentUser, userEstablishments] = await Promise.all([
+            const [currentUser, userActivities] = await Promise.all([
                 getCurrentUser(),
-                getEstablishments().catch(() => []),
+                getActivities().catch(() => []),
             ]);
             setUser(currentUser);
-            setEstablishments(userEstablishments);
+            setActivities(userActivities);
             return currentUser;
         } catch (error) {
             logger.error("Failed to load user:", error);
             setIsAuthenticated(false);
             setUser(null);
-            setEstablishments([]);
+            setActivities([]);
             await authService.clearTokens();
             return null;
         } finally {
@@ -87,7 +87,7 @@ export function AuthProvider({
             queryClient.clear();
             setIsAuthenticated(false);
             setUser(null);
-            setEstablishments([]);
+            setActivities([]);
             router.push(routes.Login());
         }
     };
@@ -96,11 +96,11 @@ export function AuthProvider({
 
     const value: AuthContextValue = {
         user,
-        establishments,
+        activities,
         isLoading,
         isLoaded: !isLoading && !!user,
         isAuthenticated,
-        hasEstablishment: establishments.length > 0,
+        hasActivity: activities.length > 0,
         logout,
         refreshUser,
     };

@@ -1,3 +1,3 @@
-export default function EstablishmentSettings() {
+export default function ActivitySettings() {
     return null;
 }

@@ -7,10 +7,10 @@ import { Button } from "@workspace/ui/components/button";
 import { Separator } from "@workspace/ui/components/separator";
 import { toApiDate, fromApiDate } from "@workspace/common";
 import type {
-    CapacityModel,
-    EstablishmentModel,
+    ActivityCycleSettingModel,
+    ActivityModel,
     AvailabilityModel,
-} from "@workspace/modules/establishments";
+} from "@workspace/modules/activities";
 import type { DateRange } from "react-day-picker";
 
 import { useNavigation } from "@/hooks/use-navigation";
@@ -28,15 +28,15 @@ import { HostReviewsSection } from "./host-reviews-section";
 import { HostBookingBar } from "./host-booking-bar";
 
 type HostDetailContentProps = {
-    establishment: EstablishmentModel;
-    capacities: CapacityModel[];
+    activity: ActivityModel;
+    capacities: ActivityCycleSettingModel[];
     availabilities: AvailabilityModel[];
     initialDateRange: DateRange | undefined;
     onBack: () => void;
 };
 
 export function HostDetailContent({
-    establishment,
+    activity,
     capacities,
     availabilities,
     initialDateRange,
@@ -52,7 +52,7 @@ export function HostDetailContent({
         if (!dateRange?.from || !dateRange?.to) return;
         router.push(
             routes.HostBook({
-                id: establishment.id,
+                id: activity.id,
                 search_params: {
                     check_in: toApiDate(dateRange.from),
                     check_out: toApiDate(dateRange.to),
@@ -61,7 +61,7 @@ export function HostDetailContent({
         );
     };
 
-    const images = establishment.images.map((img) => img.url);
+    const images = activity.images.map((img) => img.url);
 
     const galleryEmptyState = (
         <div className="flex aspect-[4/3] w-full items-center justify-center bg-muted">
@@ -75,7 +75,7 @@ export function HostDetailContent({
     return (
         <DetailPageLayout
             images={images}
-            altPrefix={establishment.name}
+            altPrefix={activity.name}
             emptyState={galleryEmptyState}
             desktopCtaLabel={t("features.host.detail.viewPhotos", { count: images.length })}
             headerStart={
@@ -95,14 +95,14 @@ export function HostDetailContent({
         >
             <div className="flex flex-col gap-1 px-4 pt-4">
                 <HostHeaderSection
-                    name={establishment.name}
-                    address={establishment.address}
+                    name={activity.name}
+                    address={activity.address}
                     capacities={capacities}
                 />
-                {establishment.manager && (
+                {activity.manager && (
                     <>
-                        <HostManagerSection manager={establishment.manager} />
-                        {establishment.manager.isIdVerified && (
+                        <HostManagerSection manager={activity.manager} />
+                        {activity.manager.isIdVerified && (
                             <section className="pt-4">
                                 <HostVerifiedBanner />
                             </section>
@@ -110,7 +110,7 @@ export function HostDetailContent({
                     </>
                 )}
 
-                <HostAboutSection description={establishment.description} />
+                <HostAboutSection description={activity.description} />
 
                 <Separator className="my-6" />
 
@@ -118,7 +118,7 @@ export function HostDetailContent({
 
                 <Separator className="my-6" />
 
-                <HostLocationSection address={establishment.address} />
+                <HostLocationSection address={activity.address} />
 
                 <Separator className="my-6" />
 
