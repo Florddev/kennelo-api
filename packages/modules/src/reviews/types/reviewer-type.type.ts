@@ -1,1 +1,1 @@
-export type ReviewerType = "user" | "establishment";
+export type ReviewerType = "user" | "activity";

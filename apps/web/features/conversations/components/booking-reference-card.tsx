@@ -103,7 +103,7 @@ export function BookingReferenceCard({ message }: { message: MessageModel }) {
     const avatarUrl = establishment?.getAvatarUrl() ?? null;
     const establishmentName = establishment?.name ?? "—";
     const initials = establishmentName.slice(0, 2).toUpperCase();
-    const isEstablishment = message.senderType === "establishment";
+    const isEstablishment = message.senderType === "activity";
     const isCancelled = booking?.isCancelled() ?? false;
     const statusLabel = getStatusLabel(t, isEstablishment, isCancelled);
 
