@@ -37,8 +37,8 @@ export default function ActivityLayout({ children }: { children: React.ReactNode
         },
         {
             icon: Paw,
-            href: routes.ActivityCapacities({ id: params.id }),
-            label: t("features.activities.manager.nav.capacities"),
+            href: routes.ActivityCycles({ id: params.id }),
+            label: t("features.activities.manager.nav.cycles"),
             default: false,
         },
         {

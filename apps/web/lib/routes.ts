@@ -54,13 +54,13 @@ type ActivityAvailabilitiesParams = {
     search_params?: Record<string, string | number | boolean>;
 };
 
-type ActivityCapacitiesParams = {
+type ActivityCollaboratorsParams = {
     locale?: string | number;
     id: string;
     search_params?: Record<string, string | number | boolean>;
 };
 
-type ActivityCollaboratorsParams = {
+type ActivityCyclesParams = {
     locale?: string | number;
     id: string;
     search_params?: Record<string, string | number | boolean>;
@@ -257,12 +257,12 @@ function ActivityAvailabilities(params: ActivityAvailabilitiesParams): string {
     return buildRoute("/[locale]/hosting/host/[id]/settings/availabilities", params);
 }
 
-function ActivityCapacities(params: ActivityCapacitiesParams): string {
-    return buildRoute("/[locale]/hosting/host/[id]/settings/capacities", params);
-}
-
 function ActivityCollaborators(params: ActivityCollaboratorsParams): string {
     return buildRoute("/[locale]/hosting/host/[id]/settings/collaborators", params);
+}
+
+function ActivityCycles(params: ActivityCyclesParams): string {
+    return buildRoute("/[locale]/hosting/host/[id]/settings/cycles", params);
 }
 
 function ActivitySettingsInformations(params: ActivitySettingsInformationsParams): string {
@@ -391,8 +391,8 @@ export const routes = {
     ActivityOverview,
     ActivityDetails,
     ActivityAvailabilities,
-    ActivityCapacities,
     ActivityCollaborators,
+    ActivityCycles,
     ActivitySettingsInformations,
     ActivitySettings,
     ActivityPayment,

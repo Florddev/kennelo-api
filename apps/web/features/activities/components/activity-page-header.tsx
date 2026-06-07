@@ -35,7 +35,7 @@ export function ActivityPageHeader({ children }: { children?: React.ReactNode })
         settings: t("ui.navigation.settings"),
         informations: t("features.activities.manager.nav.info"),
         availabilities: t("features.activities.manager.nav.availabilities"),
-        capacities: t("features.activities.manager.nav.capacities"),
+        cycles: t("features.activities.manager.nav.cycles"),
         collaborators: t("features.activities.manager.nav.collaborators"),
         payment: t("features.activities.manager.nav.payment"),
     };
@@ -47,7 +47,7 @@ export function ActivityPageHeader({ children }: { children?: React.ReactNode })
         settings: routes.ActivitySettings({ id }),
         "settings/informations": routes.ActivitySettingsInformations({ id }),
         "settings/availabilities": routes.ActivityAvailabilities({ id }),
-        "settings/capacities": routes.ActivityCapacities({ id }),
+        "settings/cycles": routes.ActivityCycles({ id }),
         "settings/collaborators": routes.ActivityCollaborators({ id }),
         "settings/payment": routes.ActivityPayment({ id }),
     };

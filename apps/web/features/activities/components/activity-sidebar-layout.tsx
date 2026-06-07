@@ -72,8 +72,8 @@ export function ActivitySidebarLayout({ activityId, children }: ActivitySidebarL
             exact: true,
         },
         {
-            href: routes.ActivityCapacities({ id: activityId }),
-            label: t("features.activities.manager.nav.capacities"),
+            href: routes.ActivityCycles({ id: activityId }),
+            label: t("features.activities.manager.nav.cycles"),
             icon: PawPrint,
             exact: false,
         },
