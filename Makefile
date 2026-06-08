@@ -45,3 +45,7 @@ setup:
 	cd api && php artisan jwt:generate
 	cd api && make refresh
 	make update
+
+refresh: ## Refresh DB and seed
+	make update
+	cd api && php artisan migrate:fresh --seed
