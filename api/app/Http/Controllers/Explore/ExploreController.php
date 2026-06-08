@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Explore;
 
 use App\Enums\ApiStatusEnum;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Explore\SearchExploreRequest;
 use App\Http\Resources\ExploreActivityResource;
 use App\Services\Explore\ExploreService;
 use Illuminate\Http\JsonResponse;
@@ -60,12 +61,12 @@ class ExploreController extends Controller
         ]);
     }
 
-    public function search(Request $request): JsonResponse
+    public function search(SearchExploreRequest $request): JsonResponse
     {
         [$lat, $lng] = $this->resolveCoords($request);
         $page = max(1, (int) $request->input('page', 1));
 
-        $result = $this->service->search($request->all(), $lat, $lng, $page);
+        $result = $this->service->search($request->validated(), $lat, $lng, $page);
 
         return response()->json([
             'data' => [
