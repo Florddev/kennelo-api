@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 use App\Enums\ReviewReportStatusEnum;
+use App\Models\Activity;
 use App\Models\Booking;
-use App\Models\Establishment;
 use App\Models\Review;
 use App\Models\ReviewReport;
 use App\Models\User;
@@ -19,21 +19,21 @@ function makeReviewForReportFixtures(): array
 {
     $user = User::factory()->create();
     $manager = User::factory()->create();
-    $establishment = Establishment::factory()->create(['manager_id' => $manager->id]);
+    $activity = Activity::factory()->create(['manager_id' => $manager->id]);
     $booking = Booking::factory()->completed()->create([
         'user_id' => $user->id,
-        'establishment_id' => $establishment->id,
+        'activity_id' => $activity->id,
     ]);
     $review = Review::factory()->fromUser()->published()->create([
         'booking_id' => $booking->id,
         'reviewer_id' => $user->id,
     ]);
 
-    return [$user, $manager, $establishment, $review];
+    return [$user, $manager, $activity, $review];
 }
 
 it('any authenticated non-author user can report a review', function () {
-    [$user, $manager, $establishment, $review] = makeReviewForReportFixtures();
+    [$user, $manager, $activity, $review] = makeReviewForReportFixtures();
 
     $this->withHeaders(asUser($manager))
         ->postJson("/api/reviews/{$review->id}/reports", [
@@ -45,7 +45,7 @@ it('any authenticated non-author user can report a review', function () {
 });
 
 it('reviewer cannot report their own review', function () {
-    [$user, $manager, $establishment, $review] = makeReviewForReportFixtures();
+    [$user, $manager, $activity, $review] = makeReviewForReportFixtures();
 
     $this->withHeaders(asUser($user))
         ->postJson("/api/reviews/{$review->id}/reports", [
@@ -55,7 +55,7 @@ it('reviewer cannot report their own review', function () {
 });
 
 it('cannot report the same review twice', function () {
-    [$user, $manager, $establishment, $review] = makeReviewForReportFixtures();
+    [$user, $manager, $activity, $review] = makeReviewForReportFixtures();
 
     ReviewReport::create([
         'review_id' => $review->id,
@@ -72,7 +72,7 @@ it('cannot report the same review twice', function () {
 });
 
 it('admin can list review reports', function () {
-    [$user, $manager, $establishment, $review] = makeReviewForReportFixtures();
+    [$user, $manager, $activity, $review] = makeReviewForReportFixtures();
 
     ReviewReport::create([
         'review_id' => $review->id,
@@ -100,7 +100,7 @@ it('non-admin cannot list review reports', function () {
 });
 
 it('admin can update report status', function () {
-    [$user, $manager, $establishment, $review] = makeReviewForReportFixtures();
+    [$user, $manager, $activity, $review] = makeReviewForReportFixtures();
 
     $report = ReviewReport::create([
         'review_id' => $review->id,

@@ -22,7 +22,7 @@ import {
     MessageModel,
     type MessageDto,
     getConversations,
-    getEstablishmentConversations,
+    getActivityConversations,
     getMessages,
     sendMessage as sendMessageAction,
     markConversationMessagesRead,
@@ -79,7 +79,7 @@ export function ConversationsProvider({ children }: { children: ReactNode }) {
     const [pendingMessages, setPendingMessages] = useState<PendingMessage[]>([]);
     const [typingUser, setTypingUser] = useState<string | null>(null);
     const queryClient = useQueryClient();
-    const { user, establishments, isLoading: isAuthLoading } = useAuth();
+    const { user, activities, isLoading: isAuthLoading } = useAuth();
     const conversationChannelRef = useRef<ReturnType<typeof echoClient.private> | null>(null);
     const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const typingThrottleRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -91,9 +91,9 @@ export function ConversationsProvider({ children }: { children: ReactNode }) {
     });
 
     const hostQueries = useQueries({
-        queries: establishments.map((est) => ({
+        queries: activities.map((est) => ({
             queryKey: QUERY_KEYS.estList(est.id),
-            queryFn: () => getEstablishmentConversations(est.id),
+            queryFn: () => getActivityConversations(est.id),
             enabled: !isAuthLoading,
         })),
     });
@@ -128,7 +128,7 @@ export function ConversationsProvider({ children }: { children: ReactNode }) {
         const q = searchQuery.trim().toLowerCase();
         return base.filter((c) => {
             const isOwner = c.userId === user?.id;
-            const name = isOwner ? (c.establishment?.name ?? "") : (c.user?.getFullName() ?? "");
+            const name = isOwner ? (c.activity?.name ?? "") : (c.user?.getFullName() ?? "");
             return name.toLowerCase().includes(q);
         });
     }, [activeFilter, ownerConversations, hostConversations, allConversations, searchQuery, user]);
@@ -161,11 +161,11 @@ export function ConversationsProvider({ children }: { children: ReactNode }) {
             const updater = (prev: ConversationModel[] | undefined) =>
                 replaceConversationLatestMessage(prev, conversationId, message, resetUnread);
             queryClient.setQueryData<ConversationModel[]>(QUERY_KEYS.personalList, updater);
-            establishments.forEach((est) => {
+            activities.forEach((est) => {
                 queryClient.setQueryData<ConversationModel[]>(QUERY_KEYS.estList(est.id), updater);
             });
         },
-        [queryClient, establishments],
+        [queryClient, activities],
     );
 
     const performSend = useCallback(

@@ -25,7 +25,7 @@ class NearbySection implements ExploreSection
         }
 
         $query
-            ->join('addresses as addr_nearby', 'addr_nearby.id', '=', 'establishments.address_id')
+            ->join('addresses as addr_nearby', 'addr_nearby.id', '=', 'activities.address_id')
             ->whereNotNull('addr_nearby.latitude')
             ->whereNotNull('addr_nearby.longitude')
             ->orderBy('distance')

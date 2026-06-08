@@ -10,7 +10,7 @@ import { StatusDot } from "./status-dot";
 import { getStatusLabel } from "../lib/utils";
 
 function BookingConfirmationCard({
-    establishmentName,
+    activityName,
     dateRange,
     avatarUrl,
     initials,
@@ -18,7 +18,7 @@ function BookingConfirmationCard({
     statusLabel,
     viewDetailsLabel,
 }: {
-    establishmentName: string;
+    activityName: string;
     dateRange: string;
     avatarUrl: string | null;
     initials: string;
@@ -34,7 +34,7 @@ function BookingConfirmationCard({
             </div>
             <div className="flex justify-between">
                 <div className="flex flex-col gap-0.5">
-                    <p className="text-sm font-semibold truncate">{establishmentName}</p>
+                    <p className="text-sm font-semibold truncate">{activityName}</p>
                     <span className="text-xs text-muted-foreground">{dateRange}</span>
                 </div>
                 {isCancelled && (
@@ -52,7 +52,7 @@ function BookingConfirmationCard({
                         <div className="aspect-video relative w-full overflow-hidden">
                             <Image
                                 src={avatarUrl}
-                                alt={establishmentName}
+                                alt={activityName}
                                 fill
                                 className="object-cover rounded-sm"
                             />
@@ -68,12 +68,12 @@ function BookingConfirmationCard({
 }
 
 function BookingRequestCard({
-    establishmentName,
+    activityName,
     avatarUrl,
     initials,
     statusLabel,
 }: {
-    establishmentName: string;
+    activityName: string;
     avatarUrl: string | null;
     initials: string;
     statusLabel: string;
@@ -82,7 +82,7 @@ function BookingRequestCard({
         <div className="flex items-center justify-between gap-2.5">
             <div className="flex flex-col min-w-0">
                 <p className="text-xs text-muted-foreground">{statusLabel}</p>
-                <p className="text-sm font-semibold truncate">{establishmentName}</p>
+                <p className="text-sm font-semibold truncate">{activityName}</p>
             </div>
             <Avatar size="sm">
                 {avatarUrl && (
@@ -99,22 +99,22 @@ export function BookingReferenceCard({ message }: { message: MessageModel }) {
     const locale = useLocale();
 
     const booking = message.booking;
-    const establishment = booking?.establishment ?? null;
-    const avatarUrl = establishment?.getAvatarUrl() ?? null;
-    const establishmentName = establishment?.name ?? "—";
-    const initials = establishmentName.slice(0, 2).toUpperCase();
-    const isEstablishment = message.senderType === "establishment";
+    const activity = booking?.activity ?? null;
+    const avatarUrl = activity?.getAvatarUrl() ?? null;
+    const activityName = activity?.name ?? "—";
+    const initials = activityName.slice(0, 2).toUpperCase();
+    const isActivity = message.senderType === "activity";
     const isCancelled = booking?.isCancelled() ?? false;
-    const statusLabel = getStatusLabel(t, isEstablishment, isCancelled);
+    const statusLabel = getStatusLabel(t, isActivity, isCancelled);
 
     return (
         <div
             data-slot="booking-reference-card"
             className="rounded-2xl border border-border/80 bg-card p-3 flex flex-col gap-2 w-56"
         >
-            {isEstablishment && booking ? (
+            {isActivity && booking ? (
                 <BookingConfirmationCard
-                    establishmentName={establishmentName}
+                    activityName={activityName}
                     dateRange={formatDateRangeCompact(
                         booking.checkInDate,
                         booking.checkOutDate,
@@ -128,7 +128,7 @@ export function BookingReferenceCard({ message }: { message: MessageModel }) {
                 />
             ) : (
                 <BookingRequestCard
-                    establishmentName={establishmentName}
+                    activityName={activityName}
                     avatarUrl={avatarUrl}
                     initials={initials}
                     statusLabel={statusLabel}

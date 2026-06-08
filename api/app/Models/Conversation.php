@@ -14,10 +14,10 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * @property string $user_id
- * @property string $establishment_id
+ * @property string $activity_id
  * @property Carbon|null $last_message_at
  * @property-read User|null $user
- * @property-read Establishment|null $establishment
+ * @property-read Activity|null $activity
  * @property-read Message|null $latestMessage
  */
 class Conversation extends Model
@@ -26,7 +26,7 @@ class Conversation extends Model
 
     protected $fillable = [
         'user_id',
-        'establishment_id',
+        'activity_id',
         'last_message_at',
     ];
 
@@ -42,9 +42,9 @@ class Conversation extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function establishment(): BelongsTo
+    public function activity(): BelongsTo
     {
-        return $this->belongsTo(Establishment::class);
+        return $this->belongsTo(Activity::class);
     }
 
     public function messages(): HasMany

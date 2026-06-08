@@ -21,7 +21,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property Carbon $check_in_date
  * @property Carbon $check_out_date
  * @property BookingStatusEnum $status
- * @property-read Establishment|null $establishment
+ * @property-read Activity|null $activity
  * @property-read Collection<int, Pet> $pets
  * @property-read Collection<int, Service> $services
  */
@@ -31,12 +31,12 @@ class Booking extends Model
 
     protected $fillable = [
         'user_id',
-        'establishment_id',
+        'activity_id',
         'check_in_date',
         'check_out_date',
         'total_price',
         'platform_fee',
-        'establishment_amount',
+        'activity_amount',
         'status',
         'special_requests',
         'stripe_payment_intent_id',
@@ -57,7 +57,7 @@ class Booking extends Model
             'check_out_date' => 'date',
             'total_price' => 'decimal:2',
             'platform_fee' => 'decimal:2',
-            'establishment_amount' => 'decimal:2',
+            'activity_amount' => 'decimal:2',
             'status' => BookingStatusEnum::class,
             'payment_status' => PaymentStatusEnum::class,
             'paid_at' => 'datetime',
@@ -71,9 +71,9 @@ class Booking extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function establishment(): BelongsTo
+    public function activity(): BelongsTo
     {
-        return $this->belongsTo(Establishment::class);
+        return $this->belongsTo(Activity::class);
     }
 
     public function pets(): BelongsToMany
@@ -109,8 +109,8 @@ class Booking extends Model
         return $this->hasOne(Review::class)->where('reviewer_type', ReviewerTypeEnum::USER->value);
     }
 
-    public function establishmentReview(): HasOne
+    public function activityReview(): HasOne
     {
-        return $this->hasOne(Review::class)->where('reviewer_type', ReviewerTypeEnum::ESTABLISHMENT->value);
+        return $this->hasOne(Review::class)->where('reviewer_type', ReviewerTypeEnum::ACTIVITY->value);
     }
 }

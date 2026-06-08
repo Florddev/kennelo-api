@@ -16,7 +16,7 @@ class Service extends Model
     use HasUuids;
 
     protected $fillable = [
-        'establishment_id',
+        'activity_id',
         'animal_type_id',
         'name',
         'description',
@@ -29,9 +29,9 @@ class Service extends Model
         'price' => 'decimal:2',
     ];
 
-    public function establishment(): BelongsTo
+    public function activity(): BelongsTo
     {
-        return $this->belongsTo(Establishment::class);
+        return $this->belongsTo(Activity::class);
     }
 
     public function animalType(): BelongsTo

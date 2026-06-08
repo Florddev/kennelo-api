@@ -26,7 +26,7 @@ class UserService
     {
         $perPage = $filters['per_page'] ?? PaginationEnum::DEFAULT_PAGINATION->value();
 
-        return User::with(['managedEstablishments', 'collaboratedEstablishments'])
+        return User::with(['managedActivities', 'collaboratedActivities'])
             ->when(isset($filters['search']), function ($q) use ($filters) {
                 $q->where(function ($q) use ($filters) {
                     $q->where('first_name', 'like', "%{$filters['search']}%")

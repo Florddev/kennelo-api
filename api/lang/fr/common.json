@@ -2,7 +2,7 @@
   "site": {
     "name": "Kennelo",
     "tagline": "Plateforme de gestion moderne et intuitive",
-    "description": "Gérez facilement vos établissements, réservations et collaborateurs avec Kennelo."
+    "description": "gérez facilement vos activités, réservations et collaborateurs avec Kennelo."
   },
   "home": {
     "cta": "Commencez votre expérience avec Kennelo dès aujourd'hui",
@@ -27,7 +27,7 @@
   "nav": {
     "home": "Accueil",
     "dashboard": "Tableau de bord",
-    "establishments": "Établissements",
+    "activities": "Activités",
     "users": "Utilisateurs",
     "profile": "Profil",
     "settings": "Paramètres",
@@ -63,7 +63,7 @@
   },
   "meta": {
     "title": "Kennelo",
-    "description": "Plateforme complète pour gérer vos établissements, réservations et équipes en toute simplicité."
+    "description": "Plateforme complète pour gérer vos activités, réservations et équipes en toute simplicité."
   },
   "dashboard": {
     "title": "Dashboard",

@@ -15,24 +15,24 @@ class ConversationSeeder extends Seeder
     {
         $userId = DB::table('users')->where('email', 'user@orus.com')->value('id');
         $managerId = DB::table('users')->where('email', 'manager@orus.com')->value('id');
-        $establishments = DB::table('establishments')->limit(2)->get();
+        $activities = DB::table('activities')->limit(2)->get();
 
-        $establishment1Id = $establishments[0]->id ?? null;
-        $establishment2Id = $establishments[1]->id ?? null;
+        $activity1Id = $activities[0]->id ?? null;
+        $activity2Id = $activities[1]->id ?? null;
 
         $bookings = DB::table('bookings')->get();
         $booking1Id = $bookings[0]->id ?? null; // Completed - Rex
         $booking2Id = $bookings[1]->id ?? null; // Confirmed - Rex + Minou
         $booking5Id = $bookings[4]->id ?? null; // Cancelled - Rex
 
-        if (! $establishment1Id || ! $userId) {
-            throw new \RuntimeException('Required data missing. Ensure UsersSeeder and EstablishmentSeeder ran successfully.');
+        if (! $activity1Id || ! $userId) {
+            throw new \RuntimeException('Required data missing. Ensure UsersSeeder and ActivitySeeder ran successfully.');
         }
 
         // === CONVERSATION 1 ===
         $existingConv1 = DB::table('conversations')
             ->where('user_id', $userId)
-            ->where('establishment_id', $establishment1Id)
+            ->where('activity_id', $activity1Id)
             ->first();
 
         if ($existingConv1) {
@@ -46,7 +46,7 @@ class ConversationSeeder extends Seeder
             DB::table('conversations')->insert([
                 'id' => $conversation1Id,
                 'user_id' => $userId,
-                'establishment_id' => $establishment1Id,
+                'activity_id' => $activity1Id,
                 'last_message_at' => Carbon::now()->subHours(2),
                 'created_at' => Carbon::now()->subDays(30),
                 'updated_at' => Carbon::now()->subHours(2),
@@ -73,7 +73,7 @@ class ConversationSeeder extends Seeder
             'conversation_id' => $conversation1Id,
             'booking_id' => null,
             'sender_id' => $managerId,
-            'sender_type' => 'establishment',
+            'sender_type' => 'activity',
             'message_type' => 'text',
             'content' => 'Bonjour ! Oui, nous acceptons les chiens de toutes tailles. Nous avons de l\'expérience avec les grandes races. N\'hésitez pas à me parler de votre chien !',
             'created_at' => Carbon::now()->subDays(30)->addHours(1),
@@ -95,13 +95,12 @@ class ConversationSeeder extends Seeder
                 'updated_at' => Carbon::now()->subDays(26),
             ]);
 
-            // Establishment confirms
             DB::table('messages')->insert([
                 'id' => (string) Str::uuid(),
                 'conversation_id' => $conversation1Id,
                 'booking_id' => $booking1Id,
                 'sender_id' => $managerId,
-                'sender_type' => 'establishment',
+                'sender_type' => 'activity',
                 'message_type' => 'booking_reference',
                 'content' => 'Votre réservation pour Rex est confirmée !',
                 'created_at' => Carbon::now()->subDays(25),
@@ -161,7 +160,7 @@ class ConversationSeeder extends Seeder
                 'conversation_id' => $conversation1Id,
                 'booking_id' => $booking1Id,
                 'sender_id' => $managerId,
-                'sender_type' => 'establishment',
+                'sender_type' => 'activity',
                 'message_type' => 'text',
                 'content' => 'Parfait, tout est en ordre ! Rex sera entre de bonnes mains.',
                 'created_at' => Carbon::now()->subDays(22)->addHours(2),
@@ -174,7 +173,7 @@ class ConversationSeeder extends Seeder
                 'conversation_id' => $conversation1Id,
                 'booking_id' => $booking1Id,
                 'sender_id' => $managerId,
-                'sender_type' => 'establishment',
+                'sender_type' => 'activity',
                 'message_type' => 'file',
                 'content' => 'Rex s\'amuse bien au parc !',
                 'created_at' => Carbon::now()->subDays(18),
@@ -220,13 +219,12 @@ class ConversationSeeder extends Seeder
                 'updated_at' => Carbon::now()->subDays(7),
             ]);
 
-            // Establishment refuses
             DB::table('messages')->insert([
                 'id' => (string) Str::uuid(),
                 'conversation_id' => $conversation1Id,
                 'booking_id' => $booking5Id,
                 'sender_id' => $managerId,
-                'sender_type' => 'establishment',
+                'sender_type' => 'activity',
                 'message_type' => 'booking_reference',
                 'content' => 'Désolé, nous ne pouvons pas honorer cette réservation sur ces dates, nous sommes complets.',
                 'created_at' => Carbon::now()->subDays(6),
@@ -261,13 +259,12 @@ class ConversationSeeder extends Seeder
                 'updated_at' => Carbon::now()->subDays(4),
             ]);
 
-            // Establishment confirms
             DB::table('messages')->insert([
                 'id' => (string) Str::uuid(),
                 'conversation_id' => $conversation1Id,
                 'booking_id' => $booking2Id,
                 'sender_id' => $managerId,
-                'sender_type' => 'establishment',
+                'sender_type' => 'activity',
                 'message_type' => 'booking_reference',
                 'content' => 'C\'est avec plaisir ! La réservation est confirmée pour Rex et Minou.',
                 'created_at' => Carbon::now()->subDays(3),
@@ -315,7 +312,7 @@ class ConversationSeeder extends Seeder
                 'conversation_id' => $conversation1Id,
                 'booking_id' => $booking2Id,
                 'sender_id' => $managerId,
-                'sender_type' => 'establishment',
+                'sender_type' => 'activity',
                 'message_type' => 'text',
                 'content' => 'Pas de souci ! Nous avons des espaces séparés et nous gérons cela régulièrement. Minou aura son propre espace tranquille.',
                 'created_at' => Carbon::now()->subHours(2),
@@ -337,10 +334,10 @@ class ConversationSeeder extends Seeder
         ]);
 
         // === CONVERSATION 2: Simple conversation without bookings ===
-        if ($establishment2Id) {
+        if ($activity2Id) {
             $existingConv2 = DB::table('conversations')
                 ->where('user_id', $userId)
-                ->where('establishment_id', $establishment2Id)
+                ->where('activity_id', $activity2Id)
                 ->first();
 
             if ($existingConv2) {
@@ -350,7 +347,7 @@ class ConversationSeeder extends Seeder
                 DB::table('conversations')->insert([
                     'id' => $conversation2Id,
                     'user_id' => $userId,
-                    'establishment_id' => $establishment2Id,
+                    'activity_id' => $activity2Id,
                     'last_message_at' => Carbon::now()->subDays(5),
                     'created_at' => Carbon::now()->subDays(10),
                     'updated_at' => Carbon::now()->subDays(5),
@@ -374,7 +371,7 @@ class ConversationSeeder extends Seeder
                 'conversation_id' => $conversation2Id,
                 'booking_id' => null,
                 'sender_id' => $managerId,
-                'sender_type' => 'establishment',
+                'sender_type' => 'activity',
                 'message_type' => 'text',
                 'content' => 'Bonjour ! Malheureusement, nous ne sommes pas équipés pour les oiseaux pour le moment. Désolé !',
                 'created_at' => Carbon::now()->subDays(10)->addHours(3),
@@ -416,7 +413,7 @@ class ConversationSeeder extends Seeder
             return;
         }
 
-        $establishments = DB::table('establishments')
+        $activities = DB::table('activities')
             ->where('manager_id', $managerId)
             ->orderBy('created_at')
             ->get();
@@ -432,10 +429,10 @@ class ConversationSeeder extends Seeder
             ],
         ];
 
-        foreach ($establishments as $index => $establishment) {
+        foreach ($activities as $index => $activity) {
             $existing = DB::table('conversations')
                 ->where('user_id', $userId)
-                ->where('establishment_id', $establishment->id)
+                ->where('activity_id', $activity->id)
                 ->first();
 
             if ($existing) {
@@ -448,7 +445,7 @@ class ConversationSeeder extends Seeder
             DB::table('conversations')->insert([
                 'id' => $conversationId,
                 'user_id' => $userId,
-                'establishment_id' => $establishment->id,
+                'activity_id' => $activity->id,
                 'last_message_at' => Carbon::now()->subDays($index + 1),
                 'created_at' => Carbon::now()->subDays($index + 8),
                 'updated_at' => Carbon::now()->subDays($index + 1),
@@ -471,7 +468,7 @@ class ConversationSeeder extends Seeder
                 'conversation_id' => $conversationId,
                 'booking_id' => null,
                 'sender_id' => $managerId,
-                'sender_type' => 'establishment',
+                'sender_type' => 'activity',
                 'message_type' => 'text',
                 'content' => $exchange[1],
                 'created_at' => Carbon::now()->subDays($index + 1),

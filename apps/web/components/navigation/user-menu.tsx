@@ -38,22 +38,22 @@ import { UserModel } from "@workspace/modules/users";
 
 interface UserMenuProps {
     user?: UserModel;
-    hasEstablishment?: boolean;
+    hasActivity?: boolean;
     className?: string;
 }
 
 function useHostSpaceHref() {
     const { routes } = useNavigation();
-    const { establishments, hasEstablishment } = useAuth();
+    const { activities, hasActivity } = useAuth();
 
-    if (!hasEstablishment) return undefined;
-    if (establishments.length === 1) {
-        return routes.EstablishmentDetails({ id: establishments[0]!.id });
+    if (!hasActivity) return undefined;
+    if (activities.length === 1) {
+        return routes.ActivityDetails({ id: activities[0]!.id });
     }
-    return routes.MyEstablishments();
+    return routes.MyActivities();
 }
 
-export default function UserMenu({ user, hasEstablishment, className }: UserMenuProps) {
+export default function UserMenu({ user, hasActivity, className }: UserMenuProps) {
     const { theme, setTheme } = useTheme();
     const { logout } = useAuth();
     const locale = useLocale() as Locale;
@@ -100,7 +100,7 @@ export default function UserMenu({ user, hasEstablishment, className }: UserMenu
                                 <span>{t("ui.navigation.settings")}</span>
                             </Link>
                         </DropdownMenuItem>
-                        {hasEstablishment && hostSpaceHref && (
+                        {hasActivity && hostSpaceHref && (
                             <DropdownMenuItem asChild>
                                 <Link href={hostSpaceHref} className="cursor-pointer">
                                     <Buildings className="h-4 w-4" />

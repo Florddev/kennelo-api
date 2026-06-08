@@ -6,8 +6,8 @@ namespace App\Services\Stripe;
 
 use App\Enums\BookingStatusEnum;
 use App\Enums\PaymentStatusEnum;
+use App\Models\Activity;
 use App\Models\Booking;
-use App\Models\Establishment;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -50,7 +50,7 @@ class StripeWebhookService
                 'stripe_onboarding_completed' => $onboardingCompleted,
             ]);
 
-        Establishment::where('stripe_account_id', $object->id)
+        Activity::where('stripe_account_id', $object->id)
             ->update([
                 'stripe_charges_enabled' => $object->charges_enabled,
                 'stripe_payouts_enabled' => $object->payouts_enabled,

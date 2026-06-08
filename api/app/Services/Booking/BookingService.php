@@ -6,14 +6,14 @@ namespace App\Services\Booking;
 
 use App\Enums\AvailabilityStatusEnum;
 use App\Enums\BookingStatusEnum;
+use App\Models\Activity;
 use App\Models\Booking;
 use App\Models\BookingThread;
 use App\Models\Conversation;
-use App\Models\Establishment;
-use App\Models\EstablishmentCapacity;
 use App\Models\Pet;
 use App\Models\Service;
 use App\Models\User;
+use App\Services\Activity\ActivityCycleService;
 use App\Services\Conversation\ConversationService;
 use App\Services\Stripe\StripeCustomerService;
 use Carbon\Carbon;
@@ -31,26 +31,27 @@ class BookingService
     public function __construct(
         private ConversationService $conversationService,
         private StripeClient $stripe,
-        private StripeCustomerService $customerService
+        private StripeCustomerService $customerService,
+        private ActivityCycleService $cycleService
     ) {}
 
     public function getUserBookings(User $user, array $filters = []): LengthAwarePaginator
     {
         $perPage = $filters['per_page'] ?? 15;
 
-        return Booking::with(['establishment', 'pets', 'services'])
+        return Booking::with(['activity', 'pets', 'services'])
             ->where('user_id', $user->id)
             ->when(isset($filters['status']), fn ($q) => $q->where('status', $filters['status']))
             ->latest()
             ->paginate($perPage);
     }
 
-    public function getEstablishmentBookings(Establishment $establishment, array $filters = []): LengthAwarePaginator
+    public function getActivityBookings(Activity $activity, array $filters = []): LengthAwarePaginator
     {
         $perPage = $filters['per_page'] ?? 15;
 
         return Booking::with(['user', 'pets', 'services'])
-            ->where('establishment_id', $establishment->id)
+            ->where('activity_id', $activity->id)
             ->when(isset($filters['status']), fn ($q) => $q->where('status', $filters['status']))
             ->when(isset($filters['date_from']), fn ($q) => $q->where('check_in_date', '>=', $filters['date_from']))
             ->when(isset($filters['date_to']), fn ($q) => $q->where('check_out_date', '<=', $filters['date_to']))
@@ -60,15 +61,11 @@ class BookingService
 
     public function create(User $user, array $data, string $paymentMethodId, bool $savePaymentMethod = false): Booking
     {
-        $establishment = Establishment::findOrFail($data['establishment_id']);
+        $activity = Activity::findOrFail($data['activity_id']);
 
-        $establishment->loadMissing('manager');
+        $activity->loadMissing('manager');
 
-        if (! $establishment->resolveChargesEnabled() || $establishment->resolveStripeAccountId() === null) {
-            throw ValidationException::withMessages([
-                'establishment_id' => ['This host cannot accept bookings yet. Their bank account is not connected.'],
-            ]);
-        }
+        $this->assertHostCanAcceptBookings($activity);
 
         $checkIn = Carbon::parse($data['check_in_date']);
         $checkOut = Carbon::parse($data['check_out_date']);
@@ -79,29 +76,23 @@ class BookingService
             ? Service::whereIn('id', $data['service_ids'])->get()
             : collect();
 
-        [$booking, $totalPrice] = DB::transaction(function () use ($user, $data, $establishment, $checkIn, $checkOut, $nights, $pets, $services): array {
-            $animalTypeIds = $pets->pluck('animal_type_id')->unique()->values();
+        [$booking, $totalPrice] = DB::transaction(function () use ($user, $data, $activity, $checkIn, $checkOut, $nights, $pets, $services): array {
+            $capacities = $this->resolveCapacities($activity, $checkIn);
 
-            $capacities = EstablishmentCapacity::where('establishment_id', $establishment->id)
-                ->whereIn('animal_type_id', $animalTypeIds)
-                ->lockForUpdate()
-                ->get()
-                ->keyBy('animal_type_id');
+            $this->validateAvailability($activity, $checkIn, $checkOut);
+            $this->validateCapacity($activity, $pets, $capacities, $checkIn, $checkOut);
 
-            $this->validateAvailability($establishment, $checkIn, $checkOut);
-            $this->validateCapacity($establishment, $pets, $capacities, $checkIn, $checkOut);
-
-            [$totalPrice, $platformFee, $establishmentAmount, $petPivots, $servicePivots] =
+            [$totalPrice, $platformFee, $activityAmount, $petPivots, $servicePivots] =
                 $this->calculatePrice($pets, $services, $capacities, (int) $nights);
 
             $booking = Booking::create([
                 'user_id' => $user->id,
-                'establishment_id' => $establishment->id,
+                'activity_id' => $activity->id,
                 'check_in_date' => $data['check_in_date'],
                 'check_out_date' => $data['check_out_date'],
                 'total_price' => $totalPrice,
                 'platform_fee' => $platformFee,
-                'establishment_amount' => $establishmentAmount,
+                'activity_amount' => $activityAmount,
                 'status' => BookingStatusEnum::PENDING,
                 'special_requests' => $data['special_requests'] ?? null,
             ]);
@@ -113,9 +104,9 @@ class BookingService
             }
 
             return [$booking->load([
-                'establishment.address',
-                'establishment.manager',
-                'establishment.collaborators',
+                'activity.address',
+                'activity.manager',
+                'activity.collaborators',
                 'pets',
                 'services',
             ]), $totalPrice];
@@ -141,12 +132,65 @@ class BookingService
         $this->conversationService->getOrCreateForBooking($user, $booking);
 
         return $booking->load([
-            'establishment.address',
-            'establishment.manager',
-            'establishment.collaborators',
+            'activity.address',
+            'activity.manager',
+            'activity.collaborators',
             'pets',
             'services',
         ]);
+    }
+
+    /**
+     * @return array{check_in_date: string, check_out_date: string, nights: int, total_price: string, platform_fee: string, activity_amount: string, pets: array<int, array<string, mixed>>, services: array<int, array<string, mixed>>}
+     */
+    public function quote(array $data): array
+    {
+        $activity = Activity::findOrFail($data['activity_id']);
+
+        $activity->loadMissing('manager');
+
+        $this->assertHostCanAcceptBookings($activity);
+
+        $checkIn = Carbon::parse($data['check_in_date']);
+        $checkOut = Carbon::parse($data['check_out_date']);
+        $nights = (int) $checkIn->diffInDays($checkOut);
+
+        $pets = Pet::whereIn('id', $data['pet_ids'])->get();
+        $services = ! empty($data['service_ids'])
+            ? Service::whereIn('id', $data['service_ids'])->get()
+            : collect();
+
+        $capacities = $this->resolveCapacities($activity, $checkIn);
+
+        $this->validateAvailability($activity, $checkIn, $checkOut);
+        $this->validateCapacity($activity, $pets, $capacities, $checkIn, $checkOut);
+
+        [$totalPrice, $platformFee, $activityAmount, $petPivots, $servicePivots] =
+            $this->calculatePrice($pets, $services, $capacities, $nights);
+
+        return [
+            'check_in_date' => $checkIn->toDateString(),
+            'check_out_date' => $checkOut->toDateString(),
+            'nights' => $nights,
+            'total_price' => $totalPrice,
+            'platform_fee' => $platformFee,
+            'activity_amount' => $activityAmount,
+            'pets' => $pets->map(fn (Pet $pet): array => [
+                'id' => $pet->id,
+                'name' => $pet->name,
+                'animal_type_id' => $pet->animal_type_id,
+                'price_per_night' => $petPivots[$pet->id]['price_per_night'],
+                'number_of_nights' => $petPivots[$pet->id]['number_of_nights'],
+                'subtotal' => $petPivots[$pet->id]['subtotal'],
+            ])->values()->all(),
+            'services' => $services->map(fn (Service $service): array => [
+                'id' => $service->id,
+                'name' => $service->name,
+                'quantity' => $servicePivots[$service->id]['quantity'],
+                'unit_price' => $servicePivots[$service->id]['unit_price'],
+                'subtotal' => $servicePivots[$service->id]['subtotal'],
+            ])->values()->all(),
+        ];
     }
 
     private function createConfirmedPaymentIntent(
@@ -172,7 +216,7 @@ class BookingService
             'metadata' => [
                 'booking_id' => $booking->id,
                 'user_id' => $user->id,
-                'establishment_id' => $booking->establishment_id,
+                'activity_id' => $booking->activity_id,
             ],
         ];
 
@@ -198,10 +242,10 @@ class BookingService
 
         $booking->update(['status' => BookingStatusEnum::CONFIRMED]);
 
-        $accountId = $booking->establishment->resolveStripeAccountId();
+        $accountId = $booking->activity->resolveStripeAccountId();
 
-        if ($accountId && $booking->stripe_charge_id && (float) $booking->establishment_amount > 0) {
-            $amountToTransfer = (int) bcmul((string) $booking->establishment_amount, '100', 0);
+        if ($accountId && $booking->stripe_charge_id && (float) $booking->activity_amount > 0) {
+            $amountToTransfer = (int) bcmul((string) $booking->activity_amount, '100', 0);
             $transfer = $this->stripe->transfers->create([
                 'amount' => $amountToTransfer,
                 'currency' => (string) config('services.stripe.currency', 'eur'),
@@ -246,7 +290,7 @@ class BookingService
         return $booking->fresh();
     }
 
-    public function rejectByEstablishment(Booking $booking, User $actor): Booking
+    public function rejectByActivity(Booking $booking, User $actor): Booking
     {
         $this->assertStatus($booking, [BookingStatusEnum::PENDING], 'reject');
 
@@ -259,22 +303,40 @@ class BookingService
         return $booking->fresh();
     }
 
-    private function validateAvailability(Establishment $establishment, Carbon $checkIn, Carbon $checkOut): void
+    private function resolveCapacities(Activity $activity, Carbon $checkIn): Collection
     {
-        $closedDays = $establishment->availabilities()
+        $cycle = $this->cycleService->resolveActiveCycle($activity, $checkIn->toDateString());
+
+        return $cycle === null
+            ? collect()
+            : $cycle->settings->keyBy('animal_type_id');
+    }
+
+    private function assertHostCanAcceptBookings(Activity $activity): void
+    {
+        if (! $activity->resolveChargesEnabled() || $activity->resolveStripeAccountId() === null) {
+            throw ValidationException::withMessages([
+                'activity_id' => ['This host cannot accept bookings yet. Their bank account is not connected.'],
+            ]);
+        }
+    }
+
+    private function validateAvailability(Activity $activity, Carbon $checkIn, Carbon $checkOut): void
+    {
+        $closedDays = $activity->availabilities()
             ->where('status', AvailabilityStatusEnum::CLOSED)
             ->whereBetween('date', [$checkIn->toDateString(), $checkOut->copy()->subDay()->toDateString()])
             ->exists();
 
         if ($closedDays) {
             throw ValidationException::withMessages([
-                'check_in_date' => ['The establishment is not available for the selected dates.'],
+                'check_in_date' => ['The activity is not available for the selected dates.'],
             ]);
         }
     }
 
     private function validateCapacity(
-        Establishment $establishment,
+        Activity $activity,
         Collection $pets,
         Collection $capacities,
         Carbon $checkIn,
@@ -286,7 +348,7 @@ class BookingService
             ->selectRaw('COUNT(*) as occupied_count')
             ->join('booking_pets', 'booking_pets.pet_id', '=', 'pets.id')
             ->join('bookings', 'bookings.id', '=', 'booking_pets.booking_id')
-            ->where('bookings.establishment_id', $establishment->id)
+            ->where('bookings.activity_id', $activity->id)
             ->whereIn('bookings.status', [BookingStatusEnum::CONFIRMED->value, BookingStatusEnum::IN_PROGRESS->value])
             ->where('bookings.check_in_date', '<', $checkOut->toDateString())
             ->where('bookings.check_out_date', '>', $checkIn->toDateString())
@@ -297,7 +359,7 @@ class BookingService
         foreach ($animalTypeCounts as $animalTypeId => $requestedCount) {
             if (! $capacities->has($animalTypeId)) {
                 throw ValidationException::withMessages([
-                    'pet_ids' => ['The establishment does not accept this animal type.'],
+                    'pet_ids' => ['The activity does not accept this animal type.'],
                 ]);
             }
 
@@ -306,7 +368,7 @@ class BookingService
 
             if (($occupied + $requestedCount) > $maxCapacity) {
                 throw ValidationException::withMessages([
-                    'pet_ids' => ['The establishment does not have enough capacity for the selected dates.'],
+                    'pet_ids' => ['The activity does not have enough capacity for the selected dates.'],
                 ]);
             }
         }
@@ -325,7 +387,7 @@ class BookingService
         $totalPrice = '0.00';
 
         foreach ($pets as $pet) {
-            $pricePerNight = (string) $capacities->get($pet->animal_type_id)->price_per_night;
+            $pricePerNight = (string) $capacities->get($pet->animal_type_id)->price;
             $subtotal = bcmul($pricePerNight, (string) $nights, 2);
             $totalPrice = bcadd($totalPrice, $subtotal, 2);
 
@@ -350,9 +412,9 @@ class BookingService
         }
 
         $platformFee = bcmul($totalPrice, '0.10', 2);
-        $establishmentAmount = bcsub($totalPrice, $platformFee, 2);
+        $activityAmount = bcsub($totalPrice, $platformFee, 2);
 
-        return [$totalPrice, $platformFee, $establishmentAmount, $petPivots, $servicePivots];
+        return [$totalPrice, $platformFee, $activityAmount, $petPivots, $servicePivots];
     }
 
     private function sendBookingReferenceIfConversationExists(Booking $booking, User $actor): void

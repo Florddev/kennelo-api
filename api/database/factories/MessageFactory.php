@@ -27,9 +27,9 @@ class MessageFactory extends Factory
         ];
     }
 
-    public function fromEstablishment(): static
+    public function fromActivity(): static
     {
-        return $this->state(['sender_type' => SenderTypeEnum::ESTABLISHMENT]);
+        return $this->state(['sender_type' => SenderTypeEnum::ACTIVITY]);
     }
 
     public function system(): static

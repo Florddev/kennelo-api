@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Activity\ActivityAvailabilityController;
+use App\Http\Controllers\Activity\ActivityController;
+use App\Http\Controllers\Activity\ActivityCycleController;
+use App\Http\Controllers\Activity\ActivityDashboardController;
+use App\Http\Controllers\Activity\ActivityImageController;
+use App\Http\Controllers\Activity\StripeConnectController;
+use App\Http\Controllers\Booking\ActivityBookingController;
 use App\Http\Controllers\Booking\BookingController;
-use App\Http\Controllers\Booking\EstablishmentBookingController;
+use App\Http\Controllers\Conversation\ActivityConversationController;
 use App\Http\Controllers\Conversation\ConversationController;
-use App\Http\Controllers\Conversation\EstablishmentConversationController;
 use App\Http\Controllers\Conversation\MessageController;
-use App\Http\Controllers\Establishment\EstablishmentAvailabilityController;
-use App\Http\Controllers\Establishment\EstablishmentCapacityController;
-use App\Http\Controllers\Establishment\EstablishmentController;
-use App\Http\Controllers\Establishment\EstablishmentDashboardController;
-use App\Http\Controllers\Establishment\EstablishmentImageController;
-use App\Http\Controllers\Establishment\StripeConnectController;
 use App\Http\Controllers\Explore\ExploreController;
 use App\Http\Controllers\PaymentMethod\PaymentMethodController;
 use App\Http\Controllers\Pet\AnimalTypeController;
@@ -20,9 +20,9 @@ use App\Http\Controllers\Pet\PetAttributeController;
 use App\Http\Controllers\Pet\PetController;
 use App\Http\Controllers\Pet\PetImageController;
 use App\Http\Controllers\Pet\PetReviewController;
+use App\Http\Controllers\Review\ActivityReviewController;
 use App\Http\Controllers\Review\Admin\ReviewReportController as AdminReviewReportController;
 use App\Http\Controllers\Review\BookingReviewController;
-use App\Http\Controllers\Review\EstablishmentReviewController;
 use App\Http\Controllers\Review\MyReviewController;
 use App\Http\Controllers\Review\ReviewController;
 use App\Http\Controllers\Review\ReviewCriteriaController;
@@ -37,44 +37,48 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/test', [TestController::class, 'index']);
 Route::get('/animal-types', [AnimalTypeController::class, 'index']);
-Route::get('/explore/establishments', [ExploreController::class, 'establishments']);
-Route::get('/explore/establishments/sections/{sectionId}', [ExploreController::class, 'sectionPage']);
+Route::get('/explore/activities', [ExploreController::class, 'activities']);
+Route::get('/explore/activities/sections/{sectionId}', [ExploreController::class, 'sectionPage']);
 Route::get('/explore/search', [ExploreController::class, 'search']);
 Route::post('/webhooks/stripe', [StripeWebhookController::class, 'handle']);
 
 Route::middleware(['auth.jwt'])->group(function () {
-    // Establishments
-    Route::apiResource('establishments', EstablishmentController::class);
-    Route::put('/establishments/{establishment}/collaborators/{user}/permissions', [EstablishmentController::class, 'syncCollaboratorPermissions']);
-    Route::get('/establishments/{establishment}/dashboard', [EstablishmentDashboardController::class, 'show']);
-    Route::get('/establishments/{establishment}/availabilities', [EstablishmentAvailabilityController::class, 'index']);
-    Route::get('/establishments/{establishment}/availabilities/range', [EstablishmentAvailabilityController::class, 'range']);
-    Route::post('/establishments/{establishment}/availabilities', [EstablishmentAvailabilityController::class, 'store']);
-    Route::post('/establishments/{establishment}/availabilities/bulk', [EstablishmentAvailabilityController::class, 'bulk']);
-    Route::put('/establishments/{establishment}/availabilities/{availability}', [EstablishmentAvailabilityController::class, 'update']);
-    Route::delete('/establishments/{establishment}/availabilities/{availability}', [EstablishmentAvailabilityController::class, 'destroy']);
-    Route::get('/establishments/{establishment}/capacities', [EstablishmentCapacityController::class, 'index']);
-    Route::post('/establishments/{establishment}/capacities', [EstablishmentCapacityController::class, 'store']);
-    Route::put('/establishments/{establishment}/capacities/{capacity}', [EstablishmentCapacityController::class, 'update']);
-    Route::delete('/establishments/{establishment}/capacities/{capacity}', [EstablishmentCapacityController::class, 'destroy']);
-    Route::post('/establishments/{establishment}/avatar', [EstablishmentImageController::class, 'uploadAvatar']);
-    Route::get('/establishments/{establishment}/images', [EstablishmentImageController::class, 'index']);
-    Route::post('/establishments/{establishment}/images', [EstablishmentImageController::class, 'store']);
-    Route::post('/establishments/{establishment}/images/bulk', [EstablishmentImageController::class, 'storeBulk']);
-    Route::delete('/establishments/{establishment}/images/{media}', [EstablishmentImageController::class, 'destroy']);
+    // Activities
+    Route::apiResource('activities', ActivityController::class);
+    Route::put('/activities/{activity}/collaborators/{user}/permissions', [ActivityController::class, 'syncCollaboratorPermissions']);
+    Route::get('/activities/{activity}/dashboard', [ActivityDashboardController::class, 'show']);
+    Route::get('/activities/{activity}/availabilities', [ActivityAvailabilityController::class, 'index']);
+    Route::get('/activities/{activity}/availabilities/range', [ActivityAvailabilityController::class, 'range']);
+    Route::post('/activities/{activity}/availabilities', [ActivityAvailabilityController::class, 'store']);
+    Route::post('/activities/{activity}/availabilities/bulk', [ActivityAvailabilityController::class, 'bulk']);
+    Route::put('/activities/{activity}/availabilities/{availability}', [ActivityAvailabilityController::class, 'update']);
+    Route::delete('/activities/{activity}/availabilities/{availability}', [ActivityAvailabilityController::class, 'destroy']);
+    Route::get('/activities/{activity}/cycle-settings', [ActivityCycleController::class, 'settingsIndex']);
+    Route::get('/activities/{activity}/cycles', [ActivityCycleController::class, 'index']);
+    Route::post('/activities/{activity}/cycles', [ActivityCycleController::class, 'store']);
+    Route::put('/activities/{activity}/cycles/{cycle}', [ActivityCycleController::class, 'update']);
+    Route::delete('/activities/{activity}/cycles/{cycle}', [ActivityCycleController::class, 'destroy']);
+    Route::put('/activities/{activity}/cycles/{cycle}/settings', [ActivityCycleController::class, 'settings']);
+    Route::put('/activities/{activity}/cycles/{cycle}/closed-week-days', [ActivityCycleController::class, 'closedWeekDays']);
+    Route::post('/activities/{activity}/avatar', [ActivityImageController::class, 'uploadAvatar']);
+    Route::get('/activities/{activity}/images', [ActivityImageController::class, 'index']);
+    Route::post('/activities/{activity}/images', [ActivityImageController::class, 'store']);
+    Route::post('/activities/{activity}/images/bulk', [ActivityImageController::class, 'storeBulk']);
+    Route::delete('/activities/{activity}/images/{media}', [ActivityImageController::class, 'destroy']);
 
-    Route::post('/establishments/{establishment}/stripe/onboarding-link', [StripeConnectController::class, 'onboardingLink']);
-    Route::get('/establishments/{establishment}/stripe/status', [StripeConnectController::class, 'status']);
+    Route::post('/activities/{activity}/stripe/onboarding-link', [StripeConnectController::class, 'onboardingLink']);
+    Route::get('/activities/{activity}/stripe/status', [StripeConnectController::class, 'status']);
 
     // Bookings (user)
+    Route::post('/bookings/quote', [BookingController::class, 'quote']);
     Route::apiResource('bookings', BookingController::class)->only(['index', 'show', 'store']);
     Route::put('/bookings/{booking}/cancel', [BookingController::class, 'cancel']);
 
-    // Bookings (establishment)
-    Route::get('/establishments/{establishment}/bookings', [EstablishmentBookingController::class, 'index']);
-    Route::put('/establishments/{establishment}/bookings/{booking}/confirm', [EstablishmentBookingController::class, 'confirm']);
-    Route::put('/establishments/{establishment}/bookings/{booking}/cancel', [EstablishmentBookingController::class, 'cancel']);
-    Route::put('/establishments/{establishment}/bookings/{booking}/complete', [EstablishmentBookingController::class, 'complete']);
+    // Bookings (activity)
+    Route::get('/activities/{activity}/bookings', [ActivityBookingController::class, 'index']);
+    Route::put('/activities/{activity}/bookings/{booking}/confirm', [ActivityBookingController::class, 'confirm']);
+    Route::put('/activities/{activity}/bookings/{booking}/cancel', [ActivityBookingController::class, 'cancel']);
+    Route::put('/activities/{activity}/bookings/{booking}/complete', [ActivityBookingController::class, 'complete']);
 
     // Pets
     Route::apiResource('pets', PetController::class);
@@ -100,8 +104,8 @@ Route::middleware(['auth.jwt'])->group(function () {
     Route::get('/conversations/{conversation}', [ConversationController::class, 'show']);
     Route::post('/bookings/{booking}/conversation', [ConversationController::class, 'storeForBooking']);
 
-    // Conversations (establishment)
-    Route::get('/establishments/{establishment}/conversations', [EstablishmentConversationController::class, 'index']);
+    // Conversations (activity)
+    Route::get('/activities/{activity}/conversations', [ActivityConversationController::class, 'index']);
 
     // Messages
     Route::get('/conversations/{conversation}/messages', [MessageController::class, 'index']);
@@ -110,7 +114,7 @@ Route::middleware(['auth.jwt'])->group(function () {
 
     // Reviews
     Route::get('/review-criteria', [ReviewCriteriaController::class, 'index']);
-    Route::get('/establishments/{establishment}/reviews', [EstablishmentReviewController::class, 'index']);
+    Route::get('/activities/{activity}/reviews', [ActivityReviewController::class, 'index']);
     Route::get('/users/{user}/reviews', [UserReviewController::class, 'index']);
     Route::get('/reviews/{review}', [ReviewController::class, 'show']);
     Route::post('/bookings/{booking}/reviews', [BookingReviewController::class, 'store']);

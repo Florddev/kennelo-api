@@ -36,7 +36,7 @@ class ConversationController extends Controller
     {
         $this->authorize('view', $conversation);
 
-        $conversation->load(['user', 'establishment', 'latestMessage.sender', 'bookingThreads.booking']);
+        $conversation->load(['user', 'activity', 'latestMessage.sender', 'bookingThreads.booking']);
 
         return (new ConversationResource($conversation))
             ->additional(['status' => ApiStatusEnum::SUCCESS, 'timestamp' => human_date(now())])

@@ -38,8 +38,8 @@ class Address extends Model
         return $this->hasOne(User::class);
     }
 
-    public function establishments(): HasMany
+    public function activities(): HasMany
     {
-        return $this->hasMany(Establishment::class);
+        return $this->hasMany(Activity::class);
     }
 }

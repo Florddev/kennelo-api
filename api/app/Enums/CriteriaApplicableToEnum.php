@@ -7,7 +7,7 @@ namespace App\Enums;
 enum CriteriaApplicableToEnum: string
 {
     case USER = 'user';
-    case ESTABLISHMENT = 'establishment';
+    case ACTIVITY = 'activity';
     case BOTH = 'both';
 
     public function matchesTarget(ReviewerTypeEnum $reviewerType): bool
@@ -17,8 +17,8 @@ enum CriteriaApplicableToEnum: string
         }
 
         return match ($reviewerType) {
-            ReviewerTypeEnum::USER => $this === self::ESTABLISHMENT,
-            ReviewerTypeEnum::ESTABLISHMENT => $this === self::USER,
+            ReviewerTypeEnum::USER => $this === self::ACTIVITY,
+            ReviewerTypeEnum::ACTIVITY => $this === self::USER,
         };
     }
 }

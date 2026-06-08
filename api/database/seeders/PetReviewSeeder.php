@@ -6,8 +6,8 @@ namespace Database\Seeders;
 
 use App\Enums\BookingStatusEnum;
 use App\Enums\ReviewerTypeEnum;
+use App\Models\Activity;
 use App\Models\Booking;
-use App\Models\Establishment;
 use App\Models\Pet;
 use App\Models\Review;
 use App\Models\User;
@@ -24,9 +24,9 @@ class PetReviewSeeder extends Seeder
             throw new \RuntimeException('User user@orus.com not found. Run UsersSeeder first.');
         }
 
-        $establishment = Establishment::first();
-        if (! $establishment) {
-            throw new \RuntimeException('No establishment found. Run EstablishmentSeeder first.');
+        $activity = Activity::first();
+        if (! $activity) {
+            throw new \RuntimeException('No activity found. Run ActivitySeeder first.');
         }
 
         $pets = Pet::whereIn('name', ['Rex', 'Minou', 'Luna', 'Caramel'])->pluck('id', 'name');
@@ -76,7 +76,7 @@ class PetReviewSeeder extends Seeder
 
             $booking = Booking::create([
                 'user_id' => $petOwner->id,
-                'establishment_id' => $establishment->id,
+                'activity_id' => $activity->id,
                 'check_in_date' => Carbon::now()->subDays($daysAgo + $nights)->format('Y-m-d'),
                 'check_out_date' => Carbon::now()->subDays($daysAgo)->format('Y-m-d'),
                 'total_price' => $nights * 30.00,
@@ -92,7 +92,7 @@ class PetReviewSeeder extends Seeder
             Review::create([
                 'booking_id' => $booking->id,
                 'reviewer_id' => $host->id,
-                'reviewer_type' => ReviewerTypeEnum::ESTABLISHMENT,
+                'reviewer_type' => ReviewerTypeEnum::ACTIVITY,
                 'overall_rating' => $data['rating'],
                 'comment' => $data['comment'],
                 'would_recommend' => true,

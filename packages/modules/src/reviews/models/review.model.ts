@@ -47,8 +47,8 @@ export class ReviewModel {
         return this.reviewerType === "user";
     }
 
-    isEstablishmentReview(): boolean {
-        return this.reviewerType === "establishment";
+    isActivityReview(): boolean {
+        return this.reviewerType === "activity";
     }
 
     hasResponse(): boolean {

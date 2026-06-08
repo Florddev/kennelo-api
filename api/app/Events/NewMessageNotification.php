@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Events;
 
-use App\Enums\EstablishmentPermissionEnum;
+use App\Enums\ActivityPermissionEnum;
 use App\Models\Message;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
@@ -23,7 +23,7 @@ class NewMessageNotification implements ShouldBroadcast
     /** @return array<int, PrivateChannel> */
     public function broadcastOn(): array
     {
-        $this->message->loadMissing('conversation.establishment.collaboratorPermissions');
+        $this->message->loadMissing('conversation.activity.collaboratorPermissions');
         $conversation = $this->message->conversation;
         $senderId = (string) $this->message->sender_id;
         $channels = [];
@@ -32,15 +32,15 @@ class NewMessageNotification implements ShouldBroadcast
             $channels[] = new PrivateChannel('user.'.$conversation->user_id);
         }
 
-        $establishment = $conversation->establishment;
+        $activity = $conversation->activity;
 
-        if ($establishment && $senderId !== (string) $establishment->manager_id) {
-            $channels[] = new PrivateChannel('user.'.$establishment->manager_id);
+        if ($activity && $senderId !== (string) $activity->manager_id) {
+            $channels[] = new PrivateChannel('user.'.$activity->manager_id);
         }
 
-        if ($establishment) {
-            $collaboratorIds = $establishment->collaboratorPermissions
-                ->where('permission', EstablishmentPermissionEnum::MANAGE_MESSAGES->value)
+        if ($activity) {
+            $collaboratorIds = $activity->collaboratorPermissions
+                ->where('permission', ActivityPermissionEnum::MANAGE_MESSAGES->value)
                 ->pluck('user_id')
                 ->unique()
                 ->reject(fn (string $id) => $id === $senderId);

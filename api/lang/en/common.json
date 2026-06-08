@@ -2,7 +2,7 @@
   "site": {
     "name": "Kennelo",
     "tagline": "Modern and intuitive management platform",
-    "description": "Easily manage your establishments, bookings and collaborators with Kennelo."
+    "description": "Easily manage your activities, bookings and collaborators with Kennelo."
   },
   "home": {
     "cta": "Start your Kennelo experience today",
@@ -27,7 +27,7 @@
   "nav": {
     "home": "Home",
     "dashboard": "Dashboard",
-    "establishments": "Establishments",
+    "activities": "Activities",
     "users": "Users",
     "profile": "Profile",
     "settings": "Settings",
@@ -62,8 +62,8 @@
     "import": "Import"
   },
   "meta": {
-    "title": "Kennelo - Establishment Management",
-    "description": "Complete platform to manage your establishments, bookings and teams with ease."
+    "title": "Kennelo - Activity Management",
+    "description": "Complete platform to manage your activities, bookings and teams with ease."
   },
   "dashboard": {
     "title": "Dashboard",

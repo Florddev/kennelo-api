@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 
 export const QUERY_KEYS = {
     personalList: ["conversations", "list", "personal"],
-    estList: (estId: string) => ["conversations", "list", "establishment", estId],
+    estList: (estId: string) => ["conversations", "list", "activity", estId],
     allLists: ["conversations", "list"],
     messages: (convId: string | undefined) => ["conversations", "messages", convId],
 };
@@ -47,10 +47,10 @@ export function prependMessageToPages(
 
 export function getStatusLabel(
     t: ReturnType<typeof useTranslations>,
-    isEstablishment: boolean,
+    isActivity: boolean,
     isCancelled: boolean,
 ): string {
-    if (!isEstablishment) return t("features.conversations.bookingReference.requestMade");
+    if (!isActivity) return t("features.conversations.bookingReference.requestMade");
     if (isCancelled) return t("features.conversations.bookingReference.refused");
     return t("features.conversations.bookingReference.confirmed");
 }

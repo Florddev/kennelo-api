@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
+use App\Models\Activity;
 use App\Models\Booking;
 use App\Models\Conversation;
-use App\Models\Establishment;
 use App\Models\Message;
 use App\Models\User;
 use Illuminate\Support\Facades\Event;
@@ -56,10 +56,10 @@ it('user cannot view another user conversation', function () {
         ->assertForbidden();
 });
 
-it('establishment manager can view conversation', function () {
+it('activity manager can view conversation', function () {
     $manager = User::factory()->create();
-    $establishment = Establishment::factory()->create(['manager_id' => $manager->id]);
-    $conversation = Conversation::factory()->create(['establishment_id' => $establishment->id]);
+    $activity = Activity::factory()->create(['manager_id' => $manager->id]);
+    $conversation = Conversation::factory()->create(['activity_id' => $activity->id]);
 
     $this->withHeaders(asUser($manager))
         ->getJson("/api/conversations/{$conversation->id}")
@@ -70,17 +70,17 @@ it('user can get or create conversation for their booking', function () {
     Event::fake();
 
     $user = User::factory()->create();
-    $establishment = Establishment::factory()->create();
+    $activity = Activity::factory()->create();
     $booking = Booking::factory()->create([
         'user_id' => $user->id,
-        'establishment_id' => $establishment->id,
+        'activity_id' => $activity->id,
     ]);
 
     $this->withHeaders(asUser($user))
         ->postJson("/api/bookings/{$booking->id}/conversation")
         ->assertOk()
         ->assertJsonPath('data.user_id', $user->id)
-        ->assertJsonPath('data.establishment_id', $establishment->id);
+        ->assertJsonPath('data.activity_id', $activity->id);
 });
 
 it('user cannot create conversation for another user booking', function () {
@@ -97,10 +97,10 @@ it('calling storeForBooking twice returns same conversation', function () {
     Event::fake();
 
     $user = User::factory()->create();
-    $establishment = Establishment::factory()->create();
+    $activity = Activity::factory()->create();
     $booking = Booking::factory()->create([
         'user_id' => $user->id,
-        'establishment_id' => $establishment->id,
+        'activity_id' => $activity->id,
     ]);
 
     $response1 = $this->withHeaders(asUser($user))
@@ -114,23 +114,23 @@ it('calling storeForBooking twice returns same conversation', function () {
     expect($response1->json('data.id'))->toBe($response2->json('data.id'));
 });
 
-it('establishment manager can list establishment conversations', function () {
+it('activity manager can list activity conversations', function () {
     $manager = User::factory()->create();
-    $establishment = Establishment::factory()->create(['manager_id' => $manager->id]);
-    Conversation::factory()->count(3)->create(['establishment_id' => $establishment->id]);
+    $activity = Activity::factory()->create(['manager_id' => $manager->id]);
+    Conversation::factory()->count(3)->create(['activity_id' => $activity->id]);
 
     $this->withHeaders(asUser($manager))
-        ->getJson("/api/establishments/{$establishment->id}/conversations")
+        ->getJson("/api/activities/{$activity->id}/conversations")
         ->assertOk()
         ->assertJsonCount(3, 'data');
 });
 
-it('non manager cannot list establishment conversations', function () {
+it('non manager cannot list activity conversations', function () {
     $user = User::factory()->create();
-    $establishment = Establishment::factory()->create();
+    $activity = Activity::factory()->create();
 
     $this->withHeaders(asUser($user))
-        ->getJson("/api/establishments/{$establishment->id}/conversations")
+        ->getJson("/api/activities/{$activity->id}/conversations")
         ->assertForbidden();
 });
 

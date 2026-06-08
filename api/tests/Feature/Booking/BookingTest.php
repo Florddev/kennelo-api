@@ -6,12 +6,14 @@ use App\Enums\AvailabilityStatusEnum;
 use App\Enums\BookingStatusEnum;
 use App\Enums\MessageTypeEnum;
 use App\Enums\SenderTypeEnum;
+use App\Enums\WeekDayEnum;
+use App\Models\Activity;
+use App\Models\ActivityAvailability;
+use App\Models\ActivityCycle;
+use App\Models\ActivityCycleSetting;
 use App\Models\AnimalType;
 use App\Models\Booking;
 use App\Models\BookingThread;
-use App\Models\Establishment;
-use App\Models\EstablishmentAvailability;
-use App\Models\EstablishmentCapacity;
 use App\Models\Message;
 use App\Models\Pet;
 use App\Models\User;
@@ -22,7 +24,7 @@ use Tests\Support\FakeStripeClient;
 function makeBookingFixtures(): array
 {
     $manager = User::factory()->create();
-    $establishment = Establishment::factory()->create([
+    $activity = Activity::factory()->create([
         'manager_id' => $manager->id,
         'is_active' => true,
         'stripe_account_id' => 'acct_test_'.uniqid(),
@@ -30,14 +32,23 @@ function makeBookingFixtures(): array
     ]);
     $animalType = AnimalType::create(['code' => 'dog_'.uniqid(), 'name' => 'Chien', 'category' => 'mammals']);
 
-    EstablishmentCapacity::create([
-        'establishment_id' => $establishment->id,
-        'animal_type_id' => $animalType->id,
-        'max_capacity' => 5,
-        'price_per_night' => 30.00,
+    $activityCycle = ActivityCycle::create([
+        'activity_id' => $activity->id,
+        'is_active' => true,
+        'priority' => 0,
+        'start_date' => null,
+        'end_date' => null,
     ]);
 
-    return [$manager, $establishment, $animalType];
+    ActivityCycleSetting::create([
+        'activity_cycle_id' => $activityCycle->id,
+        'animal_type_id' => $animalType->id,
+        'max_capacity' => 5,
+        'price' => 30.00,
+        'sum_weekdays' => WeekDayEnum::ALL,
+    ]);
+
+    return [$manager, $activity, $animalType];
 }
 
 function fakeStripe(): void
@@ -103,12 +114,12 @@ it('authenticated user can create a booking', function () {
     fakeStripe();
 
     $user = User::factory()->create();
-    [$manager, $establishment, $animalType] = makeBookingFixtures();
+    [$manager, $activity, $animalType] = makeBookingFixtures();
     $pet = Pet::create(['user_id' => $user->id, 'animal_type_id' => $animalType->id, 'name' => 'Rex']);
 
     $this->withHeaders(asUser($user))
         ->postJson('/api/bookings', [
-            'establishment_id' => $establishment->id,
+            'activity_id' => $activity->id,
             'check_in_date' => now()->addDays(10)->format('Y-m-d'),
             'check_out_date' => now()->addDays(13)->format('Y-m-d'),
             'pet_ids' => [$pet->id],
@@ -116,23 +127,23 @@ it('authenticated user can create a booking', function () {
         ])
         ->assertCreated()
         ->assertJsonPath('data.status', BookingStatusEnum::PENDING->value)
-        ->assertJsonPath('data.establishment_id', $establishment->id);
+        ->assertJsonPath('data.activity_id', $activity->id);
 });
 
 it('booking creation fails if a day is closed', function () {
     $user = User::factory()->create();
-    [$manager, $establishment, $animalType] = makeBookingFixtures();
+    [$manager, $activity, $animalType] = makeBookingFixtures();
     $pet = Pet::create(['user_id' => $user->id, 'animal_type_id' => $animalType->id, 'name' => 'Rex']);
 
-    EstablishmentAvailability::create([
-        'establishment_id' => $establishment->id,
+    ActivityAvailability::create([
+        'activity_id' => $activity->id,
         'date' => now()->addDays(11)->format('Y-m-d'),
         'status' => AvailabilityStatusEnum::CLOSED,
     ]);
 
     $this->withHeaders(asUser($user))
         ->postJson('/api/bookings', [
-            'establishment_id' => $establishment->id,
+            'activity_id' => $activity->id,
             'check_in_date' => now()->addDays(10)->format('Y-m-d'),
             'check_out_date' => now()->addDays(13)->format('Y-m-d'),
             'pet_ids' => [$pet->id],
@@ -144,9 +155,9 @@ it('booking creation fails if a day is closed', function () {
 
 it('booking creation fails if capacity is exceeded', function () {
     $user = User::factory()->create();
-    [$manager, $establishment, $animalType] = makeBookingFixtures();
+    [$manager, $activity, $animalType] = makeBookingFixtures();
 
-    EstablishmentCapacity::where('establishment_id', $establishment->id)
+    ActivityCycleSetting::whereHas('cycle', fn ($query) => $query->where('activity_id', $activity->id))
         ->where('animal_type_id', $animalType->id)
         ->update(['max_capacity' => 1]);
 
@@ -155,7 +166,7 @@ it('booking creation fails if capacity is exceeded', function () {
 
     $this->withHeaders(asUser($user))
         ->postJson('/api/bookings', [
-            'establishment_id' => $establishment->id,
+            'activity_id' => $activity->id,
             'check_in_date' => now()->addDays(10)->format('Y-m-d'),
             'check_out_date' => now()->addDays(13)->format('Y-m-d'),
             'pet_ids' => [$pet1->id, $pet2->id],
@@ -174,12 +185,12 @@ it('booking creation automatically creates a thread and a booking reference mess
     fakeStripe();
 
     $user = User::factory()->create();
-    [$manager, $establishment, $animalType] = makeBookingFixtures();
+    [$manager, $activity, $animalType] = makeBookingFixtures();
     $pet = Pet::create(['user_id' => $user->id, 'animal_type_id' => $animalType->id, 'name' => 'Rex']);
 
     $this->withHeaders(asUser($user))
         ->postJson('/api/bookings', [
-            'establishment_id' => $establishment->id,
+            'activity_id' => $activity->id,
             'check_in_date' => now()->addDays(10)->format('Y-m-d'),
             'check_out_date' => now()->addDays(13)->format('Y-m-d'),
             'pet_ids' => [$pet->id],
@@ -201,12 +212,12 @@ it('booking creation automatically creates a thread and a booking reference mess
 it('user cannot book with another user pets', function () {
     $user = User::factory()->create();
     $other = User::factory()->create();
-    [$manager, $establishment, $animalType] = makeBookingFixtures();
+    [$manager, $activity, $animalType] = makeBookingFixtures();
     $pet = Pet::create(['user_id' => $other->id, 'animal_type_id' => $animalType->id, 'name' => 'Rex']);
 
     $this->withHeaders(asUser($user))
         ->postJson('/api/bookings', [
-            'establishment_id' => $establishment->id,
+            'activity_id' => $activity->id,
             'check_in_date' => now()->addDays(10)->format('Y-m-d'),
             'check_out_date' => now()->addDays(13)->format('Y-m-d'),
             'pet_ids' => [$pet->id],

@@ -36,9 +36,9 @@ class ReviewFactory extends Factory
         return $this->state(['reviewer_type' => ReviewerTypeEnum::USER]);
     }
 
-    public function fromEstablishment(): static
+    public function fromActivity(): static
     {
-        return $this->state(['reviewer_type' => ReviewerTypeEnum::ESTABLISHMENT]);
+        return $this->state(['reviewer_type' => ReviewerTypeEnum::ACTIVITY]);
     }
 
     public function published(): static

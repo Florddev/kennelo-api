@@ -1,6 +1,6 @@
 import type { BookingStatus } from "@workspace/modules/bookings";
 
-export type EstablishmentColor = {
+export type ActivityColor = {
     barBg: string;
     barHoverBg: string;
     barText: string;
@@ -10,7 +10,7 @@ export type EstablishmentColor = {
     chipText: string;
 };
 
-const ESTABLISHMENT_PALETTE: EstablishmentColor[] = [
+const ACTIVITY_PALETTE: ActivityColor[] = [
     {
         barBg: "bg-sky-500/20",
         barHoverBg: "hover:bg-sky-500/35",
@@ -67,8 +67,8 @@ const ESTABLISHMENT_PALETTE: EstablishmentColor[] = [
     },
 ];
 
-export function establishmentColor(index: number): EstablishmentColor {
-    return ESTABLISHMENT_PALETTE[index % ESTABLISHMENT_PALETTE.length]!;
+export function activityColor(index: number): ActivityColor {
+    return ACTIVITY_PALETTE[index % ACTIVITY_PALETTE.length]!;
 }
 
 export type StatusColor = {

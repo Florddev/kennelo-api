@@ -8,8 +8,8 @@ use App\Contracts\ExploreSection;
 use App\Enums\AvailabilityStatusEnum;
 use App\Enums\BookingStatusEnum;
 use App\Enums\ReviewerTypeEnum;
+use App\Models\Activity;
 use App\Models\AnimalType;
-use App\Models\Establishment;
 use App\Services\Explore\Sections\AvailableWeekendSection;
 use App\Services\Explore\Sections\HasHaversine;
 use App\Services\Explore\Sections\NearbySection;
@@ -42,8 +42,8 @@ class ExploreService
 
     private function baseQuery(): Builder
     {
-        return Establishment::select('establishments.*')
-            ->with(['address', 'capacities.animalType'])
+        return Activity::select('activities.*')
+            ->with(['address', 'cycles.settings.animalType'])
             ->withAvg(
                 ['reviews as avg_rating' => fn (Builder $q) => $q->whereRaw('"is_published" IS TRUE')],
                 'overall_rating'
@@ -58,27 +58,27 @@ class ExploreService
     }
 
     /**
-     * @return list<array{id: string, has_more: bool, establishments: Collection}>
+     * @return list<array{id: string, has_more: bool, activities: Collection}>
      */
     public function getSections(?float $lat, ?float $lng): array
     {
         $sections = [];
 
         foreach ($this->sections() as $section) {
-            $establishments = $section->apply($this->baseQuery(), $lat, $lng)
+            $activities = $section->apply($this->baseQuery(), $lat, $lng)
                 ->limit(self::PER_PAGE + 1)
                 ->get();
 
-            if ($establishments->count() < self::MIN_SECTION_RESULTS) {
+            if ($activities->count() < self::MIN_SECTION_RESULTS) {
                 continue;
             }
 
-            $hasMore = $establishments->count() > self::PER_PAGE;
+            $hasMore = $activities->count() > self::PER_PAGE;
 
             $sections[] = [
                 'id' => $section->id(),
                 'has_more' => $hasMore,
-                'establishments' => $establishments->take(self::PER_PAGE),
+                'activities' => $activities->take(self::PER_PAGE),
             ];
         }
 
@@ -86,7 +86,7 @@ class ExploreService
     }
 
     /**
-     * @return array{establishments: Collection, has_more: bool, page: int}|null
+     * @return array{activities: Collection, has_more: bool, page: int}|null
      */
     public function getSectionPage(string $sectionId, ?float $lat, ?float $lng, int $page): ?array
     {
@@ -99,20 +99,20 @@ class ExploreService
 
         $offset = ($page - 1) * self::PER_PAGE;
 
-        $establishments = $section->apply($this->baseQuery(), $lat, $lng)
+        $activities = $section->apply($this->baseQuery(), $lat, $lng)
             ->offset($offset)
             ->limit(self::PER_PAGE + 1)
             ->get();
 
         return [
-            'establishments' => $establishments->take(self::PER_PAGE),
-            'has_more' => $establishments->count() > self::PER_PAGE,
+            'activities' => $activities->take(self::PER_PAGE),
+            'has_more' => $activities->count() > self::PER_PAGE,
             'page' => $page,
         ];
     }
 
     /**
-     * @return array{establishments: Collection, has_more: bool, page: int}
+     * @return array{activities: Collection, has_more: bool, page: int}
      */
     public function search(array $input, ?float $lat, ?float $lng, int $page): array
     {
@@ -134,11 +134,11 @@ class ExploreService
         $this->applySort($query, $input['sort'] ?? 'rating', $geoAvailable);
 
         $offset = ($page - 1) * self::PER_PAGE;
-        $establishments = $query->offset($offset)->limit(self::PER_PAGE + 1)->get();
+        $activities = $query->offset($offset)->limit(self::PER_PAGE + 1)->get();
 
         return [
-            'establishments' => $establishments->take(self::PER_PAGE),
-            'has_more' => $establishments->count() > self::PER_PAGE,
+            'activities' => $activities->take(self::PER_PAGE),
+            'has_more' => $activities->count() > self::PER_PAGE,
             'page' => $page,
         ];
     }
@@ -173,18 +173,19 @@ class ExploreService
 
             $count = (int) $value;
 
-            $query->whereHas('capacities', function (Builder $q) use ($code, $count, $dateFrom, $dateTo, $excluded): void {
+            $query->whereHas('cycles.settings', function (Builder $q) use ($code, $count, $dateFrom, $dateTo, $excluded): void {
                 $q->whereHas('animalType', fn (Builder $at) => $at->where('code', $code));
 
                 if ($dateFrom && $dateTo) {
                     $q->whereRaw(
-                        'establishment_capacities.max_capacity - (
+                        'activities_cycles_settings.max_capacity - (
                             SELECT COALESCE(COUNT(bp.id), 0)
                             FROM booking_pet bp
                             JOIN bookings bk ON bk.id = bp.booking_id
                             JOIN pets p ON p.id = bp.pet_id
                             JOIN animal_types at ON at.id = p.animal_type_id
-                            WHERE bk.establishment_id = establishment_capacities.establishment_id
+                            JOIN activities_cycles ac ON ac.id = activities_cycles_settings.activity_cycle_id
+                            WHERE bk.activity_id = ac.activity_id
                             AND at.code = ?
                             AND bk.status NOT IN (?, ?)
                             AND bk.check_in_date < ?
@@ -220,8 +221,8 @@ class ExploreService
         $hostType = $input['host_type'] ?? null;
 
         match ($hostType) {
-            'pro' => $query->whereNotNull('establishments.siret'),
-            'individual' => $query->whereNull('establishments.siret'),
+            'pro' => $query->whereNotNull('activities.siret'),
+            'individual' => $query->whereNull('activities.siret'),
             default => null,
         };
     }
@@ -233,7 +234,7 @@ class ExploreService
         }
 
         $query->whereRaw(
-            '(SELECT COALESCE(AVG(r.overall_rating), 0) FROM reviews r INNER JOIN bookings b ON b.id = r.booking_id WHERE b.establishment_id = establishments.id AND r.is_published IS TRUE AND r.reviewer_type = ?) >= ?',
+            '(SELECT COALESCE(AVG(r.overall_rating), 0) FROM reviews r INNER JOIN bookings b ON b.id = r.booking_id WHERE b.activity_id = activities.id AND r.is_published IS TRUE AND r.reviewer_type = ?) >= ?',
             [ReviewerTypeEnum::USER->value, (float) $input['min_rating']]
         );
     }
@@ -245,15 +246,15 @@ class ExploreService
         }
 
         $query->whereHas(
-            'capacities',
-            fn (Builder $q) => $q->where('price_per_night', '<=', (float) $input['max_price'])
+            'cycles.settings',
+            fn (Builder $q) => $q->where('price', '<=', (float) $input['max_price'])
         );
     }
 
     private function applyGeoJoin(Builder $query, float $lat, float $lng, array $input): void
     {
         $query
-            ->join('addresses as addr_search', 'addr_search.id', '=', 'establishments.address_id')
+            ->join('addresses as addr_search', 'addr_search.id', '=', 'activities.address_id')
             ->addSelect(DB::raw(
                 $this->haversineExpression($lat, $lng, 'addr_search.latitude', 'addr_search.longitude').' AS distance'
             ))

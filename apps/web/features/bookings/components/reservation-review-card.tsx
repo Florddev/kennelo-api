@@ -21,26 +21,26 @@ import {
 } from "@workspace/ui/components/alert-dialog";
 import { formatAmount } from "@workspace/common";
 import {
-    confirmEstablishmentBooking,
-    cancelEstablishmentBooking,
+    confirmActivityBooking,
+    cancelActivityBooking,
     type BookingModel,
 } from "@workspace/modules/bookings";
 
 type ReservationReviewCardProps = {
     booking: BookingModel;
-    establishmentId: string;
+    activityId: string;
 };
 
-export function ReservationReviewCard({ booking, establishmentId }: ReservationReviewCardProps) {
+export function ReservationReviewCard({ booking, activityId }: ReservationReviewCardProps) {
     const t = useTranslations();
     const queryClient = useQueryClient();
     const [isRejectOpen, setIsRejectOpen] = useState(false);
 
     const accept = useMutation({
-        mutationFn: () => confirmEstablishmentBooking(establishmentId, booking.id),
+        mutationFn: () => confirmActivityBooking(activityId, booking.id),
         onSuccess: () => {
             queryClient.invalidateQueries({
-                queryKey: ["establishment-bookings", establishmentId],
+                queryKey: ["activity-bookings", activityId],
             });
             toast.success(t("features.bookings.review.acceptSuccess"));
         },
@@ -49,10 +49,10 @@ export function ReservationReviewCard({ booking, establishmentId }: ReservationR
     });
 
     const reject = useMutation({
-        mutationFn: () => cancelEstablishmentBooking(establishmentId, booking.id),
+        mutationFn: () => cancelActivityBooking(activityId, booking.id),
         onSuccess: () => {
             queryClient.invalidateQueries({
-                queryKey: ["establishment-bookings", establishmentId],
+                queryKey: ["activity-bookings", activityId],
             });
             toast.success(t("features.bookings.review.refundIssued"));
         },

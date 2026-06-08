@@ -15,10 +15,10 @@ class DevelopmentSeeder extends Seeder
         $this->call([
             AddressSeeder::class,
             UsersSeeder::class,
-            EstablishmentSeeder::class,
+            ActivitySeeder::class,
             PetSeeder::class,
-            EstablishmentCapacitySeeder::class,
-            EstablishmentAvailabilitySeeder::class,
+            ActivityCycleSeeder::class,
+            ActivityAvailabilitySeeder::class,
             BookingSeeder::class,
             ExploreSeeder::class,
             ConversationSeeder::class,

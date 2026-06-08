@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import EstablishmentPaymentPage from "./establishment-payment-page";
+import ActivityPaymentPage from "./activity-payment-page";
 
 export type Query = {
     id: string;
@@ -14,10 +14,10 @@ export async function generateMetadata({ params }: { params: { locale: string } 
     const t = await getTranslations({ locale });
 
     return {
-        title: t("features.establishments.manager.nav.payment"),
+        title: t("features.activities.manager.nav.payment"),
     };
 }
 
-export default function EstablishmentPayment() {
-    return <EstablishmentPaymentPage />;
+export default function ActivityPayment() {
+    return <ActivityPaymentPage />;
 }

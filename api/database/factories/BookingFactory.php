@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Database\Factories;
 
 use App\Enums\BookingStatusEnum;
+use App\Models\Activity;
 use App\Models\Booking;
-use App\Models\Establishment;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -24,12 +24,12 @@ class BookingFactory extends Factory
 
         return [
             'user_id' => User::factory(),
-            'establishment_id' => Establishment::factory(),
+            'activity_id' => Activity::factory(),
             'check_in_date' => $checkIn->format('Y-m-d'),
             'check_out_date' => $checkOut->format('Y-m-d'),
             'total_price' => $totalPrice,
             'platform_fee' => $platformFee,
-            'establishment_amount' => round($totalPrice - $platformFee, 2),
+            'activity_amount' => round($totalPrice - $platformFee, 2),
             'status' => BookingStatusEnum::PENDING,
             'payment_status' => 'pending',
             'special_requests' => fake()->optional(0.4)->sentence(),

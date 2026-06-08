@@ -40,10 +40,10 @@ export default function HostingLayout({ children, className }: HostingLayoutProp
             active: isActive(routes.HostingCalendar()),
         },
         {
-            href: routes.MyEstablishments(),
-            label: t("ui.navigation.hosting.establishment"),
+            href: routes.MyActivities(),
+            label: t("ui.navigation.hosting.activity"),
             icon: Buildings,
-            active: isActive(routes.MyEstablishments()),
+            active: isActive(routes.MyActivities()),
         },
         {
             href: routes.HostingMessages(),

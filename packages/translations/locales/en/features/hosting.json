@@ -1,18 +1,18 @@
 {
-    "bankAccountShared": "Your bank account is shared across all your establishments — only set it up once.",
+    "bankAccountShared": "Your bank account is shared across all your activities — only set it up once.",
     "temp": {
         "tabs": {
             "bankAccount": "Bank account",
             "pendingRequests": "Pending requests"
         },
-        "noEstablishments": "You don't have any establishments yet."
+        "noActivities": "You don't have any activities yet."
     },
     "bankAccount": {
         "connectedAs": "Connected as {name} ({email})",
-        "coveredEstablishments": "Establishments using this account",
-        "noEstablishmentsCovered": "No establishments yet — your account will cover them automatically once created.",
+        "coveredActivities": "Activities using this account",
+        "noActivitiesCovered": "No activities yet — your account will cover them automatically once created.",
         "usesThisAccount": "Default",
-        "perEstablishmentNote": "Want a different bank account for a specific establishment? This option will land in a future update.",
+        "perActivityNote": "Want a different bank account for a specific activity? This option will land in a future update.",
         "updateDetails": "Update banking details"
     }
 }

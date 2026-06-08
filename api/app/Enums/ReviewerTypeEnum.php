@@ -7,13 +7,13 @@ namespace App\Enums;
 enum ReviewerTypeEnum: string
 {
     case USER = 'user';
-    case ESTABLISHMENT = 'establishment';
+    case ACTIVITY = 'activity';
 
     public function counterpart(): self
     {
         return match ($this) {
-            self::USER => self::ESTABLISHMENT,
-            self::ESTABLISHMENT => self::USER,
+            self::USER => self::ACTIVITY,
+            self::ACTIVITY => self::USER,
         };
     }
 }

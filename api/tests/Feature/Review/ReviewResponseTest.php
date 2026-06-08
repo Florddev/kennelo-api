@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Models\Activity;
 use App\Models\Booking;
-use App\Models\Establishment;
 use App\Models\Review;
 use App\Models\ReviewResponse;
 use App\Models\User;
@@ -13,13 +13,13 @@ beforeEach(function () {
     Role::firstOrCreate(['name' => 'user']);
 });
 
-it('reviewee establishment can respond to a user review', function () {
+it('reviewee activity can respond to a user review', function () {
     $user = User::factory()->create();
     $manager = User::factory()->create();
-    $establishment = Establishment::factory()->create(['manager_id' => $manager->id]);
+    $activity = Activity::factory()->create(['manager_id' => $manager->id]);
     $booking = Booking::factory()->completed()->create([
         'user_id' => $user->id,
-        'establishment_id' => $establishment->id,
+        'activity_id' => $activity->id,
     ]);
     $review = Review::factory()->fromUser()->published()->create([
         'booking_id' => $booking->id,
@@ -34,15 +34,15 @@ it('reviewee establishment can respond to a user review', function () {
         ->assertJsonPath('data.response', 'Merci pour votre retour !');
 });
 
-it('reviewee user can respond to an establishment review', function () {
+it('reviewee user can respond to an activity review', function () {
     $user = User::factory()->create();
     $manager = User::factory()->create();
-    $establishment = Establishment::factory()->create(['manager_id' => $manager->id]);
+    $activity = Activity::factory()->create(['manager_id' => $manager->id]);
     $booking = Booking::factory()->completed()->create([
         'user_id' => $user->id,
-        'establishment_id' => $establishment->id,
+        'activity_id' => $activity->id,
     ]);
-    $review = Review::factory()->fromEstablishment()->published()->create([
+    $review = Review::factory()->fromActivity()->published()->create([
         'booking_id' => $booking->id,
         'reviewer_id' => $manager->id,
     ]);
@@ -57,10 +57,10 @@ it('reviewee user can respond to an establishment review', function () {
 it('reviewer cannot respond to its own review', function () {
     $user = User::factory()->create();
     $manager = User::factory()->create();
-    $establishment = Establishment::factory()->create(['manager_id' => $manager->id]);
+    $activity = Activity::factory()->create(['manager_id' => $manager->id]);
     $booking = Booking::factory()->completed()->create([
         'user_id' => $user->id,
-        'establishment_id' => $establishment->id,
+        'activity_id' => $activity->id,
     ]);
     $review = Review::factory()->fromUser()->published()->create([
         'booking_id' => $booking->id,
@@ -77,10 +77,10 @@ it('reviewer cannot respond to its own review', function () {
 it('cannot create more than one response per review', function () {
     $user = User::factory()->create();
     $manager = User::factory()->create();
-    $establishment = Establishment::factory()->create(['manager_id' => $manager->id]);
+    $activity = Activity::factory()->create(['manager_id' => $manager->id]);
     $booking = Booking::factory()->completed()->create([
         'user_id' => $user->id,
-        'establishment_id' => $establishment->id,
+        'activity_id' => $activity->id,
     ]);
     $review = Review::factory()->fromUser()->published()->create([
         'booking_id' => $booking->id,

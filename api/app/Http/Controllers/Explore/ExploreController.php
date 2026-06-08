@@ -6,7 +6,7 @@ namespace App\Http\Controllers\Explore;
 
 use App\Enums\ApiStatusEnum;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\ExploreEstablishmentResource;
+use App\Http\Resources\ExploreActivityResource;
 use App\Services\Explore\ExploreService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -16,7 +16,7 @@ class ExploreController extends Controller
 {
     public function __construct(private ExploreService $service) {}
 
-    public function establishments(Request $request): JsonResponse
+    public function activities(Request $request): JsonResponse
     {
         [$lat, $lng] = $this->resolveCoords($request);
 
@@ -25,7 +25,7 @@ class ExploreController extends Controller
         $sectionsData = array_map(fn ($section) => [
             'id' => $section['id'],
             'has_more' => $section['has_more'],
-            'establishments' => ExploreEstablishmentResource::collection($section['establishments'])->resolve($request),
+            'activities' => ExploreActivityResource::collection($section['activities'])->resolve($request),
         ], $sections);
 
         return response()->json([
@@ -48,7 +48,7 @@ class ExploreController extends Controller
 
         return response()->json([
             'data' => [
-                'establishments' => ExploreEstablishmentResource::collection($result['establishments'])->resolve($request),
+                'activities' => ExploreActivityResource::collection($result['activities'])->resolve($request),
                 'meta' => [
                     'current_page' => $result['page'],
                     'per_page' => ExploreService::PER_PAGE,
@@ -69,7 +69,7 @@ class ExploreController extends Controller
 
         return response()->json([
             'data' => [
-                'establishments' => ExploreEstablishmentResource::collection($result['establishments'])->resolve($request),
+                'activities' => ExploreActivityResource::collection($result['activities'])->resolve($request),
                 'meta' => [
                     'current_page' => $result['page'],
                     'per_page' => ExploreService::PER_PAGE,

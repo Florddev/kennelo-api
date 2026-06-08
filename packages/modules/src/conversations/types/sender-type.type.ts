@@ -1,1 +1,1 @@
-export type SenderType = "user" | "establishment" | "system";
+export type SenderType = "user" | "activity" | "system";

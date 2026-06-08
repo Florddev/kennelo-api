@@ -18,7 +18,7 @@ class NewHostsSection implements ExploreSection
     public function apply(Builder $query, ?float $lat, ?float $lng): Builder
     {
         return $query
-            ->where('establishments.created_at', '>=', Carbon::now()->subDays(60))
-            ->orderByDesc('establishments.created_at');
+            ->where('activities.created_at', '>=', Carbon::now()->subDays(60))
+            ->orderByDesc('activities.created_at');
     }
 }

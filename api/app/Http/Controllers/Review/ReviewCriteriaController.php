@@ -18,7 +18,7 @@ class ReviewCriteriaController extends Controller
         $applicableTo = $request->query('applicable_to');
 
         $criteria = ReviewCriteriaDefinition::query()
-            ->when(is_string($applicableTo) && in_array($applicableTo, ['user', 'establishment', 'both'], true),
+            ->when(is_string($applicableTo) && in_array($applicableTo, ['user', 'activity', 'both'], true),
                 fn ($q) => $q->where('applicable_to', $applicableTo)
             )
             ->orderBy('applicable_to')

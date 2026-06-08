@@ -7,6 +7,6 @@ namespace App\Enums;
 enum SenderTypeEnum: string
 {
     case USER = 'user';
-    case ESTABLISHMENT = 'establishment';
+    case ACTIVITY = 'activity';
     case SYSTEM = 'system';
 }

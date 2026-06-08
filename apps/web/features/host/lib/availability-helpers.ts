@@ -1,4 +1,4 @@
-import type { AvailabilityModel } from "@workspace/modules/establishments";
+import type { AvailabilityModel } from "@workspace/modules/activities";
 import { fromApiDate, isSameDay } from "@workspace/common";
 
 export function buildAvailableDateSet(availabilities: AvailabilityModel[]): Set<string> {

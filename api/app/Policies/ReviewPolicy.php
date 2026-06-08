@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Policies;
 
+use App\Enums\ActivityPermissionEnum;
 use App\Enums\BookingStatusEnum;
-use App\Enums\EstablishmentPermissionEnum;
 use App\Enums\ReviewerTypeEnum;
 use App\Models\Booking;
 use App\Models\Review;
@@ -27,7 +27,7 @@ class ReviewPolicy
             return true;
         }
 
-        $review->loadMissing('booking.establishment');
+        $review->loadMissing('booking.activity');
         $booking = $review->booking;
 
         if ($booking === null) {
@@ -38,17 +38,17 @@ class ReviewPolicy
             return true;
         }
 
-        $establishment = $booking->establishment;
+        $activity = $booking->activity;
 
-        if ($establishment === null) {
+        if ($activity === null) {
             return false;
         }
 
-        if ((string) $establishment->manager_id === (string) $user->id) {
+        if ((string) $activity->manager_id === (string) $user->id) {
             return true;
         }
 
-        return $establishment->collaboratorHasPermission($user, EstablishmentPermissionEnum::MANAGE_BOOKINGS);
+        return $activity->collaboratorHasPermission($user, ActivityPermissionEnum::MANAGE_BOOKINGS);
     }
 
     public function create(User $user, Booking $booking): bool
@@ -61,23 +61,23 @@ class ReviewPolicy
             return true;
         }
 
-        $booking->loadMissing('establishment');
-        $establishment = $booking->establishment;
+        $booking->loadMissing('activity');
+        $activity = $booking->activity;
 
-        if ($establishment === null) {
+        if ($activity === null) {
             return false;
         }
 
-        if ((string) $establishment->manager_id === (string) $user->id) {
+        if ((string) $activity->manager_id === (string) $user->id) {
             return true;
         }
 
-        return $establishment->collaboratorHasPermission($user, EstablishmentPermissionEnum::MANAGE_BOOKINGS);
+        return $activity->collaboratorHasPermission($user, ActivityPermissionEnum::MANAGE_BOOKINGS);
     }
 
     public function respond(User $user, Review $review): bool
     {
-        $review->loadMissing('booking.establishment');
+        $review->loadMissing('booking.activity');
         $booking = $review->booking;
 
         if ($booking === null) {
@@ -85,17 +85,17 @@ class ReviewPolicy
         }
 
         if ($review->reviewer_type === ReviewerTypeEnum::USER) {
-            $establishment = $booking->establishment;
+            $activity = $booking->activity;
 
-            if ($establishment === null) {
+            if ($activity === null) {
                 return false;
             }
 
-            if ((string) $establishment->manager_id === (string) $user->id) {
+            if ((string) $activity->manager_id === (string) $user->id) {
                 return true;
             }
 
-            return $establishment->collaboratorHasPermission($user, EstablishmentPermissionEnum::MANAGE_BOOKINGS);
+            return $activity->collaboratorHasPermission($user, ActivityPermissionEnum::MANAGE_BOOKINGS);
         }
 
         return (string) $booking->user_id === (string) $user->id;

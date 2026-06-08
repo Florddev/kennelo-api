@@ -8,7 +8,7 @@ import {
     HostDetailSkeleton,
     HostNotFound,
     parseDateRangeFromParams,
-    useHostEstablishment,
+    useHostActivity,
     useHostAvailabilities,
 } from "@/features/host";
 
@@ -17,14 +17,14 @@ export default function HostDetailPage() {
     const id = params.id ?? "";
     const searchParams = useSearchParams();
 
-    const { establishment, capacities, isLoading } = useHostEstablishment(id);
+    const { activity, capacities, isLoading } = useHostActivity(id);
     const { availabilities } = useHostAvailabilities(id);
 
     if (isLoading) {
         return <HostDetailSkeleton />;
     }
 
-    if (!establishment) {
+    if (!activity) {
         return <HostNotFound onBack={() => router.back()} />;
     }
 
@@ -35,7 +35,7 @@ export default function HostDetailPage() {
 
     return (
         <HostDetailContent
-            establishment={establishment}
+            activity={activity}
             capacities={capacities}
             availabilities={availabilities}
             initialDateRange={initialDateRange}

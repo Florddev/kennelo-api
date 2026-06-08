@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Policies;
 
+use App\Enums\ActivityPermissionEnum;
 use App\Enums\BookingStatusEnum;
-use App\Enums\EstablishmentPermissionEnum;
+use App\Models\Activity;
 use App\Models\Booking;
-use App\Models\Establishment;
 use App\Models\User;
 
 class BookingPolicy
@@ -18,18 +18,18 @@ class BookingPolicy
             return true;
         }
 
-        $booking->loadMissing('establishment');
-        $establishment = $booking->establishment;
+        $booking->loadMissing('activity');
+        $activity = $booking->activity;
 
-        if ($establishment === null) {
+        if ($activity === null) {
             return false;
         }
 
-        if ((string) $establishment->manager_id === (string) $user->id) {
+        if ((string) $activity->manager_id === (string) $user->id) {
             return true;
         }
 
-        return $establishment->collaboratorHasPermission($user, EstablishmentPermissionEnum::MANAGE_BOOKINGS);
+        return $activity->collaboratorHasPermission($user, ActivityPermissionEnum::MANAGE_BOOKINGS);
     }
 
     public function cancel(User $user, Booking $booking): bool
@@ -41,12 +41,12 @@ class BookingPolicy
         return $booking->status === BookingStatusEnum::PENDING || $booking->status === BookingStatusEnum::CONFIRMED;
     }
 
-    public function manageForEstablishment(User $user, Establishment $establishment): bool
+    public function manageForActivity(User $user, Activity $activity): bool
     {
-        if ((string) $establishment->manager_id === (string) $user->id) {
+        if ((string) $activity->manager_id === (string) $user->id) {
             return true;
         }
 
-        return $establishment->collaboratorHasPermission($user, EstablishmentPermissionEnum::MANAGE_BOOKINGS);
+        return $activity->collaboratorHasPermission($user, ActivityPermissionEnum::MANAGE_BOOKINGS);
     }
 }

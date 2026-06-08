@@ -1,5 +1,5 @@
-import EstablishmentLayout from "./establishments-layout";
+import ActivityLayout from "./activities-layout";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-    return <EstablishmentLayout>{children}</EstablishmentLayout>;
+    return <ActivityLayout>{children}</ActivityLayout>;
 }

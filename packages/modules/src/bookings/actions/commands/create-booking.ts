@@ -5,7 +5,7 @@ import type { CreateBookingInput } from "../../validators/create-booking.schema"
 
 export async function createBooking(input: CreateBookingInput): Promise<BookingModel> {
     const response = await api.post<BookingDto>("/bookings", {
-        establishment_id: input.establishmentId,
+        activity_id: input.activityId,
         check_in_date: input.checkInDate,
         check_out_date: input.checkOutDate,
         pet_ids: input.petIds,

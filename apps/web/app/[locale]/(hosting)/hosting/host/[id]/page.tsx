@@ -1,3 +1,3 @@
-export default function EstablishmentDetails() {
+export default function ActivityDetails() {
     return null;
 }

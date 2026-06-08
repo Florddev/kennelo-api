@@ -9,10 +9,10 @@ use App\Enums\SenderTypeEnum;
 use App\Events\MessageSent;
 use App\Events\MessagesRead;
 use App\Events\NewMessageNotification;
+use App\Models\Activity;
 use App\Models\Booking;
 use App\Models\BookingThread;
 use App\Models\Conversation;
-use App\Models\Establishment;
 use App\Models\Message;
 use App\Models\MessageFile;
 use App\Models\User;
@@ -27,7 +27,7 @@ class ConversationService
     {
         $perPage = $filters['per_page'] ?? 15;
 
-        return Conversation::with(['user', 'establishment.manager', 'latestMessage.sender', 'bookingThreads.booking'])
+        return Conversation::with(['user', 'activity.manager', 'latestMessage.sender', 'bookingThreads.booking'])
             ->withCount(['messages as unread_count' => function ($query) use ($user): void {
                 $query->where('sender_id', '!=', $user->id)
                     ->whereDoesntHave('reads', function ($q) use ($user): void {
@@ -39,7 +39,7 @@ class ConversationService
             ->paginate($perPage);
     }
 
-    public function getEstablishmentConversations(Establishment $establishment, User $user, array $filters = []): LengthAwarePaginator
+    public function getActivityConversations(Activity $activity, User $user, array $filters = []): LengthAwarePaginator
     {
         $perPage = $filters['per_page'] ?? 15;
 
@@ -50,7 +50,7 @@ class ConversationService
                         $q->where('user_id', $user->id);
                     });
             }])
-            ->where('establishment_id', $establishment->id)
+            ->where('activity_id', $activity->id)
             ->orderByDesc('last_message_at')
             ->paginate($perPage);
     }
@@ -60,7 +60,7 @@ class ConversationService
         $conversation = Conversation::firstOrCreate(
             [
                 'user_id' => $booking->user_id,
-                'establishment_id' => $booking->establishment_id,
+                'activity_id' => $booking->activity_id,
             ],
             [
                 'last_message_at' => now(),
@@ -79,7 +79,7 @@ class ConversationService
             ]);
         }
 
-        return $conversation->load(['establishment', 'user', 'bookingThreads.booking']);
+        return $conversation->load(['activity', 'user', 'bookingThreads.booking']);
     }
 
     public function sendBookingReference(Conversation $conversation, User $actor, Booking $booking): void
@@ -94,7 +94,7 @@ class ConversationService
     {
         $perPage = $filters['per_page'] ?? 30;
 
-        return Message::with(['sender', 'files', 'booking.establishment'])
+        return Message::with(['sender', 'files', 'booking.activity'])
             ->where('conversation_id', $conversation->id)
             ->when(isset($filters['booking_id']), fn ($q) => $q->where('booking_id', $filters['booking_id']))
             ->orderByDesc('created_at')
@@ -106,7 +106,7 @@ class ConversationService
         return DB::transaction(function () use ($user, $conversation, $data): Message {
             $senderType = (string) $conversation->user_id === (string) $user->id
                 ? SenderTypeEnum::USER
-                : SenderTypeEnum::ESTABLISHMENT;
+                : SenderTypeEnum::ACTIVITY;
 
             $messageType = isset($data['message_type'])
                 ? MessageTypeEnum::from($data['message_type'])
@@ -138,7 +138,7 @@ class ConversationService
 
             $message->load(['sender', 'files']);
             if ($message->booking_id) {
-                $message->load('booking.establishment');
+                $message->load('booking.activity');
             }
 
             event(new MessageSent($message));
@@ -178,11 +178,11 @@ class ConversationService
 
     public function getUnreadCount(User $user): int
     {
-        $managedEstablishmentIds = $user->managedEstablishments()->pluck('id');
+        $managedActivityIds = $user->managedActivities()->pluck('id');
 
-        return Message::whereHas('conversation', function ($q) use ($user, $managedEstablishmentIds): void {
+        return Message::whereHas('conversation', function ($q) use ($user, $managedActivityIds): void {
             $q->where('user_id', $user->id)
-                ->orWhereIn('establishment_id', $managedEstablishmentIds);
+                ->orWhereIn('activity_id', $managedActivityIds);
         })
             ->where('sender_id', '!=', $user->id)
             ->whereDoesntHave('reads', function ($q) use ($user): void {
