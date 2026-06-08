@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property Carbon $check_in_date
  * @property Carbon $check_out_date
  * @property BookingStatusEnum $status
+ * @property PaymentStatusEnum $payment_status
  * @property-read Activity|null $activity
  * @property-read Collection<int, Pet> $pets
  * @property-read Collection<int, Service> $services
