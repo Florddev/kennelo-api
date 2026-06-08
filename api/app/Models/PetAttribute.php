@@ -7,7 +7,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
+/**
+ * @property Carbon|null $value_date
+ */
 class PetAttribute extends Model
 {
     use HasUuids;
@@ -23,11 +27,14 @@ class PetAttribute extends Model
         'value_date',
     ];
 
-    protected $casts = [
-        'value_decimal' => 'decimal:2',
-        'value_boolean' => 'boolean',
-        'value_date' => 'date',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'value_decimal' => 'decimal:2',
+            'value_boolean' => 'boolean',
+            'value_date' => 'date',
+        ];
+    }
 
     public function pet(): BelongsTo
     {

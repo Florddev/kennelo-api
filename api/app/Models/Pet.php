@@ -10,11 +10,14 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 /**
+ * @property Carbon|null $birth_date
+ * @property Carbon|null $adoption_date
  * @property-read BookingPet $booking_pet
  */
 class Pet extends Model implements HasMedia
@@ -37,13 +40,16 @@ class Pet extends Model implements HasMedia
         'health_notes',
     ];
 
-    protected $casts = [
-        'birth_date' => 'date',
-        'adoption_date' => 'date',
-        'weight' => 'decimal:2',
-        'is_sterilized' => 'boolean',
-        'has_microchip' => 'boolean',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'birth_date' => 'date',
+            'adoption_date' => 'date',
+            'weight' => 'decimal:2',
+            'is_sterilized' => 'boolean',
+            'has_microchip' => 'boolean',
+        ];
+    }
 
     public function registerMediaCollections(): void
     {

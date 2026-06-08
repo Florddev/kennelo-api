@@ -19,9 +19,12 @@ class AttributeOption extends Model
         'sort_order',
     ];
 
-    protected $casts = [
-        'sort_order' => 'integer',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'sort_order' => 'integer',
+        ];
+    }
 
     public function attributeDefinition(): BelongsTo
     {

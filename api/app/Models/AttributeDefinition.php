@@ -26,11 +26,14 @@ class AttributeDefinition extends Model
         'validation_rules',
     ];
 
-    protected $casts = [
-        'category' => AnimalAttributeCategoryEnum::class,
-        'has_predefined_options' => 'boolean',
-        'is_required' => 'boolean',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'category' => AnimalAttributeCategoryEnum::class,
+            'has_predefined_options' => 'boolean',
+            'is_required' => 'boolean',
+        ];
+    }
 
     public function options(): HasMany
     {
