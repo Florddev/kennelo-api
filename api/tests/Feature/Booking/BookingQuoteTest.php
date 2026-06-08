@@ -16,6 +16,8 @@ function makeQuoteFixtures(): array
     $activity = Activity::factory()->create([
         'manager_id' => $manager->id,
         'is_active' => true,
+        'stripe_account_id' => 'acct_test_'.uniqid(),
+        'stripe_charges_enabled' => true,
     ]);
     $animalType = AnimalType::create(['code' => 'dog_'.uniqid(), 'name' => 'Chien', 'category' => 'mammals']);
 

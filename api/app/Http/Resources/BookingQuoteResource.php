@@ -11,9 +11,6 @@ class BookingQuoteResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
-        /** @var array<string, mixed> $quote */
-        $quote = $this->resource;
-
-        return $quote;
+        return (array) $this->resource;
     }
 }
