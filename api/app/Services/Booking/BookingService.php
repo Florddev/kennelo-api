@@ -6,6 +6,7 @@ namespace App\Services\Booking;
 
 use App\Enums\AvailabilityStatusEnum;
 use App\Enums\BookingStatusEnum;
+use App\Enums\PaymentStatusEnum;
 use App\Models\Activity;
 use App\Models\Booking;
 use App\Models\BookingThread;
@@ -124,7 +125,7 @@ class BookingService
             'stripe_payment_intent_id' => $pi->id,
             'stripe_charge_id' => $pi->latest_charge ?? null,
             'stripe_transfer_group' => 'booking_'.$booking->id,
-            'payment_status' => $pi->status === 'succeeded' ? 'succeeded' : 'pending',
+            'payment_status' => $pi->status === 'succeeded' ? PaymentStatusEnum::SUCCEEDED : PaymentStatusEnum::PENDING,
         ]);
 
         $booking->setAttribute('client_secret', $pi->client_secret);
@@ -273,7 +274,7 @@ class BookingService
 
     public function refundOnReject(Booking $booking): Booking
     {
-        if (! $booking->stripe_charge_id || $booking->payment_status !== 'succeeded') {
+        if (! $booking->stripe_charge_id || $booking->payment_status !== PaymentStatusEnum::SUCCEEDED) {
             return $booking;
         }
         $refund = $this->stripe->refunds->create([
@@ -284,7 +285,7 @@ class BookingService
             'stripe_refund_id' => $refund->id,
             'refunded_amount' => bcdiv((string) $refund->amount, '100', 2),
             'refunded_at' => Carbon::now(),
-            'payment_status' => 'refunded',
+            'payment_status' => PaymentStatusEnum::REFUNDED,
         ]);
 
         return $booking->fresh();

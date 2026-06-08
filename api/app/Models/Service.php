@@ -24,10 +24,13 @@ class Service extends Model
         'price',
     ];
 
-    protected $casts = [
-        'is_included' => 'boolean',
-        'price' => 'decimal:2',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'is_included' => 'boolean',
+            'price' => 'decimal:2',
+        ];
+    }
 
     public function activity(): BelongsTo
     {

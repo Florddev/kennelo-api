@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Services\Explore\Sections;
+namespace App\Services\Explore;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;

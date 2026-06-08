@@ -4,21 +4,16 @@ declare(strict_types=1);
 
 namespace App\Services\Explore;
 
-use App\Contracts\ExploreSection;
 use App\Enums\AvailabilityStatusEnum;
 use App\Enums\BookingStatusEnum;
 use App\Enums\ReviewerTypeEnum;
 use App\Models\Activity;
 use App\Models\AnimalType;
-use App\Services\Explore\Sections\AvailableWeekendSection;
-use App\Services\Explore\Sections\HasHaversine;
-use App\Services\Explore\Sections\NearbySection;
-use App\Services\Explore\Sections\NewHostsSection;
-use App\Services\Explore\Sections\TopRatedSection;
-use App\Services\Explore\Sections\VerifiedProsSection;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use InvalidArgumentException;
 
 class ExploreService
 {
@@ -28,16 +23,22 @@ class ExploreService
 
     private const int MIN_SECTION_RESULTS = 3;
 
-    /** @return list<ExploreSection> */
-    private function sections(): array
+    /** @return list<string> */
+    private function sectionIds(): array
     {
-        return [
-            new NearbySection,
-            new AvailableWeekendSection,
-            new VerifiedProsSection,
-            new TopRatedSection,
-            new NewHostsSection,
-        ];
+        return ['nearby', 'available_weekend', 'verified_pros', 'top_rated', 'new_hosts'];
+    }
+
+    private function applySection(string $sectionId, Builder $query, ?float $lat, ?float $lng): Builder
+    {
+        return match ($sectionId) {
+            'nearby' => $this->nearbySection($query, $lat, $lng),
+            'available_weekend' => $this->availableWeekendSection($query, $lat, $lng),
+            'verified_pros' => $this->verifiedProsSection($query, $lat, $lng),
+            'top_rated' => $this->topRatedSection($query),
+            'new_hosts' => $this->newHostsSection($query),
+            default => throw new InvalidArgumentException("Unknown explore section: {$sectionId}"),
+        };
     }
 
     private function baseQuery(): Builder
@@ -45,11 +46,11 @@ class ExploreService
         return Activity::select('activities.*')
             ->with(['address', 'cycles.settings.animalType'])
             ->withAvg(
-                ['reviews as avg_rating' => fn (Builder $q) => $q->whereRaw('"is_published" IS TRUE')],
+                ['reviews as avg_rating' => fn (Builder $q) => $q->where('is_published', true)],
                 'overall_rating'
             )
             ->withCount(
-                ['reviews as review_count' => fn (Builder $q) => $q->whereRaw('"is_published" IS TRUE')]
+                ['reviews as review_count' => fn (Builder $q) => $q->where('is_published', true)]
             )
             ->active()
             ->whereHas('manager', function ($q) {
@@ -64,8 +65,8 @@ class ExploreService
     {
         $sections = [];
 
-        foreach ($this->sections() as $section) {
-            $activities = $section->apply($this->baseQuery(), $lat, $lng)
+        foreach ($this->sectionIds() as $sectionId) {
+            $activities = $this->applySection($sectionId, $this->baseQuery(), $lat, $lng)
                 ->limit(self::PER_PAGE + 1)
                 ->get();
 
@@ -76,7 +77,7 @@ class ExploreService
             $hasMore = $activities->count() > self::PER_PAGE;
 
             $sections[] = [
-                'id' => $section->id(),
+                'id' => $sectionId,
                 'has_more' => $hasMore,
                 'activities' => $activities->take(self::PER_PAGE),
             ];
@@ -90,16 +91,13 @@ class ExploreService
      */
     public function getSectionPage(string $sectionId, ?float $lat, ?float $lng, int $page): ?array
     {
-        $section = collect($this->sections())
-            ->first(fn (ExploreSection $s) => $s->id() === $sectionId);
-
-        if ($section === null) {
+        if (! in_array($sectionId, $this->sectionIds(), true)) {
             return null;
         }
 
         $offset = ($page - 1) * self::PER_PAGE;
 
-        $activities = $section->apply($this->baseQuery(), $lat, $lng)
+        $activities = $this->applySection($sectionId, $this->baseQuery(), $lat, $lng)
             ->offset($offset)
             ->limit(self::PER_PAGE + 1)
             ->get();
@@ -141,6 +139,98 @@ class ExploreService
             'has_more' => $activities->count() > self::PER_PAGE,
             'page' => $page,
         ];
+    }
+
+    private function nearbySection(Builder $query, ?float $lat, ?float $lng): Builder
+    {
+        if ($lat === null || $lng === null || ! $this->supportsGeo()) {
+            return $query
+                ->orderByRaw('avg_rating DESC NULLS LAST')
+                ->orderByDesc('review_count');
+        }
+
+        $query
+            ->join('addresses as addr_nearby', 'addr_nearby.id', '=', 'activities.address_id')
+            ->whereNotNull('addr_nearby.latitude')
+            ->whereNotNull('addr_nearby.longitude')
+            ->orderBy('distance')
+            ->orderByRaw('avg_rating DESC NULLS LAST');
+
+        $this->applyDistanceSelect($query, $lat, $lng, 'addr_nearby.latitude', 'addr_nearby.longitude');
+
+        return $query;
+    }
+
+    private function availableWeekendSection(Builder $query, ?float $lat, ?float $lng): Builder
+    {
+        $saturday = Carbon::now()->next(Carbon::SATURDAY)->toDateString();
+        $sunday = Carbon::now()->next(Carbon::SUNDAY)->toDateString();
+
+        $query->whereHas('availabilities', function (Builder $q) use ($saturday, $sunday): void {
+            $q->whereIn('date', [$saturday, $sunday])
+                ->where('status', AvailabilityStatusEnum::OPEN->value);
+        });
+
+        if ($lat !== null && $lng !== null && $this->supportsGeo()) {
+            $query
+                ->join('addresses as addr_weekend', 'addr_weekend.id', '=', 'activities.address_id')
+                ->whereNotNull('addr_weekend.latitude')
+                ->whereNotNull('addr_weekend.longitude')
+                ->orderBy('distance')
+                ->orderByRaw('avg_rating DESC NULLS LAST');
+
+            $this->applyDistanceSelect($query, $lat, $lng, 'addr_weekend.latitude', 'addr_weekend.longitude');
+        } else {
+            $query->orderByRaw('avg_rating DESC NULLS LAST');
+        }
+
+        return $query;
+    }
+
+    private function verifiedProsSection(Builder $query, ?float $lat, ?float $lng): Builder
+    {
+        $query
+            ->whereNotNull('activities.siret')
+            ->whereHas('manager', fn (Builder $q) => $q->where('is_id_verified', true));
+
+        if ($lat !== null && $lng !== null && $this->supportsGeo()) {
+            $query
+                ->join('addresses as addr_pros', 'addr_pros.id', '=', 'activities.address_id')
+                ->whereNotNull('addr_pros.latitude')
+                ->whereNotNull('addr_pros.longitude')
+                ->orderBy('distance')
+                ->orderByRaw('avg_rating DESC NULLS LAST');
+
+            $this->applyDistanceSelect($query, $lat, $lng, 'addr_pros.latitude', 'addr_pros.longitude');
+        } else {
+            $query->orderByRaw('avg_rating DESC NULLS LAST');
+        }
+
+        return $query;
+    }
+
+    private function topRatedSection(Builder $query): Builder
+    {
+        $reviewerType = ReviewerTypeEnum::USER->value;
+
+        return $query
+            ->whereRaw(
+                '(SELECT COALESCE(AVG(r.overall_rating), 0) FROM reviews r INNER JOIN bookings b ON b.id = r.booking_id WHERE b.activity_id = activities.id AND r.is_published IS TRUE AND r.reviewer_type = ?) >= ?',
+                [$reviewerType, 4.5]
+            )
+            ->whereRaw(
+                '(SELECT COUNT(*) FROM reviews r INNER JOIN bookings b ON b.id = r.booking_id WHERE b.activity_id = activities.id AND r.is_published IS TRUE AND r.reviewer_type = ?) >= ?',
+                [$reviewerType, 5]
+            )
+            ->orderByRaw('avg_rating DESC NULLS LAST')
+            ->orderByDesc('review_count');
+    }
+
+    private function newHostsSection(Builder $query): Builder
+    {
+        return $query
+            ->where('activities.created_at', '>=', Carbon::now()->subDays(60))
+            ->orderByDesc('activities.created_at');
     }
 
     private function applyLocationFilter(Builder $query, array $input): void
