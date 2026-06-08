@@ -1,11 +1,11 @@
 "use client";
 
-import { EstablishmentPageHeader } from "@/features/establishments/components/establishment-page-header";
+import { ActivityPageHeader } from "@/features/activities/components/activity-page-header";
 
-export default function EstablishmentSettingsInformations() {
+export default function ActivitySettingsInformations() {
     return (
         <div className="flex flex-col gap-6">
-            <EstablishmentPageHeader />
+            <ActivityPageHeader />
             <span>Informations</span>
         </div>
     );

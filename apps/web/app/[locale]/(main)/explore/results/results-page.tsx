@@ -16,7 +16,7 @@ import {
     useMap,
     type MapRef,
 } from "@workspace/ui/components/mapcn";
-import type { EstablishmentModel } from "@workspace/modules/establishments";
+import type { ActivityModel } from "@workspace/modules/activities";
 
 import { useNavVisibility } from "@/providers/navigation-visibility-provider";
 import { useNavigation } from "@/hooks/use-navigation";
@@ -231,14 +231,14 @@ function MapController({
 }
 
 function ExploreMap({
-    establishments,
+    activities,
     highlightedId,
     onMarkerClick,
     onSearchArea,
     geocodedCenter,
     onDismissHighlight,
 }: {
-    establishments: EstablishmentModel[];
+    activities: ActivityModel[];
     highlightedId: string | null;
     onMarkerClick: (id: string) => void;
     onSearchArea: (area: SearchArea) => void;
@@ -249,23 +249,23 @@ function ExploreMap({
     const [hasMoved, setHasMoved] = useState(false);
     const mapRef = useRef<MapRef>(null);
 
-    const validEstablishments = useMemo(
+    const validActivities = useMemo(
         () =>
-            establishments.filter(
+            activities.filter(
                 (e) =>
                     e.address !== null &&
                     e.address.latitude !== null &&
                     e.address.longitude !== null,
             ),
-        [establishments],
+        [activities],
     );
 
     const positions = useMemo(
         () =>
-            validEstablishments.map(
+            validActivities.map(
                 (e) => [e.address!.latitude!, e.address!.longitude!] as [number, number],
             ),
-        [validEstablishments],
+        [validActivities],
     );
 
     function handleSearchInArea() {
@@ -302,7 +302,7 @@ function ExploreMap({
                     onMapClick={onDismissHighlight}
                 />
                 <MapControls position="top-right" showZoom showLocate className="hidden md:flex" />
-                {validEstablishments.map((e, i) => (
+                {validActivities.map((e, i) => (
                     <MapMarker
                         key={e.id}
                         longitude={positions[i]![1]}
@@ -371,7 +371,7 @@ function HighlightedHostOverlay({
     userDistanceMap,
     onClose,
 }: {
-    host: EstablishmentModel | null;
+    host: ActivityModel | null;
     userDistanceMap: Record<string, number | null>;
     onClose: () => void;
 }) {
@@ -398,7 +398,7 @@ function MapDetailCard({
     distanceOverride,
     onClose,
 }: {
-    host: EstablishmentModel;
+    host: ActivityModel;
     distanceOverride: number | null;
     onClose: () => void;
 }) {
@@ -440,11 +440,11 @@ function expandSearchArea(
 }
 
 function filterHosts(
-    establishments: EstablishmentModel[],
+    activities: ActivityModel[],
     activeFilter: string,
     bounds: MapBounds | null,
-): EstablishmentModel[] {
-    let result = establishments;
+): ActivityModel[] {
+    let result = activities;
     if (bounds) {
         result = result.filter(
             (e) =>
@@ -464,15 +464,12 @@ function filterHosts(
     return result;
 }
 
-function findHighlightedHost(
-    hosts: EstablishmentModel[],
-    id: string | null,
-): EstablishmentModel | null {
+function findHighlightedHost(hosts: ActivityModel[], id: string | null): ActivityModel | null {
     return hosts.find((e) => e.id === id) ?? null;
 }
 
 function buildUserDistanceMap(
-    hosts: EstablishmentModel[],
+    hosts: ActivityModel[],
     userLocation: { lat: number; lng: number } | null,
 ): Record<string, number | null> {
     const result: Record<string, number | null> = {};
@@ -560,7 +557,7 @@ export default function ExploreResultsPage({
     const geocodedCenter = useGeocodeLocation(location);
     const searchParams = resolveSearchParams(location, searchArea, geocodedCenter);
 
-    const { establishments, isLoading } = useSearchResults({
+    const { activities, isLoading } = useSearchResults({
         location: searchParams.location,
         coords: searchParams.coords,
         radius: searchParams.radius,
@@ -603,8 +600,8 @@ export default function ExploreResultsPage({
     });
 
     const filteredHosts = useMemo(
-        () => filterHosts(establishments, activeFilter, searchParams.bounds),
-        [establishments, activeFilter, searchParams.bounds],
+        () => filterHosts(activities, activeFilter, searchParams.bounds),
+        [activities, activeFilter, searchParams.bounds],
     );
     const highlightedHost = findHighlightedHost(filteredHosts, highlightedId);
 
@@ -681,7 +678,7 @@ export default function ExploreResultsPage({
                     )}
                 >
                     <ExploreMap
-                        establishments={filteredHosts}
+                        activities={filteredHosts}
                         highlightedId={highlightedId}
                         onMarkerClick={(id) =>
                             setHighlightedId((prev) => (prev === id ? null : id))

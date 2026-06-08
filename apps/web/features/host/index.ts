@@ -17,7 +17,7 @@ export * from "./components/host-species-list";
 export * from "./components/host-species-section";
 export * from "./components/host-verified-banner";
 export * from "./components/review-item";
+export * from "./hooks/use-host-activity";
 export * from "./hooks/use-host-availabilities";
-export * from "./hooks/use-host-establishment";
 export * from "./lib/availability-helpers";
 export * from "./lib/pricing";

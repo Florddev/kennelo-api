@@ -26,7 +26,7 @@ export function HostingNavbar({
     links: HostingNavLink[];
     className?: string;
 }) {
-    const { user, hasEstablishment } = useAuth();
+    const { user, hasActivity } = useAuth();
     const { routes } = useNavigation();
     const t = useTranslations();
 
@@ -73,7 +73,7 @@ export function HostingNavbar({
                     </Link>
                     <UserMenu
                         user={user ?? undefined}
-                        hasEstablishment={hasEstablishment}
+                        hasActivity={hasActivity}
                         className="size-9 shadow-lg"
                     />
                 </div>

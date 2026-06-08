@@ -1,22 +1,25 @@
-import type { CapacityModel } from "@workspace/modules/establishments";
+import type { ActivityCycleSettingModel } from "@workspace/modules/activities";
 import type { PetModel } from "@workspace/modules/pets";
 
-export function minPricePerNight(capacities: CapacityModel[]): number | null {
+export function minPricePerNight(capacities: ActivityCycleSettingModel[]): number | null {
     if (capacities.length === 0) return null;
     return capacities.reduce(
-        (min, capacity) => (capacity.pricePerNight < min ? capacity.pricePerNight : min),
-        capacities[0]!.pricePerNight,
+        (min, capacity) => (capacity.price < min ? capacity.price : min),
+        capacities[0]!.price,
     );
 }
 
-export function sumPetsPricePerNight(pets: PetModel[], capacities: CapacityModel[]): number {
+export function sumPetsPricePerNight(
+    pets: PetModel[],
+    capacities: ActivityCycleSettingModel[],
+): number {
     return pets.reduce((total, pet) => {
         const capacity = capacities.find((c) => c.animalType.id === pet.animalTypeId);
-        return capacity ? total + capacity.pricePerNight : total;
+        return capacity ? total + capacity.price : total;
     }, 0);
 }
 
-export function acceptedAnimalTypeIds(capacities: CapacityModel[]): string[] {
+export function acceptedAnimalTypeIds(capacities: ActivityCycleSettingModel[]): string[] {
     return capacities.map((capacity) => capacity.animalType.id);
 }
 
@@ -27,7 +30,7 @@ export type PetAvailability = {
 
 export function resolvePetsAvailability(
     pets: PetModel[],
-    capacities: CapacityModel[],
+    capacities: ActivityCycleSettingModel[],
 ): PetAvailability[] {
     return pets.map((pet) => {
         const capacity = capacities.find((c) => c.animalType.id === pet.animalTypeId);

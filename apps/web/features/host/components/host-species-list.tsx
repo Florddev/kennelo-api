@@ -1,12 +1,12 @@
 import { useTranslations } from "next-intl";
 import { PawPrint } from "lucide-react";
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle } from "@workspace/ui/components/empty";
-import type { CapacityModel } from "@workspace/modules/establishments";
+import type { ActivityCycleSettingModel } from "@workspace/modules/activities";
 
 import { PetTypeIllustration } from "@/features/pets/components/pet-type-illustration";
 
 type HostSpeciesListProps = {
-    capacities: CapacityModel[];
+    capacities: ActivityCycleSettingModel[];
 };
 
 export function HostSpeciesList({ capacities }: HostSpeciesListProps) {

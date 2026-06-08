@@ -19,6 +19,10 @@ return new class extends Migration
             Schema::table('messages', function (Blueprint $table): void {
                 $table->string('sender_type', 20)->change();
             });
+
+            if ($driver === 'pgsql') {
+                DB::statement('ALTER TABLE messages DROP CONSTRAINT IF EXISTS messages_sender_type_check');
+            }
         }
 
         DB::table('messages')->where('sender_type', 'establishment')->update(['sender_type' => 'activity']);

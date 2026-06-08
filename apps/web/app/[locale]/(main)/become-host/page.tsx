@@ -1,4 +1,4 @@
-import { BecomeHostStepper } from "@/features/establishments";
+import { BecomeHostStepper } from "@/features/activities";
 import { getTranslations } from "next-intl/server";
 
 export async function generateMetadata({ params }: { params: { locale: string } }) {

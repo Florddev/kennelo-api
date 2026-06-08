@@ -1,0 +1,195 @@
+{
+    "title": "My Activities",
+    "description": "Manage your pet boarding activities",
+    "addNew": "Add an activity",
+    "status": {
+        "active": "Active",
+        "inactive": "Inactive"
+    },
+    "card": {
+        "open": "Manage activity",
+        "species": "Animals hosted",
+        "noSpecies": "No animal type configured"
+    },
+    "manager": {
+        "groups": {
+            "configuration": "Configuration",
+            "activity": "Activity"
+        },
+        "nav": {
+            "info": "Information",
+            "cycles": "Cycles",
+            "bookings": "Bookings",
+            "collaborators": "Collaborators",
+            "availabilities": "Availabilities",
+            "invoices": "Invoices",
+            "payment": "Payment"
+        },
+        "invoices": {
+            "comingSoon": "Coming soon"
+        },
+        "payment": {
+            "comingSoon": "Coming soon"
+        },
+        "bookings": {
+            "title": "Bookings",
+            "description": "Bookings for this activity",
+            "filter": "Filter by customer...",
+            "empty": "No bookings",
+            "count": "{count, plural, =1 {# booking} other {# bookings}}",
+            "columns": {
+                "customer": "Customer",
+                "checkIn": "Check-in",
+                "checkOut": "Check-out",
+                "pets": "Pets",
+                "status": "Status",
+                "total": "Total"
+            }
+        },
+        "collaborators": {
+            "title": "Collaborators",
+            "description": "Collaborators of this activity",
+            "filter": "Filter by name...",
+            "empty": "No collaborators",
+            "count": "{count, plural, =1 {# collaborator} other {# collaborators}}",
+            "columns": {
+                "name": "Name",
+                "email": "Email",
+                "phone": "Phone",
+                "role": "Role"
+            }
+        },
+        "availabilities": {
+            "filter": "Filter by note...",
+            "count": "{count, plural, =1 {# day} other {# days}}",
+            "columns": {
+                "date": "Date"
+            }
+        },
+        "capacities": {
+            "filter": "Filter by animal type...",
+            "count": "{count, plural, =1 {# capacity} other {# capacities}}"
+        }
+    },
+    "empty": {
+        "title": "No activities yet",
+        "description": "Create your first activity and start welcoming pets!"
+    },
+    "detail": {
+        "sections": {
+            "details": "Activity details",
+            "contact": "Contact information",
+            "address": "Address",
+            "business": "Business information",
+            "payments": "Payments"
+        },
+        "stripe": {
+            "connectedTitle": "Bank account connected",
+            "connectedDescription": "You can receive payouts for confirmed bookings.",
+            "pendingTitle": "Onboarding in progress",
+            "pendingDescription": "Finish providing your business details to start receiving payouts.",
+            "notConnectedTitle": "Connect your bank account",
+            "notConnectedDescription": "Set up Stripe to receive payouts when guests book your activity.",
+            "startOnboarding": "Connect with Stripe",
+            "continueOnboarding": "Continue onboarding",
+            "chargesOn": "Payments enabled",
+            "chargesOff": "Payments disabled",
+            "payoutsOn": "Payouts enabled",
+            "payoutsOff": "Payouts disabled",
+            "embedded": {
+                "title": "Bank account onboarding",
+                "description": "Complete this short form to start receiving payouts from Kennelo.",
+                "sessionFailed": "Could not load the Stripe onboarding session"
+            }
+        },
+        "empty": {
+            "phone": "No phone number",
+            "email": "No email address",
+            "website": "No website",
+            "siret": "No SIRET number",
+            "description": "No description provided"
+        },
+        "notFound": "Activity not found",
+        "notFoundDescription": "This activity does not exist or you don't have access to it.",
+        "editTitle": "Edit activity",
+        "editDescription": "Update the details of your activity",
+        "updateSuccess": "Activity updated successfully",
+        "deleteTitle": "Delete activity",
+        "deleteDescription": "Are you sure you want to delete this activity? This action cannot be undone.",
+        "deleteSuccess": "Activity deleted successfully"
+    },
+    "dashboard": {
+        "title": "Dashboard",
+        "totalCapacity": "Total capacity",
+        "occupiedSpots": "Occupied spots",
+        "availableSpots": "Available spots",
+        "todayStatus": "Today's status",
+        "occupancyByAnimal": "Occupancy by animal type",
+        "occupancyRate": "Occupancy rate",
+        "noCapacities": "No capacities configured yet"
+    },
+    "cycles": {
+        "title": "Cycles",
+        "addCycle": "Add a cycle",
+        "empty": "No cycles yet. Add a cycle to set capacity and pricing.",
+        "defaultPeriod": "Default cycle",
+        "active": "Active",
+        "inactive": "Inactive",
+        "activeLabel": "Active",
+        "priority": "Priority",
+        "startDate": "Start date",
+        "endDate": "End date",
+        "settingsTitle": "Capacity & pricing",
+        "settingsEmpty": "No animal type configured for this cycle.",
+        "settingSummary": "{capacity} spots · {price}€/night",
+        "editSettings": "Edit settings",
+        "addSpecies": "Add an animal type",
+        "applicableDays": "Applicable days",
+        "priceValue": "{price}€",
+        "closedDays": "Closed days",
+        "deleteCycle": "Delete cycle",
+        "deleteConfirmation": "Are you sure you want to delete this cycle?",
+        "weekdaysShort": {
+            "monday": "Mon",
+            "tuesday": "Tue",
+            "wednesday": "Wed",
+            "thursday": "Thu",
+            "friday": "Fri",
+            "saturday": "Sat",
+            "sunday": "Sun"
+        }
+    },
+    "availabilities": {
+        "title": "Availabilities",
+        "open": "Open",
+        "closed": "Closed",
+        "addAvailability": "Add availability",
+        "deleteConfirmation": "Are you sure you want to delete this availability?",
+        "empty": "No availabilities set for this period.",
+        "dateRange": "Date range",
+        "bulkUpdate": "Bulk update"
+    },
+    "feature": {
+        "activity": {
+            "host": "Host"
+        },
+        "my-activity": {
+            "host": "Host"
+        },
+        "my-activities": {
+            "host": "Host"
+        }
+    },
+    "host": "Host",
+    "types": {
+        "boarding": "Boarding",
+        "breeding": "Breeding",
+        "daycare": "Day care",
+        "shelter": "Shelter",
+        "other": "Other",
+        "pet-sitter": "Pet sitter",
+        "home-care": "Home care",
+        "host-family": "Host family",
+        "mobile-boarding": "Mobile boarding"
+    }
+}

@@ -19,6 +19,10 @@ return new class extends Migration
             Schema::table('reviews', function (Blueprint $table): void {
                 $table->string('reviewer_type', 20)->change();
             });
+
+            if ($driver === 'pgsql') {
+                DB::statement('ALTER TABLE reviews DROP CONSTRAINT IF EXISTS reviews_reviewer_type_check');
+            }
         }
 
         DB::table('reviews')->where('reviewer_type', 'establishment')->update(['reviewer_type' => 'activity']);

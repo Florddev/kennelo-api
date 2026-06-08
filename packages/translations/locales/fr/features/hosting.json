@@ -1,18 +1,18 @@
 {
-    "bankAccountShared": "Votre compte bancaire est partagé entre tous vos établissements — vous ne le configurez qu'une fois.",
+    "bankAccountShared": "Votre compte bancaire est partagé entre tous vos activités — vous ne le configurez qu'une fois.",
     "temp": {
         "tabs": {
             "bankAccount": "Compte bancaire",
             "pendingRequests": "Demandes en attente"
         },
-        "noEstablishments": "Vous n'avez encore aucun établissement."
+        "noActivities": "Vous n'avez encore aucune activité."
     },
     "bankAccount": {
         "connectedAs": "Connecté en tant que {name} ({email})",
-        "coveredEstablishments": "Établissements utilisant ce compte",
-        "noEstablishmentsCovered": "Aucun établissement pour l'instant — votre compte couvrira automatiquement ceux que vous créez.",
+        "coveredActivities": "Activités utilisant ce compte",
+        "noActivitiesCovered": "Aucune activité pour l'instant — votre compte couvrira automatiquement ceux que vous créez.",
         "usesThisAccount": "Défaut",
-        "perEstablishmentNote": "Vous voulez un compte bancaire différent pour un établissement spécifique ? Cette option arrivera dans une prochaine mise à jour.",
+        "perActivityNote": "Vous voulez un compte bancaire différent pour une activité spécifique ? Cette option arrivera dans une prochaine mise à jour.",
         "updateDetails": "Modifier les coordonnées bancaires"
     }
 }

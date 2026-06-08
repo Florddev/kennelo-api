@@ -19,6 +19,10 @@ return new class extends Migration
             Schema::table('review_criteria_definitions', function (Blueprint $table): void {
                 $table->string('applicable_to', 20)->change();
             });
+
+            if ($driver === 'pgsql') {
+                DB::statement('ALTER TABLE review_criteria_definitions DROP CONSTRAINT IF EXISTS review_criteria_definitions_applicable_to_check');
+            }
         }
 
         DB::table('review_criteria_definitions')->where('applicable_to', 'establishment')->update(['applicable_to' => 'activity']);

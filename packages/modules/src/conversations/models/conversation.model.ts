@@ -1,4 +1,4 @@
-import { EstablishmentModel } from "../../establishments/models/establishment.model";
+import { ActivityModel } from "../../activities/models/activity.model";
 import { UserModel } from "../../users/models/user.model";
 import { BookingThreadModel } from "./booking-thread.model";
 import type { ConversationDto } from "./dtos/conversation.dto";
@@ -8,10 +8,10 @@ export class ConversationModel {
     private constructor(
         public readonly id: string,
         public readonly userId: string,
-        public readonly establishmentId: string,
+        public readonly activityId: string,
         public readonly lastMessageAt: string | null,
         public readonly user: UserModel | null,
-        public readonly establishment: EstablishmentModel | null,
+        public readonly activity: ActivityModel | null,
         public readonly latestMessage: MessageModel | null,
         public readonly unreadCount: number | null,
         public readonly bookingThreads: BookingThreadModel[] | null,
@@ -23,10 +23,10 @@ export class ConversationModel {
         return new ConversationModel(
             dto.id,
             dto.user_id,
-            dto.establishment_id,
+            dto.activity_id,
             dto.last_message_at,
             dto.user ? UserModel.from(dto.user) : null,
-            dto.establishment ? EstablishmentModel.from(dto.establishment) : null,
+            dto.activity ? ActivityModel.from(dto.activity) : null,
             dto.latest_message ? MessageModel.from(dto.latest_message) : null,
             dto.unread_count ?? null,
             dto.booking_threads ? dto.booking_threads.map(BookingThreadModel.from) : null,
@@ -43,10 +43,10 @@ export class ConversationModel {
         return new ConversationModel(
             this.id,
             this.userId,
-            this.establishmentId,
+            this.activityId,
             message.createdAt,
             this.user,
-            this.establishment,
+            this.activity,
             message,
             resetUnread ? 0 : this.unreadCount,
             this.bookingThreads,

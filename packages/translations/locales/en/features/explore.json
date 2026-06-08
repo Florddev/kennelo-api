@@ -60,6 +60,6 @@
     },
     "error": {
         "title": "Something went wrong",
-        "description": "Unable to load establishments."
+        "description": "Unable to load activities."
     }
 }

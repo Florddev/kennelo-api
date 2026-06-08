@@ -1,0 +1,35 @@
+import { AddressDto } from "../../../address/models/dtos/address.dto";
+import { UserDto } from "../../../users/models/dtos/user.dto";
+import { ActivityImageDto } from "./activity-image.dto";
+
+export type ActivityDto = {
+    id: string;
+    name: string;
+    siret: string | null;
+    description: string | null;
+    phone: string | null;
+    email: string | null;
+    website: string | null;
+    address_id: string | null;
+    timezone: string | null;
+    is_active: boolean;
+    manager_id: string;
+    is_professional: boolean;
+    type: string | null;
+    min_price: number | null;
+    animal_types: string[];
+    avatar_url: string | null;
+    stripe_account_id: string | null;
+    stripe_onboarding_completed: boolean;
+    stripe_charges_enabled: boolean;
+    stripe_payouts_enabled: boolean;
+    address: AddressDto | null;
+    manager?: UserDto | null;
+    collaborators?: UserDto[];
+    images?: ActivityImageDto[];
+    rating: number | null;
+    review_count: number;
+    distance: number | null;
+    created_at: string;
+    updated_at: string;
+};

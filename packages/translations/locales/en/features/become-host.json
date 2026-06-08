@@ -1,11 +1,11 @@
 {
     "title": "Become a Host",
-    "description": "List your pet boarding establishment on Kennelo",
+    "description": "List your pet boarding activity on Kennelo",
     "steps": {
         "welcome": {
             "title": "Step 1",
             "subtitle": "Tell us about your business",
-            "description": "In just a few steps, you'll be ready to welcome pets into your establishment. We'll guide you through setting up your profile.",
+            "description": "In just a few steps, you'll be ready to welcome pets into your activity. We'll guide you through setting up your profile.",
             "cta": "Get started"
         },
         "hostType": {
@@ -17,13 +17,13 @@
             "individualDescription": "Pet-sitter, home boarding or occasional hosting",
             "error": "Please select a profile type"
         },
-        "establishmentType": {
+        "activityType": {
             "title": "Which of the following best describes your business?",
             "subtitle": "What type of facility do you manage?",
-            "error": "Please select an establishment type"
+            "error": "Please select an activity type"
         },
-        "establishmentInfo": {
-            "title": "Your establishment",
+        "activityInfo": {
+            "title": "Your activity",
             "subtitle": "Tell us about your place"
         },
         "contactDetails": {
@@ -32,7 +32,7 @@
         },
         "address": {
             "title": "Location",
-            "subtitle": "Where is your establishment located?"
+            "subtitle": "Where is your activity located?"
         },
         "businessInfo": {
             "title": "Business information",
@@ -41,14 +41,14 @@
         "review": {
             "title": "Review & confirm",
             "subtitle": "Make sure everything looks good",
-            "submitButton": "Create my establishment",
+            "submitButton": "Create my activity",
             "submitting": "Creating...",
             "autoFilledFromProfile": "Auto-filled from your profile"
         }
     },
     "success": {
         "title": "Congratulations!",
-        "description": "Your establishment has been created successfully. You can now start welcoming pets!",
-        "cta": "View my establishment"
+        "description": "Your activity has been created successfully. You can now start welcoming pets!",
+        "cta": "View my activity"
     }
 }

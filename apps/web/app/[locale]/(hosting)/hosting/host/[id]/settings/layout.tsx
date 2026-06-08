@@ -12,11 +12,11 @@ import { useNavigation } from "@/hooks/use-navigation";
 import { NavRow } from "@/components/navigation/nav-row";
 import { SplitPageLayout, SplitPageLayoutNavItem } from "@/components/layouts/split-page-layout";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useEstablishment } from "@/features/establishments";
+import { useActivity } from "@/features/activities";
 import { Skeleton } from "@workspace/ui/components/skeleton";
-import EstablishmentSettingsInformations from "./informations/page";
+import ActivitySettingsInformations from "./informations/page";
 
-export default function EstablishmentLayout({ children }: { children: React.ReactNode }) {
+export default function ActivityLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
     const t = useTranslations();
     const { routes, params } = useNavigation<{ id: string }>();
@@ -25,31 +25,31 @@ export default function EstablishmentLayout({ children }: { children: React.Reac
     const settingsNav: SplitPageLayoutNavItem[] = [
         {
             icon: Widget5,
-            href: routes.EstablishmentSettingsInformations({ id: params.id }),
-            label: t("features.establishments.manager.nav.info"),
+            href: routes.ActivitySettingsInformations({ id: params.id }),
+            label: t("features.activities.manager.nav.info"),
             default: true,
         },
         {
             icon: Calendar,
-            href: routes.EstablishmentAvailabilities({ id: params.id }),
-            label: t("features.establishments.manager.nav.availabilities"),
+            href: routes.ActivityAvailabilities({ id: params.id }),
+            label: t("features.activities.manager.nav.availabilities"),
             default: false,
         },
         {
             icon: Paw,
-            href: routes.EstablishmentCapacities({ id: params.id }),
-            label: t("features.establishments.manager.nav.capacities"),
+            href: routes.ActivityCycles({ id: params.id }),
+            label: t("features.activities.manager.nav.cycles"),
             default: false,
         },
         {
-            href: routes.EstablishmentCollaborators({ id: params.id }),
-            label: t("features.establishments.manager.nav.collaborators"),
+            href: routes.ActivityCollaborators({ id: params.id }),
+            label: t("features.activities.manager.nav.collaborators"),
             icon: UsersGroupTwoRounded,
             default: false,
         },
         {
-            href: routes.EstablishmentPayment({ id: params.id }),
-            label: t("features.establishments.manager.nav.payment"),
+            href: routes.ActivityPayment({ id: params.id }),
+            label: t("features.activities.manager.nav.payment"),
             icon: Card,
             default: false,
             comingSoon: true,
@@ -58,7 +58,7 @@ export default function EstablishmentLayout({ children }: { children: React.Reac
 
     const isRoot = !settingsNav.some((item) => pathname.includes(item.href));
     const currentPageLabel = settingsNav.find((item) => pathname.includes(item.href))?.label;
-    const { establishment } = useEstablishment(params.id);
+    const { activity } = useActivity(params.id);
 
     return (
         <SplitPageLayout isRoot={isRoot}>
@@ -68,20 +68,20 @@ export default function EstablishmentLayout({ children }: { children: React.Reac
                         <Link
                             href={
                                 isRoot || !isMobile
-                                    ? routes.EstablishmentDetails({ id: params.id })
-                                    : routes.EstablishmentSettings({ id: params.id })
+                                    ? routes.ActivityDetails({ id: params.id })
+                                    : routes.ActivitySettings({ id: params.id })
                             }
                         >
                             <ArrowLeft className="size-4" />
                             <span className="hidden md:block">
-                                {t("common.actions.backTo", { value: establishment?.name ?? "" })}
+                                {t("common.actions.backTo", { value: activity?.name ?? "" })}
                             </span>
                         </Link>
                     </Button>
                 </SplitPageLayout.Header>
 
                 <div className="px-4 md:px-0">
-                    {establishment ? (
+                    {activity ? (
                         <h1 className="font-semibold tracking-tight text-2xl md:text-3xl">
                             {!isRoot && <span className="md:hidden">{currentPageLabel}</span>}
                             <span className={cn(!isRoot && "md:block hidden")}>
@@ -116,7 +116,7 @@ export default function EstablishmentLayout({ children }: { children: React.Reac
 
             <SplitPageLayout.Content
                 className="md:w-3/4"
-                defaultContent={<EstablishmentSettingsInformations />}
+                defaultContent={<ActivitySettingsInformations />}
             >
                 {children}
             </SplitPageLayout.Content>

@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { searchEstablishments } from "@workspace/modules/establishments";
-import type { EstablishmentModel } from "@workspace/modules/establishments";
+import { searchActivities } from "@workspace/modules/activities";
+import type { ActivityModel } from "@workspace/modules/activities";
 
 type UseSearchResultsInput = {
     location?: string;
@@ -21,7 +21,7 @@ export function useSearchResults({
     dateTo,
     animalCounts,
 }: UseSearchResultsInput) {
-    const [establishments, setEstablishments] = useState<EstablishmentModel[]>([]);
+    const [activities, setActivities] = useState<ActivityModel[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [retryKey, setRetryKey] = useState(0);
@@ -33,9 +33,9 @@ export function useSearchResults({
             setIsLoading(true);
             setError(null);
         }, 0);
-        searchEstablishments({ location, coords, radius, dateFrom, dateTo, animalCounts })
+        searchActivities({ location, coords, radius, dateFrom, dateTo, animalCounts })
             .then((result) => {
-                if (!cancelled) setEstablishments(result.establishments);
+                if (!cancelled) setActivities(result.activities);
             })
             .catch(() => {
                 if (!cancelled) setError("error");
@@ -50,5 +50,5 @@ export function useSearchResults({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [location, coords?.lat, coords?.lng, radius, dateFrom, dateTo, animalCounts, retryKey]);
 
-    return { establishments, isLoading, error, retry: () => setRetryKey((k) => k + 1) };
+    return { activities, isLoading, error, retry: () => setRetryKey((k) => k + 1) };
 }

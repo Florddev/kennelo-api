@@ -3,8 +3,8 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { cn } from "@workspace/ui/lib/utils";
-import { getExploreSection } from "@workspace/modules/establishments";
-import type { EstablishmentModel, ExploreSectionModel } from "@workspace/modules/establishments";
+import { getExploreSection } from "@workspace/modules/activities";
+import type { ActivityModel, ExploreSectionModel } from "@workspace/modules/activities";
 import { useLocation } from "@/features/explore/context/location-context";
 import { HostCard } from "./host-card";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@workspace/ui/components/drawer";
@@ -24,9 +24,7 @@ function SectionOverlay({
 }) {
     const t = useTranslations();
     const { coords } = useLocation();
-    const [establishments, setEstablishments] = useState<EstablishmentModel[]>(
-        section.establishments,
-    );
+    const [activities, setActivities] = useState<ActivityModel[]>(section.activities);
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(section.hasMore);
     const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -37,7 +35,7 @@ function SectionOverlay({
         setIsLoadingMore(true);
         const nextPage = page + 1;
         const result = await getExploreSection(section.id, nextPage, coords ?? undefined);
-        setEstablishments((prev) => [...prev, ...result.establishments]);
+        setActivities((prev) => [...prev, ...result.activities]);
         setHasMore(result.meta.hasMore);
         setPage(nextPage);
         setIsLoadingMore(false);
@@ -63,7 +61,7 @@ function SectionOverlay({
     return (
         <div data-slot="section-overlay" className="flex flex-col h-full">
             <div className="flex-1 overflow-y-auto px-4 py-3 flex flex-col gap-2">
-                {establishments.map((host) => (
+                {activities.map((host) => (
                     <HostCard
                         key={host.id}
                         host={host}
@@ -84,7 +82,7 @@ function SectionOverlay({
                         )}
                     </div>
                 )}
-                {!hasMore && establishments.length > 0 && (
+                {!hasMore && activities.length > 0 && (
                     <p className="text-center text-xs text-muted-foreground py-4">
                         {t("features.explore.overlay.noMore")}
                     </p>
@@ -116,7 +114,7 @@ export function ExploreSection({ section, className }: ExploreSectionProps) {
                     )}
                 </div>
                 <div className="flex gap-4 overflow-x-auto scrollbar-none px-4 py-2.5">
-                    {section.establishments.map((host) => (
+                    {section.activities.map((host) => (
                         <HostCard key={host.id} host={host} variant="vertical" />
                     ))}
                 </div>

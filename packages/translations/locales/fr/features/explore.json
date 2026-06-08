@@ -60,6 +60,6 @@
     },
     "error": {
         "title": "Une erreur est survenue",
-        "description": "Impossible de charger les établissements."
+        "description": "Impossible de charger les activités."
     }
 }

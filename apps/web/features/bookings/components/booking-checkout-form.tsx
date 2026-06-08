@@ -6,14 +6,14 @@ import { toast } from "sonner";
 import { Separator } from "@workspace/ui/components/separator";
 import { createBooking } from "@workspace/modules/bookings";
 import { computeNights, formatDateRange, toApiDate } from "@workspace/common";
-import type { CapacityModel, EstablishmentModel } from "@workspace/modules/establishments";
+import type { ActivityCycleSettingModel, ActivityModel } from "@workspace/modules/activities";
 import type { PetModel } from "@workspace/modules/pets";
 
 import { getStripe } from "@/lib/stripe";
 import { useNavigation } from "@/hooks/use-navigation";
 import { useAsyncState } from "@/hooks/use-async-state";
 import { resolvePetsAvailability } from "@/features/host";
-import { EstablishmentSummaryCard } from "@/features/establishments/components/establishment-summary-card";
+import { ActivitySummaryCard } from "@/features/activities/components/activity-summary-card";
 import { PaymentMethodPicker } from "@/features/payment-methods/components/payment-method-picker";
 
 import { computeBookingTotals } from "../lib/pricing";
@@ -27,15 +27,15 @@ import { BookingMessageSection } from "./booking-message-section";
 import { BookingFooter } from "./booking-footer";
 
 type BookingCheckoutFormProps = {
-    establishment: EstablishmentModel;
-    capacities: CapacityModel[];
+    activity: ActivityModel;
+    capacities: ActivityCycleSettingModel[];
     pets: PetModel[];
     isLoadingPets: boolean;
     dateRange: { from: Date; to: Date };
 };
 
 export function BookingCheckoutForm({
-    establishment,
+    activity,
     capacities,
     pets,
     isLoadingPets,
@@ -71,7 +71,7 @@ export function BookingCheckoutForm({
         const result = await execute(
             () =>
                 createBooking({
-                    establishmentId: establishment.id,
+                    activityId: activity.id,
                     checkInDate: toApiDate(dateRange.from),
                     checkOutDate: toApiDate(dateRange.to),
                     petIds: selectedPetIds,
@@ -121,7 +121,7 @@ export function BookingCheckoutForm({
             />
 
             <div className="flex flex-col gap-6 px-4 py-4">
-                <EstablishmentSummaryCard establishment={establishment} />
+                <ActivitySummaryCard activity={activity} />
 
                 <BookingTripSection datesLabel={datesLabel} petsCountLabel={petsCountLabel} />
 

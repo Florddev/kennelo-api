@@ -7,7 +7,7 @@ import { useAuth } from "@/features/auth";
 import { ExploreSection } from "@/features/explore/components/explore-section";
 import { LocationPrompt } from "@/features/explore/components/location-prompt";
 import { LocationProvider, useLocation } from "@/features/explore/context/location-context";
-import { useExploreEstablishments } from "@/features/explore/hooks/use-explore-establishments";
+import { useExploreActivities } from "@/features/explore/hooks/use-explore-activities";
 import SearchBar from "@/features/search/components/search-bar";
 import MobileSearch from "@/features/search/components/mobile/mobile-search";
 import { Button } from "@workspace/ui/components/button";
@@ -37,7 +37,7 @@ function ExploreContent() {
     const t = useTranslations();
     const { user, isAuthenticated } = useAuth();
     const { coords, isDismissed, setCoords } = useLocation();
-    const { sections, isLoading, error, retry } = useExploreEstablishments();
+    const { sections, isLoading, error, retry } = useExploreActivities();
 
     useEffect(() => {
         if (isAuthenticated && user?.address?.latitude && user.address.longitude && !coords) {

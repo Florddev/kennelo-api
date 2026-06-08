@@ -45,10 +45,10 @@ export function MessageSenderHeader({
                     {!isOwn && (
                         <p className="flex items-center font-semibold">
                             {message.sender?.getFullName()}
-                            {message.senderType === "establishment" && (
+                            {message.senderType === "activity" && (
                                 <>
                                     <Dot className="w-2" />
-                                    {t("features.establishments.host")}
+                                    {t("features.activities.host")}
                                 </>
                             )}
                         </p>

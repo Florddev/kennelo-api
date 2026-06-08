@@ -10,71 +10,68 @@ import { cn } from "@workspace/ui/lib/utils";
 import type { BookingStatus } from "@workspace/modules/bookings";
 
 import { useAuth } from "@/features/auth";
-import { useCalendarEstablishmentBookings } from "@/features/bookings/hooks/use-calendar-establishment-bookings";
+import { useCalendarActivityBookings } from "@/features/bookings/hooks/use-calendar-activity-bookings";
 import { BookingsCalendar } from "@/features/bookings/components/bookings-calendar";
 import { DayBookingsSheet } from "@/features/bookings/components/day-bookings-sheet";
 import { bookingsForDay } from "@/features/bookings/lib/calendar-grid";
 import {
     DEFAULT_ACTIVE_STATUSES,
     SELECTABLE_STATUSES,
-    establishmentColor,
+    activityColor,
     statusColor,
 } from "@/features/bookings/lib/booking-colors";
 import PageLayout from "@/components/layouts/page-layout";
 
 export default function HostingCalendarPage() {
     const t = useTranslations();
-    const { establishments, isLoaded } = useAuth();
+    const { activities, isLoaded } = useAuth();
 
-    const establishmentMetaById = useMemo(() => {
+    const activityMetaById = useMemo(() => {
         const map: Record<string, { id: string; name: string; colorIndex: number }> = {};
-        establishments.forEach((establishment, index) => {
-            map[establishment.id] = {
-                id: establishment.id,
-                name: establishment.name,
+        activities.forEach((activity, index) => {
+            map[activity.id] = {
+                id: activity.id,
+                name: activity.name,
                 colorIndex: index,
             };
         });
         return map;
-    }, [establishments]);
+    }, [activities]);
 
     const [focusedMonth, setFocusedMonth] = useState(() => new Date());
-    const [activeEstablishmentIds, setActiveEstablishmentIds] = useState<string[]>(() =>
-        establishments.map((establishment) => establishment.id),
+    const [activeActivityIds, setActiveActivityIds] = useState<string[]>(() =>
+        activities.map((activity) => activity.id),
     );
     const [activeStatuses, setActiveStatuses] = useState<BookingStatus[]>(DEFAULT_ACTIVE_STATUSES);
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
     const [sheetOpen, setSheetOpen] = useState(false);
 
-    const allEstablishmentIds = useMemo(
-        () => establishments.map((establishment) => establishment.id),
-        [establishments],
-    );
+    const allActivityIds = useMemo(() => activities.map((activity) => activity.id), [activities]);
 
     const weekStartsOn: 0 | 1 = 1;
 
-    const { bookingsByEstablishmentId } = useCalendarEstablishmentBookings({
-        establishmentIds: allEstablishmentIds,
+    const { bookingsByActivityId } = useCalendarActivityBookings({
+        activityIds: allActivityIds,
         focusedMonth,
         weekStartsOn,
     });
 
     const filteredBookings = useMemo(() => {
-        const activeEstablishments = new Set(activeEstablishmentIds);
+        const activeActivities = new Set(activeActivityIds);
         const activeStatusSet = new Set(activeStatuses);
-        return Object.entries(bookingsByEstablishmentId)
-            .filter(([establishmentId]) => activeEstablishments.has(establishmentId))
+        return Object.entries(bookingsByActivityId)
+            .filter(([activityId]) => activeActivities.has(activityId))
             .flatMap(([, bookings]) => bookings)
             .filter((booking) => activeStatusSet.has(booking.status));
-    }, [bookingsByEstablishmentId, activeEstablishmentIds, activeStatuses]);
+    }, [bookingsByActivityId, activeActivityIds, activeStatuses]);
 
     const dayBookings = useMemo(
         () => (selectedDate ? bookingsForDay(selectedDate, filteredBookings) : []),
         [selectedDate, filteredBookings],
     );
 
-    const toggleEstablishment = (id: string) => {
-        setActiveEstablishmentIds((prev) =>
+    const toggleActivity = (id: string) => {
+        setActiveActivityIds((prev) =>
             prev.includes(id) ? prev.filter((eid) => eid !== id) : [...prev, id],
         );
     };
@@ -94,17 +91,17 @@ export default function HostingCalendarPage() {
         return null;
     }
 
-    if (establishments.length === 0) {
+    if (activities.length === 0) {
         return (
             <div className="flex flex-col items-center justify-center h-[calc(100dvh-var(--header-height))] gap-3 px-6 text-center">
                 <div className="flex items-center justify-center size-16 rounded-full bg-muted">
                     <Building2 className="size-8 text-muted-foreground" />
                 </div>
                 <h2 className="text-lg font-semibold">
-                    {t("features.hosting-calendar.noEstablishment.title")}
+                    {t("features.hosting-calendar.noActivity.title")}
                 </h2>
                 <p className="text-sm text-muted-foreground max-w-sm">
-                    {t("features.hosting-calendar.noEstablishment.description")}
+                    {t("features.hosting-calendar.noActivity.description")}
                 </p>
             </div>
         );
@@ -112,20 +109,20 @@ export default function HostingCalendarPage() {
 
     const filters = (
         <div className="flex flex-col gap-3">
-            {establishments.length > 1 && (
+            {activities.length > 1 && (
                 <div className="flex flex-wrap items-center gap-2">
                     <span className="text-xs font-medium text-muted-foreground me-1">
-                        {t("features.hosting-calendar.filters.establishments")}
+                        {t("features.hosting-calendar.filters.activities")}
                     </span>
-                    {establishments.map((establishment) => {
-                        const meta = establishmentMetaById[establishment.id]!;
-                        const color = establishmentColor(meta.colorIndex);
-                        const active = activeEstablishmentIds.includes(establishment.id);
+                    {activities.map((activity) => {
+                        const meta = activityMetaById[activity.id]!;
+                        const color = activityColor(meta.colorIndex);
+                        const active = activeActivityIds.includes(activity.id);
                         return (
                             <button
-                                key={establishment.id}
+                                key={activity.id}
                                 type="button"
-                                onClick={() => toggleEstablishment(establishment.id)}
+                                onClick={() => toggleActivity(activity.id)}
                                 className={cn(
                                     "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition-opacity",
                                     color.chipBg,
@@ -135,7 +132,7 @@ export default function HostingCalendarPage() {
                                 )}
                             >
                                 <span className={cn("size-2 rounded-full", color.dot)} />
-                                {establishment.name}
+                                {activity.name}
                             </button>
                         );
                     })}
@@ -182,7 +179,7 @@ export default function HostingCalendarPage() {
                     focusedMonth={focusedMonth}
                     onFocusedMonthChange={setFocusedMonth}
                     bookings={filteredBookings}
-                    establishmentMetaById={establishmentMetaById}
+                    activityMetaById={activityMetaById}
                     onDayClick={onDayClick}
                 />
                 <DayBookingsSheet
@@ -190,7 +187,7 @@ export default function HostingCalendarPage() {
                     onOpenChange={setSheetOpen}
                     selectedDate={selectedDate}
                     bookings={dayBookings}
-                    establishmentMetaById={establishmentMetaById}
+                    activityMetaById={activityMetaById}
                 />
             </div>
         </PageLayout>

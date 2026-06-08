@@ -10,9 +10,9 @@ import { cn } from "@workspace/ui/lib/utils";
 import type { BookingModel } from "@workspace/modules/bookings";
 
 import { MAX_VISIBLE_ROWS, buildCalendarWeeks, dayKey, shiftMonth } from "../lib/calendar-grid";
-import { establishmentColor } from "../lib/booking-colors";
+import { activityColor } from "../lib/booking-colors";
 
-type EstablishmentMeta = {
+type ActivityMeta = {
     id: string;
     name: string;
     colorIndex: number;
@@ -22,7 +22,7 @@ type BookingsCalendarProps = {
     focusedMonth: Date;
     onFocusedMonthChange: (date: Date) => void;
     bookings: BookingModel[];
-    establishmentMetaById: Record<string, EstablishmentMeta>;
+    activityMetaById: Record<string, ActivityMeta>;
     onDayClick: (date: Date) => void;
 };
 
@@ -34,7 +34,7 @@ export function BookingsCalendar({
     focusedMonth,
     onFocusedMonthChange,
     bookings,
-    establishmentMetaById,
+    activityMetaById,
     onDayClick,
 }: BookingsCalendarProps) {
     const locale = useLocale();
@@ -151,8 +151,8 @@ export function BookingsCalendar({
                         {week.segments
                             .filter((segment) => !segment.hidden)
                             .map((segment) => {
-                                const meta = establishmentMetaById[segment.booking.establishmentId];
-                                const color = establishmentColor(meta?.colorIndex ?? 0);
+                                const meta = activityMetaById[segment.booking.activityId];
+                                const color = activityColor(meta?.colorIndex ?? 0);
                                 const customerName =
                                     segment.booking.user?.firstName ??
                                     segment.booking.user?.email ??

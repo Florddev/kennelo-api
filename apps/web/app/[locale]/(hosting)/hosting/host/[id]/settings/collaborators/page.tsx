@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import EstablishmentCollaboratorsPage from "./establishment-collaborators-page";
+import ActivityCollaboratorsPage from "./activity-collaborators-page";
 
 export type Query = {
     id: string;
@@ -14,10 +14,10 @@ export async function generateMetadata({ params }: { params: { locale: string } 
     const t = await getTranslations({ locale });
 
     return {
-        title: t("features.establishments.manager.collaborators.title"),
+        title: t("features.activities.manager.collaborators.title"),
     };
 }
 
-export default function EstablishmentCollaborators() {
-    return <EstablishmentCollaboratorsPage />;
+export default function ActivityCollaborators() {
+    return <ActivityCollaboratorsPage />;
 }

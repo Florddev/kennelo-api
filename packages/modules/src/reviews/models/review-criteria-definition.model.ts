@@ -24,7 +24,7 @@ export class ReviewCriteriaDefinitionModel {
         return this.applicableTo === "user" || this.applicableTo === "both";
     }
 
-    appliesToEstablishment(): boolean {
-        return this.applicableTo === "establishment" || this.applicableTo === "both";
+    appliesToActivity(): boolean {
+        return this.applicableTo === "activity" || this.applicableTo === "both";
     }
 }

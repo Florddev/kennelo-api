@@ -7,7 +7,9 @@ namespace App\Http\Controllers\Booking;
 use App\Enums\ApiStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Booking\ListBookingsRequest;
+use App\Http\Requests\Booking\QuoteBookingRequest;
 use App\Http\Requests\Booking\StoreBookingRequest;
+use App\Http\Resources\BookingQuoteResource;
 use App\Http\Resources\BookingResource;
 use App\Models\Booking;
 use App\Services\Booking\BookingService;
@@ -60,6 +62,18 @@ class BookingController extends Controller
             ])
             ->response()
             ->setStatusCode(201);
+    }
+
+    public function quote(QuoteBookingRequest $request): JsonResponse
+    {
+        $quote = $this->bookingService->quote($request->validated());
+
+        return (new BookingQuoteResource($quote))
+            ->additional([
+                'status' => ApiStatusEnum::SUCCESS,
+                'timestamp' => human_date(now()),
+            ])
+            ->response();
     }
 
     public function cancel(Booking $booking): JsonResponse

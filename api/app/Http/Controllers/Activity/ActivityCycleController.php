@@ -11,10 +11,12 @@ use App\Http\Requests\Activity\UpdateActivityCycleRequest;
 use App\Http\Requests\Activity\UpsertClosedWeekDaysRequest;
 use App\Http\Requests\Activity\UpsertCycleSettingsRequest;
 use App\Http\Resources\ActivityCycleResource;
+use App\Http\Resources\ActivityCycleSettingResource;
 use App\Models\Activity;
 use App\Models\ActivityCycle;
 use App\Services\Activity\ActivityCycleService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
 /**
@@ -31,6 +33,22 @@ class ActivityCycleController extends Controller
         $cycles = $this->service->list($activity);
 
         return ActivityCycleResource::collection($cycles)
+            ->additional([
+                'status' => ApiStatusEnum::SUCCESS,
+                'timestamp' => human_date(Carbon::now()),
+            ])
+            ->response();
+    }
+
+    public function settingsIndex(Request $request, Activity $activity): JsonResponse
+    {
+        $validated = $request->validate([
+            'date' => ['sometimes', 'date_format:Y-m-d'],
+        ]);
+
+        $settings = $this->service->getSettingsWithOccupancy($activity, $validated['date'] ?? null);
+
+        return ActivityCycleSettingResource::collection($settings)
             ->additional([
                 'status' => ApiStatusEnum::SUCCESS,
                 'timestamp' => human_date(Carbon::now()),

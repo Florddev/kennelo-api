@@ -1,11 +1,11 @@
 import { useTranslations } from "next-intl";
 import type { AddressModel } from "@workspace/modules/address";
-import type { CapacityModel } from "@workspace/modules/establishments";
+import type { ActivityCycleSettingModel } from "@workspace/modules/activities";
 
 type HostHeaderSectionProps = {
     name: string;
     address: AddressModel | null;
-    capacities: CapacityModel[];
+    capacities: ActivityCycleSettingModel[];
 };
 
 export function HostHeaderSection({ name, address, capacities }: HostHeaderSectionProps) {

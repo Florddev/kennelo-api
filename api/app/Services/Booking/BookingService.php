@@ -65,11 +65,7 @@ class BookingService
 
         $activity->loadMissing('manager');
 
-        if (! $activity->resolveChargesEnabled() || $activity->resolveStripeAccountId() === null) {
-            throw ValidationException::withMessages([
-                'activity_id' => ['This host cannot accept bookings yet. Their bank account is not connected.'],
-            ]);
-        }
+        $this->assertHostCanAcceptBookings($activity);
 
         $checkIn = Carbon::parse($data['check_in_date']);
         $checkOut = Carbon::parse($data['check_out_date']);
@@ -81,11 +77,7 @@ class BookingService
             : collect();
 
         [$booking, $totalPrice] = DB::transaction(function () use ($user, $data, $activity, $checkIn, $checkOut, $nights, $pets, $services): array {
-            $cycle = $this->cycleService->resolveActiveCycle($activity, $checkIn->toDateString());
-
-            $capacities = $cycle === null
-                ? collect()
-                : $cycle->settings->keyBy('animal_type_id');
+            $capacities = $this->resolveCapacities($activity, $checkIn);
 
             $this->validateAvailability($activity, $checkIn, $checkOut);
             $this->validateCapacity($activity, $pets, $capacities, $checkIn, $checkOut);
@@ -146,6 +138,59 @@ class BookingService
             'pets',
             'services',
         ]);
+    }
+
+    /**
+     * @return array{check_in_date: string, check_out_date: string, nights: int, total_price: string, platform_fee: string, activity_amount: string, pets: array<int, array<string, mixed>>, services: array<int, array<string, mixed>>}
+     */
+    public function quote(array $data): array
+    {
+        $activity = Activity::findOrFail($data['activity_id']);
+
+        $activity->loadMissing('manager');
+
+        $this->assertHostCanAcceptBookings($activity);
+
+        $checkIn = Carbon::parse($data['check_in_date']);
+        $checkOut = Carbon::parse($data['check_out_date']);
+        $nights = (int) $checkIn->diffInDays($checkOut);
+
+        $pets = Pet::whereIn('id', $data['pet_ids'])->get();
+        $services = ! empty($data['service_ids'])
+            ? Service::whereIn('id', $data['service_ids'])->get()
+            : collect();
+
+        $capacities = $this->resolveCapacities($activity, $checkIn);
+
+        $this->validateAvailability($activity, $checkIn, $checkOut);
+        $this->validateCapacity($activity, $pets, $capacities, $checkIn, $checkOut);
+
+        [$totalPrice, $platformFee, $activityAmount, $petPivots, $servicePivots] =
+            $this->calculatePrice($pets, $services, $capacities, $nights);
+
+        return [
+            'check_in_date' => $checkIn->toDateString(),
+            'check_out_date' => $checkOut->toDateString(),
+            'nights' => $nights,
+            'total_price' => $totalPrice,
+            'platform_fee' => $platformFee,
+            'activity_amount' => $activityAmount,
+            'pets' => $pets->map(fn (Pet $pet): array => [
+                'id' => $pet->id,
+                'name' => $pet->name,
+                'animal_type_id' => $pet->animal_type_id,
+                'price_per_night' => $petPivots[$pet->id]['price_per_night'],
+                'number_of_nights' => $petPivots[$pet->id]['number_of_nights'],
+                'subtotal' => $petPivots[$pet->id]['subtotal'],
+            ])->values()->all(),
+            'services' => $services->map(fn (Service $service): array => [
+                'id' => $service->id,
+                'name' => $service->name,
+                'quantity' => $servicePivots[$service->id]['quantity'],
+                'unit_price' => $servicePivots[$service->id]['unit_price'],
+                'subtotal' => $servicePivots[$service->id]['subtotal'],
+            ])->values()->all(),
+        ];
     }
 
     private function createConfirmedPaymentIntent(
@@ -256,6 +301,24 @@ class BookingService
         $this->sendBookingReferenceIfConversationExists($booking, $actor);
 
         return $booking->fresh();
+    }
+
+    private function resolveCapacities(Activity $activity, Carbon $checkIn): Collection
+    {
+        $cycle = $this->cycleService->resolveActiveCycle($activity, $checkIn->toDateString());
+
+        return $cycle === null
+            ? collect()
+            : $cycle->settings->keyBy('animal_type_id');
+    }
+
+    private function assertHostCanAcceptBookings(Activity $activity): void
+    {
+        if (! $activity->resolveChargesEnabled() || $activity->resolveStripeAccountId() === null) {
+            throw ValidationException::withMessages([
+                'activity_id' => ['This host cannot accept bookings yet. Their bank account is not connected.'],
+            ]);
+        }
     }
 
     private function validateAvailability(Activity $activity, Carbon $checkIn, Carbon $checkOut): void

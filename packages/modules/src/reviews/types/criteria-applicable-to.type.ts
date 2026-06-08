@@ -1,1 +1,1 @@
-export type CriteriaApplicableTo = "user" | "establishment" | "both";
+export type CriteriaApplicableTo = "user" | "activity" | "both";

@@ -7,7 +7,7 @@ import { fromApiDate } from "@workspace/common";
 import { useNavigation } from "@/hooks/use-navigation";
 import { useAuth } from "@/features/auth";
 import { usePets } from "@/features/pets/hooks/use-pets";
-import { useHostEstablishment } from "@/features/host";
+import { useHostActivity } from "@/features/host";
 import { BookingCheckoutForm, BookingSkeleton } from "@/features/bookings";
 
 export default function BookingPage() {
@@ -18,7 +18,7 @@ export default function BookingPage() {
     const checkOut = searchParams.get("check_out");
     const { isAuthenticated, isLoaded } = useAuth();
 
-    const { establishment, capacities, isLoading } = useHostEstablishment(id);
+    const { activity, capacities, isLoading } = useHostActivity(id);
     const { pets, isLoading: isLoadingPets } = usePets();
 
     const dateRange = useMemo(() => {
@@ -35,13 +35,13 @@ export default function BookingPage() {
         return null;
     }
 
-    if (isLoading || !establishment || !dateRange) {
+    if (isLoading || !activity || !dateRange) {
         return <BookingSkeleton />;
     }
 
     return (
         <BookingCheckoutForm
-            establishment={establishment}
+            activity={activity}
             capacities={capacities}
             pets={pets}
             isLoadingPets={isLoadingPets}
