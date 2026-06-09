@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -24,6 +25,7 @@ import {
 
 import { UserAvatar } from "@/features/auth/components/user-avatar";
 import { useAsyncState } from "@/hooks/use-async-state";
+import { useNavigation } from "@/hooks/use-navigation";
 import { activityColor, statusColor } from "../lib/booking-colors";
 
 type ActivityMeta = {
@@ -102,6 +104,7 @@ function BookingCard({
 }) {
     const locale = useLocale();
     const t = useTranslations();
+    const { routes } = useNavigation();
 
     const status = statusColor(booking.status);
     const color = activityColor(activityMeta?.colorIndex ?? 0);
@@ -205,6 +208,15 @@ function BookingCard({
                     <BookingCardActions booking={booking} />
                 </>
             )}
+
+            <Separator />
+            <div className="px-4 py-2">
+                <Button size="sm" variant="ghost" className="text-muted-foreground -ms-2" asChild>
+                    <Link href={routes.BookingDetail({ id: booking.id })}>
+                        {t("common.actions.viewDetails")}
+                    </Link>
+                </Button>
+            </div>
         </article>
     );
 }

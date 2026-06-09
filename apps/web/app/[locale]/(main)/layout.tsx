@@ -6,7 +6,7 @@ export default async function Layout({ children }: { children: React.ReactNode }
         <AppLayout>
             <Separator className="hidden md:block" />
             <div className="w-full h-full">
-                <div className="w-full pb-12 sm:pb-0 h-full">{children}</div>
+                <div className="w-full sm:pb-0 h-full">{children}</div>
             </div>
         </AppLayout>
     );

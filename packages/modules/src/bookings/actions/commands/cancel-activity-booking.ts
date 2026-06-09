@@ -5,9 +5,11 @@ import { BookingModel } from "../../models/booking.model";
 export async function cancelActivityBooking(
     activityId: string,
     bookingId: string,
+    message?: string,
 ): Promise<BookingModel> {
     const response = await api.put<BookingDto>(
         `/activities/${activityId}/bookings/${bookingId}/cancel`,
+        message ? { message } : undefined,
     );
 
     if (!response.data) {
