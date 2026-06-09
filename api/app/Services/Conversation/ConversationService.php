@@ -82,11 +82,12 @@ class ConversationService
         return $conversation->load(['activity', 'user', 'bookingThreads.booking']);
     }
 
-    public function sendBookingReference(Conversation $conversation, User $actor, Booking $booking): void
+    public function sendBookingReference(Conversation $conversation, User $actor, Booking $booking, ?string $message = null): void
     {
         $this->sendMessage($actor, $conversation, [
             'message_type' => MessageTypeEnum::BOOKING_REFERENCE->value,
             'booking_id' => $booking->id,
+            'content' => $message,
         ]);
     }
 

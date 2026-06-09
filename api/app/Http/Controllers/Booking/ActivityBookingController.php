@@ -39,7 +39,8 @@ class ActivityBookingController extends Controller
         $this->authorize('manageForActivity', [Booking::class, $activity]);
         abort_if((string) $booking->activity_id !== (string) $activity->id, 404);
 
-        $booking = $this->bookingService->confirm($booking, $request->user());
+        $message = $request->input('message');
+        $booking = $this->bookingService->confirm($booking, $request->user(), $message);
 
         return (new BookingResource($booking))
             ->additional([
@@ -54,7 +55,8 @@ class ActivityBookingController extends Controller
         $this->authorize('manageForActivity', [Booking::class, $activity]);
         abort_if((string) $booking->activity_id !== (string) $activity->id, 404);
 
-        $booking = $this->bookingService->rejectByActivity($booking, $request->user());
+        $message = $request->input('message');
+        $booking = $this->bookingService->rejectByActivity($booking, $request->user(), $message);
 
         return (new BookingResource($booking))
             ->additional([

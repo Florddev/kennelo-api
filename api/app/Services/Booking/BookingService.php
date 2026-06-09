@@ -237,7 +237,7 @@ class BookingService
         return $booking->fresh();
     }
 
-    public function confirm(Booking $booking, User $actor): Booking
+    public function confirm(Booking $booking, User $actor, ?string $message = null): Booking
     {
         $this->assertStatus($booking, [BookingStatusEnum::PENDING], 'confirm');
 
@@ -258,7 +258,7 @@ class BookingService
             $booking->update(['stripe_transfer_id' => $transfer->id]);
         }
 
-        $this->sendBookingReferenceIfConversationExists($booking, $actor);
+        $this->sendBookingReferenceIfConversationExists($booking, $actor, $message);
 
         return $booking->fresh();
     }
@@ -291,7 +291,7 @@ class BookingService
         return $booking->fresh();
     }
 
-    public function rejectByActivity(Booking $booking, User $actor): Booking
+    public function rejectByActivity(Booking $booking, User $actor, ?string $message = null): Booking
     {
         $this->assertStatus($booking, [BookingStatusEnum::PENDING], 'reject');
 
@@ -299,7 +299,7 @@ class BookingService
 
         $booking->update(['status' => BookingStatusEnum::CANCELLED]);
 
-        $this->sendBookingReferenceIfConversationExists($booking, $actor);
+        $this->sendBookingReferenceIfConversationExists($booking, $actor, $message);
 
         return $booking->fresh();
     }
@@ -418,12 +418,12 @@ class BookingService
         return [$totalPrice, $platformFee, $activityAmount, $petPivots, $servicePivots];
     }
 
-    private function sendBookingReferenceIfConversationExists(Booking $booking, User $actor): void
+    private function sendBookingReferenceIfConversationExists(Booking $booking, User $actor, ?string $message = null): void
     {
         $thread = BookingThread::where('booking_id', $booking->id)->with('conversation')->first();
 
         if ($thread?->conversation instanceof Conversation) {
-            $this->conversationService->sendBookingReference($thread->conversation, $actor, $booking);
+            $this->conversationService->sendBookingReference($thread->conversation, $actor, $booking, $message);
         }
     }
 

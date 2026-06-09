@@ -32,6 +32,7 @@ type ActivityDataTableProps<T> = {
     emptyIcon: LucideIcon;
     emptyLabel: string;
     renderCount: (count: number) => string;
+    onRowClick?: (row: T) => void;
 };
 
 export function ActivityDataTable<T>({
@@ -44,6 +45,7 @@ export function ActivityDataTable<T>({
     emptyIcon: EmptyIcon,
     emptyLabel,
     renderCount,
+    onRowClick,
 }: ActivityDataTableProps<T>) {
     const filtered = useMemo(() => {
         const query = search.trim().toLowerCase();
@@ -77,7 +79,11 @@ export function ActivityDataTable<T>({
         );
     } else {
         body = filtered.map((row) => (
-            <TableRow key={getRowKey(row)}>
+            <TableRow
+                key={getRowKey(row)}
+                onClick={onRowClick ? () => onRowClick(row) : undefined}
+                className={cn(onRowClick && "cursor-pointer")}
+            >
                 {columns.map((column) => (
                     <TableCell key={column.key} className={cn(column.cellClassName)}>
                         {column.cell(row)}

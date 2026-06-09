@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
@@ -26,6 +27,8 @@ import {
     type BookingModel,
 } from "@workspace/modules/bookings";
 
+import { useNavigation } from "@/hooks/use-navigation";
+
 type ReservationReviewCardProps = {
     booking: BookingModel;
     activityId: string;
@@ -34,6 +37,7 @@ type ReservationReviewCardProps = {
 export function ReservationReviewCard({ booking, activityId }: ReservationReviewCardProps) {
     const t = useTranslations();
     const queryClient = useQueryClient();
+    const { routes } = useNavigation();
     const [isRejectOpen, setIsRejectOpen] = useState(false);
 
     const accept = useMutation({
@@ -105,6 +109,16 @@ export function ReservationReviewCard({ booking, activityId }: ReservationReview
                         <Badge variant={paymentBadge.variant} className="text-[10px]">
                             {paymentBadge.label}
                         </Badge>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-xs text-muted-foreground h-auto px-1 py-0"
+                            asChild
+                        >
+                            <Link href={routes.BookingDetail({ id: booking.id })}>
+                                {t("common.actions.viewDetails")}
+                            </Link>
+                        </Button>
                     </div>
                 </div>
 

@@ -5,9 +5,11 @@ import { BookingModel } from "../../models/booking.model";
 export async function confirmActivityBooking(
     activityId: string,
     bookingId: string,
+    message?: string,
 ): Promise<BookingModel> {
     const response = await api.put<BookingDto>(
         `/activities/${activityId}/bookings/${bookingId}/confirm`,
+        message ? { message } : undefined,
     );
 
     if (!response.data) {

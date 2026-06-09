@@ -12,6 +12,7 @@ import { cn } from "@workspace/ui/lib/utils";
 import { getActivityBookings, type BookingModel } from "@workspace/modules/bookings";
 
 import { UserAvatar } from "@/features/auth/components/user-avatar";
+import { useNavigation } from "@/hooks/use-navigation";
 import { statusColor } from "@/features/bookings/lib/booking-colors";
 import { ActivityDataTable, type DataTableColumn } from "./activity-data-table";
 import { ActivityPageHeader } from "./activity-page-header";
@@ -19,6 +20,7 @@ import { ActivityPageHeader } from "./activity-page-header";
 export function ActivityBookingsTable({ activityId }: { activityId: string }) {
     const t = useTranslations();
     const locale = useLocale();
+    const { routes, router } = useNavigation();
     const [search, setSearch] = useState("");
 
     const { data, isLoading } = useQuery({
@@ -120,6 +122,7 @@ export function ActivityBookingsTable({ activityId }: { activityId: string }) {
                 emptyIcon={CalendarDays}
                 emptyLabel={t("features.activities.manager.bookings.empty")}
                 renderCount={(count) => t("features.activities.manager.bookings.count", { count })}
+                onRowClick={(booking) => router.push(routes.BookingDetail({ id: booking.id }))}
             />
         </div>
     );
