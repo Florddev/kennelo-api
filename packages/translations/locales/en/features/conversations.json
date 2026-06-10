@@ -30,5 +30,7 @@
         "viewDetails": "Show details"
     },
     "please-login": "Log in to view messages",
-    "please-login-description": "Once you log in, messages from hosts will appear here."
+    "please-login-description": "Once you log in, messages from hosts will appear here.",
+    "contactHost": "Contact host",
+    "contactOwner": "Contact owner"
 }

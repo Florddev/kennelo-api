@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { ArrowLeft, PenNewSquare } from "@solar-icons/react";
+import { ArrowLeft, PenNewSquare, ChatRoundLine } from "@solar-icons/react";
 import { PawPrint } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@workspace/ui/components/button";
@@ -10,6 +10,7 @@ import { usePet } from "@/features/pets/hooks/use-pet";
 import { PetProfileInfo } from "@/features/pets/components/pet-profile-info";
 import { useAuth } from "@/features/auth";
 import { useNavigation } from "@/hooks/use-navigation";
+import { useOpenConversation } from "@/features/conversations/hooks/use-open-conversation";
 import { getAge } from "@/features/pets/lib/pet-age";
 import { isIllustratedType } from "@/features/pets/lib/pet-illustrations";
 import { DetailPageLayout } from "@/components/layouts/detail-page-layout";
@@ -122,7 +123,8 @@ export default function PetDetailsPage() {
     const { params, routes } = useNavigation<Query>();
     const { pet, isLoading } = usePet(params.id);
     const isMobile = useIsMobile();
-    const { user } = useAuth();
+    const { user, activities } = useAuth();
+    const { openWithPetOwner, isPending: isContactPending } = useOpenConversation();
 
     if (!pet && isLoading) {
         return <PetDetailsPageSkeleton />;
@@ -139,6 +141,7 @@ export default function PetDetailsPage() {
     );
 
     const isOwner = user?.id === pet.userId;
+    const canContactOwner = !isOwner && activities.length > 0;
     const typeCode = pet.animalType?.code?.toLowerCase() ?? "";
     const images = [...(pet.avatarUrl ? [pet.avatarUrl] : []), ...pet.images.map((img) => img.url)];
 
@@ -190,6 +193,17 @@ export default function PetDetailsPage() {
                                 <PenNewSquare />
                                 {t("common.actions.edit")}
                             </Link>
+                        </Button>
+                    )}
+                    {canContactOwner && (
+                        <Button
+                            size="icon-sm"
+                            className="text-primary bg-card hover:bg-muted"
+                            disabled={isContactPending}
+                            onClick={() => openWithPetOwner(pet.id, activities[0]?.id)}
+                            aria-label={t("features.conversations.contactOwner")}
+                        >
+                            <ChatRoundLine />
                         </Button>
                     )}
                 </>

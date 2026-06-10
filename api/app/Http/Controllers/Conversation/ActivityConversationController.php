@@ -12,6 +12,7 @@ use App\Models\Activity;
 use App\Models\Conversation;
 use App\Services\Conversation\ConversationService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class ActivityConversationController extends Controller
 {
@@ -35,5 +36,25 @@ class ActivityConversationController extends Controller
                 'timestamp' => human_date(now()),
             ])
             ->response();
+    }
+
+    public function store(Request $request, Activity $activity): JsonResponse
+    {
+        $user = $request->user();
+
+        abort_if(
+            (string) $activity->manager_id === (string) $user->id,
+            403,
+        );
+
+        $conversation = $this->conversationService->getOrCreateForActivity($user, $activity);
+
+        return (new ConversationResource($conversation))
+            ->additional([
+                'status' => ApiStatusEnum::SUCCESS,
+                'timestamp' => human_date(now()),
+            ])
+            ->response()
+            ->setStatusCode(200);
     }
 }

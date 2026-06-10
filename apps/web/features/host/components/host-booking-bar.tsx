@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { ChatRoundLine } from "@solar-icons/react";
 import { Button } from "@workspace/ui/components/button";
 import { computeNights, formatAmount, formatDay } from "@workspace/common";
 import type { DateRange } from "react-day-picker";
@@ -10,9 +11,18 @@ type HostBookingBarProps = {
     dateRange: DateRange | undefined;
     canBook: boolean;
     onBook: () => void;
+    onContact?: () => void;
+    isContactPending?: boolean;
 };
 
-export function HostBookingBar({ pricePerNight, dateRange, canBook, onBook }: HostBookingBarProps) {
+export function HostBookingBar({
+    pricePerNight,
+    dateRange,
+    canBook,
+    onBook,
+    onContact,
+    isContactPending,
+}: HostBookingBarProps) {
     const t = useTranslations();
     const nights = computeNights(dateRange?.from, dateRange?.to);
     const hasRange = Boolean(nights > 0 && dateRange?.from && dateRange?.to);
@@ -28,14 +38,28 @@ export function HostBookingBar({ pricePerNight, dateRange, canBook, onBook }: Ho
                         hasRange={hasRange}
                     />
                 </div>
-                <Button
-                    size="lg"
-                    onClick={onBook}
-                    disabled={!canBook}
-                    className="shrink-0 rounded-full bg-foreground px-10 text-base font-medium text-background hover:bg-foreground/90 disabled:opacity-50"
-                >
-                    {t("features.host.detail.book")}
-                </Button>
+                <div className="flex shrink-0 items-center gap-2">
+                    {onContact && (
+                        <Button
+                            size="icon-lg"
+                            variant="outline"
+                            onClick={onContact}
+                            disabled={isContactPending}
+                            className="rounded-full"
+                            aria-label={t("features.conversations.contactHost")}
+                        >
+                            <ChatRoundLine />
+                        </Button>
+                    )}
+                    <Button
+                        size="lg"
+                        onClick={onBook}
+                        disabled={!canBook}
+                        className="rounded-full bg-foreground px-10 text-base font-medium text-background hover:bg-foreground/90 disabled:opacity-50"
+                    >
+                        {t("features.host.detail.book")}
+                    </Button>
+                </div>
             </div>
         </div>
     );
