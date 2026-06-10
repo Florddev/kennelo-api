@@ -4,7 +4,6 @@ import { useState } from "react";
 import {
     createActivityConversation,
     createBookingConversation,
-    createPetConversation,
 } from "@workspace/modules/conversations";
 import { useNavigation } from "@/hooks/use-navigation";
 
@@ -12,20 +11,10 @@ export function useOpenConversation() {
     const { router, routes } = useNavigation();
     const [isPending, setIsPending] = useState(false);
 
-    const openWithActivity = async (activityId: string) => {
+    const openWithActivity = async (activityId: string, userId?: string) => {
         setIsPending(true);
         try {
-            const conversation = await createActivityConversation(activityId);
-            router.push(routes.Messages({ search_params: { conversation_id: conversation.id } }));
-        } finally {
-            setIsPending(false);
-        }
-    };
-
-    const openWithPetOwner = async (petId: string, activityId?: string) => {
-        setIsPending(true);
-        try {
-            const conversation = await createPetConversation(petId, activityId);
+            const conversation = await createActivityConversation(activityId, userId);
             router.push(routes.Messages({ search_params: { conversation_id: conversation.id } }));
         } finally {
             setIsPending(false);
@@ -42,5 +31,5 @@ export function useOpenConversation() {
         }
     };
 
-    return { openWithActivity, openWithPetOwner, openWithBooking, isPending };
+    return { openWithActivity, openWithBooking, isPending };
 }

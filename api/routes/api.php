@@ -107,7 +107,6 @@ Route::middleware(['auth.jwt'])->group(function () {
     // Conversations (activity)
     Route::get('/activities/{activity}/conversations', [ActivityConversationController::class, 'index']);
     Route::post('/activities/{activity}/conversation', [ActivityConversationController::class, 'store']);
-    Route::post('/pets/{pet}/conversation', [ConversationController::class, 'storeForPet']);
 
     // Messages
     Route::get('/conversations/{conversation}/messages', [MessageController::class, 'index']);

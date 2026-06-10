@@ -124,7 +124,7 @@ export default function PetDetailsPage() {
     const { pet, isLoading } = usePet(params.id);
     const isMobile = useIsMobile();
     const { user, activities } = useAuth();
-    const { openWithPetOwner, isPending: isContactPending } = useOpenConversation();
+    const { openWithActivity, isPending: isContactPending } = useOpenConversation();
 
     if (!pet && isLoading) {
         return <PetDetailsPageSkeleton />;
@@ -200,7 +200,7 @@ export default function PetDetailsPage() {
                             size="icon-sm"
                             className="text-primary bg-card hover:bg-muted"
                             disabled={isContactPending}
-                            onClick={() => openWithPetOwner(pet.id, activities[0]?.id)}
+                            onClick={() => openWithActivity(activities[0]!.id, pet.userId)}
                             aria-label={t("features.conversations.contactOwner")}
                         >
                             <ChatRoundLine />

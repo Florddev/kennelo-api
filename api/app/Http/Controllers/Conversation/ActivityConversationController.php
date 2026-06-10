@@ -10,6 +10,7 @@ use App\Http\Requests\Conversation\ListConversationsRequest;
 use App\Http\Resources\ConversationResource;
 use App\Models\Activity;
 use App\Models\Conversation;
+use App\Models\User;
 use App\Services\Conversation\ConversationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -41,13 +42,17 @@ class ActivityConversationController extends Controller
     public function store(Request $request, Activity $activity): JsonResponse
     {
         $user = $request->user();
+        $targetUserId = $request->input('user_id');
 
-        abort_if(
-            (string) $activity->manager_id === (string) $user->id,
-            403,
-        );
+        if ($targetUserId) {
+            $this->authorize('manageForActivity', [Conversation::class, $activity]);
+            $targetUser = User::findOrFail($targetUserId);
+        } else {
+            abort_if((string) $activity->manager_id === (string) $user->id, 403);
+            $targetUser = $user;
+        }
 
-        $conversation = $this->conversationService->getOrCreateForActivity($user, $activity);
+        $conversation = $this->conversationService->getOrCreateForActivity($targetUser, $activity);
 
         return (new ConversationResource($conversation))
             ->additional([
