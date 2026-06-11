@@ -115,7 +115,7 @@ type BecomeHostParams = {
 
 type BookingDetailParams = {
     locale?: string | number;
-    id: string | number;
+    id: string;
     search_params?: Record<string, string | number | boolean>;
 };
 
@@ -170,7 +170,7 @@ type PetEditHealthParams = {
 
 type PetEditPageParams = {
     locale?: string | number;
-    id: string | number;
+    id: string;
     search_params?: Record<string, string | number | boolean>;
 };
 
@@ -223,6 +223,11 @@ type MyProfileEmailPreferencesParams = {
 };
 
 type MyProfilePreferencesNotificationParams = {
+    locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type ScannerConfigPageParams = {
     locale?: string | number;
     search_params?: Record<string, string | number | boolean>;
 };
@@ -391,6 +396,10 @@ function MyProfilePreferencesNotification(params?: MyProfilePreferencesNotificat
     return buildRoute("/[locale]/settings/preferences-notification", params);
 }
 
+function ScannerConfigPage(params?: ScannerConfigPageParams): string {
+    return buildRoute("/[locale]/scanner", params);
+}
+
 export const routes = {
     RootPage,
     Login,
@@ -433,6 +442,7 @@ export const routes = {
     PaymentMethodsPage,
     MyProfileEmailPreferences,
     MyProfilePreferencesNotification,
+    ScannerConfigPage,
 } as const;
 
 export type RouteName = keyof typeof routes;

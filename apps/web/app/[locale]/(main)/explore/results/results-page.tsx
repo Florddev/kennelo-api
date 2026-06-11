@@ -27,6 +27,7 @@ import { useSearchResults } from "@/features/explore/hooks/use-search-results";
 import { useMobileSearch } from "@/features/search/hooks/use-mobile-search";
 import { MobileSearchOverlay } from "@/features/search/components/mobile/mobile-search-overlay";
 import { CrownStar, PointOnMap } from "@solar-icons/react";
+import { PET_TYPES } from "@/features/search";
 
 const SNAP_MIN = "70px";
 const SNAP_MID = 0.45;
@@ -36,13 +37,6 @@ const GEOCODE_DEFAULT_RADIUS = 25;
 type SearchCoords = { lat: number; lng: number };
 type MapBounds = { north: number; south: number; east: number; west: number };
 type SearchArea = { coords: SearchCoords; bounds: MapBounds | null; radius: number };
-
-type ResultsPageProps = {
-    location: string;
-    dateFrom: string;
-    dateTo: string;
-    petCounts: Record<string, number>;
-};
 
 function useGeocodeLocation(query: string): [number, number] | null {
     const [result, setResult] = useState<{ query: string; center: [number, number] } | null>(null);
@@ -428,6 +422,10 @@ function MapDetailCard({
     );
 }
 
+function stringParam(val: unknown): string {
+    return typeof val === "string" ? val : "";
+}
+
 function expandSearchArea(
     searchArea: SearchArea | null,
     geocodedCenter: [number, number] | null,
@@ -537,12 +535,7 @@ function useSnapPoints() {
     return { snap, snapMax, snapPoints, handleSetSnap, handleToggleSnap };
 }
 
-export default function ExploreResultsPage({
-    location,
-    dateFrom,
-    dateTo,
-    petCounts,
-}: ResultsPageProps) {
+export default function ExploreResultsPage() {
     const t = useTranslations();
     const formatter = useFormatter();
     const router = useRouter();
@@ -554,9 +547,24 @@ export default function ExploreResultsPage({
     const [highlightedId, setHighlightedId] = useState<string | null>(null);
     const [searchArea, setSearchArea] = useState<SearchArea | null>(null);
 
-    const geocodedCenter = useGeocodeLocation(location);
-    const searchParams = resolveSearchParams(location, searchArea, geocodedCenter);
+    const { params } = useNavigation();
+    const location = stringParam(params.location);
+    const dateFrom = stringParam(params.dateFrom);
+    const dateTo = stringParam(params.dateTo);
 
+    const geocodedCenter = useGeocodeLocation(location);
+
+    const petCounts: Record<string, number> = {};
+    PET_TYPES.forEach((type) => {
+        const val = params[type];
+        if (typeof val === "string") {
+            const count = parseInt(val, 10);
+            if (count > 0) petCounts[type] = count;
+        }
+    });
+
+    const searchParams = resolveSearchParams(location, searchArea, geocodedCenter);
+    const { bounds } = searchParams;
     const { activities, isLoading } = useSearchResults({
         location: searchParams.location,
         coords: searchParams.coords,
@@ -599,16 +607,10 @@ export default function ExploreResultsPage({
         initialPetCounts: petCounts,
     });
 
-    const filteredHosts = useMemo(
-        () => filterHosts(activities, activeFilter, searchParams.bounds),
-        [activities, activeFilter, searchParams.bounds],
-    );
+    const filteredHosts = filterHosts(activities, activeFilter, bounds);
     const highlightedHost = findHighlightedHost(filteredHosts, highlightedId);
 
-    const userDistanceMap = useMemo(
-        () => buildUserDistanceMap(filteredHosts, userLocation),
-        [filteredHosts, userLocation],
-    );
+    const userDistanceMap = buildUserDistanceMap(filteredHosts, userLocation);
 
     useEffect(() => {
         setBottomNavbarVisible(false);

@@ -27,6 +27,10 @@ export function NativePage({ platform }: { platform: string }) {
             <Button asChild>
                 <Link href={routes.Login({ locale: lang })}>Login</Link>
             </Button>
+
+            <Button asChild>
+                <Link href={routes.ScannerConfigPage({ locale: lang })}>Scanner Config</Link>
+            </Button>
         </div>
     );
 }
