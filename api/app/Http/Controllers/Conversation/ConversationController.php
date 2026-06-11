@@ -45,15 +45,9 @@ class ConversationController extends Controller
 
     public function storeForBooking(Request $request, Booking $booking): JsonResponse
     {
-        $user = $request->user();
-        $booking->loadMissing('activity');
+        $this->authorize('createForBooking', [Conversation::class, $booking]);
 
-        $isGuest = (string) $booking->user_id === (string) $user->id;
-        $isHost = $booking->activity && (string) $booking->activity->manager_id === (string) $user->id;
-
-        abort_if(! $isGuest && ! $isHost, 403);
-
-        $conversation = $this->conversationService->getOrCreateForBooking($user, $booking);
+        $conversation = $this->conversationService->getOrCreateForBooking($request->user(), $booking);
 
         return (new ConversationResource($conversation))
             ->additional([
