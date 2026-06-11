@@ -8,7 +8,7 @@ export async function createActivityConversation(
 ): Promise<ConversationModel> {
     const body = userId ? { user_id: userId } : undefined;
     const response = await api.post<ConversationDto>(
-        `/activities/${activityId}/conversation`,
+        `/activities/${activityId}/conversations`,
         body,
     );
 
