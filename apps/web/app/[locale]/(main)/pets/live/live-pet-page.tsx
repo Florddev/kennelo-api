@@ -116,9 +116,9 @@ function PetBroadcastCard({ pet }: { pet: BroadcastedPet }) {
 
 export default function LivePetPage() {
     const t = useTranslations();
-    const { broadcastedPet, isLoading } = usePetBroadcast();
+    const { broadcastedPet, hasBroadcast } = usePetBroadcast();
 
-    if (!broadcastedPet && !isLoading) {
+    if (!hasBroadcast) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6 text-center px-4">
                 <div className="relative flex items-center justify-center">
@@ -145,11 +145,7 @@ export default function LivePetPage() {
                 </span>
             </div>
 
-            {isLoading || !broadcastedPet ? (
-                <PetBroadcastSkeleton />
-            ) : (
-                <PetBroadcastCard pet={broadcastedPet} />
-            )}
+            {broadcastedPet ? <PetBroadcastCard pet={broadcastedPet} /> : <PetBroadcastSkeleton />}
         </div>
     );
 }

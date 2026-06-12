@@ -1,10 +1,14 @@
+"use client";
+
 import { useState, useRef, useCallback } from "react";
+import { useTranslations } from "next-intl";
+
 import { ScannerMessage } from "../hooks/useScannerBle";
 
-interface SavedNetwork {
+type SavedNetwork = {
     ssid: string;
     priority: number;
-}
+};
 
 export function WifiSavedList({
     send,
@@ -13,6 +17,7 @@ export function WifiSavedList({
     send: (cmd: object) => Promise<void>;
     subscribe: (handler: (msg: ScannerMessage) => void) => () => void;
 }) {
+    const t = useTranslations("features.scanner.wifi");
     const [loading, setLoading] = useState(false);
     const [networks, setNetworks] = useState<SavedNetwork[]>([]);
     const [deleting, setDeleting] = useState<string | null>(null);
@@ -66,38 +71,38 @@ export function WifiSavedList({
     return (
         <div className="flex flex-col gap-3">
             <div className="flex items-center justify-between">
-                <h2 className="font-semibold text-gray-800">Réseaux sauvegardés</h2>
+                <h2 className="font-semibold">{t("saved")}</h2>
                 <button
                     onClick={load}
                     disabled={loading}
-                    className="px-3 py-1 text-sm rounded bg-blue-600 text-white disabled:opacity-50"
+                    className="px-3 py-1 text-sm rounded-4xl bg-primary text-primary-foreground disabled:opacity-50"
                 >
-                    {loading ? "Chargement..." : "Rafraîchir"}
+                    {loading ? t("loading") : t("refresh")}
                 </button>
             </div>
 
             {networks.length === 0 && !loading && (
-                <p className="text-sm text-gray-400 text-center py-6">Aucun réseau sauvegardé</p>
+                <p className="text-sm text-muted-foreground text-center py-6">{t("noSaved")}</p>
             )}
 
             <ul className="flex flex-col gap-2">
                 {networks.map((net) => (
                     <li
                         key={net.ssid}
-                        className="flex items-center justify-between p-3 border rounded"
+                        className="flex items-center justify-between p-3 border rounded-2xl"
                     >
                         <div>
                             <span className="font-medium text-sm">{net.ssid}</span>
-                            <span className="ml-2 text-xs text-gray-400">
-                                priorité {net.priority}
+                            <span className="ms-2 text-xs text-muted-foreground">
+                                {t("priority")} {net.priority}
                             </span>
                         </div>
                         <button
                             onClick={() => deleteNetwork(net.ssid)}
                             disabled={deleting === net.ssid}
-                            className="text-sm text-red-500 disabled:opacity-40"
+                            className="text-sm text-destructive disabled:opacity-40"
                         >
-                            {deleting === net.ssid ? "..." : "Supprimer"}
+                            {deleting === net.ssid ? "..." : t("delete")}
                         </button>
                     </li>
                 ))}

@@ -1,0 +1,38 @@
+{
+    "title": "Configuration Scanner",
+    "description": "Configurez votre scanner KenoTag",
+    "connect": {
+        "connected": "Scanner connecté",
+        "connecting": "Connexion en cours...",
+        "disconnected": "Scanner déconnecté",
+        "connectBtn": "Connecter le scanner",
+        "disconnectBtn": "Déconnecter",
+        "connectingBtn": "Connexion...",
+        "failed": "Connexion échouée"
+    },
+    "wifi": {
+        "available": "Réseaux disponibles",
+        "scan": "Scanner",
+        "scanning": "Scan...",
+        "noNetworks": "Lancez un scan pour voir les réseaux disponibles",
+        "saved": "Réseaux sauvegardés",
+        "refresh": "Rafraîchir",
+        "loading": "Chargement...",
+        "noSaved": "Aucun réseau sauvegardé",
+        "priority": "priorité",
+        "delete": "Supprimer",
+        "addTitle": "Ajouter un réseau WiFi",
+        "ssidLabel": "Nom du réseau (SSID)",
+        "ssidPlaceholder": "MonReseau",
+        "passwordLabel": "Mot de passe",
+        "passwordPlaceholder": "Mot de passe",
+        "showPassword": "Voir",
+        "hidePassword": "Cacher",
+        "priorityLabel": "Priorité (1 = la plus haute)",
+        "unknownError": "Erreur inconnue",
+        "sendError": "Erreur d'envoi",
+        "cancel": "Annuler",
+        "save": "Sauvegarder",
+        "saving": "Sauvegarde..."
+    }
+}

@@ -41,7 +41,6 @@ Route::get('/test', [TestController::class, 'index']);
 
 Route::get('/animal-types', [AnimalTypeController::class, 'index']);
 Route::post('/pets/broadcast', [PetBroadcastController::class, 'broadcast']);
-Route::get('/pets/by-microchip/{microchipNumber}', [PetByMicrochipController::class, 'show']);
 
 Route::get('/explore/activities', [ExploreController::class, 'activities']);
 Route::get('/explore/activities/sections/{sectionId}', [ExploreController::class, 'sectionPage']);
@@ -87,6 +86,7 @@ Route::middleware(['auth.jwt'])->group(function () {
     Route::put('/activities/{activity}/bookings/{booking}/complete', [ActivityBookingController::class, 'complete']);
 
     // Pets
+    Route::get('/pets/by-microchip/{microchipNumber}', [PetByMicrochipController::class, 'show']);
     Route::apiResource('pets', PetController::class);
     Route::put('/pets/{pet}/attributes', [PetAttributeController::class, 'upsert']);
     Route::post('/pets/{pet}/avatar', [PetImageController::class, 'uploadAvatar']);

@@ -38,5 +38,6 @@ export function usePetBroadcast() {
     return {
         broadcastedPet,
         isLoading: !!microchipNumber && isLoading,
+        hasBroadcast: !!microchipNumber,
     };
 }

@@ -1,10 +1,14 @@
+"use client";
+
 import { useState, useRef, useCallback } from "react";
+import { useTranslations } from "next-intl";
+
 import { ScannerMessage } from "../hooks/useScannerBle";
 
-interface WifiNetwork {
+type WifiNetwork = {
     ssid: string;
     rssi: number;
-}
+};
 
 function signalBars(rssi: number): string {
     if (rssi > -50) return "▂▄▆█";
@@ -22,6 +26,7 @@ export function WifiScanner({
     subscribe: (handler: (msg: ScannerMessage) => void) => () => void;
     onSelect: (ssid: string) => void;
 }) {
+    const t = useTranslations("features.scanner.wifi");
     const [scanning, setScanning] = useState(false);
     const [networks, setNetworks] = useState<WifiNetwork[]>([]);
     const foundRef = useRef<WifiNetwork[]>([]);
@@ -52,20 +57,18 @@ export function WifiScanner({
     return (
         <div className="flex flex-col gap-3">
             <div className="flex items-center justify-between">
-                <h2 className="font-semibold text-gray-800">Réseaux disponibles</h2>
+                <h2 className="font-semibold">{t("available")}</h2>
                 <button
                     onClick={scan}
                     disabled={scanning}
-                    className="px-3 py-1 text-sm rounded bg-blue-600 text-white disabled:opacity-50"
+                    className="px-3 py-1 text-sm rounded-4xl bg-primary text-primary-foreground disabled:opacity-50"
                 >
-                    {scanning ? "Scan..." : "Scanner"}
+                    {scanning ? t("scanning") : t("scan")}
                 </button>
             </div>
 
             {networks.length === 0 && !scanning && (
-                <p className="text-sm text-gray-400 text-center py-6">
-                    Lancez un scan pour voir les réseaux disponibles
-                </p>
+                <p className="text-sm text-muted-foreground text-center py-6">{t("noNetworks")}</p>
             )}
 
             <ul className="flex flex-col gap-2">
@@ -73,10 +76,10 @@ export function WifiScanner({
                     <li
                         key={net.ssid}
                         onClick={() => onSelect(net.ssid)}
-                        className="flex items-center justify-between p-3 border rounded cursor-pointer hover:bg-gray-50 active:bg-gray-100"
+                        className="flex items-center justify-between p-3 border rounded-2xl cursor-pointer hover:bg-muted/50 active:bg-muted"
                     >
                         <span className="font-medium text-sm">{net.ssid}</span>
-                        <span className="text-xs text-gray-400 font-mono">
+                        <span className="text-xs text-muted-foreground font-mono">
                             {signalBars(net.rssi)}
                         </span>
                     </li>
