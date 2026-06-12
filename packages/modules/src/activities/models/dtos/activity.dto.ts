@@ -30,6 +30,7 @@ export type ActivityDto = {
     rating: number | null;
     review_count: number;
     distance: number | null;
+    is_favorited?: boolean;
     created_at: string;
     updated_at: string;
 };
