@@ -129,6 +129,11 @@ type ExploreResultsParams = {
     search_params?: Record<string, string | number | boolean>;
 };
 
+type FavoritesParams = {
+    locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
 type HostBookParams = {
     locale?: string | number;
     id: string;
@@ -319,6 +324,10 @@ function ExploreResults(params?: ExploreResultsParams): string {
     return buildRoute("/[locale]/explore/results", params);
 }
 
+function Favorites(params?: FavoritesParams): string {
+    return buildRoute("/[locale]/favorites", params);
+}
+
 function HostBook(params: HostBookParams): string {
     return buildRoute("/[locale]/host/[id]/book", params);
 }
@@ -415,6 +424,7 @@ export const routes = {
     BookingDetail,
     Explore,
     ExploreResults,
+    Favorites,
     HostBook,
     HostDetail,
     Messages,
