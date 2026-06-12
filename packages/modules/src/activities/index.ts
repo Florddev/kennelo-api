@@ -30,6 +30,7 @@ export * from "./actions/queries/get-cycles";
 export * from "./actions/queries/get-dashboard";
 export * from "./actions/queries/get-explore-activities";
 export * from "./actions/queries/get-explore-section";
+export * from "./actions/queries/get-favorites";
 export * from "./actions/queries/search-activities";
 export * from "./models/activity-cycle-closed-week-day.model";
 export * from "./models/activity-cycle-setting.model";
