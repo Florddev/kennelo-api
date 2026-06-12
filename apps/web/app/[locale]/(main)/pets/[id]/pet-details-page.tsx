@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { ArrowLeft, PenNewSquare } from "@solar-icons/react";
+import { ArrowLeft, PenNewSquare, ChatRoundLine } from "@solar-icons/react";
 import { PawPrint } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@workspace/ui/components/button";
@@ -10,6 +10,7 @@ import { usePet } from "@/features/pets/hooks/use-pet";
 import { PetProfileInfo } from "@/features/pets/components/pet-profile-info";
 import { useAuth } from "@/features/auth";
 import { useNavigation } from "@/hooks/use-navigation";
+import { useOpenConversation } from "@/features/conversations/hooks/use-open-conversation";
 import { getAge } from "@/features/pets/lib/pet-age";
 import { isIllustratedType } from "@/features/pets/lib/pet-illustrations";
 import { DetailPageLayout } from "@/components/layouts/detail-page-layout";
@@ -17,6 +18,84 @@ import Link from "next/link";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 type Query = { id: string };
+
+function PetEmptyState({ typeCode, altName }: { typeCode: string; altName: string }) {
+    if (isIllustratedType(typeCode)) {
+        return (
+            <div className="relative aspect-[16/6] rounded-2xl overflow-hidden bg-muted">
+                <Image
+                    src={`/illustrations/pets/${typeCode}.svg`}
+                    alt={altName}
+                    fill
+                    className="object-contain p-12"
+                />
+            </div>
+        );
+    }
+    return (
+        <div className="relative aspect-[16/6] overflow-hidden bg-muted">
+            <div className="absolute inset-0 flex items-center justify-center">
+                <PawPrint className="size-20 text-muted-foreground/15" />
+            </div>
+        </div>
+    );
+}
+
+function PetHeaderActions({
+    isOwner,
+    canContactOwner,
+    isMobile,
+    mobileEditHref,
+    desktopEditHref,
+    editLabel,
+    contactLabel,
+    isContactPending,
+    onContact,
+}: {
+    isOwner: boolean;
+    canContactOwner: boolean;
+    isMobile: boolean;
+    mobileEditHref: string;
+    desktopEditHref: string;
+    editLabel: string;
+    contactLabel: string;
+    isContactPending: boolean;
+    onContact: () => void;
+}) {
+    return (
+        <>
+            {isOwner && (
+                <Button size="sm" className="text-primary bg-card hover:bg-muted gap-1.5" asChild>
+                    <Link href={isMobile ? mobileEditHref : desktopEditHref}>
+                        <PenNewSquare />
+                        {editLabel}
+                    </Link>
+                </Button>
+            )}
+            {canContactOwner && (
+                <Button
+                    size="icon-sm"
+                    className="text-primary bg-card hover:bg-muted"
+                    disabled={isContactPending}
+                    onClick={onContact}
+                    aria-label={contactLabel}
+                >
+                    <ChatRoundLine />
+                </Button>
+            )}
+        </>
+    );
+}
+
+function PetOwnerFooter({ label }: { label: string }) {
+    return (
+        <div className="h-16 bg-card border-t px-2 flex justify-center items-center sm:hidden">
+            <Button className="w-full" size="xl">
+                {label}
+            </Button>
+        </div>
+    );
+}
 
 function formatAgeDisplay(
     birthDate: string | null | undefined,
@@ -122,7 +201,8 @@ export default function PetDetailsPage() {
     const { params, routes } = useNavigation<Query>();
     const { pet, isLoading } = usePet(params.id);
     const isMobile = useIsMobile();
-    const { user } = useAuth();
+    const { user, activities } = useAuth();
+    const { openWithActivity, isPending: isContactPending } = useOpenConversation();
 
     if (!pet && isLoading) {
         return <PetDetailsPageSkeleton />;
@@ -139,31 +219,15 @@ export default function PetDetailsPage() {
     );
 
     const isOwner = user?.id === pet.userId;
+    const canContactOwner = !isOwner && activities.length > 0;
     const typeCode = pet.animalType?.code?.toLowerCase() ?? "";
     const images = [...(pet.avatarUrl ? [pet.avatarUrl] : []), ...pet.images.map((img) => img.url)];
-
-    const emptyState = isIllustratedType(typeCode) ? (
-        <div className="relative aspect-[16/6] rounded-2xl overflow-hidden bg-muted">
-            <Image
-                src={`/illustrations/pets/${typeCode}.svg`}
-                alt={pet.animalType?.name ?? ""}
-                fill
-                className="object-contain p-12"
-            />
-        </div>
-    ) : (
-        <div className="relative aspect-[16/6] overflow-hidden bg-muted">
-            <div className="absolute inset-0 flex items-center justify-center">
-                <PawPrint className="size-20 text-muted-foreground/15" />
-            </div>
-        </div>
-    );
 
     return (
         <DetailPageLayout
             images={images}
             altPrefix={pet.name}
-            emptyState={emptyState}
+            emptyState={<PetEmptyState typeCode={typeCode} altName={pet.animalType?.name ?? ""} />}
             desktopCtaLabel={t("features.pets.profile.viewPhotos", { count: images.length })}
             headerStart={
                 <Button size="icon-sm" className="text-primary bg-card hover:bg-muted" asChild>
@@ -173,34 +237,23 @@ export default function PetDetailsPage() {
                 </Button>
             }
             headerEnd={
-                <>
-                    {isOwner && (
-                        <Button
-                            size="sm"
-                            className="text-primary bg-card hover:bg-muted gap-1.5"
-                            asChild
-                        >
-                            <Link
-                                href={
-                                    isMobile
-                                        ? routes.PetEditPage({ id: pet.id })
-                                        : routes.PetEditGeneral({ id: pet.id })
-                                }
-                            >
-                                <PenNewSquare />
-                                {t("common.actions.edit")}
-                            </Link>
-                        </Button>
-                    )}
-                </>
+                <PetHeaderActions
+                    isOwner={isOwner}
+                    canContactOwner={canContactOwner}
+                    isMobile={isMobile}
+                    mobileEditHref={routes.PetEditPage({ id: pet.id })}
+                    desktopEditHref={routes.PetEditGeneral({ id: pet.id })}
+                    editLabel={t("common.actions.edit")}
+                    contactLabel={t("features.conversations.contactOwner")}
+                    isContactPending={isContactPending}
+                    onContact={() => openWithActivity(activities[0]!.id, pet.userId)}
+                />
             }
             footer={
                 isOwner ? (
-                    <div className="h-16 bg-card border-t px-2 flex justify-center items-center sm:hidden">
-                        <Button className="w-full" size="xl">
-                            {t("features.pets.profile.findHost", { name: pet.name })}
-                        </Button>
-                    </div>
+                    <PetOwnerFooter
+                        label={t("features.pets.profile.findHost", { name: pet.name })}
+                    />
                 ) : undefined
             }
             className="pb-6"

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
@@ -22,8 +23,10 @@ import Link from "next/link";
 
 function ConversationPanels({
     selectedConversation,
-    closeConversation,
-}: Pick<ReturnType<typeof useConversations>, "selectedConversation" | "closeConversation">) {
+    onBack,
+}: Pick<ReturnType<typeof useConversations>, "selectedConversation"> & {
+    onBack: () => void;
+}) {
     return (
         <>
             <div
@@ -43,7 +46,7 @@ function ConversationPanels({
                     selectedConversation ? "translate-x-0" : "translate-x-full",
                 )}
             >
-                <ConversationView key={selectedConversation?.id} onBack={closeConversation} />
+                <ConversationView key={selectedConversation?.id} onBack={onBack} />
             </div>
         </>
     );
@@ -52,16 +55,41 @@ function ConversationPanels({
 function MessagePageContent() {
     const t = useTranslations();
     const { user, isAuthenticated } = useAuth();
+    const router = useRouter();
     const [hideTitle, setHideTitle] = useState(false);
     const [isSearching, setIsSearching] = useState(false);
+    const searchParams = useSearchParams();
+    const targetConversationId = searchParams.get("conversation_id");
     const {
+        conversations,
         selectedConversation,
         closeConversation,
+        selectConversation,
         activeFilter,
         setActiveFilter,
         searchQuery,
         setSearchQuery,
+        isLoadingConversations,
     } = useConversations();
+
+    const handleBack = targetConversationId
+        ? () => {
+              closeConversation();
+              router.back();
+          }
+        : closeConversation;
+
+    useEffect(() => {
+        if (!targetConversationId || selectedConversation || isLoadingConversations) return;
+        const target = conversations.find((c) => c.id === targetConversationId);
+        if (target) selectConversation(target);
+    }, [
+        targetConversationId,
+        conversations,
+        selectedConversation,
+        isLoadingConversations,
+        selectConversation,
+    ]);
 
     const handleSearchOpen = () => {
         setIsSearching(true);
@@ -182,7 +210,7 @@ function MessagePageContent() {
                     ) : (
                         <ConversationPanels
                             selectedConversation={selectedConversation}
-                            closeConversation={closeConversation}
+                            onBack={handleBack}
                         />
                     )}
                 </PageLayout>

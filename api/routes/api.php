@@ -114,6 +114,7 @@ Route::middleware(['auth.jwt'])->group(function () {
 
     // Conversations (activity)
     Route::get('/activities/{activity}/conversations', [ActivityConversationController::class, 'index']);
+    Route::post('/activities/{activity}/conversations', [ActivityConversationController::class, 'store']);
 
     // Messages
     Route::get('/conversations/{conversation}/messages', [MessageController::class, 'index']);

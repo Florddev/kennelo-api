@@ -45,7 +45,7 @@ class ConversationController extends Controller
 
     public function storeForBooking(Request $request, Booking $booking): JsonResponse
     {
-        abort_if((string) $booking->user_id !== (string) $request->user()->id, 403);
+        $this->authorize('createForBooking', [Conversation::class, $booking]);
 
         $conversation = $this->conversationService->getOrCreateForBooking($request->user(), $booking);
 

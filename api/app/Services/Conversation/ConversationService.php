@@ -82,6 +82,21 @@ class ConversationService
         return $conversation->load(['activity', 'user', 'bookingThreads.booking']);
     }
 
+    public function getOrCreateForActivity(User $user, Activity $activity): Conversation
+    {
+        $conversation = Conversation::firstOrCreate(
+            [
+                'user_id' => $user->id,
+                'activity_id' => $activity->id,
+            ],
+            [
+                'last_message_at' => now(),
+            ]
+        );
+
+        return $conversation->load(['activity', 'user', 'bookingThreads.booking']);
+    }
+
     public function sendBookingReference(Conversation $conversation, User $actor, Booking $booking, ?string $message = null): void
     {
         $this->sendMessage($actor, $conversation, [
