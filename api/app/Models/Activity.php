@@ -100,6 +100,20 @@ class Activity extends Model implements HasMedia
         return $this->hasMany(ActivityCollaboratorPermission::class);
     }
 
+    public function favoritedBy(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'favorites', 'activity_id', 'user_id');
+    }
+
+    public function scopeWithIsFavorited(Builder $query, ?User $user): Builder
+    {
+        if ($user === null) {
+            return $query;
+        }
+
+        return $query->withExists(['favoritedBy as is_favorited' => fn (Builder $q) => $q->where('users.id', $user->id)]);
+    }
+
     public function cycles(): HasMany
     {
         return $this->hasMany(ActivityCycle::class);

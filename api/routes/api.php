@@ -14,6 +14,7 @@ use App\Http\Controllers\Conversation\ActivityConversationController;
 use App\Http\Controllers\Conversation\ConversationController;
 use App\Http\Controllers\Conversation\MessageController;
 use App\Http\Controllers\Explore\ExploreController;
+use App\Http\Controllers\Favorite\FavoriteController;
 use App\Http\Controllers\PaymentMethod\PaymentMethodController;
 use App\Http\Controllers\Pet\AnimalTypeController;
 use App\Http\Controllers\Pet\PetAttributeController;
@@ -89,6 +90,11 @@ Route::middleware(['auth.jwt'])->group(function () {
     Route::post('/pets/{pet}/images/bulk', [PetImageController::class, 'storeBulk']);
     Route::delete('/pets/{pet}/images/{media}', [PetImageController::class, 'destroy']);
     Route::get('/pets/{pet}/reviews', [PetReviewController::class, 'index']);
+
+    // Favorites
+    Route::get('/favorites', [FavoriteController::class, 'index']);
+    Route::post('/favorites', [FavoriteController::class, 'store']);
+    Route::delete('/favorites/{activity}', [FavoriteController::class, 'destroy']);
 
     // Users (admin)
     Route::apiResource('users', UserController::class)->only(['index', 'show', 'update']);
