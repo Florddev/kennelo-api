@@ -40,6 +40,8 @@
         "from": "dès",
         "perNight": "/nuit",
         "addToFavorites": "Ajouter aux favoris",
+        "removeFromFavorites": "Retirer des favoris",
+        "favoriteError": "Impossible de mettre à jour le favori",
         "reviews": "{count, plural, =0 {Aucun avis} =1 {# avis} other {# avis}}",
         "distanceKm": "{distance} km"
     },

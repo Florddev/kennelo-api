@@ -40,6 +40,8 @@
         "from": "من",
         "perNight": "/ليلة",
         "addToFavorites": "إضافة إلى المفضلة",
+        "removeFromFavorites": "إزالة من المفضلة",
+        "favoriteError": "تعذّر تحديث المفضلة",
         "reviews": "{count, plural, =0 {لا توجد مراجعات} =1 {# مراجعة} other {# مراجعات}}",
         "distanceKm": "{distance} كم"
     },
