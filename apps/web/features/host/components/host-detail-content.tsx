@@ -15,6 +15,7 @@ import type { DateRange } from "react-day-picker";
 
 import { useNavigation } from "@/hooks/use-navigation";
 import { DetailPageLayout } from "@/components/layouts/detail-page-layout";
+import { FavoriteButton } from "@/features/activities";
 
 import { minPricePerNight } from "../lib/pricing";
 import { HostHeaderSection } from "./host-header-section";
@@ -82,6 +83,9 @@ export function HostDetailContent({
                 <Button size="icon-sm" className="text-primary bg-card" onClick={onBack}>
                     <ArrowLeft />
                 </Button>
+            }
+            headerEnd={
+                <FavoriteButton activityId={activity.id} isFavorited={activity.isFavorited} />
             }
             footer={
                 <HostBookingBar

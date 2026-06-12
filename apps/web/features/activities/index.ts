@@ -19,6 +19,7 @@ export * from "./components/cycle-card";
 export * from "./components/cycle-settings-editor";
 export * from "./components/dashboard-tab";
 export * from "./components/embedded-connect-onboarding";
+export * from "./components/favorite-button";
 export * from "./components/stripe-connect-card";
 export * from "./components/weekday-selector";
 export * from "./components/step/activity-info-step";

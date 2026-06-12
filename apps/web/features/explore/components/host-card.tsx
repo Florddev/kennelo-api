@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { cn } from "@workspace/ui/lib/utils";
 import { useNavigation } from "@/hooks/use-navigation";
+import { FavoriteButton } from "@/features/activities";
 import type { ActivityModel } from "@workspace/modules/activities";
 import { CrownStar, Gallery, Star, UsersGroupRounded } from "@solar-icons/react";
 
@@ -115,6 +116,11 @@ export function HostCard({
                     <div className="absolute start-2 top-2">
                         <ProBadge isPro={host.isProfessional} showText={false} />
                     </div>
+                    <FavoriteButton
+                        activityId={host.id}
+                        isFavorited={host.isFavorited}
+                        className="absolute end-2 top-2 z-10"
+                    />
                 </div>
                 <div className="flex flex-col justify-between py-2">
                     <div className="min-w-0 space-y-1">
@@ -172,6 +178,11 @@ export function HostCard({
                         </div>
                     </div>
                 )}
+                <FavoriteButton
+                    activityId={host.id}
+                    isFavorited={host.isFavorited}
+                    className="absolute end-3 top-3 z-10"
+                />
             </div>
 
             <div className="flex flex-1 flex-col gap-2 pt-2 px-1">
