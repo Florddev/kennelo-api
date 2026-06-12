@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { addActivityFavorite, removeActivityFavorite } from "@workspace/modules/activities";
@@ -19,11 +19,15 @@ type FavoriteButtonProps = {
 export function FavoriteButton({ activityId, isFavorited, className }: FavoriteButtonProps) {
     const t = useTranslations();
     const { isAuthenticated } = useAuth();
+    const queryClient = useQueryClient();
     const [favorited, setFavorited] = useState(isFavorited);
 
     const mutation = useMutation({
         mutationFn: (next: boolean) =>
             next ? addActivityFavorite(activityId) : removeActivityFavorite(activityId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["favorites"] });
+        },
         onError: (error: Error, next: boolean) => {
             setFavorited(!next);
             toast.error(t("features.explore.card.favoriteError"), { description: error.message });
