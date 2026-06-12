@@ -1,0 +1,12 @@
+{
+    "title": "Favorites",
+    "description": "Activities you saved",
+    "empty": {
+        "title": "No favorites yet",
+        "description": "Activities you add to your favorites will appear here.",
+        "cta": "Explore activities"
+    },
+    "loadMore": "Load more",
+    "please-login": "Log in to view your favorites",
+    "please-login-description": "Once you log in, the activities you saved will appear here."
+}

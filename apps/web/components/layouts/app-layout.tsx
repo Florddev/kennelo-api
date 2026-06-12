@@ -46,8 +46,8 @@ export default function AppLayout({ children, className }: AppLayoutProps) {
         {
             icon: FolderFavouriteStar,
             text: t("ui.navigation.favorites"),
-            href: "#",
-            active: isActive("#"),
+            href: routes.Favorites(),
+            active: isActive(routes.Favorites()),
         },
         {
             icon: Hearts,

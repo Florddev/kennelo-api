@@ -15,6 +15,7 @@ use App\Models\Activity;
 use App\Models\User;
 use App\Services\Activity\ActivityService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
 /**
@@ -55,9 +56,9 @@ class ActivityController extends Controller
             ->setStatusCode(201);
     }
 
-    public function show(string $id): JsonResponse
+    public function show(Request $request, string $id): JsonResponse
     {
-        $activity = $this->activityService->findById($id);
+        $activity = $this->activityService->findById($id, $request->user());
 
         $this->authorize('view', $activity);
 
