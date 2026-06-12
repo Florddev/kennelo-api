@@ -5,10 +5,15 @@
         "connected": "الماسح متصل",
         "connecting": "جارٍ الاتصال...",
         "disconnected": "الماسح غير متصل",
-        "connectBtn": "توصيل الماسح",
+        "scanBtn": "البحث عن الماسح",
+        "scanning": "جارٍ البحث...",
         "disconnectBtn": "قطع الاتصال",
-        "connectingBtn": "جارٍ الاتصال...",
-        "failed": "فشل الاتصال"
+        "noDevices": "تأكد من أن الماسح في وضع Bluetooth...",
+        "errors": {
+            "BLUETOOTH_DISABLED": "يرجى تفعيل البلوتوث لتوصيل الماسح.",
+            "SCAN_ERROR": "خطأ أثناء مسح BLE.",
+            "CONNECT_FAILED": "فشل الاتصال."
+        }
     },
     "wifi": {
         "available": "الشبكات المتاحة",

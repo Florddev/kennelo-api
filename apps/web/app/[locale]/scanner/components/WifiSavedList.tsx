@@ -49,12 +49,13 @@ export function WifiSavedList({
     const deleteNetwork = useCallback(
         async (ssid: string) => {
             setDeleting(ssid);
+            const keepNetwork = (n: SavedNetwork) => n.ssid !== ssid;
 
             const unsub = subscribe((msg) => {
                 if (msg.t === "ok" || msg.t === "err") {
                     unsub();
                     setDeleting(null);
-                    if (msg.t === "ok") setNetworks((prev) => prev.filter((n) => n.ssid !== ssid));
+                    if (msg.t === "ok") setNetworks((prev) => prev.filter(keepNetwork));
                 }
             });
 

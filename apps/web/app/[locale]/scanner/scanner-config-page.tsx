@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 import { useScannerBle } from "./hooks/useScannerBle";
 import { ScannerConnect } from "./components/ScannerConnect";
@@ -8,17 +9,34 @@ import { WifiScanner } from "./components/WifiScanner";
 import { WifiSavedList } from "./components/WifiSavedList";
 import { WifiAddForm } from "./components/WifiAddForm";
 
-export function ScannerConfigPage() {
-    const { connected, connecting, error, connect, disconnect, send, subscribe } = useScannerBle();
+export default function ScannerConfigPage() {
+    const t = useTranslations("features.scanner");
+    const {
+        connected,
+        connecting,
+        scanning,
+        devices,
+        error,
+        startScan,
+        connectTo,
+        disconnect,
+        send,
+        subscribe,
+    } = useScannerBle();
     const [selectedSsid, setSelectedSsid] = useState<string | null>(null);
 
     return (
         <main className="max-w-md mx-auto p-4 flex flex-col gap-6">
+            <h1 className="text-xl font-bold">{t("title")}</h1>
+
             <ScannerConnect
                 connected={connected}
                 connecting={connecting}
+                scanning={scanning}
+                devices={devices}
                 error={error}
-                onConnect={connect}
+                onScan={startScan}
+                onConnect={connectTo}
                 onDisconnect={disconnect}
             />
 

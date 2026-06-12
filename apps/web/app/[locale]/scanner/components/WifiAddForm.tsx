@@ -1,8 +1,4 @@
-"use client";
-
 import { useState, useCallback } from "react";
-import { useTranslations } from "next-intl";
-
 import { ScannerMessage } from "../hooks/useScannerBle";
 
 export function WifiAddForm({
@@ -18,7 +14,6 @@ export function WifiAddForm({
     onSaved: () => void;
     onCancel: () => void;
 }) {
-    const t = useTranslations("features.scanner.wifi");
     const [ssid, setSsid] = useState(initialSsid);
     const [password, setPassword] = useState("");
     const [priority, setPriority] = useState(5);
@@ -39,7 +34,7 @@ export function WifiAddForm({
             } else if (msg.t === "err") {
                 unsub();
                 setSaving(false);
-                setError(msg.m ?? t("unknownError"));
+                setError(msg.m ?? "Erreur inconnue");
             }
         });
 
@@ -48,50 +43,50 @@ export function WifiAddForm({
         } catch (e) {
             unsub();
             setSaving(false);
-            setError(e instanceof Error ? e.message : t("sendError"));
+            setError(e instanceof Error ? e.message : "Erreur envoi");
         }
-    }, [send, subscribe, ssid, password, priority, onSaved, t]);
+    }, [send, subscribe, ssid, password, priority, onSaved]);
 
     return (
-        <div className="flex flex-col gap-4 p-4 border rounded-2xl">
-            <h2 className="font-semibold">{t("addTitle")}</h2>
+        <div className="flex flex-col gap-4 p-4 border rounded-lg">
+            <h2 className="font-semibold text-gray-800">Ajouter un réseau WiFi</h2>
 
             <div className="flex flex-col gap-1">
-                <label className="text-sm text-muted-foreground">{t("ssidLabel")}</label>
+                <label className="text-sm text-gray-600">Nom du réseau (SSID)</label>
                 <input
                     value={ssid}
                     onChange={(e) => setSsid(e.target.value)}
-                    placeholder={t("ssidPlaceholder")}
-                    className="border rounded-lg px-3 py-2 text-sm"
+                    placeholder="MonReseau"
+                    className="border rounded px-3 py-2 text-sm"
                 />
             </div>
 
             <div className="flex flex-col gap-1">
-                <label className="text-sm text-muted-foreground">{t("passwordLabel")}</label>
+                <label className="text-sm text-gray-600">Mot de passe</label>
                 <div className="flex gap-2">
                     <input
                         type={showPassword ? "text" : "password"}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        placeholder={t("passwordPlaceholder")}
-                        className="flex-1 border rounded-lg px-3 py-2 text-sm"
+                        placeholder="Mot de passe"
+                        className="flex-1 border rounded px-3 py-2 text-sm"
                     />
                     <button
                         type="button"
                         onClick={() => setShowPassword((v) => !v)}
-                        className="px-3 text-sm text-muted-foreground border rounded-lg"
+                        className="px-3 text-sm text-gray-500 border rounded"
                     >
-                        {showPassword ? t("hidePassword") : t("showPassword")}
+                        {showPassword ? "Cacher" : "Voir"}
                     </button>
                 </div>
             </div>
 
             <div className="flex flex-col gap-1">
-                <label className="text-sm text-muted-foreground">{t("priorityLabel")}</label>
+                <label className="text-sm text-gray-600">Priorité (1 = la plus haute)</label>
                 <select
                     value={priority}
                     onChange={(e) => setPriority(Number(e.target.value))}
-                    className="border rounded-lg px-3 py-2 text-sm"
+                    className="border rounded px-3 py-2 text-sm"
                 >
                     {[1, 2, 3, 4, 5].map((p) => (
                         <option key={p} value={p}>
@@ -101,23 +96,23 @@ export function WifiAddForm({
                 </select>
             </div>
 
-            {error && <p className="text-sm text-destructive">{error}</p>}
+            {error && <p className="text-sm text-red-500">{error}</p>}
 
             <div className="flex gap-2 pt-1">
                 <button
                     type="button"
                     onClick={onCancel}
-                    className="flex-1 py-2 border rounded-4xl text-sm"
+                    className="flex-1 py-2 border rounded text-sm text-gray-700"
                 >
-                    {t("cancel")}
+                    Annuler
                 </button>
                 <button
                     type="button"
                     onClick={save}
                     disabled={saving || !ssid.trim()}
-                    className="flex-1 py-2 rounded-4xl bg-primary text-primary-foreground text-sm disabled:opacity-50"
+                    className="flex-1 py-2 rounded bg-blue-600 text-white text-sm disabled:opacity-50"
                 >
-                    {saving ? t("saving") : t("save")}
+                    {saving ? "Sauvegarde..." : "Sauvegarder"}
                 </button>
             </div>
         </div>

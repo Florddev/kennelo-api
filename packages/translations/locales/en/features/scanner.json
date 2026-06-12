@@ -5,10 +5,15 @@
         "connected": "Scanner connected",
         "connecting": "Connecting...",
         "disconnected": "Scanner disconnected",
-        "connectBtn": "Connect scanner",
+        "scanBtn": "Search for scanner",
+        "scanning": "Searching...",
         "disconnectBtn": "Disconnect",
-        "connectingBtn": "Connecting...",
-        "failed": "Connection failed"
+        "noDevices": "Make sure the scanner is in Bluetooth mode...",
+        "errors": {
+            "BLUETOOTH_DISABLED": "Please enable Bluetooth to connect the scanner.",
+            "SCAN_ERROR": "Error during BLE scan.",
+            "CONNECT_FAILED": "Connection failed."
+        }
     },
     "wifi": {
         "available": "Available networks",

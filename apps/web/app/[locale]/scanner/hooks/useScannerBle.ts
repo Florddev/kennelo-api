@@ -1,23 +1,51 @@
 import { useState, useCallback } from "react";
-import { scannerBle, ScannerMessage } from "../lib/scannerBle";
+import { scannerBle, ScannerMessage, FoundDevice } from "../lib/scannerBle";
 
-export type { ScannerMessage };
+export type { ScannerMessage, FoundDevice };
+export type BleErrorCode = "BLUETOOTH_DISABLED" | "SCAN_ERROR" | "CONNECT_FAILED";
 
 export function useScannerBle() {
     const [connected, setConnected] = useState(false);
     const [connecting, setConnecting] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    const [scanning, setScanning] = useState(false);
+    const [devices, setDevices] = useState<FoundDevice[]>([]);
+    const [error, setError] = useState<BleErrorCode | null>(null);
 
-    const connect = useCallback(async () => {
+    const startScan = useCallback(async () => {
+        setScanning(true);
+        setDevices([]);
+        setError(null);
+        const found: FoundDevice[] = [];
+        try {
+            await scannerBle.scanDevices((device) => {
+                if (found.some((d) => d.deviceId === device.deviceId)) return;
+                found.push(device);
+                setDevices([...found]);
+            });
+            setTimeout(() => setScanning(false), 8000);
+        } catch (e) {
+            setError(
+                e instanceof Error && e.message === "BLUETOOTH_DISABLED"
+                    ? "BLUETOOTH_DISABLED"
+                    : "SCAN_ERROR",
+            );
+            setScanning(false);
+        }
+    }, []);
+
+    const connectTo = useCallback(async (deviceId: string) => {
         setConnecting(true);
         setError(null);
         try {
-            await scannerBle.connect();
+            await scannerBle.stopScan();
+            await scannerBle.connectTo(deviceId);
             setConnected(true);
-        } catch (e) {
-            setError(e instanceof Error ? e.message : "Connexion échouée");
+            setDevices([]);
+        } catch {
+            setError("CONNECT_FAILED");
         } finally {
             setConnecting(false);
+            setScanning(false);
         }
     }, []);
 
@@ -27,11 +55,21 @@ export function useScannerBle() {
     }, []);
 
     const send = useCallback((cmd: object) => scannerBle.send(cmd), []);
-
     const subscribe = useCallback(
         (handler: (msg: ScannerMessage) => void) => scannerBle.subscribe(handler),
         [],
     );
 
-    return { connected, connecting, error, connect, disconnect, send, subscribe };
+    return {
+        connected,
+        connecting,
+        scanning,
+        devices,
+        error,
+        startScan,
+        connectTo,
+        disconnect,
+        send,
+        subscribe,
+    };
 }
