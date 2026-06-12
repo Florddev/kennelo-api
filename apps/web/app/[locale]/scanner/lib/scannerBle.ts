@@ -1,5 +1,7 @@
 import { BleClient, ScanResult } from "@capacitor-community/bluetooth-le";
 
+export const BLE_DEVICE_PREFIX = "KenneloScan";
+
 const SERVICE_UUID = "19b10000-e8f2-537e-4f6c-d104768a1214";
 const TX_UUID = "19b10001-e8f2-537e-4f6c-d104768a1214";
 const RX_UUID = "19b10002-e8f2-537e-4f6c-d104768a1214";
@@ -11,6 +13,7 @@ export type ScannerMessage = {
     rssi?: number;
     pri?: number;
     m?: string;
+    code?: string;
 };
 
 export type FoundDevice = {
@@ -47,7 +50,7 @@ class ScannerBle {
         await BleClient.requestLEScan({ services: [SERVICE_UUID] }, (result: ScanResult) => {
             onFound({
                 deviceId: result.device.deviceId,
-                name: result.device.name ?? "KenoTag-Scanner",
+                name: result.device.name ?? BLE_DEVICE_PREFIX,
                 rssi: result.rssi ?? 0,
             });
         });
@@ -69,6 +72,33 @@ class ScannerBle {
         await BleClient.startNotifications(this.deviceId, SERVICE_UUID, TX_UUID, (v) =>
             this.onData(v),
         );
+    }
+
+    async getInfo(): Promise<string> {
+        return new Promise((resolve, reject) => {
+            const timer = setTimeout(() => {
+                unsub();
+                reject(new Error("INFO_TIMEOUT"));
+            }, 5000);
+
+            const unsub = this.subscribe((msg) => {
+                if (msg.t === "info" && msg.code) {
+                    clearTimeout(timer);
+                    unsub();
+                    resolve(msg.code);
+                } else if (msg.t === "err") {
+                    clearTimeout(timer);
+                    unsub();
+                    reject(new Error("INFO_FAILED"));
+                }
+            });
+
+            this.send({ t: "info" }).catch((e: unknown) => {
+                clearTimeout(timer);
+                unsub();
+                reject(e);
+            });
+        });
     }
 
     async disconnect(): Promise<void> {

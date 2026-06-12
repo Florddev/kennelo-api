@@ -31,6 +31,7 @@ use App\Http\Controllers\Review\ReviewCriteriaController;
 use App\Http\Controllers\Review\ReviewReportController;
 use App\Http\Controllers\Review\ReviewResponseController;
 use App\Http\Controllers\Review\UserReviewController;
+use App\Http\Controllers\Scanner\ScannerController;
 use App\Http\Controllers\Stripe\StripeWebhookController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\User\UserController;
@@ -134,6 +135,12 @@ Route::middleware(['auth.jwt'])->group(function () {
         Route::get('/admin/review-reports', [AdminReviewReportController::class, 'index']);
         Route::put('/admin/review-reports/{report}', [AdminReviewReportController::class, 'update']);
     });
+
+    // Scanners
+    Route::get('/user/scanners', [ScannerController::class, 'index']);
+    Route::post('/user/scanners', [ScannerController::class, 'store']);
+    Route::put('/user/scanners/{scanner}', [ScannerController::class, 'update']);
+    Route::delete('/user/scanners/{scanner}', [ScannerController::class, 'destroy']);
 
     // Current user
     Route::get('/user', [UserController::class, 'getCurrentUser']);

@@ -232,7 +232,7 @@ type MyProfilePreferencesNotificationParams = {
     search_params?: Record<string, string | number | boolean>;
 };
 
-type ScannerPageParams = {
+type PageParams = {
     locale?: string | number;
     search_params?: Record<string, string | number | boolean>;
 };
@@ -405,7 +405,7 @@ function MyProfilePreferencesNotification(params?: MyProfilePreferencesNotificat
     return buildRoute("/[locale]/settings/preferences-notification", params);
 }
 
-function ScannerPage(params?: ScannerPageParams): string {
+function Page(params?: PageParams): string {
     return buildRoute("/[locale]/scanner", params);
 }
 
@@ -452,7 +452,7 @@ export const routes = {
     PaymentMethodsPage,
     MyProfileEmailPreferences,
     MyProfilePreferencesNotification,
-    ScannerPage,
+    Page,
 } as const;
 
 export type RouteName = keyof typeof routes;
