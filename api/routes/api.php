@@ -17,6 +17,8 @@ use App\Http\Controllers\Explore\ExploreController;
 use App\Http\Controllers\PaymentMethod\PaymentMethodController;
 use App\Http\Controllers\Pet\AnimalTypeController;
 use App\Http\Controllers\Pet\PetAttributeController;
+use App\Http\Controllers\Pet\PetBroadcastController;
+use App\Http\Controllers\Pet\PetByMicrochipController;
 use App\Http\Controllers\Pet\PetController;
 use App\Http\Controllers\Pet\PetImageController;
 use App\Http\Controllers\Pet\PetReviewController;
@@ -36,7 +38,11 @@ use App\Http\Controllers\User\UserStripeController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/test', [TestController::class, 'index']);
+
 Route::get('/animal-types', [AnimalTypeController::class, 'index']);
+Route::post('/pets/broadcast', [PetBroadcastController::class, 'broadcast']);
+Route::get('/pets/by-microchip/{microchipNumber}', [PetByMicrochipController::class, 'show']);
+
 Route::get('/explore/activities', [ExploreController::class, 'activities']);
 Route::get('/explore/activities/sections/{sectionId}', [ExploreController::class, 'sectionPage']);
 Route::get('/explore/search', [ExploreController::class, 'search']);

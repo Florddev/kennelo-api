@@ -146,6 +146,11 @@ type MessagesParams = {
     search_params?: Record<string, string | number | boolean>;
 };
 
+type LivePetParams = {
+    locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
 type NewPetParams = {
     locale?: string | number;
     search_params?: Record<string, string | number | boolean>;
@@ -336,6 +341,10 @@ function Messages(params?: MessagesParams): string {
     return buildRoute("/[locale]/messages", params);
 }
 
+function LivePet(params?: LivePetParams): string {
+    return buildRoute("/[locale]/pets/live", params);
+}
+
 function NewPet(params?: NewPetParams): string {
     return buildRoute("/[locale]/pets/new", params);
 }
@@ -427,6 +436,7 @@ export const routes = {
     HostBook,
     HostDetail,
     Messages,
+    LivePet,
     NewPet,
     MyPets,
     PetEditGeneral,

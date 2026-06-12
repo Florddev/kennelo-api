@@ -26,6 +26,7 @@ export * from "./components/forms/step/identity-step";
 export * from "./components/forms/step/intro-step";
 export * from "./components/forms/step/media-step";
 export * from "./components/forms/step/profile-step";
+export * from "./hooks/use-pet-broadcast";
 export * from "./hooks/use-pet-reviews";
 export * from "./hooks/use-pet";
 export * from "./hooks/use-pets-filters";

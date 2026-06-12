@@ -3,12 +3,23 @@
  */
 
 export * from "./components/booking-checkout-form";
+export * from "./components/booking-detail-content";
+export * from "./components/booking-detail-header";
+export * from "./components/booking-detail-host-actions";
+export * from "./components/booking-detail-identity";
+export * from "./components/booking-detail-map";
+export * from "./components/booking-detail-tab-details";
+export * from "./components/booking-detail-tab-location";
+export * from "./components/booking-detail-tab-support";
+export * from "./components/booking-detail-tabs";
 export * from "./components/booking-footer";
 export * from "./components/booking-header";
 export * from "./components/booking-info-row";
 export * from "./components/booking-message-section";
+export * from "./components/booking-mini-map";
 export * from "./components/booking-pets-section";
 export * from "./components/booking-skeleton";
+export * from "./components/booking-status-badge";
 export * from "./components/booking-trip-section";
 export * from "./components/bookings-calendar";
 export * from "./components/day-bookings-sheet";
@@ -17,6 +28,8 @@ export * from "./components/price-breakdown";
 export * from "./components/reservation-review-card";
 export * from "./components/reservation-review-list";
 export * from "./hooks/use-activity-bookings";
+export * from "./hooks/use-booking-action-dialog";
+export * from "./hooks/use-booking";
 export * from "./hooks/use-calendar-activity-bookings";
 export * from "./lib/booking-colors";
 export * from "./lib/calendar-grid";

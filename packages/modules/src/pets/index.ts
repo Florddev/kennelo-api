@@ -4,6 +4,7 @@
 
 export * from "./actions/commands/add-pet-image";
 export * from "./actions/commands/add-pet-images";
+export * from "./actions/commands/broadcast-pet";
 export * from "./actions/commands/create-pet";
 export * from "./actions/commands/delete-pet-image";
 export * from "./actions/commands/delete-pet";
@@ -11,6 +12,7 @@ export * from "./actions/commands/update-pet";
 export * from "./actions/commands/upload-pet-avatar";
 export * from "./actions/commands/upsert-pet-attributes";
 export * from "./actions/queries/get-animal-types";
+export * from "./actions/queries/get-pet-by-microchip";
 export * from "./actions/queries/get-pet-images";
 export * from "./actions/queries/get-pet-reviews";
 export * from "./actions/queries/get-pet";

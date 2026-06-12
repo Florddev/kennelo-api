@@ -98,6 +98,11 @@ class EchoClient {
         return this._echo!.private(channel);
     }
 
+    channel(channelName: string): ReturnType<Echo<"reverb">["channel"]> {
+        this.connect();
+        return this._echo!.channel(channelName);
+    }
+
     leave(channel: string): void {
         this._echo?.leave(channel);
     }
