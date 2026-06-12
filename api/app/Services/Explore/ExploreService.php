@@ -9,6 +9,7 @@ use App\Enums\BookingStatusEnum;
 use App\Enums\ReviewerTypeEnum;
 use App\Models\Activity;
 use App\Models\AnimalType;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
@@ -41,7 +42,7 @@ class ExploreService
         };
     }
 
-    private function baseQuery(): Builder
+    private function baseQuery(?User $user = null): Builder
     {
         return Activity::select('activities.*')
             ->with(['address', 'cycles.settings.animalType'])
@@ -52,6 +53,7 @@ class ExploreService
             ->withCount(
                 ['reviews as review_count' => fn (Builder $q) => $q->where('is_published', true)]
             )
+            ->withIsFavorited($user)
             ->active()
             ->whereHas('manager', function ($q) {
                 $q->where('stripe_charges_enabled', true);
@@ -61,12 +63,12 @@ class ExploreService
     /**
      * @return list<array{id: string, has_more: bool, activities: Collection}>
      */
-    public function getSections(?float $lat, ?float $lng): array
+    public function getSections(?float $lat, ?float $lng, ?User $user = null): array
     {
         $sections = [];
 
         foreach ($this->sectionIds() as $sectionId) {
-            $activities = $this->applySection($sectionId, $this->baseQuery(), $lat, $lng)
+            $activities = $this->applySection($sectionId, $this->baseQuery($user), $lat, $lng)
                 ->limit(self::PER_PAGE + 1)
                 ->get();
 
@@ -89,7 +91,7 @@ class ExploreService
     /**
      * @return array{activities: Collection, has_more: bool, page: int}|null
      */
-    public function getSectionPage(string $sectionId, ?float $lat, ?float $lng, int $page): ?array
+    public function getSectionPage(string $sectionId, ?float $lat, ?float $lng, int $page, ?User $user = null): ?array
     {
         if (! in_array($sectionId, $this->sectionIds(), true)) {
             return null;
@@ -97,7 +99,7 @@ class ExploreService
 
         $offset = ($page - 1) * self::PER_PAGE;
 
-        $activities = $this->applySection($sectionId, $this->baseQuery(), $lat, $lng)
+        $activities = $this->applySection($sectionId, $this->baseQuery($user), $lat, $lng)
             ->offset($offset)
             ->limit(self::PER_PAGE + 1)
             ->get();
@@ -112,9 +114,9 @@ class ExploreService
     /**
      * @return array{activities: Collection, has_more: bool, page: int}
      */
-    public function search(array $input, ?float $lat, ?float $lng, int $page): array
+    public function search(array $input, ?float $lat, ?float $lng, int $page, ?User $user = null): array
     {
-        $query = $this->baseQuery();
+        $query = $this->baseQuery($user);
 
         $this->applyLocationFilter($query, $input);
         $this->applyAnimalCountsFilter($query, $input);

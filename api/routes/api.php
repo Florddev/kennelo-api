@@ -38,9 +38,11 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/test', [TestController::class, 'index']);
 Route::get('/animal-types', [AnimalTypeController::class, 'index']);
-Route::get('/explore/activities', [ExploreController::class, 'activities']);
-Route::get('/explore/activities/sections/{sectionId}', [ExploreController::class, 'sectionPage']);
-Route::get('/explore/search', [ExploreController::class, 'search']);
+Route::middleware('auth.jwt.optional')->group(function () {
+    Route::get('/explore/activities', [ExploreController::class, 'activities']);
+    Route::get('/explore/activities/sections/{sectionId}', [ExploreController::class, 'sectionPage']);
+    Route::get('/explore/search', [ExploreController::class, 'search']);
+});
 Route::post('/webhooks/stripe', [StripeWebhookController::class, 'handle']);
 
 Route::middleware(['auth.jwt'])->group(function () {

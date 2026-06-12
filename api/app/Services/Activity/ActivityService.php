@@ -34,6 +34,7 @@ class ActivityService
         $perPage = $filters['per_page'] ?? PaginationEnum::DEFAULT_PAGINATION->value();
 
         return Activity::with(['address', 'manager', 'collaborators'])
+            ->withIsFavorited($user)
             ->where('manager_id', $user->id)
             ->when(isset($filters['search']), fn ($q) => $q->where('name', 'like', "%{$filters['search']}%"))
             ->when(isset($filters['sort_by']), fn ($q) => $q->orderBy($filters['sort_by'], $filters['sort_dir'] ?? 'asc'))
@@ -41,9 +42,11 @@ class ActivityService
             ->paginate($perPage);
     }
 
-    public function findById(string $id): Activity
+    public function findById(string $id, ?User $user = null): Activity
     {
-        return Activity::with(['address', 'manager', 'collaborators'])->findOrFail($id);
+        return Activity::with(['address', 'manager', 'collaborators'])
+            ->withIsFavorited($user)
+            ->findOrFail($id);
     }
 
     public function create(User $user, array $data): Activity
