@@ -237,11 +237,6 @@ type SettingsScannersParams = {
     search_params?: Record<string, string | number | boolean>;
 };
 
-type ScannerConfigPageParams = {
-    locale?: string | number;
-    search_params?: Record<string, string | number | boolean>;
-};
-
 function RootPage(params?: RootPageParams): string {
     return buildRoute("/", params);
 }
@@ -414,10 +409,6 @@ function SettingsScanners(params?: SettingsScannersParams): string {
     return buildRoute("/[locale]/settings/scanners", params);
 }
 
-function ScannerConfigPage(params?: ScannerConfigPageParams): string {
-    return buildRoute("/[locale]/scanner", params);
-}
-
 export const routes = {
     RootPage,
     Login,
@@ -462,7 +453,6 @@ export const routes = {
     MyProfileEmailPreferences,
     MyProfilePreferencesNotification,
     SettingsScanners,
-    ScannerConfigPage,
 } as const;
 
 export type RouteName = keyof typeof routes;
