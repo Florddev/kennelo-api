@@ -2,9 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { ArrowLeft, BluetoothOff } from "lucide-react";
-
-import { Button } from "@workspace/ui/components/button";
+import { BluetoothOff } from "lucide-react";
 import { addScanner, type ScannerModel } from "@workspace/modules/scanners";
 
 import type { FoundDevice, BleErrorCode } from "../hooks/use-scanner-ble";
@@ -21,7 +19,6 @@ export function AddScannerSection({
     onScan,
     onConnect,
     onDisconnect,
-    onBack,
     onAdded,
     existingCodes,
 }: {
@@ -33,7 +30,6 @@ export function AddScannerSection({
     onScan: () => void;
     onConnect: (deviceId: string) => void;
     onDisconnect: () => void;
-    onBack: () => void;
     onAdded: (scanner: ScannerModel) => void;
     existingCodes: string[];
 }) {
@@ -67,9 +63,6 @@ export function AddScannerSection({
     return (
         <div data-slot="add-scanner-section" className="flex flex-col gap-4">
             <div className="flex items-center gap-3">
-                <Button variant="flat" size="icon-sm" onClick={onBack}>
-                    <ArrowLeft className="size-4" />
-                </Button>
                 <p className="text-sm text-muted-foreground">{t("description")}</p>
             </div>
 
