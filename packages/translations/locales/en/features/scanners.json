@@ -18,6 +18,7 @@
     },
     "add": {
         "title": "Add a scanner",
+        "description": "Make sure your scanner is in Bluetooth mode to detect it",
         "scanBtn": "Scan for devices",
         "scanning": "Scanning…",
         "noDevices": "No device found",

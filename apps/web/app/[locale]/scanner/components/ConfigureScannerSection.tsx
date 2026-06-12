@@ -12,6 +12,102 @@ import { WifiScanner } from "./WifiScanner";
 import { WifiSavedList } from "./WifiSavedList";
 import { WifiAddForm } from "./WifiAddForm";
 
+function ScanConnectPanel({
+    error,
+    showBleModeHint,
+    codeMismatch,
+    connecting,
+    scanning,
+    devices,
+    onScan,
+    onConnect,
+}: {
+    error: BleErrorCode | null;
+    showBleModeHint: boolean;
+    codeMismatch: boolean;
+    connecting: boolean;
+    scanning: boolean;
+    devices: FoundDevice[];
+    onScan: () => void;
+    onConnect: (deviceId: string) => void;
+}) {
+    const t = useTranslations("features.scanners.configure");
+    const showHint = !connecting && !scanning && !codeMismatch && !error;
+
+    return (
+        <div className="flex flex-col gap-3 p-4 border rounded-2xl">
+            {error && (
+                <div className="flex items-start gap-2 p-3 bg-destructive/10 border border-destructive/20 rounded-xl">
+                    <BluetoothOff className="size-4 text-destructive shrink-0 mt-0.5" />
+                    <p className="text-sm text-destructive">{t(`errors.${error}`)}</p>
+                </div>
+            )}
+
+            {showBleModeHint && (
+                <div className="flex items-start gap-2 p-3 bg-muted rounded-xl">
+                    <Info className="size-4 text-muted-foreground shrink-0 mt-0.5" />
+                    <p className="text-sm text-muted-foreground">{t("bleModeHint")}</p>
+                </div>
+            )}
+
+            {codeMismatch && (
+                <div className="flex items-start gap-2 p-3 bg-destructive/10 border border-destructive/20 rounded-xl">
+                    <BluetoothOff className="size-4 text-destructive shrink-0 mt-0.5" />
+                    <p className="text-sm text-destructive">{t("wrongScanner")}</p>
+                </div>
+            )}
+
+            {showHint && <p className="text-sm text-muted-foreground">{t("hint")}</p>}
+
+            {connecting && (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Loader2 className="size-4 animate-spin" />
+                    {t("connecting")}
+                </div>
+            )}
+
+            {!connecting && (
+                <button
+                    onClick={onScan}
+                    disabled={scanning}
+                    className="flex items-center justify-center gap-2 px-4 py-2 rounded-4xl bg-primary text-primary-foreground text-sm disabled:opacity-50"
+                >
+                    {scanning ? (
+                        <Loader2 className="size-4 animate-spin" />
+                    ) : (
+                        <Bluetooth className="size-4" />
+                    )}
+                    {scanning ? t("scanning") : t("scanBtn")}
+                </button>
+            )}
+
+            {scanning && devices.length === 0 && (
+                <p className="text-sm text-muted-foreground text-center py-2">{t("scanning")}</p>
+            )}
+
+            {devices.length > 0 && (
+                <ul className="flex flex-col gap-2">
+                    {devices.map((d) => (
+                        <li key={d.deviceId}>
+                            <button
+                                onClick={() => onConnect(d.deviceId)}
+                                disabled={connecting}
+                                className="w-full flex items-center justify-between p-3 border rounded-2xl hover:bg-muted/50 active:bg-muted disabled:opacity-50 transition-colors"
+                            >
+                                <div className="flex items-center gap-2">
+                                    <Bluetooth className="size-4 text-primary" />
+                                    <span className="text-sm font-medium">{d.name}</span>
+                                </div>
+                                <span className="text-xs text-muted-foreground">{d.rssi} dBm</span>
+                            </button>
+                        </li>
+                    ))}
+                </ul>
+            )}
+        </div>
+    );
+}
+
 export function ConfigureScannerSection({
     scanner,
     connected,
@@ -65,81 +161,16 @@ export function ConfigureScannerSection({
             </div>
 
             {!codeMatches && (
-                <div className="flex flex-col gap-3 p-4 border rounded-2xl">
-                    {error && (
-                        <div className="flex items-start gap-2 p-3 bg-destructive/10 border border-destructive/20 rounded-xl">
-                            <BluetoothOff className="size-4 text-destructive shrink-0 mt-0.5" />
-                            <p className="text-sm text-destructive">{t(`errors.${error}`)}</p>
-                        </div>
-                    )}
-
-                    {showBleModeHint && (
-                        <div className="flex items-start gap-2 p-3 bg-muted rounded-xl">
-                            <Info className="size-4 text-muted-foreground shrink-0 mt-0.5" />
-                            <p className="text-sm text-muted-foreground">{t("bleModeHint")}</p>
-                        </div>
-                    )}
-
-                    {codeMismatch && (
-                        <div className="flex items-start gap-2 p-3 bg-destructive/10 border border-destructive/20 rounded-xl">
-                            <BluetoothOff className="size-4 text-destructive shrink-0 mt-0.5" />
-                            <p className="text-sm text-destructive">{t("wrongScanner")}</p>
-                        </div>
-                    )}
-
-                    {!connecting && !scanning && !codeMismatch && !error && (
-                        <p className="text-sm text-muted-foreground">{t("hint")}</p>
-                    )}
-
-                    {connecting && (
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <Loader2 className="size-4 animate-spin" />
-                            {t("connecting")}
-                        </div>
-                    )}
-
-                    {!connecting && (
-                        <button
-                            onClick={onScan}
-                            disabled={scanning || connecting}
-                            className="flex items-center justify-center gap-2 px-4 py-2 rounded-4xl bg-primary text-primary-foreground text-sm disabled:opacity-50"
-                        >
-                            {scanning ? (
-                                <Loader2 className="size-4 animate-spin" />
-                            ) : (
-                                <Bluetooth className="size-4" />
-                            )}
-                            {scanning ? t("scanning") : t("scanBtn")}
-                        </button>
-                    )}
-
-                    {scanning && devices.length === 0 && (
-                        <p className="text-sm text-muted-foreground text-center py-2">
-                            {t("scanning")}
-                        </p>
-                    )}
-
-                    {devices.length > 0 && !connecting && (
-                        <ul className="flex flex-col gap-2">
-                            {devices.map((d) => (
-                                <li key={d.deviceId}>
-                                    <button
-                                        onClick={() => onConnect(d.deviceId)}
-                                        className="w-full flex items-center justify-between p-3 border rounded-2xl hover:bg-muted/50 active:bg-muted transition-colors"
-                                    >
-                                        <div className="flex items-center gap-2">
-                                            <Bluetooth className="size-4 text-primary" />
-                                            <span className="text-sm font-medium">{d.name}</span>
-                                        </div>
-                                        <span className="text-xs text-muted-foreground">
-                                            {d.rssi} dBm
-                                        </span>
-                                    </button>
-                                </li>
-                            ))}
-                        </ul>
-                    )}
-                </div>
+                <ScanConnectPanel
+                    error={error}
+                    showBleModeHint={showBleModeHint}
+                    codeMismatch={codeMismatch}
+                    connecting={connecting}
+                    scanning={scanning}
+                    devices={devices}
+                    onScan={onScan}
+                    onConnect={onConnect}
+                />
             )}
 
             {codeMatches && (

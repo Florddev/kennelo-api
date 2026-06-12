@@ -35,5 +35,6 @@
         "activity": "Activity",
         "messages": "Messages"
     },
-    "overview": "Overview"
+    "overview": "Overview",
+    "scanners": "My scanners"
 }

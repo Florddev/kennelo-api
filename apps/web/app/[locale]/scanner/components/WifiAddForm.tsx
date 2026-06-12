@@ -27,6 +27,7 @@ export function WifiAddForm({
     const [showPassword, setShowPassword] = useState(false);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const inputClass = inputClass;
 
     const save = useCallback(async () => {
         if (!ssid.trim()) return;
@@ -66,7 +67,7 @@ export function WifiAddForm({
                     placeholder={t("ssidPlaceholder")}
                     className={cn(
                         "w-full px-3 py-2 text-sm border rounded-xl bg-background",
-                        "focus:outline-none focus:ring-2 focus:ring-primary/50",
+                        inputClass,
                     )}
                 />
             </div>
@@ -81,7 +82,7 @@ export function WifiAddForm({
                         placeholder={t("passwordPlaceholder")}
                         className={cn(
                             "flex-1 px-3 py-2 text-sm border rounded-xl bg-background",
-                            "focus:outline-none focus:ring-2 focus:ring-primary/50",
+                            inputClass,
                         )}
                     />
                     <button
@@ -101,7 +102,7 @@ export function WifiAddForm({
                     onChange={(e) => setPriority(Number(e.target.value))}
                     className={cn(
                         "w-full px-3 py-2 text-sm border rounded-xl bg-background",
-                        "focus:outline-none focus:ring-2 focus:ring-primary/50",
+                        inputClass,
                     )}
                 >
                     {[1, 2, 3, 4, 5].map((p) => (

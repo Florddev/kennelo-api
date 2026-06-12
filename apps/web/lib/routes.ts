@@ -232,6 +232,11 @@ type MyProfilePreferencesNotificationParams = {
     search_params?: Record<string, string | number | boolean>;
 };
 
+type SettingsScannersParams = {
+    locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
 type ScannerConfigPageParams = {
     locale?: string | number;
     search_params?: Record<string, string | number | boolean>;
@@ -405,6 +410,10 @@ function MyProfilePreferencesNotification(params?: MyProfilePreferencesNotificat
     return buildRoute("/[locale]/settings/preferences-notification", params);
 }
 
+function SettingsScanners(params?: SettingsScannersParams): string {
+    return buildRoute("/[locale]/settings/scanners", params);
+}
+
 function ScannerConfigPage(params?: ScannerConfigPageParams): string {
     return buildRoute("/[locale]/scanner", params);
 }
@@ -452,6 +461,7 @@ export const routes = {
     PaymentMethodsPage,
     MyProfileEmailPreferences,
     MyProfilePreferencesNotification,
+    SettingsScanners,
     ScannerConfigPage,
 } as const;
 
