@@ -97,12 +97,14 @@ export function HostCard({
 
     if (variant === "horizontal") {
         return (
-            <button
+            <div
                 data-slot="host-card-horizontal"
-                type="button"
+                role="button"
+                tabIndex={0}
                 onClick={handleClick}
+                onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && handleClick()}
                 className={cn(
-                    "group flex w-full items-stretch gap-3 rounded-[1.75rem] text-start",
+                    "group flex w-full cursor-pointer items-stretch gap-3 rounded-[1.75rem] text-start",
                     highlighted
                         ? "border-secondary/30 bg-secondary/5 shadow-[0_20px_40px_-30px_hsl(var(--secondary))]"
                         : "border-border/60 bg-card hover:border-border/90",
@@ -143,7 +145,7 @@ export function HostCard({
                         </div>
                     </div>
                 </div>
-            </button>
+            </div>
         );
     }
 
