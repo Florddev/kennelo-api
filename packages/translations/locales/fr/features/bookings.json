@@ -43,7 +43,8 @@
             "pending": "En attente",
             "refunded": "Remboursé",
             "failed": "Échoué",
-            "no_payment_required": "Aucun paiement requis"
+            "no_payment_required": "Aucun paiement requis",
+            "succeeded": "Finalisé"
         },
         "viewInvoice": "Voir le reçu / Facture",
         "tabDetails": "Détails",
