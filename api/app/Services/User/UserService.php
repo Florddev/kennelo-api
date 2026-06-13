@@ -6,12 +6,15 @@ namespace App\Services\User;
 
 use App\Enums\BookingStatusEnum;
 use App\Enums\IdentityVerificationStatusEnum;
+use App\Enums\NotificationTypeEnum;
 use App\Enums\PaginationEnum;
 use App\Models\Address;
 use App\Models\Booking;
 use App\Models\IdentityVerification;
 use App\Models\User;
 use App\Services\MediaService;
+use App\Services\Notification\NotificationRecipientResolver;
+use App\Services\Notification\NotificationService;
 use App\Services\User\Exceptions\InvalidCurrentPasswordException;
 use App\Services\User\Exceptions\UserHasActiveBookingsException;
 use Illuminate\Http\UploadedFile;
@@ -22,6 +25,11 @@ use Illuminate\Support\Facades\Hash;
 
 class UserService
 {
+    public function __construct(
+        private NotificationService $notifications,
+        private NotificationRecipientResolver $recipients
+    ) {}
+
     public function getAllPaginated(array $filters = []): LengthAwarePaginator
     {
         $perPage = $filters['per_page'] ?? PaginationEnum::DEFAULT_PAGINATION->value();
@@ -135,6 +143,12 @@ class UserService
     {
         $user->update(['status' => $data['status']]);
 
+        $this->notifications->notify(
+            $user,
+            NotificationTypeEnum::ACCOUNT_STATUS_CHANGED,
+            ['status' => $data['status']],
+        );
+
         return $user->fresh(['roles']);
     }
 
@@ -163,11 +177,22 @@ class UserService
     {
         $path = $document->store('identity-verifications', 'private');
 
-        return IdentityVerification::create([
+        $verification = IdentityVerification::create([
             'user_id' => $user->id,
             'document_url' => $path,
             'status' => IdentityVerificationStatusEnum::PENDING,
         ]);
+
+        $this->notifications->notify(
+            $this->recipients->admins(),
+            NotificationTypeEnum::IDENTITY_SUBMITTED,
+            [
+                'verification_id' => $verification->id,
+                'user_id' => $user->id,
+            ],
+        );
+
+        return $verification;
     }
 
     public function reviewIdentityVerification(User $user, User $reviewer, array $data): User
@@ -190,6 +215,16 @@ class UserService
                 $user->update(['is_id_verified' => true]);
             }
         });
+
+        $type = $status === IdentityVerificationStatusEnum::APPROVED->value
+            ? NotificationTypeEnum::IDENTITY_APPROVED
+            : NotificationTypeEnum::IDENTITY_REJECTED;
+
+        $this->notifications->notify(
+            $user,
+            $type,
+            ['verification_id' => $verification->id],
+        );
 
         return $user->fresh(['roles']);
     }
