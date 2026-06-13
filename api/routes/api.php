@@ -15,6 +15,7 @@ use App\Http\Controllers\Conversation\ConversationController;
 use App\Http\Controllers\Conversation\MessageController;
 use App\Http\Controllers\Explore\ExploreController;
 use App\Http\Controllers\Favorite\FavoriteController;
+use App\Http\Controllers\Notification\NotificationController;
 use App\Http\Controllers\PaymentMethod\PaymentMethodController;
 use App\Http\Controllers\Pet\AnimalTypeController;
 use App\Http\Controllers\Pet\PetAttributeController;
@@ -97,6 +98,13 @@ Route::middleware(['auth.jwt'])->group(function () {
     Route::get('/favorites', [FavoriteController::class, 'index']);
     Route::post('/favorites', [FavoriteController::class, 'store']);
     Route::delete('/favorites/{activity}', [FavoriteController::class, 'destroy']);
+
+    // Notifications
+    Route::get('/notifications', [NotificationController::class, 'index']);
+    Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
+    Route::put('/notifications/read-all', [NotificationController::class, 'markAllAsRead']);
+    Route::put('/notifications/{notification}/read', [NotificationController::class, 'markAsRead']);
+    Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy']);
 
     // Users (admin)
     Route::apiResource('users', UserController::class)->only(['index', 'show', 'update']);
