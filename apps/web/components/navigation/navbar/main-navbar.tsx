@@ -10,6 +10,7 @@ import Image from "next/image";
 import NavButton from "../nav-button";
 import UserMenu from "../user-menu";
 import { useNavigation } from "@/hooks/use-navigation";
+import { NotificationBell } from "@/features/notifications";
 
 export function MainNavbar({
     navigationItems,
@@ -95,6 +96,7 @@ export function MainNavbar({
                                         {item.text}
                                     </NavItem>
                                 ))}
+                                <NotificationBell />
                                 <UserMenu
                                     user={user ?? undefined}
                                     hasActivity={hasActivity}
