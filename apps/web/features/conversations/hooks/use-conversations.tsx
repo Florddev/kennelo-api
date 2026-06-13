@@ -314,7 +314,9 @@ export function ConversationsProvider({ children }: { children: ReactNode }) {
             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.allLists });
         });
 
-        return () => echoClient.leave(`user.${user.id}`);
+        return () => {
+            channel.stopListening(".new.message");
+        };
     }, [user, queryClient]);
 
     const isSending = pendingMessages.some((m) => m.status === "pending");

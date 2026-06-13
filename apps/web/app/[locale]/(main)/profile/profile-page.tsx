@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import {
     Bell,
     Logout2,
@@ -35,6 +35,7 @@ export default function ProfilePage() {
     const { user, logout } = useAuth();
     const { routes } = useNavigation();
     const isMobile = useIsMobile();
+    const locale = useLocale();
 
     const createdAtDate = user ? new Date(user.createdAt) : null;
     const isValidDate = createdAtDate !== null && !isNaN(createdAtDate.getTime());
@@ -149,6 +150,12 @@ export default function ProfilePage() {
                     <div className={cn("flex flex-col gap-2 mb-8", !isManager && "mb-0")}>
                         <Card className="p-0 ring-0">
                             <CardContent className="p-0">
+                                <NavRow
+                                    icon={Bell}
+                                    label={t("ui.navigation.notifications")}
+                                    href={`/${locale}/notifications`}
+                                    displayArrow
+                                />
                                 <NavRow
                                     icon={Settings}
                                     label={t("ui.navigation.profileSettings")}

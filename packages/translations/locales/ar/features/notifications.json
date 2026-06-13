@@ -1,0 +1,75 @@
+{
+    "title": "الإشعارات",
+    "markAllAsRead": "تعليم الكل كمقروء",
+    "empty": "ليس لديك أي إشعارات",
+    "loadMore": "تحميل المزيد",
+    "delete": "حذف الإشعار",
+    "generic": {
+        "title": "إشعار جديد"
+    },
+    "booking_created": {
+        "title": "طلب حجز جديد",
+        "body": "حجز جديد لـ {activity}"
+    },
+    "booking_confirmed": {
+        "title": "تم تأكيد الحجز",
+        "body": "تم تأكيد حجزك لـ {activity}"
+    },
+    "booking_rejected": {
+        "title": "تم رفض الحجز",
+        "body": "تم رفض حجزك لـ {activity}"
+    },
+    "booking_completed": {
+        "title": "انتهت الإقامة",
+        "body": "انتهت إقامتك في {activity}"
+    },
+    "booking_cancelled_by_client": {
+        "title": "تم إلغاء الحجز",
+        "body": "تم إلغاء حجز لـ {activity}"
+    },
+    "payment_succeeded": {
+        "title": "تم استلام الدفعة"
+    },
+    "payment_failed": {
+        "title": "فشل الدفع"
+    },
+    "payment_processing": {
+        "title": "جارٍ معالجة الدفع"
+    },
+    "payment_refunded": {
+        "title": "تم رد المبلغ"
+    },
+    "stripe_account_activated": {
+        "title": "حساب الدفع الخاص بك مفعّل"
+    },
+    "new_message": {
+        "title": "رسالة جديدة"
+    },
+    "review_received": {
+        "title": "تم استلام تقييم جديد"
+    },
+    "review_published": {
+        "title": "تم نشر تقييمك"
+    },
+    "review_response": {
+        "title": "رد جديد على تقييمك"
+    },
+    "review_reported": {
+        "title": "تم الإبلاغ عن تقييم"
+    },
+    "review_report_resolved": {
+        "title": "تمت معالجة بلاغ التقييم"
+    },
+    "identity_submitted": {
+        "title": "تم إرسال التحقق من الهوية"
+    },
+    "identity_approved": {
+        "title": "تم التحقق من الهوية"
+    },
+    "identity_rejected": {
+        "title": "تم رفض التحقق من الهوية"
+    },
+    "account_status_changed": {
+        "title": "تغيّرت حالة حسابك"
+    }
+}
