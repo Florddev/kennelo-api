@@ -59,7 +59,7 @@ class NotificationService
             $notification->update(['read_at' => now()]);
         }
 
-        return $notification->fresh();
+        return $notification;
     }
 
     public function markAllAsRead(User $user): int

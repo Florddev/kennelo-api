@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Enums\ActivityPermissionEnum;
 use App\Enums\BookingStatusEnum;
 use App\Enums\NotificationTypeEnum;
 use App\Events\NotificationCreated;
@@ -13,6 +14,7 @@ use App\Notifications\AppNotification;
 use App\Notifications\Channels\UserDatabaseChannel;
 use App\Services\Booking\BookingService;
 use App\Services\Favorite\FavoriteService;
+use App\Services\Notification\NotificationRecipientResolver;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Notification as NotificationFacade;
 
@@ -92,4 +94,68 @@ it('sends tier3 notifications when the feature is enabled', function () {
     app(FavoriteService::class)->add($user, $activity);
 
     NotificationFacade::assertSentTo($manager, AppNotification::class);
+});
+
+it('classifies every favorite, activity and pet type as tier3', function () {
+    $tierThreePrefixes = ['favorite_', 'activity_', 'pet_'];
+
+    foreach (NotificationTypeEnum::cases() as $type) {
+        $isPrefixed = collect($tierThreePrefixes)->contains(fn (string $prefix): bool => str_starts_with($type->value, $prefix));
+
+        if ($isPrefixed) {
+            expect($type->isTierThree())->toBeTrue("{$type->value} should be tier3");
+        }
+    }
+});
+
+// ─── recipient resolution ─────────────────────────────────────────────────────
+
+it('resolves collaborators holding the permission as activity recipients', function () {
+    $manager = User::factory()->create();
+    $collaborator = User::factory()->create();
+    $outsider = User::factory()->create();
+    $activity = Activity::factory()->create(['manager_id' => $manager->id]);
+
+    $activity->collaborators()->attach($collaborator->id);
+    $activity->collaboratorPermissions()->create([
+        'user_id' => $collaborator->id,
+        'permission' => ActivityPermissionEnum::MANAGE_BOOKINGS->value,
+    ]);
+
+    $recipients = app(NotificationRecipientResolver::class)
+        ->forActivity($activity, ActivityPermissionEnum::MANAGE_BOOKINGS)
+        ->pluck('id')
+        ->all();
+
+    expect($recipients)->toContain($manager->id);
+    expect($recipients)->toContain($collaborator->id);
+    expect($recipients)->not->toContain($outsider->id);
+});
+
+it('notifies the manager and the MANAGE_BOOKINGS collaborator when a booking is created', function () {
+    NotificationFacade::fake();
+
+    $client = User::factory()->create();
+    $manager = User::factory()->create();
+    $collaborator = User::factory()->create();
+    $activity = Activity::factory()->create(['manager_id' => $manager->id]);
+
+    $activity->collaborators()->attach($collaborator->id);
+    $activity->collaboratorPermissions()->create([
+        'user_id' => $collaborator->id,
+        'permission' => ActivityPermissionEnum::MANAGE_BOOKINGS->value,
+    ]);
+
+    $booking = Booking::factory()->create([
+        'user_id' => $client->id,
+        'activity_id' => $activity->id,
+        'status' => BookingStatusEnum::PENDING,
+    ]);
+
+    app(NotificationRecipientResolver::class)
+        ->forActivity($activity, ActivityPermissionEnum::MANAGE_BOOKINGS)
+        ->each(fn (User $recipient) => NotificationFacade::send($recipient, new AppNotification(NotificationTypeEnum::BOOKING_CREATED, ['booking_id' => $booking->id])));
+
+    NotificationFacade::assertSentTo($manager, AppNotification::class);
+    NotificationFacade::assertSentTo($collaborator, AppNotification::class);
 });

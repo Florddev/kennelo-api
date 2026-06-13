@@ -293,17 +293,7 @@ class BookingService
 
         $this->sendBookingReferenceIfConversationExists($booking, $actor, $message);
 
-        $booking->loadMissing('user', 'activity');
-
-        $this->notifications->notify(
-            $booking->user,
-            NotificationTypeEnum::BOOKING_CONFIRMED,
-            [
-                'booking_id' => $booking->id,
-                'activity_id' => $booking->activity_id,
-                'activity_name' => $booking->activity?->name,
-            ],
-        );
+        $this->notifyBookingUser($booking, NotificationTypeEnum::BOOKING_CONFIRMED);
 
         return $booking->fresh();
     }
@@ -314,17 +304,7 @@ class BookingService
 
         $booking->update(['status' => BookingStatusEnum::COMPLETED]);
 
-        $booking->loadMissing('user', 'activity');
-
-        $this->notifications->notify(
-            $booking->user,
-            NotificationTypeEnum::BOOKING_COMPLETED,
-            [
-                'booking_id' => $booking->id,
-                'activity_id' => $booking->activity_id,
-                'activity_name' => $booking->activity?->name,
-            ],
-        );
+        $this->notifyBookingUser($booking, NotificationTypeEnum::BOOKING_COMPLETED);
 
         return $booking->fresh();
     }
@@ -358,19 +338,28 @@ class BookingService
 
         $this->sendBookingReferenceIfConversationExists($booking, $actor, $message);
 
+        $this->notifyBookingUser($booking, NotificationTypeEnum::BOOKING_REJECTED);
+
+        return $booking->fresh();
+    }
+
+    private function notifyBookingUser(Booking $booking, NotificationTypeEnum $type): void
+    {
         $booking->loadMissing('user', 'activity');
+
+        if ($booking->user === null) {
+            return;
+        }
 
         $this->notifications->notify(
             $booking->user,
-            NotificationTypeEnum::BOOKING_REJECTED,
+            $type,
             [
                 'booking_id' => $booking->id,
                 'activity_id' => $booking->activity_id,
                 'activity_name' => $booking->activity?->name,
             ],
         );
-
-        return $booking->fresh();
     }
 
     private function resolveCapacities(Activity $activity, Carbon $checkIn): Collection

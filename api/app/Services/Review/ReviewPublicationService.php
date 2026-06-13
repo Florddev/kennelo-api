@@ -24,6 +24,7 @@ class ReviewPublicationService
         $threshold = now()->subDays(self::PUBLICATION_DELAY_DAYS);
 
         $matured = Review::query()
+            ->with('reviewer')
             ->where('is_published', false)
             ->where('created_at', '<=', $threshold)
             ->get();
@@ -32,10 +33,12 @@ class ReviewPublicationService
             return 0;
         }
 
-        Review::whereIn('id', $matured->pluck('id')->all())->update([
-            'is_published' => true,
-            'published_at' => now(),
-        ]);
+        Review::whereIn('id', $matured->pluck('id')->all())
+            ->where('is_published', false)
+            ->update([
+                'is_published' => true,
+                'published_at' => now(),
+            ]);
 
         $this->notifyPublished($matured);
 
@@ -44,7 +47,7 @@ class ReviewPublicationService
 
     public function maybePublishCounterpart(Booking $booking): void
     {
-        $reviews = Review::query()->where('booking_id', $booking->id)->get();
+        $reviews = Review::query()->with('reviewer')->where('booking_id', $booking->id)->get();
 
         if ($reviews->count() < 2) {
             return;
@@ -74,8 +77,6 @@ class ReviewPublicationService
     private function notifyPublished(Collection $reviews): void
     {
         foreach ($reviews as $review) {
-            $review->loadMissing('reviewer');
-
             if ($review->reviewer === null) {
                 continue;
             }
