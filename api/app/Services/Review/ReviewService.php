@@ -6,6 +6,7 @@ namespace App\Services\Review;
 
 use App\Enums\ActivityPermissionEnum;
 use App\Enums\BookingStatusEnum;
+use App\Enums\NotificationTypeEnum;
 use App\Enums\PaginationEnum;
 use App\Enums\ReviewerTypeEnum;
 use App\Models\Activity;
@@ -14,6 +15,7 @@ use App\Models\Pet;
 use App\Models\Review;
 use App\Models\ReviewCriteriaDefinition;
 use App\Models\User;
+use App\Services\Notification\NotificationService;
 use Illuminate\Database\QueryException;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -23,6 +25,7 @@ class ReviewService
 {
     public function __construct(
         private ReviewPublicationService $publicationService,
+        private NotificationService $notifications,
     ) {}
 
     public function create(User $actor, Booking $booking, array $data): Review
@@ -78,7 +81,34 @@ class ReviewService
 
         $this->publicationService->maybePublishCounterpart($booking);
 
+        $recipient = $this->resolveReviewRecipient($booking, $reviewerType);
+
+        if ($recipient !== null) {
+            $this->notifications->notify(
+                $recipient,
+                NotificationTypeEnum::REVIEW_RECEIVED,
+                [
+                    'review_id' => $review->id,
+                    'booking_id' => $booking->id,
+                    'reviewer_type' => $reviewerType->value,
+                ],
+            );
+        }
+
         return $review->fresh(['criteriaScores', 'reviewer']);
+    }
+
+    private function resolveReviewRecipient(Booking $booking, ReviewerTypeEnum $reviewerType): ?User
+    {
+        if ($reviewerType === ReviewerTypeEnum::USER) {
+            $booking->loadMissing('activity.manager');
+
+            return $booking->activity?->manager;
+        }
+
+        $booking->loadMissing('user');
+
+        return $booking->user;
     }
 
     public function show(Review $review): Review
