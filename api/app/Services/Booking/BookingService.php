@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Services\Booking;
 
+use App\Enums\ActivityPermissionEnum;
 use App\Enums\AvailabilityStatusEnum;
 use App\Enums\BookingStatusEnum;
+use App\Enums\NotificationTypeEnum;
 use App\Enums\PaymentStatusEnum;
 use App\Models\Activity;
 use App\Models\Booking;
@@ -16,6 +18,8 @@ use App\Models\Service;
 use App\Models\User;
 use App\Services\Activity\ActivityCycleService;
 use App\Services\Conversation\ConversationService;
+use App\Services\Notification\NotificationRecipientResolver;
+use App\Services\Notification\NotificationService;
 use App\Services\Stripe\StripeCustomerService;
 use Carbon\Carbon;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -33,7 +37,9 @@ class BookingService
         private ConversationService $conversationService,
         private StripeClient $stripe,
         private StripeCustomerService $customerService,
-        private ActivityCycleService $cycleService
+        private ActivityCycleService $cycleService,
+        private NotificationService $notifications,
+        private NotificationRecipientResolver $recipients
     ) {}
 
     public function getUserBookings(User $user, array $filters = []): LengthAwarePaginator
@@ -131,6 +137,19 @@ class BookingService
         $booking->setAttribute('client_secret', $pi->client_secret);
 
         $this->conversationService->getOrCreateForBooking($user, $booking);
+
+        $this->notifications->notify(
+            $this->recipients->forActivity($activity, ActivityPermissionEnum::MANAGE_BOOKINGS),
+            NotificationTypeEnum::BOOKING_CREATED,
+            [
+                'booking_id' => $booking->id,
+                'activity_id' => $activity->id,
+                'activity_name' => $activity->name,
+                'user_id' => $user->id,
+                'check_in_date' => $booking->check_in_date->toDateString(),
+                'check_out_date' => $booking->check_out_date->toDateString(),
+            ],
+        );
 
         return $booking->load([
             'activity.address',
@@ -234,6 +253,20 @@ class BookingService
 
         $booking->update(['status' => BookingStatusEnum::CANCELLED]);
 
+        $booking->loadMissing('activity');
+
+        if ($booking->activity !== null) {
+            $this->notifications->notify(
+                $this->recipients->forActivity($booking->activity, ActivityPermissionEnum::MANAGE_BOOKINGS),
+                NotificationTypeEnum::BOOKING_CANCELLED_BY_CLIENT,
+                [
+                    'booking_id' => $booking->id,
+                    'activity_id' => $booking->activity_id,
+                    'user_id' => $booking->user_id,
+                ],
+            );
+        }
+
         return $booking->fresh();
     }
 
@@ -260,6 +293,8 @@ class BookingService
 
         $this->sendBookingReferenceIfConversationExists($booking, $actor, $message);
 
+        $this->notifyBookingUser($booking, NotificationTypeEnum::BOOKING_CONFIRMED);
+
         return $booking->fresh();
     }
 
@@ -268,6 +303,8 @@ class BookingService
         $this->assertStatus($booking, [BookingStatusEnum::CONFIRMED, BookingStatusEnum::IN_PROGRESS], 'complete');
 
         $booking->update(['status' => BookingStatusEnum::COMPLETED]);
+
+        $this->notifyBookingUser($booking, NotificationTypeEnum::BOOKING_COMPLETED);
 
         return $booking->fresh();
     }
@@ -301,7 +338,28 @@ class BookingService
 
         $this->sendBookingReferenceIfConversationExists($booking, $actor, $message);
 
+        $this->notifyBookingUser($booking, NotificationTypeEnum::BOOKING_REJECTED);
+
         return $booking->fresh();
+    }
+
+    private function notifyBookingUser(Booking $booking, NotificationTypeEnum $type): void
+    {
+        $booking->loadMissing('user', 'activity');
+
+        if ($booking->user === null) {
+            return;
+        }
+
+        $this->notifications->notify(
+            $booking->user,
+            $type,
+            [
+                'booking_id' => $booking->id,
+                'activity_id' => $booking->activity_id,
+                'activity_name' => $booking->activity?->name,
+            ],
+        );
     }
 
     private function resolveCapacities(Activity $activity, Carbon $checkIn): Collection

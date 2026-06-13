@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property BookingStatusEnum $status
  * @property PaymentStatusEnum $payment_status
  * @property-read Activity|null $activity
+ * @property-read User|null $user
  * @property-read Collection<int, Pet> $pets
  * @property-read Collection<int, Service> $services
  */

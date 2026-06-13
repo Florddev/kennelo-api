@@ -5,15 +5,21 @@ declare(strict_types=1);
 namespace App\Services\Review;
 
 use App\Enums\ActivityPermissionEnum;
+use App\Enums\NotificationTypeEnum;
 use App\Enums\ReviewerTypeEnum;
 use App\Models\Review;
 use App\Models\ReviewResponse;
 use App\Models\User;
+use App\Services\Notification\NotificationService;
 use Illuminate\Database\QueryException;
 use Illuminate\Validation\ValidationException;
 
 class ReviewResponseService
 {
+    public function __construct(
+        private NotificationService $notifications
+    ) {}
+
     public function create(User $actor, Review $review, array $data): ReviewResponse
     {
         if ($review->response()->exists()) {
@@ -29,7 +35,7 @@ class ReviewResponseService
         }
 
         try {
-            return ReviewResponse::create([
+            $response = ReviewResponse::create([
                 'review_id' => $review->id,
                 'responder_id' => $actor->id,
                 'response' => $data['response'],
@@ -42,6 +48,21 @@ class ReviewResponseService
             }
             throw $e;
         }
+
+        $review->loadMissing('reviewer');
+
+        if ($review->reviewer !== null) {
+            $this->notifications->notify(
+                $review->reviewer,
+                NotificationTypeEnum::REVIEW_RESPONSE,
+                [
+                    'review_id' => $review->id,
+                    'response_id' => $response->id,
+                ],
+            );
+        }
+
+        return $response;
     }
 
     public function canRespond(User $actor, Review $review): bool
