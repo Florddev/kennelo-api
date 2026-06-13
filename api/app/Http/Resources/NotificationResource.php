@@ -18,8 +18,8 @@ class NotificationResource extends JsonResource
             'type' => $this->type->value,
             'data' => $this->data,
             'is_read' => $this->read_at !== null,
-            'read_at' => $this->read_at ? human_date($this->read_at) : null,
-            'created_at' => human_date($this->created_at),
+            'read_at' => $this->read_at?->toISOString(),
+            'created_at' => $this->created_at?->toISOString(),
         ];
     }
 }
