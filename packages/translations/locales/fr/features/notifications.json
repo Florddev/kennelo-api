@@ -71,5 +71,17 @@
     },
     "account_status_changed": {
         "title": "Le statut de votre compte a changé"
+    },
+    "collaborator_invited": {
+        "title": "Invitation à collaborer",
+        "body": "Vous avez été invité à collaborer sur {activity}"
+    },
+    "collaborator_accepted": {
+        "title": "Invitation acceptée",
+        "body": "Votre invitation à collaborer sur {activity} a été acceptée"
+    },
+    "collaborator_declined": {
+        "title": "Invitation refusée",
+        "body": "Votre invitation à collaborer sur {activity} a été refusée"
     }
 }
