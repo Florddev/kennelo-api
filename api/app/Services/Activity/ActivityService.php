@@ -34,7 +34,10 @@ class ActivityService
 
         return Activity::with(['address', 'manager', 'collaborators'])
             ->withIsFavorited($user)
-            ->where('manager_id', $user->id)
+            ->where(function ($query) use ($user): void {
+                $query->where('manager_id', $user->id)
+                    ->orWhereHas('collaborators', fn ($q) => $q->where('users.id', $user->id));
+            })
             ->when(isset($filters['search']), fn ($q) => $q->where('name', 'like', "%{$filters['search']}%"))
             ->when(isset($filters['sort_by']), fn ($q) => $q->orderBy($filters['sort_by'], $filters['sort_dir'] ?? 'asc'))
             ->latest()

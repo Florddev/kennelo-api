@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Enums\ActivityPermissionEnum;
+use App\Enums\CollaboratorStatusEnum;
 use App\Models\Activity;
 use App\Models\User;
 
@@ -21,6 +22,31 @@ it('authenticated user can list activities', function () {
 it('unauthenticated user cannot list activities', function () {
     $this->getJson('/api/activities')
         ->assertUnauthorized();
+});
+
+it('accepted collaborator sees the collaborated activity in their activities list', function () {
+    $manager = User::factory()->create();
+    $activity = Activity::factory()->create(['manager_id' => $manager->id]);
+    $collaborator = User::factory()->create();
+    attachCollaborator($activity, $collaborator);
+
+    $this->withHeaders(asUser($collaborator))
+        ->getJson('/api/activities')
+        ->assertOk()
+        ->assertJsonCount(1, 'data')
+        ->assertJsonPath('data.0.id', $activity->id);
+});
+
+it('pending collaborator does not see the activity in their activities list', function () {
+    $manager = User::factory()->create();
+    $activity = Activity::factory()->create(['manager_id' => $manager->id]);
+    $collaborator = User::factory()->create();
+    attachCollaborator($activity, $collaborator, [], CollaboratorStatusEnum::PENDING);
+
+    $this->withHeaders(asUser($collaborator))
+        ->getJson('/api/activities')
+        ->assertOk()
+        ->assertJsonCount(0, 'data');
 });
 
 // ─── show ─────────────────────────────────────────────────────────────────────
