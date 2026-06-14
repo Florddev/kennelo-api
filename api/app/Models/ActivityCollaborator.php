@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @property CollaboratorStatusEnum $status
+ * @property string|null $role_id
  */
 class ActivityCollaborator extends Model
 {

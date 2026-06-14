@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace App\Services\Notification;
 
 use App\Enums\ActivityPermissionEnum;
+use App\Enums\CollaboratorStatusEnum;
 use App\Models\Activity;
+use App\Models\ActivityCollaborator;
 use App\Models\Message;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection as SupportCollection;
 
 class NotificationRecipientResolver
 {
@@ -17,14 +20,8 @@ class NotificationRecipientResolver
      */
     public function forActivity(Activity $activity, ActivityPermissionEnum $permission): Collection
     {
-        $activity->loadMissing('collaboratorPermissions');
-
         $ids = collect([$activity->manager_id])
-            ->merge(
-                $activity->collaboratorPermissions
-                    ->where('permission', $permission->value)
-                    ->pluck('user_id')
-            )
+            ->merge($this->collaboratorIdsWithPermission($activity, $permission))
             ->filter()
             ->unique();
 
@@ -36,7 +33,7 @@ class NotificationRecipientResolver
      */
     public function forMessage(Message $message): Collection
     {
-        $message->loadMissing('conversation.activity.collaboratorPermissions');
+        $message->loadMissing('conversation.activity');
 
         $conversation = $message->conversation;
         $senderId = (string) $message->sender_id;
@@ -53,9 +50,7 @@ class NotificationRecipientResolver
                 $ids->push($activity->manager_id);
             }
 
-            $collaboratorIds = $activity->collaboratorPermissions
-                ->where('permission', ActivityPermissionEnum::MANAGE_MESSAGES->value)
-                ->pluck('user_id')
+            $collaboratorIds = $this->collaboratorIdsWithPermission($activity, ActivityPermissionEnum::MANAGE_MESSAGES)
                 ->reject(fn (string $id): bool => $id === $senderId);
 
             $ids = $ids->merge($collaboratorIds);
@@ -76,5 +71,18 @@ class NotificationRecipientResolver
     public function admins(): Collection
     {
         return User::role('admin')->get();
+    }
+
+    /**
+     * @return SupportCollection<int, string>
+     */
+    private function collaboratorIdsWithPermission(Activity $activity, ActivityPermissionEnum $permission): SupportCollection
+    {
+        return ActivityCollaborator::query()
+            ->where('activity_id', $activity->id)
+            ->where('status', CollaboratorStatusEnum::ACCEPTED->value)
+            ->whereNotNull('role_id')
+            ->whereHas('role.permissions', fn ($query) => $query->where('permission', $permission->value))
+            ->pluck('user_id');
     }
 }

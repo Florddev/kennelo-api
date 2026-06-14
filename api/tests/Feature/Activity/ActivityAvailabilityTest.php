@@ -36,7 +36,7 @@ it('collaborator can get the availability calendar without specific permission',
     $activity = Activity::factory()->create(['manager_id' => $manager->id]);
 
     $collaborator = User::factory()->create();
-    $activity->collaborators()->attach($collaborator->id);
+    attachCollaborator($activity, $collaborator);
 
     $this->withHeaders(asUser($collaborator))
         ->getJson("/api/activities/{$activity->id}/availabilities?month=2026-04")
@@ -156,11 +156,7 @@ it('collaborator with MANAGE_AVAILABILITIES can store availabilities', function 
     $activity = Activity::factory()->create(['manager_id' => $manager->id]);
 
     $collaborator = User::factory()->create();
-    $activity->collaborators()->attach($collaborator->id);
-    $activity->collaboratorPermissions()->create([
-        'user_id' => $collaborator->id,
-        'permission' => ActivityPermissionEnum::MANAGE_AVAILABILITIES->value,
-    ]);
+    attachCollaborator($activity, $collaborator, [ActivityPermissionEnum::MANAGE_AVAILABILITIES]);
 
     $this->withHeaders(asUser($collaborator))
         ->postJson("/api/activities/{$activity->id}/availabilities", [
@@ -176,7 +172,7 @@ it('collaborator without MANAGE_AVAILABILITIES cannot store availabilities', fun
     $activity = Activity::factory()->create(['manager_id' => $manager->id]);
 
     $collaborator = User::factory()->create();
-    $activity->collaborators()->attach($collaborator->id);
+    attachCollaborator($activity, $collaborator);
 
     $this->withHeaders(asUser($collaborator))
         ->postJson("/api/activities/{$activity->id}/availabilities", [

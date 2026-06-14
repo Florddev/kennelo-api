@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Enums\ActivityPermissionEnum;
 use App\Enums\ActivityTypeEnum;
+use App\Enums\CollaboratorStatusEnum;
 use App\Enums\ReviewerTypeEnum;
 use App\Services\MediaService;
 use Illuminate\Database\Eloquent\Builder;
@@ -92,7 +93,8 @@ class Activity extends Model implements HasMedia
 
     public function collaborators(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'activity_collaborators', 'activity_id', 'user_id');
+        return $this->belongsToMany(User::class, 'activity_collaborators', 'activity_id', 'user_id')
+            ->wherePivot('status', CollaboratorStatusEnum::ACCEPTED->value);
     }
 
     public function collaboratorPermissions(): HasMany
@@ -152,12 +154,18 @@ class Activity extends Model implements HasMedia
 
     public function collaboratorHasPermission(User $user, ActivityPermissionEnum $permission): bool
     {
-        if (! $this->collaborators()->where('users.id', $user->id)->exists()) {
+        $link = ActivityCollaborator::query()
+            ->where('activity_id', $this->id)
+            ->where('user_id', $user->id)
+            ->where('status', CollaboratorStatusEnum::ACCEPTED->value)
+            ->first();
+
+        if ($link === null || $link->role_id === null) {
             return false;
         }
 
-        return $this->collaboratorPermissions()
-            ->where('user_id', $user->id)
+        return ActivityRolePermission::query()
+            ->where('role_id', $link->role_id)
             ->where('permission', $permission->value)
             ->exists();
     }

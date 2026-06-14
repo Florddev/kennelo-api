@@ -80,7 +80,7 @@ class User extends Authenticatable implements HasMedia, JWTSubject, MustVerifyEm
     protected static function booted(): void
     {
         static::addGlobalScope('active', function (Builder $query): void {
-            $query->where('status', UserStatusEnum::ACTIVE);
+            $query->where('users.status', UserStatusEnum::ACTIVE);
         });
     }
 

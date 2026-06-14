@@ -115,11 +115,7 @@ it('collaborator with UPDATE_ACTIVITY can update', function () {
     $activity = Activity::factory()->create(['manager_id' => $manager->id]);
 
     $collaborator = User::factory()->create();
-    $activity->collaborators()->attach($collaborator->id);
-    $activity->collaboratorPermissions()->create([
-        'user_id' => $collaborator->id,
-        'permission' => ActivityPermissionEnum::UPDATE_ACTIVITY->value,
-    ]);
+    attachCollaborator($activity, $collaborator, [ActivityPermissionEnum::UPDATE_ACTIVITY]);
 
     $this->withHeaders(asUser($collaborator))
         ->putJson("/api/activities/{$activity->id}", ['name' => 'Modifié par collab'])
@@ -140,7 +136,7 @@ it('collaborator without UPDATE_ACTIVITY cannot update', function () {
     $activity = Activity::factory()->create(['manager_id' => $manager->id]);
 
     $collaborator = User::factory()->create();
-    $activity->collaborators()->attach($collaborator->id);
+    attachCollaborator($activity, $collaborator);
 
     $this->withHeaders(asUser($collaborator))
         ->putJson("/api/activities/{$activity->id}", ['name' => 'Hack'])
@@ -176,7 +172,7 @@ it('collaborator cannot delete an activity', function () {
     $activity = Activity::factory()->create(['manager_id' => $manager->id]);
 
     $collaborator = User::factory()->create();
-    $activity->collaborators()->attach($collaborator->id);
+    attachCollaborator($activity, $collaborator);
 
     $this->withHeaders(asUser($collaborator))
         ->deleteJson("/api/activities/{$activity->id}")
@@ -200,7 +196,7 @@ it('manager can sync permissions for a collaborator', function () {
     $activity = Activity::factory()->create(['manager_id' => $manager->id]);
 
     $collaborator = User::factory()->create();
-    $activity->collaborators()->attach($collaborator->id);
+    attachCollaborator($activity, $collaborator);
 
     $this->withHeaders(asUser($manager))
         ->putJson("/api/activities/{$activity->id}/collaborators/{$collaborator->id}/permissions", [
@@ -216,7 +212,7 @@ it('admin can sync permissions for a collaborator', function () {
     $activity = Activity::factory()->create(['manager_id' => $manager->id]);
 
     $collaborator = User::factory()->create();
-    $activity->collaborators()->attach($collaborator->id);
+    attachCollaborator($activity, $collaborator);
 
     $this->withHeaders(asUser($admin))
         ->putJson("/api/activities/{$activity->id}/collaborators/{$collaborator->id}/permissions", [
@@ -244,7 +240,7 @@ it('non-manager cannot sync collaborator permissions', function () {
     $activity = Activity::factory()->create(['manager_id' => $manager->id]);
 
     $collaborator = User::factory()->create();
-    $activity->collaborators()->attach($collaborator->id);
+    attachCollaborator($activity, $collaborator);
 
     $randomUser = User::factory()->create();
 
@@ -261,7 +257,7 @@ it('syncing with an invalid permission value returns 422', function () {
     $activity = Activity::factory()->create(['manager_id' => $manager->id]);
 
     $collaborator = User::factory()->create();
-    $activity->collaborators()->attach($collaborator->id);
+    attachCollaborator($activity, $collaborator);
 
     $this->withHeaders(asUser($manager))
         ->putJson("/api/activities/{$activity->id}/collaborators/{$collaborator->id}/permissions", [
