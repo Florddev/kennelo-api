@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@workspace/ui/components/tabs";
 
 import { useNavigation } from "@/hooks/use-navigation";
-import { ActivityCollaboratorsTable } from "@/features/activities/components/activity-collaborators-table";
+import { ActivityCollaboratorsManager } from "@/features/activities/components/activity-collaborators-manager";
 import { ActivityRolesPanel } from "@/features/activities/components/activity-roles-panel";
 
 export default function ActivityCollaboratorsPage() {
@@ -23,7 +23,7 @@ export default function ActivityCollaboratorsPage() {
                 </TabsTrigger>
             </TabsList>
             <TabsContent value="collaborators">
-                <ActivityCollaboratorsTable activityId={params.id} />
+                <ActivityCollaboratorsManager activityId={params.id} />
             </TabsContent>
             <TabsContent value="roles">
                 <ActivityRolesPanel activityId={params.id} />

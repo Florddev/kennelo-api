@@ -4,7 +4,7 @@
 
 export * from "./components/activity-availabilities-list";
 export * from "./components/activity-bookings-table";
-export * from "./components/activity-collaborators-table";
+export * from "./components/activity-collaborators-manager";
 export * from "./components/activity-cycles-grid";
 export * from "./components/activity-data-table";
 export * from "./components/activity-info-section";
@@ -14,6 +14,7 @@ export * from "./components/activity-select-card";
 export * from "./components/activity-sidebar-layout";
 export * from "./components/activity-species-avatars";
 export * from "./components/activity-summary-card";
+export * from "./components/assign-role-dialog";
 export * from "./components/availabilities-tab";
 export * from "./components/become-host-stepper";
 export * from "./components/cycle-card";
@@ -21,6 +22,7 @@ export * from "./components/cycle-settings-editor";
 export * from "./components/dashboard-tab";
 export * from "./components/embedded-connect-onboarding";
 export * from "./components/favorite-button";
+export * from "./components/invite-collaborator-dialog";
 export * from "./components/role-form-dialog";
 export * from "./components/stripe-connect-card";
 export * from "./components/weekday-selector";
