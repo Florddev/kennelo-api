@@ -3,11 +3,13 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Activity\ActivityAvailabilityController;
+use App\Http\Controllers\Activity\ActivityCollaboratorController;
 use App\Http\Controllers\Activity\ActivityController;
 use App\Http\Controllers\Activity\ActivityCycleController;
 use App\Http\Controllers\Activity\ActivityDashboardController;
 use App\Http\Controllers\Activity\ActivityImageController;
 use App\Http\Controllers\Activity\ActivityRoleController;
+use App\Http\Controllers\Activity\CollaboratorInvitationController;
 use App\Http\Controllers\Activity\StripeConnectController;
 use App\Http\Controllers\Booking\ActivityBookingController;
 use App\Http\Controllers\Booking\BookingController;
@@ -55,6 +57,13 @@ Route::middleware(['auth.jwt'])->group(function () {
     Route::post('/activities/{activity}/roles', [ActivityRoleController::class, 'store']);
     Route::put('/activities/{activity}/roles/{role}', [ActivityRoleController::class, 'update']);
     Route::delete('/activities/{activity}/roles/{role}', [ActivityRoleController::class, 'destroy']);
+    Route::get('/activities/{activity}/collaborators', [ActivityCollaboratorController::class, 'index']);
+    Route::post('/activities/{activity}/collaborators', [ActivityCollaboratorController::class, 'store']);
+    Route::put('/activities/{activity}/collaborators/accept', [CollaboratorInvitationController::class, 'accept']);
+    Route::put('/activities/{activity}/collaborators/decline', [CollaboratorInvitationController::class, 'decline']);
+    Route::put('/activities/{activity}/collaborators/{user}/role', [ActivityCollaboratorController::class, 'assignRole']);
+    Route::delete('/activities/{activity}/collaborators/{user}', [ActivityCollaboratorController::class, 'destroy']);
+    Route::get('/collaborator-invitations', [CollaboratorInvitationController::class, 'index']);
     Route::get('/activities/{activity}/dashboard', [ActivityDashboardController::class, 'show']);
     Route::get('/activities/{activity}/availabilities', [ActivityAvailabilityController::class, 'index']);
     Route::get('/activities/{activity}/availabilities/range', [ActivityAvailabilityController::class, 'range']);

@@ -8,6 +8,9 @@ use App\Enums\CollaboratorStatusEnum;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property CollaboratorStatusEnum $status
+ */
 class ActivityCollaborator extends Model
 {
     protected $table = 'activity_collaborators';
