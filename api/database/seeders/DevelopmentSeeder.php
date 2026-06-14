@@ -18,7 +18,6 @@ class DevelopmentSeeder extends Seeder
             ActivitySeeder::class,
             PetSeeder::class,
             ActivityCycleSeeder::class,
-            ActivityAvailabilitySeeder::class,
             BookingSeeder::class,
             ExploreSeeder::class,
             ConversationSeeder::class,

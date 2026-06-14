@@ -39,7 +39,9 @@ class ActivityCycleSeeder extends Seeder
                 ['start_date' => null, 'end_date' => null, 'is_active' => true],
             );
 
-            $animalTypes->each(function ($animalType) use ($cycle) {
+            $chosenTypes = $animalTypes->shuffle()->take(random_int(1, $animalTypes->count()));
+
+            $chosenTypes->each(function ($animalType) use ($cycle) {
                 $setting = ActivityCycleSetting::firstOrCreate(
                     [
                         'activity_cycle_id' => $cycle->id,
