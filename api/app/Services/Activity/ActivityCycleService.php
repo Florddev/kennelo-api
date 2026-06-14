@@ -26,17 +26,67 @@ class ActivityCycleService
     public function createCycle(Activity $activity, array $data): ActivityCycle
     {
         return DB::transaction(function () use ($activity, $data): ActivityCycle {
+            $startDate = $data['start_date'] ?? null;
+            $endDate = $data['end_date'] ?? null;
+
+            $priority = array_key_exists('priority', $data)
+                ? (int) $data['priority']
+                : $this->nextPriorityForRange($activity, $startDate, $endDate);
+
             $cycle = ActivityCycle::create([
                 'activity_id' => $activity->id,
-                'start_date' => $data['start_date'] ?? null,
-                'end_date' => $data['end_date'] ?? null,
-                'priority' => $data['priority'] ?? 0,
+                'start_date' => $startDate,
+                'end_date' => $endDate,
+                'priority' => $priority,
                 'is_active' => $data['is_active'] ?? true,
                 'color' => $data['color'] ?? null,
             ]);
 
             return $cycle->load(['settings.animalType', 'settings.prices', 'closedWeekDays']);
         });
+    }
+
+    public function reorder(Activity $activity, array $orderedIds): Collection
+    {
+        DB::transaction(function () use ($activity, $orderedIds): void {
+            $total = count($orderedIds);
+
+            foreach (array_values($orderedIds) as $index => $cycleId) {
+                ActivityCycle::where('activity_id', $activity->id)
+                    ->where('id', $cycleId)
+                    ->update(['priority' => $total - $index]);
+            }
+        });
+
+        return $this->list($activity);
+    }
+
+    private function nextPriorityForRange(Activity $activity, ?string $startDate, ?string $endDate): int
+    {
+        if ($startDate === null && $endDate === null) {
+            return 0;
+        }
+
+        $priorities = ActivityCycle::where('activity_id', $activity->id)
+            ->where(fn ($query) => $query->whereNotNull('start_date')->orWhereNotNull('end_date'))
+            ->get()
+            ->filter(fn (ActivityCycle $cycle): bool => $this->rangesOverlap(
+                $startDate,
+                $endDate,
+                $cycle->start_date?->toDateString(),
+                $cycle->end_date?->toDateString(),
+            ))
+            ->pluck('priority');
+
+        return $priorities->isEmpty() ? 1 : ((int) $priorities->max() + 1);
+    }
+
+    private function rangesOverlap(?string $aStart, ?string $aEnd, ?string $bStart, ?string $bEnd): bool
+    {
+        $startsBeforeOtherEnds = $aStart === null || $bEnd === null || $aStart <= $bEnd;
+        $endsAfterOtherStarts = $aEnd === null || $bStart === null || $aEnd >= $bStart;
+
+        return $startsBeforeOtherEnds && $endsAfterOtherStarts;
     }
 
     public function updateCycle(ActivityCycle $cycle, array $data): ActivityCycle

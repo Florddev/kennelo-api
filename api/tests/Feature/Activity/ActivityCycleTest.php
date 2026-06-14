@@ -239,3 +239,89 @@ it('rejects an invalid cycle color', function () {
         ->postJson("/api/activities/{$activity->id}/cycles", ['color' => 'blue'])
         ->assertUnprocessable();
 });
+
+// ─── priority ─────────────────────────────────────────────────────────────────
+
+it('assigns the highest priority to a new overlapping cycle', function () {
+    $manager = User::factory()->create();
+    $activity = Activity::factory()->create(['manager_id' => $manager->id]);
+
+    ActivityCycle::factory()->create([
+        'activity_id' => $activity->id,
+        'start_date' => '2026-07-01',
+        'end_date' => '2026-07-31',
+        'priority' => 3,
+    ]);
+
+    $this->withHeaders(asUser($manager))
+        ->postJson("/api/activities/{$activity->id}/cycles", [
+            'start_date' => '2026-07-15',
+            'end_date' => '2026-08-15',
+        ])
+        ->assertCreated()
+        ->assertJsonPath('data.priority', 4);
+});
+
+it('does not inherit priority from a non-overlapping cycle', function () {
+    $manager = User::factory()->create();
+    $activity = Activity::factory()->create(['manager_id' => $manager->id]);
+
+    ActivityCycle::factory()->create([
+        'activity_id' => $activity->id,
+        'start_date' => '2026-07-01',
+        'end_date' => '2026-07-31',
+        'priority' => 3,
+    ]);
+
+    $this->withHeaders(asUser($manager))
+        ->postJson("/api/activities/{$activity->id}/cycles", [
+            'start_date' => '2026-09-01',
+            'end_date' => '2026-09-30',
+        ])
+        ->assertCreated()
+        ->assertJsonPath('data.priority', 1);
+});
+
+it('manager can reorder cycles to set priorities', function () {
+    $manager = User::factory()->create();
+    $activity = Activity::factory()->create(['manager_id' => $manager->id]);
+
+    $first = ActivityCycle::factory()->create([
+        'activity_id' => $activity->id,
+        'start_date' => '2026-07-01',
+        'end_date' => '2026-07-31',
+        'priority' => 1,
+    ]);
+    $second = ActivityCycle::factory()->create([
+        'activity_id' => $activity->id,
+        'start_date' => '2026-07-10',
+        'end_date' => '2026-08-10',
+        'priority' => 2,
+    ]);
+
+    $this->withHeaders(asUser($manager))
+        ->putJson("/api/activities/{$activity->id}/cycles/reorder", [
+            'cycles' => [$first->id, $second->id],
+        ])
+        ->assertOk();
+
+    $this->assertDatabaseHas('activities_cycles', ['id' => $first->id, 'priority' => 2]);
+    $this->assertDatabaseHas('activities_cycles', ['id' => $second->id, 'priority' => 1]);
+});
+
+it('collaborator without MANAGE_CYCLES cannot reorder cycles', function () {
+    $manager = User::factory()->create();
+    $activity = Activity::factory()->create(['manager_id' => $manager->id]);
+    $cycle = ActivityCycle::factory()->create([
+        'activity_id' => $activity->id,
+        'start_date' => '2026-07-01',
+        'end_date' => '2026-07-31',
+    ]);
+
+    $collaborator = User::factory()->create();
+    attachCollaborator($activity, $collaborator);
+
+    $this->withHeaders(asUser($collaborator))
+        ->putJson("/api/activities/{$activity->id}/cycles/reorder", ['cycles' => [$cycle->id]])
+        ->assertForbidden();
+});
