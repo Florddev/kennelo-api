@@ -31,6 +31,10 @@ enum NotificationTypeEnum: string
     case IDENTITY_REJECTED = 'identity_rejected';
     case ACCOUNT_STATUS_CHANGED = 'account_status_changed';
 
+    case COLLABORATOR_INVITED = 'collaborator_invited';
+    case COLLABORATOR_ACCEPTED = 'collaborator_accepted';
+    case COLLABORATOR_DECLINED = 'collaborator_declined';
+
     case FAVORITE_ADDED = 'favorite_added';
     case ACTIVITY_CREATED = 'activity_created';
     case ACTIVITY_UPDATED = 'activity_updated';
