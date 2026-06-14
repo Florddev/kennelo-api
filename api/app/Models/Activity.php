@@ -97,11 +97,6 @@ class Activity extends Model implements HasMedia
             ->wherePivot('status', CollaboratorStatusEnum::ACCEPTED->value);
     }
 
-    public function collaboratorPermissions(): HasMany
-    {
-        return $this->hasMany(ActivityCollaboratorPermission::class);
-    }
-
     public function roles(): HasMany
     {
         return $this->hasMany(ActivityRole::class);

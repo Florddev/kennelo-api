@@ -52,7 +52,6 @@ Route::post('/webhooks/stripe', [StripeWebhookController::class, 'handle']);
 Route::middleware(['auth.jwt'])->group(function () {
     // Activities
     Route::apiResource('activities', ActivityController::class);
-    Route::put('/activities/{activity}/collaborators/{user}/permissions', [ActivityController::class, 'syncCollaboratorPermissions']);
     Route::get('/activities/{activity}/roles', [ActivityRoleController::class, 'index']);
     Route::post('/activities/{activity}/roles', [ActivityRoleController::class, 'store']);
     Route::put('/activities/{activity}/roles/{role}', [ActivityRoleController::class, 'update']);
