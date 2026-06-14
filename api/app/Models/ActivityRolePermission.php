@@ -9,13 +9,15 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class ActivityCollaboratorPermission extends Model
+/**
+ * @property ActivityPermissionEnum $permission
+ */
+class ActivityRolePermission extends Model
 {
     use HasUuids;
 
     protected $fillable = [
-        'activity_id',
-        'user_id',
+        'role_id',
         'permission',
     ];
 
@@ -26,13 +28,8 @@ class ActivityCollaboratorPermission extends Model
         ];
     }
 
-    public function activity(): BelongsTo
+    public function role(): BelongsTo
     {
-        return $this->belongsTo(Activity::class);
-    }
-
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(ActivityRole::class, 'role_id');
     }
 }

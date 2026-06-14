@@ -6,7 +6,6 @@ namespace App\Services\Activity;
 
 use App\Enums\PaginationEnum;
 use App\Models\Activity;
-use App\Models\ActivityCollaboratorPermission;
 use App\Models\Address;
 use App\Models\User;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -35,7 +34,10 @@ class ActivityService
 
         return Activity::with(['address', 'manager', 'collaborators'])
             ->withIsFavorited($user)
-            ->where('manager_id', $user->id)
+            ->where(function ($query) use ($user): void {
+                $query->where('manager_id', $user->id)
+                    ->orWhereHas('collaborators', fn ($q) => $q->where('users.id', $user->id));
+            })
             ->when(isset($filters['search']), fn ($q) => $q->where('name', 'like', "%{$filters['search']}%"))
             ->when(isset($filters['sort_by']), fn ($q) => $q->orderBy($filters['sort_by'], $filters['sort_dir'] ?? 'asc'))
             ->latest()
@@ -98,22 +100,5 @@ class ActivityService
     public function delete(Activity $activity): void
     {
         DB::transaction(fn () => $activity->delete());
-    }
-
-    public function syncCollaboratorPermissions(Activity $activity, User $collaborator, array $permissions): void
-    {
-        DB::transaction(function () use ($activity, $collaborator, $permissions): void {
-            ActivityCollaboratorPermission::where('activity_id', $activity->id)
-                ->where('user_id', $collaborator->id)
-                ->delete();
-
-            foreach ($permissions as $permission) {
-                ActivityCollaboratorPermission::create([
-                    'activity_id' => $activity->id,
-                    'user_id' => $collaborator->id,
-                    'permission' => $permission,
-                ]);
-            }
-        });
     }
 }

@@ -71,5 +71,17 @@
     },
     "account_status_changed": {
         "title": "تغيّرت حالة حسابك"
+    },
+    "collaborator_invited": {
+        "title": "دعوة للتعاون",
+        "body": "تمت دعوتك للتعاون في {activity}"
+    },
+    "collaborator_accepted": {
+        "title": "تم قبول الدعوة",
+        "body": "تم قبول دعوتك للتعاون في {activity}"
+    },
+    "collaborator_declined": {
+        "title": "تم رفض الدعوة",
+        "body": "تم رفض دعوتك للتعاون في {activity}"
     }
 }

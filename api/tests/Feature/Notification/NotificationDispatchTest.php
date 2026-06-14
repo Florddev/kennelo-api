@@ -116,11 +116,7 @@ it('resolves collaborators holding the permission as activity recipients', funct
     $outsider = User::factory()->create();
     $activity = Activity::factory()->create(['manager_id' => $manager->id]);
 
-    $activity->collaborators()->attach($collaborator->id);
-    $activity->collaboratorPermissions()->create([
-        'user_id' => $collaborator->id,
-        'permission' => ActivityPermissionEnum::MANAGE_BOOKINGS->value,
-    ]);
+    attachCollaborator($activity, $collaborator, [ActivityPermissionEnum::MANAGE_BOOKINGS]);
 
     $recipients = app(NotificationRecipientResolver::class)
         ->forActivity($activity, ActivityPermissionEnum::MANAGE_BOOKINGS)
@@ -140,11 +136,7 @@ it('notifies the manager and the MANAGE_BOOKINGS collaborator when a booking is 
     $collaborator = User::factory()->create();
     $activity = Activity::factory()->create(['manager_id' => $manager->id]);
 
-    $activity->collaborators()->attach($collaborator->id);
-    $activity->collaboratorPermissions()->create([
-        'user_id' => $collaborator->id,
-        'permission' => ActivityPermissionEnum::MANAGE_BOOKINGS->value,
-    ]);
+    attachCollaborator($activity, $collaborator, [ActivityPermissionEnum::MANAGE_BOOKINGS]);
 
     $booking = Booking::factory()->create([
         'user_id' => $client->id,

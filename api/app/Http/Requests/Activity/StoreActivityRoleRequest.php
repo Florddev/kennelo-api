@@ -8,7 +8,7 @@ use App\Enums\ActivityPermissionEnum;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class SyncCollaboratorPermissionsRequest extends FormRequest
+class StoreActivityRoleRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -18,7 +18,8 @@ class SyncCollaboratorPermissionsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'permissions' => ['required', 'array'],
+            'name' => ['required', 'string', 'max:100'],
+            'permissions' => ['present', 'array'],
             'permissions.*' => ['string', Rule::in(ActivityPermissionEnum::values())],
         ];
     }

@@ -42,7 +42,7 @@ it('collaborator can view the dashboard without specific permission', function (
     $activity = Activity::factory()->create(['manager_id' => $manager->id]);
 
     $collaborator = User::factory()->create();
-    $activity->collaborators()->attach($collaborator->id);
+    attachCollaborator($activity, $collaborator);
 
     $this->withHeaders(asUser($collaborator))
         ->getJson("/api/activities/{$activity->id}/dashboard")

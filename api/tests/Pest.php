@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+use App\Enums\ActivityPermissionEnum;
+use App\Enums\CollaboratorStatusEnum;
+use App\Models\Activity;
+use App\Models\ActivityRole;
 use App\Models\User;
 use App\Services\JWTService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -58,4 +62,36 @@ function jwtToken(User $user): string
 function asUser(User $user): array
 {
     return ['Authorization' => 'Bearer '.jwtToken($user)];
+}
+
+/**
+ * @param  array<int, ActivityPermissionEnum|string>  $permissions
+ */
+function attachCollaborator(
+    Activity $activity,
+    User $user,
+    array $permissions = [],
+    CollaboratorStatusEnum $status = CollaboratorStatusEnum::ACCEPTED
+): void {
+    $roleId = null;
+
+    if ($permissions !== []) {
+        $role = ActivityRole::factory()->create(['activity_id' => $activity->id]);
+
+        foreach ($permissions as $permission) {
+            $role->permissions()->create([
+                'permission' => $permission instanceof ActivityPermissionEnum ? $permission->value : $permission,
+            ]);
+        }
+
+        $roleId = $role->id;
+    }
+
+    $activity->collaboratorLinks()->create([
+        'user_id' => $user->id,
+        'status' => $status->value,
+        'role_id' => $roleId,
+        'invited_at' => now(),
+        'responded_at' => $status === CollaboratorStatusEnum::PENDING ? null : now(),
+    ]);
 }
