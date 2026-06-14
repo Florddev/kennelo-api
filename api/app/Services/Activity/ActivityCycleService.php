@@ -17,7 +17,7 @@ class ActivityCycleService
 {
     public function list(Activity $activity): Collection
     {
-        return ActivityCycle::with(['settings.animalType', 'closedWeekDays'])
+        return ActivityCycle::with(['settings.animalType', 'settings.prices', 'closedWeekDays'])
             ->where('activity_id', $activity->id)
             ->orderByDesc('priority')
             ->get();
@@ -32,9 +32,10 @@ class ActivityCycleService
                 'end_date' => $data['end_date'] ?? null,
                 'priority' => $data['priority'] ?? 0,
                 'is_active' => $data['is_active'] ?? true,
+                'color' => $data['color'] ?? null,
             ]);
 
-            return $cycle->load(['settings.animalType', 'closedWeekDays']);
+            return $cycle->load(['settings.animalType', 'settings.prices', 'closedWeekDays']);
         });
     }
 
@@ -42,7 +43,7 @@ class ActivityCycleService
     {
         $cycle->update($data);
 
-        return $cycle->fresh(['settings.animalType', 'closedWeekDays']);
+        return $cycle->fresh(['settings.animalType', 'settings.prices', 'closedWeekDays']);
     }
 
     public function deleteCycle(ActivityCycle $cycle): void
@@ -56,16 +57,35 @@ class ActivityCycleService
             $cycle->settings()->delete();
 
             foreach ($settings as $setting) {
-                ActivityCycleSetting::create([
+                $prices = $setting['prices'] ?? [];
+
+                $weekdayMask = array_reduce(
+                    $prices,
+                    static fn (int $mask, array $price): int => $mask | (int) $price['weekday'],
+                    WeekDayEnum::NONE,
+                );
+
+                $minPrice = $prices === []
+                    ? '0'
+                    : (string) min(array_map(static fn (array $price): float => (float) $price['price'], $prices));
+
+                $created = ActivityCycleSetting::create([
                     'activity_cycle_id' => $cycle->id,
                     'animal_type_id' => $setting['animal_type_id'],
                     'max_capacity' => $setting['max_capacity'],
-                    'price' => $setting['price'],
-                    'sum_weekdays' => $setting['sum_weekdays'] ?? WeekDayEnum::ALL,
+                    'price' => $minPrice,
+                    'sum_weekdays' => $weekdayMask === WeekDayEnum::NONE ? WeekDayEnum::ALL : $weekdayMask,
                 ]);
+
+                foreach ($prices as $price) {
+                    $created->prices()->create([
+                        'weekday' => (int) $price['weekday'],
+                        'price' => $price['price'],
+                    ]);
+                }
             }
 
-            return $cycle->fresh(['settings.animalType', 'closedWeekDays']);
+            return $cycle->fresh(['settings.animalType', 'settings.prices', 'closedWeekDays']);
         });
     }
 
@@ -76,12 +96,12 @@ class ActivityCycleService
             $cycle->closedWeekDays()->create(['sum_weekdays' => $sumWeekdays]);
         });
 
-        return $cycle->fresh(['settings.animalType', 'closedWeekDays']);
+        return $cycle->fresh(['settings.animalType', 'settings.prices', 'closedWeekDays']);
     }
 
     public function resolveActiveCycle(Activity $activity, string $date): ?ActivityCycle
     {
-        return ActivityCycle::with(['settings.animalType', 'closedWeekDays'])
+        return ActivityCycle::with(['settings.animalType', 'settings.prices', 'closedWeekDays'])
             ->where('activity_id', $activity->id)
             ->where('is_active', true)
             ->where(fn ($query) => $query->whereNull('start_date')->orWhere('start_date', '<=', $date))
