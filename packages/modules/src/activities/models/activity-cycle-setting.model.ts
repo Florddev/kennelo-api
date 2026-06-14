@@ -28,4 +28,25 @@ export class ActivityCycleSettingModel {
 
         return match ? match.price : null;
     }
+
+    minPrice(): number {
+        if (this.prices.length === 0) {
+            return 0;
+        }
+
+        return this.prices.reduce(
+            (min, price) => (price.price < min ? price.price : min),
+            this.prices[0]!.price,
+        );
+    }
+
+    averagePrice(): number {
+        if (this.prices.length === 0) {
+            return 0;
+        }
+
+        const total = this.prices.reduce((sum, price) => sum + price.price, 0);
+
+        return total / this.prices.length;
+    }
 }

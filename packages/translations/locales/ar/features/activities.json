@@ -191,6 +191,42 @@
             "friday": "جمع",
             "saturday": "سبت",
             "sunday": "أحد"
+        },
+        "matrix": {
+            "species": "النوع",
+            "capacity": "السعة",
+            "empty": "لم يتم تكوين أي نوع حيوان بعد.",
+            "addSpecies": "إضافة نوع حيوان"
+        },
+        "defaultSettings": {
+            "title": "الإعدادات الافتراضية",
+            "description": "السعة الأساسية والتسعير اليومي المطبق عندما لا تغطي أي دورة تاريخًا."
+        },
+        "calendar": {
+            "title": "تقويم الأسعار"
+        },
+        "timeline": {
+            "title": "الدورات",
+            "addCycle": "إضافة دورة",
+            "empty": "لا توجد دورات بعد. أضف دورة لتجاوز الإعدادات الافتراضية خلال فترة.",
+            "cycleLabel": "الأولوية {priority}"
+        },
+        "dialog": {
+            "editTitle": "تعديل الدورة",
+            "createTitle": "دورة جديدة",
+            "startDate": "تاريخ البدء",
+            "endDate": "تاريخ الانتهاء",
+            "color": "اللون",
+            "noColor": "بدون لون"
+        },
+        "weekdaysLong": {
+            "monday": "الإثنين",
+            "tuesday": "الثلاثاء",
+            "wednesday": "الأربعاء",
+            "thursday": "الخميس",
+            "friday": "الجمعة",
+            "saturday": "السبت",
+            "sunday": "الأحد"
         }
     },
     "availabilities": {

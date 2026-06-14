@@ -191,6 +191,42 @@
             "friday": "Ven",
             "saturday": "Sam",
             "sunday": "Dim"
+        },
+        "matrix": {
+            "species": "Espèce",
+            "capacity": "Capacité",
+            "empty": "Aucun type d'animal configuré.",
+            "addSpecies": "Ajouter un type d'animal"
+        },
+        "defaultSettings": {
+            "title": "Paramètres par défaut",
+            "description": "Capacité de base et tarifs par jour appliqués quand aucun cycle ne couvre une date."
+        },
+        "calendar": {
+            "title": "Calendrier des tarifs"
+        },
+        "timeline": {
+            "title": "Cycles",
+            "addCycle": "Ajouter un cycle",
+            "empty": "Aucun cycle. Ajoutez un cycle pour remplacer les paramètres par défaut sur une période.",
+            "cycleLabel": "Priorité {priority}"
+        },
+        "dialog": {
+            "editTitle": "Modifier le cycle",
+            "createTitle": "Nouveau cycle",
+            "startDate": "Date de début",
+            "endDate": "Date de fin",
+            "color": "Couleur",
+            "noColor": "Aucune couleur"
+        },
+        "weekdaysLong": {
+            "monday": "Lundi",
+            "tuesday": "Mardi",
+            "wednesday": "Mercredi",
+            "thursday": "Jeudi",
+            "friday": "Vendredi",
+            "saturday": "Samedi",
+            "sunday": "Dimanche"
         }
     },
     "availabilities": {

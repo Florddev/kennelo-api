@@ -4,8 +4,8 @@ import type { PetModel } from "@workspace/modules/pets";
 export function minPricePerNight(capacities: ActivityCycleSettingModel[]): number | null {
     if (capacities.length === 0) return null;
     return capacities.reduce(
-        (min, capacity) => (capacity.price < min ? capacity.price : min),
-        capacities[0]!.price,
+        (min, capacity) => (capacity.minPrice() < min ? capacity.minPrice() : min),
+        capacities[0]!.minPrice(),
     );
 }
 
@@ -15,7 +15,7 @@ export function sumPetsPricePerNight(
 ): number {
     return pets.reduce((total, pet) => {
         const capacity = capacities.find((c) => c.animalType.id === pet.animalTypeId);
-        return capacity ? total + capacity.price : total;
+        return capacity ? total + capacity.averagePrice() : total;
     }, 0);
 }
 
