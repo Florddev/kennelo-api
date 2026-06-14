@@ -15,6 +15,7 @@ export async function createCycle(
 
     if (input.priority !== undefined) body.priority = input.priority;
     if (input.isActive !== undefined) body.is_active = input.isActive;
+    if (input.color !== undefined) body.color = input.color || null;
 
     const response = await api.post<ActivityCycleDto>(`/activities/${activityId}/cycles`, body);
 

@@ -15,8 +15,10 @@ export async function upsertCycleSettings(
             settings: input.settings.map((setting) => ({
                 animal_type_id: setting.animalTypeId,
                 max_capacity: setting.maxCapacity,
-                price: setting.price,
-                sum_weekdays: setting.sumWeekdays,
+                prices: setting.prices.map((price) => ({
+                    weekday: price.weekday,
+                    price: price.price,
+                })),
             })),
         },
     );
