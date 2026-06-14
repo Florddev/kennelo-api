@@ -10,7 +10,7 @@ export type RenderedNotification = {
 
 type Translator = (key: string, values?: Record<string, string>) => string;
 
-type HrefKind = "booking" | "messages";
+type HrefKind = "booking" | "messages" | "profile" | "collaborators";
 
 type NotificationConfig = {
     body?: boolean;
@@ -38,6 +38,9 @@ const NOTIFICATION_CONFIG: Partial<Record<NotificationType, NotificationConfig>>
     identity_approved: {},
     identity_rejected: {},
     account_status_changed: {},
+    collaborator_invited: { body: true, href: "profile" },
+    collaborator_accepted: { body: true, href: "collaborators" },
+    collaborator_declined: { body: true, href: "collaborators" },
 };
 
 function resolveHref(
@@ -47,6 +50,11 @@ function resolveHref(
 ): string | undefined {
     if (!routes || !kind) return undefined;
     if (kind === "messages") return routes.Messages();
+    if (kind === "profile") return routes.Profile();
+    if (kind === "collaborators") {
+        const activityId = n.str("activity_id");
+        return activityId ? routes.ActivityCollaborators({ id: activityId }) : undefined;
+    }
     const bookingId = n.str("booking_id");
     return bookingId ? routes.BookingDetail({ id: bookingId }) : undefined;
 }
