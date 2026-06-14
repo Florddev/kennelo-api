@@ -109,6 +109,11 @@ class User extends Authenticatable implements HasMedia, JWTSubject, MustVerifyEm
         return $this->belongsToMany(Activity::class, 'activity_collaborators', 'user_id', 'activity_id');
     }
 
+    public function collaboratorLinks(): HasMany
+    {
+        return $this->hasMany(ActivityCollaborator::class, 'user_id');
+    }
+
     public function favoriteActivities(): BelongsToMany
     {
         return $this->belongsToMany(Activity::class, 'favorites', 'user_id', 'activity_id')

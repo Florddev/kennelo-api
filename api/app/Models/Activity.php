@@ -100,6 +100,16 @@ class Activity extends Model implements HasMedia
         return $this->hasMany(ActivityCollaboratorPermission::class);
     }
 
+    public function roles(): HasMany
+    {
+        return $this->hasMany(ActivityRole::class);
+    }
+
+    public function collaboratorLinks(): HasMany
+    {
+        return $this->hasMany(ActivityCollaborator::class);
+    }
+
     public function favoritedBy(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'favorites', 'activity_id', 'user_id');
