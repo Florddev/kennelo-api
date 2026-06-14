@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Services\Notification;
 
 use App\Enums\ActivityPermissionEnum;
-use App\Enums\CollaboratorStatusEnum;
 use App\Models\Activity;
 use App\Models\ActivityCollaborator;
 use App\Models\Message;
@@ -80,9 +79,8 @@ class NotificationRecipientResolver
     {
         return ActivityCollaborator::query()
             ->where('activity_id', $activity->id)
-            ->where('status', CollaboratorStatusEnum::ACCEPTED->value)
-            ->whereNotNull('role_id')
-            ->whereHas('role.permissions', fn ($query) => $query->where('permission', $permission->value))
+            ->accepted()
+            ->withPermission($permission)
             ->pluck('user_id');
     }
 }

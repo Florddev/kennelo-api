@@ -40,10 +40,13 @@ class CollaboratorService
 
     public function accept(Activity $activity, User $user): ActivityCollaborator
     {
-        $activity->collaboratorLinks()->where('user_id', $user->id)->update([
-            'status' => CollaboratorStatusEnum::ACCEPTED->value,
-            'responded_at' => now(),
-        ]);
+        $activity->collaboratorLinks()
+            ->where('user_id', $user->id)
+            ->where('status', CollaboratorStatusEnum::PENDING->value)
+            ->update([
+                'status' => CollaboratorStatusEnum::ACCEPTED->value,
+                'responded_at' => now(),
+            ]);
 
         $this->notifyManager($activity, $user, NotificationTypeEnum::COLLABORATOR_ACCEPTED);
 
@@ -52,10 +55,13 @@ class CollaboratorService
 
     public function decline(Activity $activity, User $user): ActivityCollaborator
     {
-        $activity->collaboratorLinks()->where('user_id', $user->id)->update([
-            'status' => CollaboratorStatusEnum::REFUSED->value,
-            'responded_at' => now(),
-        ]);
+        $activity->collaboratorLinks()
+            ->where('user_id', $user->id)
+            ->where('status', CollaboratorStatusEnum::PENDING->value)
+            ->update([
+                'status' => CollaboratorStatusEnum::REFUSED->value,
+                'responded_at' => now(),
+            ]);
 
         $this->notifyManager($activity, $user, NotificationTypeEnum::COLLABORATOR_DECLINED);
 

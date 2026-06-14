@@ -149,19 +149,11 @@ class Activity extends Model implements HasMedia
 
     public function collaboratorHasPermission(User $user, ActivityPermissionEnum $permission): bool
     {
-        $link = ActivityCollaborator::query()
+        return ActivityCollaborator::query()
             ->where('activity_id', $this->id)
             ->where('user_id', $user->id)
-            ->where('status', CollaboratorStatusEnum::ACCEPTED->value)
-            ->first();
-
-        if ($link === null || $link->role_id === null) {
-            return false;
-        }
-
-        return ActivityRolePermission::query()
-            ->where('role_id', $link->role_id)
-            ->where('permission', $permission->value)
+            ->accepted()
+            ->withPermission($permission)
             ->exists();
     }
 

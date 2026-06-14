@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Events;
 
 use App\Enums\ActivityPermissionEnum;
-use App\Enums\CollaboratorStatusEnum;
 use App\Models\ActivityCollaborator;
 use App\Models\Message;
 use Illuminate\Broadcasting\InteractsWithSockets;
@@ -43,9 +42,8 @@ class NewMessageNotification implements ShouldBroadcast
         if ($activity) {
             $collaboratorIds = ActivityCollaborator::query()
                 ->where('activity_id', $activity->id)
-                ->where('status', CollaboratorStatusEnum::ACCEPTED->value)
-                ->whereNotNull('role_id')
-                ->whereHas('role.permissions', fn ($query) => $query->where('permission', ActivityPermissionEnum::MANAGE_MESSAGES->value))
+                ->accepted()
+                ->withPermission(ActivityPermissionEnum::MANAGE_MESSAGES)
                 ->pluck('user_id')
                 ->unique()
                 ->reject(fn (string $id) => $id === $senderId);

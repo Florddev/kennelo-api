@@ -13,7 +13,6 @@ use App\Models\Activity;
 use App\Models\ActivityRole;
 use App\Services\Activity\ActivityRoleService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Carbon;
 
 /**
  * @tags Activities
@@ -33,7 +32,7 @@ class ActivityRoleController extends Controller
         return ActivityRoleResource::collection($roles)
             ->additional([
                 'status' => ApiStatusEnum::SUCCESS,
-                'timestamp' => human_date(Carbon::now()),
+                'timestamp' => human_date(now()),
             ])
             ->response();
     }
@@ -47,7 +46,7 @@ class ActivityRoleController extends Controller
         return (new ActivityRoleResource($role))
             ->additional([
                 'status' => ApiStatusEnum::SUCCESS,
-                'timestamp' => human_date(Carbon::now()),
+                'timestamp' => human_date(now()),
             ])
             ->response()
             ->setStatusCode(201);
@@ -63,7 +62,7 @@ class ActivityRoleController extends Controller
         return (new ActivityRoleResource($role))
             ->additional([
                 'status' => ApiStatusEnum::SUCCESS,
-                'timestamp' => human_date(Carbon::now()),
+                'timestamp' => human_date(now()),
             ])
             ->response();
     }
