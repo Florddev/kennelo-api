@@ -17,6 +17,7 @@ export * from "./components/activity-summary-card";
 export * from "./components/assign-role-dialog";
 export * from "./components/availabilities-tab";
 export * from "./components/become-host-stepper";
+export * from "./components/collaborator-invitations-list";
 export * from "./components/cycle-card";
 export * from "./components/cycle-settings-editor";
 export * from "./components/dashboard-tab";

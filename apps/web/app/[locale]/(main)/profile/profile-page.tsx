@@ -20,6 +20,7 @@ import { useNavigation } from "@/hooks/use-navigation";
 import { useIsMobile } from "@/hooks/use-mobile";
 import Image from "next/image";
 import { NavRow } from "@/components/navigation/nav-row";
+import { CollaboratorInvitationsList } from "@/features/activities/components/collaborator-invitations-list";
 
 function StatCard({ value, label }: { value: number | string; label: string }) {
     return (
@@ -113,6 +114,8 @@ export default function ProfilePage() {
                             </div>
                         </CardContent>
                     </Card>
+
+                    <CollaboratorInvitationsList />
 
                     {!isManager && (
                         <div
