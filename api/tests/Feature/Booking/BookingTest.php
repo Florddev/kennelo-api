@@ -40,13 +40,17 @@ function makeBookingFixtures(): array
         'end_date' => null,
     ]);
 
-    ActivityCycleSetting::create([
+    $setting = ActivityCycleSetting::create([
         'activity_cycle_id' => $activityCycle->id,
         'animal_type_id' => $animalType->id,
         'max_capacity' => 5,
         'price' => 30.00,
         'sum_weekdays' => WeekDayEnum::ALL,
     ]);
+
+    foreach (WeekDayEnum::values() as $weekday) {
+        $setting->prices()->create(['weekday' => $weekday, 'price' => 30.00]);
+    }
 
     return [$manager, $activity, $animalType];
 }

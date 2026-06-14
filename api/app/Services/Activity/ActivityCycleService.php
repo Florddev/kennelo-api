@@ -142,7 +142,7 @@ class ActivityCycleService
         });
     }
 
-    private function weekDayForDate(string $date): WeekDayEnum
+    public function weekDayForDate(string $date): WeekDayEnum
     {
         return match (Carbon::parse($date)->dayOfWeekIso) {
             1 => WeekDayEnum::MONDAY,
