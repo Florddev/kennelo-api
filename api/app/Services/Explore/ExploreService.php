@@ -45,7 +45,7 @@ class ExploreService
     private function baseQuery(?User $user = null): Builder
     {
         return Activity::select('activities.*')
-            ->with(['address', 'cycles.settings.animalType'])
+            ->with(['address', 'cycles.settings.animalType', 'cycles.settings.prices'])
             ->withAvg(
                 ['reviews as avg_rating' => fn (Builder $q) => $q->where('is_published', true)],
                 'overall_rating'
@@ -338,7 +338,7 @@ class ExploreService
         }
 
         $query->whereHas(
-            'cycles.settings',
+            'cycles.settings.prices',
             fn (Builder $q) => $q->where('price', '<=', (float) $input['max_price'])
         );
     }

@@ -26,8 +26,6 @@ function makeCycleSettingFixtures(): array
         'activity_cycle_id' => $cycle->id,
         'animal_type_id' => $animalType->id,
         'max_capacity' => 8,
-        'price' => 25.00,
-        'sum_weekdays' => WeekDayEnum::ALL,
     ]);
 
     foreach (WeekDayEnum::values() as $weekday) {

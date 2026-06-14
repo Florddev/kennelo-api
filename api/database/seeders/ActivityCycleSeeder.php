@@ -40,17 +40,23 @@ class ActivityCycleSeeder extends Seeder
             );
 
             $animalTypes->each(function ($animalType) use ($cycle) {
-                ActivityCycleSetting::firstOrCreate(
+                $setting = ActivityCycleSetting::firstOrCreate(
                     [
                         'activity_cycle_id' => $cycle->id,
                         'animal_type_id' => $animalType->id,
                     ],
                     [
                         'max_capacity' => self::MAX_CAPACITY,
-                        'price' => $this->price[$animalType->code] ?? 25.00,
-                        'sum_weekdays' => WeekDayEnum::ALL,
                     ]
                 );
+
+                if ($setting->prices()->doesntExist()) {
+                    $price = $this->price[$animalType->code] ?? 25.00;
+
+                    foreach (WeekDayEnum::values() as $weekday) {
+                        $setting->prices()->create(['weekday' => $weekday, 'price' => $price]);
+                    }
+                }
             });
         });
     }

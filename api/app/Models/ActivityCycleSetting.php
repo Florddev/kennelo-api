@@ -27,15 +27,12 @@ class ActivityCycleSetting extends Model
         'activity_cycle_id',
         'animal_type_id',
         'max_capacity',
-        'price',
-        'sum_weekdays',
     ];
 
     protected function casts(): array
     {
         return [
-            'price' => 'decimal:2',
-            'sum_weekdays' => 'integer',
+            'max_capacity' => 'integer',
         ];
     }
 

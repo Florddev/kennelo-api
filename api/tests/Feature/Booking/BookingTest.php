@@ -44,8 +44,6 @@ function makeBookingFixtures(): array
         'activity_cycle_id' => $activityCycle->id,
         'animal_type_id' => $animalType->id,
         'max_capacity' => 5,
-        'price' => 30.00,
-        'sum_weekdays' => WeekDayEnum::ALL,
     ]);
 
     foreach (WeekDayEnum::values() as $weekday) {

@@ -95,7 +95,6 @@ it('dashboard summary reflects configured capacities', function () {
         'activity_cycle_id' => $cycle->id,
         'animal_type_id' => $animalType->id,
         'max_capacity' => 10,
-        'price' => 25.00,
     ]);
 
     $response = $this->withHeaders(asUser($manager))

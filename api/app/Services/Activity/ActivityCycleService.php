@@ -109,22 +109,10 @@ class ActivityCycleService
             foreach ($settings as $setting) {
                 $prices = $setting['prices'] ?? [];
 
-                $weekdayMask = array_reduce(
-                    $prices,
-                    static fn (int $mask, array $price): int => $mask | (int) $price['weekday'],
-                    WeekDayEnum::NONE,
-                );
-
-                $minPrice = $prices === []
-                    ? '0'
-                    : (string) min(array_map(static fn (array $price): float => (float) $price['price'], $prices));
-
                 $created = ActivityCycleSetting::create([
                     'activity_cycle_id' => $cycle->id,
                     'animal_type_id' => $setting['animal_type_id'],
                     'max_capacity' => $setting['max_capacity'],
-                    'price' => $minPrice,
-                    'sum_weekdays' => $weekdayMask === WeekDayEnum::NONE ? WeekDayEnum::ALL : $weekdayMask,
                 ]);
 
                 foreach ($prices as $price) {
@@ -170,11 +158,7 @@ class ActivityCycleService
             return collect();
         }
 
-        $weekDay = $this->weekDayForDate($date);
-
-        $settings = $cycle->settings
-            ->filter(fn (ActivityCycleSetting $setting): bool => WeekDayEnum::contains($setting->sum_weekdays, $weekDay))
-            ->values();
+        $settings = $cycle->settings->values();
 
         $occupancy = DB::table('booking_pets')
             ->join('pets', 'booking_pets.pet_id', '=', 'pets.id')

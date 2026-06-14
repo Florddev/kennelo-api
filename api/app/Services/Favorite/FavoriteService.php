@@ -23,7 +23,7 @@ class FavoriteService
         $perPage = $filters['per_page'] ?? PaginationEnum::DEFAULT_PAGINATION->value();
 
         return $user->favoriteActivities()
-            ->with(['address', 'manager', 'cycles.settings.animalType'])
+            ->with(['address', 'manager', 'cycles.settings.animalType', 'cycles.settings.prices'])
             ->withExists(['favoritedBy as is_favorited' => fn (Builder $q) => $q->where('users.id', $user->id)])
             ->orderByPivot('created_at', 'desc')
             ->paginate($perPage);

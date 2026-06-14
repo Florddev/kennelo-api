@@ -41,7 +41,7 @@ class FavoriteController extends Controller
 
         $this->favoriteService->add($request->user(), $activity);
 
-        $activity->load(['address', 'manager', 'cycles.settings.animalType'])
+        $activity->load(['address', 'manager', 'cycles.settings.animalType', 'cycles.settings.prices'])
             ->setAttribute('is_favorited', true);
 
         return (new ActivityResource($activity))

@@ -156,8 +156,6 @@ it('upsert settings replaces previous settings', function () {
     $cycle->settings()->create([
         'animal_type_id' => $animalType->id,
         'max_capacity' => 5,
-        'price' => 20.00,
-        'sum_weekdays' => WeekDayEnum::ALL,
     ]);
 
     $this->withHeaders(asUser($manager))

@@ -168,13 +168,17 @@ class ExploreSeeder extends Seeder
         foreach ($codes->take($count) as $code) {
             [$min, $max] = $this->pricingByCode[$code];
 
-            ActivityCycleSetting::create([
+            $setting = ActivityCycleSetting::create([
                 'activity_cycle_id' => $cycle->id,
                 'animal_type_id' => $animalTypes->get($code)->getKey(),
                 'max_capacity' => random_int(2, 10),
-                'price' => random_int($min * 100, $max * 100) / 100,
-                'sum_weekdays' => WeekDayEnum::ALL,
             ]);
+
+            $price = random_int($min * 100, $max * 100) / 100;
+
+            foreach (WeekDayEnum::values() as $weekday) {
+                $setting->prices()->create(['weekday' => $weekday, 'price' => $price]);
+            }
         }
     }
 

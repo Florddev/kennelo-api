@@ -33,8 +33,6 @@ function makeQuoteFixtures(?callable $priceFor = null, int $closedMask = 0): arr
         'activity_cycle_id' => $cycle->id,
         'animal_type_id' => $animalType->id,
         'max_capacity' => 5,
-        'price' => 30.00,
-        'sum_weekdays' => WeekDayEnum::ALL,
     ]);
 
     foreach (WeekDayEnum::values() as $weekday) {
