@@ -7,6 +7,7 @@ use App\Http\Controllers\Activity\ActivityController;
 use App\Http\Controllers\Activity\ActivityCycleController;
 use App\Http\Controllers\Activity\ActivityDashboardController;
 use App\Http\Controllers\Activity\ActivityImageController;
+use App\Http\Controllers\Activity\ActivityRoleController;
 use App\Http\Controllers\Activity\StripeConnectController;
 use App\Http\Controllers\Booking\ActivityBookingController;
 use App\Http\Controllers\Booking\BookingController;
@@ -50,6 +51,10 @@ Route::middleware(['auth.jwt'])->group(function () {
     // Activities
     Route::apiResource('activities', ActivityController::class);
     Route::put('/activities/{activity}/collaborators/{user}/permissions', [ActivityController::class, 'syncCollaboratorPermissions']);
+    Route::get('/activities/{activity}/roles', [ActivityRoleController::class, 'index']);
+    Route::post('/activities/{activity}/roles', [ActivityRoleController::class, 'store']);
+    Route::put('/activities/{activity}/roles/{role}', [ActivityRoleController::class, 'update']);
+    Route::delete('/activities/{activity}/roles/{role}', [ActivityRoleController::class, 'destroy']);
     Route::get('/activities/{activity}/dashboard', [ActivityDashboardController::class, 'show']);
     Route::get('/activities/{activity}/availabilities', [ActivityAvailabilityController::class, 'index']);
     Route::get('/activities/{activity}/availabilities/range', [ActivityAvailabilityController::class, 'range']);
