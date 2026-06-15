@@ -29,9 +29,9 @@ import { cn } from "@workspace/ui/lib/utils";
 import { useAsyncState } from "@/hooks/use-async-state";
 import { activityCyclesQueryKey } from "../../hooks/use-activity-cycles";
 import {
-    cycleToMatrix,
     emptyMatrix,
     matrixClosedMask,
+    matrixForCycleDialog,
     matrixToSettingsInput,
     type CycleMatrixValue,
 } from "../../lib/cycle-helpers";
@@ -51,6 +51,7 @@ export const CYCLE_COLORS = [
 type CycleDialogProps = {
     activityId: string;
     cycle: ActivityCycleModel | null;
+    defaultCycle: ActivityCycleModel | null;
     open: boolean;
     onOpenChange: (open: boolean) => void;
 };
@@ -62,16 +63,25 @@ type CycleFormState = {
     matrix: CycleMatrixValue;
 };
 
-function buildFormState(cycle: ActivityCycleModel | null): CycleFormState {
+function buildFormState(
+    cycle: ActivityCycleModel | null,
+    defaultCycle: ActivityCycleModel | null,
+): CycleFormState {
     return {
         startDate: cycle?.startDate ?? "",
         endDate: cycle?.endDate ?? "",
         color: cycle?.color ?? null,
-        matrix: cycle ? cycleToMatrix(cycle) : emptyMatrix(),
+        matrix: matrixForCycleDialog(defaultCycle, cycle),
     };
 }
 
-export function CycleDialog({ activityId, cycle, open, onOpenChange }: CycleDialogProps) {
+export function CycleDialog({
+    activityId,
+    cycle,
+    defaultCycle,
+    open,
+    onOpenChange,
+}: CycleDialogProps) {
     const t = useTranslations();
     const queryClient = useQueryClient();
     const { execute, isLoading } = useAsyncState();
@@ -94,7 +104,7 @@ export function CycleDialog({ activityId, cycle, open, onOpenChange }: CycleDial
     if (resetKey !== syncedKey) {
         setSyncedKey(resetKey);
         if (open) {
-            const next = buildFormState(cycle);
+            const next = buildFormState(cycle, defaultCycle);
             setStartDate(next.startDate);
             setEndDate(next.endDate);
             setColor(next.color);
@@ -142,48 +152,51 @@ export function CycleDialog({ activityId, cycle, open, onOpenChange }: CycleDial
 
     return (
         <AlertDialog open={open} onOpenChange={onOpenChange}>
-            <AlertDialogContent className="max-w-3xl">
-                <AlertDialogHeader>
+            <AlertDialogContent className="flex max-h-[90vh] flex-col data-[size=default]:max-w-[95vw] data-[size=default]:sm:max-w-7xl">
+                <AlertDialogHeader className="shrink-0">
                     <AlertDialogTitle>{title}</AlertDialogTitle>
                 </AlertDialogHeader>
 
-                <div className="flex max-h-[70vh] flex-col gap-5 overflow-y-auto">
-                    <div className="flex flex-wrap gap-4">
-                        <div className="flex flex-col gap-1.5">
-                            <Label htmlFor="cycle-start">
-                                {t("features.activities.cycles.dialog.startDate")}
-                            </Label>
-                            <Input
-                                id="cycle-start"
-                                type="date"
-                                value={startDate}
-                                onChange={(event) => setStartDate(event.target.value)}
-                            />
+                <div className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto">
+                    <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
+                        <div className="flex flex-wrap gap-4">
+                            <div className="flex flex-col gap-1.5">
+                                <Label htmlFor="cycle-start">
+                                    {t("features.activities.cycles.dialog.startDate")}
+                                </Label>
+                                <Input
+                                    id="cycle-start"
+                                    type="date"
+                                    value={startDate}
+                                    onChange={(event) => setStartDate(event.target.value)}
+                                />
+                            </div>
+                            <div className="flex flex-col gap-1.5">
+                                <Label htmlFor="cycle-end">
+                                    {t("features.activities.cycles.dialog.endDate")}
+                                </Label>
+                                <Input
+                                    id="cycle-end"
+                                    type="date"
+                                    value={endDate}
+                                    min={startDate || undefined}
+                                    onChange={(event) => setEndDate(event.target.value)}
+                                />
+                            </div>
                         </div>
-                        <div className="flex flex-col gap-1.5">
-                            <Label htmlFor="cycle-end">
-                                {t("features.activities.cycles.dialog.endDate")}
-                            </Label>
-                            <Input
-                                id="cycle-end"
-                                type="date"
-                                value={endDate}
-                                min={startDate || undefined}
-                                onChange={(event) => setEndDate(event.target.value)}
-                            />
-                        </div>
-                    </div>
 
-                    <ColorPicker value={color} onChange={setColor} />
+                        <ColorPicker value={color} onChange={setColor} />
+                    </div>
 
                     <CycleMatrixEditor
                         animalTypes={animalTypes}
                         value={matrix}
                         onChange={setMatrix}
+                        lockSpecies
                     />
                 </div>
 
-                <AlertDialogFooter className="flex-row items-center justify-between gap-2 sm:justify-between">
+                <AlertDialogFooter className="shrink-0 flex-row items-center justify-between gap-2 sm:justify-between">
                     {cycle ? (
                         <Button
                             variant="ghost"

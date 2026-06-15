@@ -141,6 +141,25 @@ export function matrixClosedMask(value: CycleMatrixValue): number {
     return ALL_WEEKDAYS & ~value.openMask;
 }
 
+export function matrixForCycleDialog(
+    defaultCycle: ActivityCycleModel | null,
+    cycle: ActivityCycleModel | null,
+): CycleMatrixValue {
+    const base = defaultCycle ? cycleToMatrix(defaultCycle) : emptyMatrix();
+
+    if (cycle === null) {
+        return base;
+    }
+
+    const cycleMatrix = cycleToMatrix(cycle);
+    const cycleRows = new Map(cycleMatrix.rows.map((row) => [row.animalTypeId, row]));
+
+    return {
+        openMask: cycleMatrix.openMask,
+        rows: base.rows.map((row) => cycleRows.get(row.animalTypeId) ?? row),
+    };
+}
+
 export function cyclesOverlap(a: ActivityCycleModel, b: ActivityCycleModel): boolean {
     const aStartsBeforeBEnds =
         a.startDate === null || b.endDate === null || a.startDate <= b.endDate;

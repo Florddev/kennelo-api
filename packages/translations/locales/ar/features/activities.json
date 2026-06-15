@@ -196,7 +196,10 @@
             "species": "النوع",
             "capacity": "السعة",
             "empty": "لم يتم تكوين أي نوع حيوان بعد.",
-            "addSpecies": "إضافة نوع حيوان"
+            "addSpecies": "إضافة نوع حيوان",
+            "wholeCycle": "كل الدورة",
+            "baseSummary": "الأساس {price}€ · {count} مكان",
+            "currency": "€"
         },
         "defaultSettings": {
             "title": "الإعدادات الافتراضية",
@@ -227,6 +230,11 @@
             "friday": "الجمعة",
             "saturday": "السبت",
             "sunday": "الأحد"
+        },
+        "autosave": {
+            "saving": "جارٍ الحفظ…",
+            "saved": "تم الحفظ",
+            "error": "فشل الحفظ"
         }
     },
     "availabilities": {

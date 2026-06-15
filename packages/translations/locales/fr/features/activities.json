@@ -196,7 +196,10 @@
             "species": "Espèce",
             "capacity": "Capacité",
             "empty": "Aucun type d'animal configuré.",
-            "addSpecies": "Ajouter un type d'animal"
+            "addSpecies": "Ajouter un type d'animal",
+            "wholeCycle": "Tout le cycle",
+            "baseSummary": "base {price}€ · {count} pl.",
+            "currency": "€"
         },
         "defaultSettings": {
             "title": "Paramètres par défaut",
@@ -227,6 +230,11 @@
             "friday": "Vendredi",
             "saturday": "Samedi",
             "sunday": "Dimanche"
+        },
+        "autosave": {
+            "saving": "Enregistrement…",
+            "saved": "Enregistré",
+            "error": "Échec de l'enregistrement"
         }
     },
     "availabilities": {

@@ -12,7 +12,6 @@ import {
     type ActivityCycleModel,
     type AvailabilityModel,
 } from "@workspace/modules/activities";
-import { getAnimalTypes } from "@workspace/modules/pets";
 import { Button } from "@workspace/ui/components/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@workspace/ui/components/card";
 import { NativeSelect, NativeSelectOption } from "@workspace/ui/components/native-select";
@@ -50,11 +49,21 @@ export function CycleCalendar({ activityId, cycles }: CycleCalendarProps) {
     const [month, setMonth] = useState(now.getMonth() + 1);
     const [animalTypeId, setAnimalTypeId] = useState<string>("");
 
-    const { data: animalTypes = [] } = useQuery({
-        queryKey: ["animal-types"],
-        queryFn: getAnimalTypes,
-        staleTime: 5 * 60_000,
-    });
+    const activityTypes = useMemo(() => {
+        const seen = new Set<string>();
+        const result: { id: string; name: string }[] = [];
+
+        for (const cycle of cycles) {
+            for (const setting of cycle.settings) {
+                if (!seen.has(setting.animalType.id)) {
+                    seen.add(setting.animalType.id);
+                    result.push({ id: setting.animalType.id, name: setting.animalType.name });
+                }
+            }
+        }
+
+        return result;
+    }, [cycles]);
 
     const monthKey = `${year}-${pad(month)}`;
     const availabilitiesQueryKey = ["activity-availabilities", activityId, monthKey];
@@ -65,7 +74,7 @@ export function CycleCalendar({ activityId, cycles }: CycleCalendarProps) {
         enabled: Boolean(activityId),
     });
 
-    const selectedType = animalTypeId || animalTypes[0]?.id || "";
+    const selectedType = animalTypeId || activityTypes[0]?.id || "";
 
     const availabilityMap = useMemo(
         () => new Map<string, AvailabilityModel>(availabilities.map((item) => [item.date, item])),
@@ -136,7 +145,7 @@ export function CycleCalendar({ activityId, cycles }: CycleCalendarProps) {
                         value={selectedType}
                         onChange={(event) => setAnimalTypeId(event.target.value)}
                     >
-                        {animalTypes.map((type) => (
+                        {activityTypes.map((type) => (
                             <NativeSelectOption key={type.id} value={type.id}>
                                 {type.name}
                             </NativeSelectOption>

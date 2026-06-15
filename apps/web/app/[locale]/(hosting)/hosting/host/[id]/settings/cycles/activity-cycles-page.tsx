@@ -40,11 +40,7 @@ export default function ActivityCyclesPage() {
     return (
         <div className="flex flex-col gap-6">
             {defaultCycle ? (
-                <DefaultCycleCard
-                    key={defaultCycle.updatedAt}
-                    activityId={activityId}
-                    cycle={defaultCycle}
-                />
+                <DefaultCycleCard activityId={activityId} cycle={defaultCycle} />
             ) : null}
 
             <CycleCalendar activityId={activityId} cycles={cycles} />
@@ -59,6 +55,7 @@ export default function ActivityCyclesPage() {
             <CycleDialog
                 activityId={activityId}
                 cycle={editing}
+                defaultCycle={defaultCycle}
                 open={dialogOpen}
                 onOpenChange={setDialogOpen}
             />
