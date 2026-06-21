@@ -10,9 +10,12 @@ use App\Http\Controllers\Controller;
 use App\Models\Scanner;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class PetBroadcastController extends Controller
 {
+    private const DEDUPE_WINDOW_SECONDS = 5;
+
     public function broadcast(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -20,9 +23,13 @@ class PetBroadcastController extends Controller
             'scanner_code' => ['required', 'string', 'exists:scanners,code'],
         ]);
 
-        $scanner = Scanner::where('code', $validated['scanner_code'])->firstOrFail();
+        $dedupeKey = "pet-broadcast:{$validated['scanner_code']}:{$validated['microchip_number']}";
 
-        event(new PetBroadcast($validated['microchip_number'], $scanner->user_id, $scanner->code));
+        if (Cache::add($dedupeKey, true, self::DEDUPE_WINDOW_SECONDS)) {
+            $scanner = Scanner::where('code', $validated['scanner_code'])->firstOrFail();
+
+            event(new PetBroadcast($validated['microchip_number'], $scanner->user_id, $scanner->code));
+        }
 
         return response()->json([
             'status' => ApiStatusEnum::SUCCESS,

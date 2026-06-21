@@ -97,7 +97,7 @@ export function ScannersSettingsPage() {
                     onScan={startScan}
                     onConnect={connectTo}
                     onDisconnect={disconnect}
-                    onBack={handleBack}
+                    // onBack={handleBack}
                     onAdded={handleAdded}
                     existingCodes={scanners.map((s) => s.code)}
                 />

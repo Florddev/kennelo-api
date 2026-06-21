@@ -23,7 +23,7 @@ import { PetTypeIllustration } from "@/features/pets/components/pet-type-illustr
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useNavigation } from "@/hooks/use-navigation";
 import PageLayout from "@/components/layouts/page-layout";
-import { Hearts, MinimalisticMagnifier } from "@solar-icons/react";
+import { Hearts, MinimalisticMagnifier, Scanner } from "@solar-icons/react";
 import { useAuth } from "@/features/auth";
 import Link from "next/link";
 
@@ -203,6 +203,17 @@ export default function MyPetsPage() {
                                 {!isMobile && t("features.pets.addPet")}
                             </Button>
                         )}
+                        <Button
+                            className="gap-2"
+                            variant="flat"
+                            size={isMobile ? "icon-sm" : "default"}
+                            asChild
+                        >
+                            <Link href={routes.LivePet()}>
+                                <Scanner className="size-3.5" />
+                                {!isMobile && t("features.pets.addPet")}
+                            </Link>
+                        </Button>
                     </>
                 )
             }

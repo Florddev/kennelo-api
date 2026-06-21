@@ -5,6 +5,8 @@ import { useTranslations } from "next-intl";
 import { BluetoothOff } from "lucide-react";
 import { addScanner, type ScannerModel } from "@workspace/modules/scanners";
 
+import { useAsyncState } from "@/hooks/use-async-state";
+
 import type { FoundDevice, BleErrorCode } from "../hooks/use-scanner-ble";
 import { derivePhase } from "../lib/scanner-phases";
 import { ScanPanel } from "./scan-panel";
@@ -34,9 +36,8 @@ export function AddScannerSection({
     existingCodes: string[];
 }) {
     const t = useTranslations("features.scanners.add");
+    const { execute, isLoading: saving, error: saveError } = useAsyncState();
     const [name, setName] = useState("");
-    const [saving, setSaving] = useState(false);
-    const [saveError, setSaveError] = useState<string | null>(null);
 
     const alreadyAssociated = !connecting && !!scannedCode && existingCodes.includes(scannedCode);
     const phase = derivePhase(saving, scanning, connecting, scannedCode, alreadyAssociated);
@@ -46,18 +47,16 @@ export function AddScannerSection({
         if (alreadyAssociated) onDisconnect();
     }, [alreadyAssociated, onDisconnect]);
 
-    const handleSave = async () => {
+    const handleSave = () => {
         if (!scannedCode) return;
-        setSaving(true);
-        setSaveError(null);
-        try {
-            const scanner = await addScanner({ code: scannedCode, name: name.trim() || undefined });
-            onDisconnect();
-            onAdded(scanner);
-        } catch {
-            setSaveError(t("errors.CONNECT_FAILED"));
-            setSaving(false);
-        }
+        execute(() => addScanner({ code: scannedCode, name: name.trim() || undefined }), {
+            displayError: true,
+            defaultError: t("errors.CONNECT_FAILED"),
+            onSuccess: (scanner) => {
+                onDisconnect();
+                onAdded(scanner);
+            },
+        });
     };
 
     return (
@@ -95,7 +94,7 @@ export function AddScannerSection({
                     name={name}
                     onNameChange={setName}
                     onSave={handleSave}
-                    saveError={saveError}
+                    saveError={saveError ?? null}
                 />
             )}
         </div>
