@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Events;
 
+use App\Models\Pet;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
@@ -18,6 +19,7 @@ class PetBroadcast implements ShouldBroadcast
         public string $microchipNumber,
         public string $userId,
         public string $scannerCode,
+        public ?Pet $pet = null,
     ) {}
 
     /** @return array<int, PrivateChannel> */
@@ -34,6 +36,10 @@ class PetBroadcast implements ShouldBroadcast
         return [
             'microchip_number' => $this->microchipNumber,
             'scanner_code' => $this->scannerCode,
+            'found' => $this->pet !== null,
+            'name' => $this->pet?->name,
+            'species' => $this->pet?->animalType?->name,
+            'breed' => $this->pet?->breed,
         ];
     }
 
