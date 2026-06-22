@@ -37,9 +37,28 @@ class PetBroadcast implements ShouldBroadcast
             'microchip_number' => $this->microchipNumber,
             'scanner_code' => $this->scannerCode,
             'found' => $this->pet !== null,
-            'name' => $this->pet?->name,
-            'species' => $this->pet?->animalType?->name,
-            'breed' => $this->pet?->breed,
+            'pet' => $this->pet ? [
+                'id' => $this->pet->id,
+                'animal_type_id' => $this->pet->animal_type_id,
+                'name' => $this->pet->name,
+                'breed' => $this->pet->breed,
+                'birth_date' => $this->pet->birth_date?->toDateString(),
+                'sex' => $this->pet->sex,
+                'weight' => $this->pet->weight,
+                'is_sterilized' => $this->pet->is_sterilized,
+                'has_microchip' => $this->pet->has_microchip,
+                'microchip_number' => $this->pet->microchip_number,
+                'about' => $this->pet->about,
+                'avatar_url' => $this->pet->getFirstMediaUrl('avatar') ?: null,
+                'animal_type' => $this->pet->animalType ? [
+                    'id' => $this->pet->animalType->id,
+                    'code' => $this->pet->animalType->code,
+                    'name' => $this->pet->animalType->name,
+                    'category' => $this->pet->animalType->category,
+                ] : null,
+                'created_at' => $this->pet->created_at?->toISOString(),
+                'updated_at' => $this->pet->updated_at?->toISOString(),
+            ] : null,
         ];
     }
 
