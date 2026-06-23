@@ -9,6 +9,7 @@ use App\Events\PetBroadcast;
 use App\Http\Controllers\Controller;
 use App\Models\Pet;
 use App\Models\Scanner;
+use App\Models\ScannerScan;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -30,6 +31,14 @@ class PetBroadcastController extends Controller
         $dedupeKey = "pet-broadcast:{$validated['scanner_code']}:{$validated['microchip_number']}";
 
         if (Cache::add($dedupeKey, true, self::DEDUPE_WINDOW_SECONDS)) {
+            ScannerScan::create([
+                'scanner_id' => $scanner->id,
+                'pet_id' => $pet?->id,
+                'microchip_number' => $validated['microchip_number'],
+                'found' => $pet !== null,
+                'scanned_at' => now(),
+            ]);
+
             event(new PetBroadcast($validated['microchip_number'], $scanner->user_id, $scanner->code, $pet));
         }
 
