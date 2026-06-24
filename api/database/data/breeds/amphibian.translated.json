@@ -2,7 +2,14 @@
     { "breed": "axolotl", "label": { "en": "Axolotl", "fr": "Axolotl", "ar": "أكسولوتل" } },
     { "breed": "african_dwarf_frog", "label": { "en": "African Dwarf Frog", "fr": "Grenouille naine africaine", "ar": "الضفدع القزم الأفريقي" } },
     { "breed": "white_tree_frog", "label": { "en": "White's Tree Frog", "fr": "Rainette de White", "ar": "ضفدع الشجر الأبيض" } },
+    { "breed": "red_eyed_tree_frog", "label": { "en": "Red-Eyed Tree Frog", "fr": "Rainette aux yeux rouges", "ar": "ضفدع الشجر أحمر العينين" } },
+    { "breed": "gray_tree_frog", "label": { "en": "Gray Tree Frog", "fr": "Rainette versicolore", "ar": "ضفدع الشجر الرمادي" } },
     { "breed": "pacman_frog", "label": { "en": "Pacman Frog", "fr": "Grenouille Pacman", "ar": "ضفدع باكمان" } },
+    { "breed": "poison_dart_frog", "label": { "en": "Poison Dart Frog", "fr": "Dendrobate", "ar": "ضفدع السهم السام" } },
+    { "breed": "american_bullfrog", "label": { "en": "American Bullfrog", "fr": "Grenouille taureau", "ar": "ضفدع الثور الأمريكي" } },
     { "breed": "fire_bellied_toad", "label": { "en": "Fire-Bellied Toad", "fr": "Crapaud à ventre de feu", "ar": "العلجوم ناري البطن" } },
-    { "breed": "tiger_salamander", "label": { "en": "Tiger Salamander", "fr": "Salamandre tigrée", "ar": "سمندل النمر" } }
+    { "breed": "cane_toad", "label": { "en": "Cane Toad", "fr": "Crapaud buffle", "ar": "علجوم القصب" } },
+    { "breed": "tiger_salamander", "label": { "en": "Tiger Salamander", "fr": "Salamandre tigrée", "ar": "سمندل النمر" } },
+    { "breed": "fire_salamander", "label": { "en": "Fire Salamander", "fr": "Salamandre tachetée", "ar": "السمندل الناري" } },
+    { "breed": "newt", "label": { "en": "Newt", "fr": "Triton", "ar": "سمندل الماء" } }
 ]

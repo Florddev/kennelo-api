@@ -9,5 +9,15 @@
     { "breed": "french_lop", "label": { "en": "French Lop", "fr": "Bélier français", "ar": "لوب فرنسي" } },
     { "breed": "mini_lop", "label": { "en": "Mini Lop", "fr": "Mini Bélier", "ar": "ميني لوب" } },
     { "breed": "rex", "label": { "en": "Rex", "fr": "Rex", "ar": "ريكس" } },
+    { "breed": "american_fuzzy_lop", "label": { "en": "American Fuzzy Lop", "fr": "Bélier American Fuzzy", "ar": "لوب أمريكي زغب" } },
+    { "breed": "english_lop", "label": { "en": "English Lop", "fr": "Bélier Anglais", "ar": "لوب إنجليزي" } },
+    { "breed": "jersey_wooly", "label": { "en": "Jersey Wooly", "fr": "Jersey Wooly", "ar": "جيرسي وولي" } },
+    { "breed": "polish", "label": { "en": "Polish", "fr": "Polonais", "ar": "بولندي" } },
+    { "breed": "californian", "label": { "en": "Californian", "fr": "Californien", "ar": "كاليفورني" } },
+    { "breed": "new_zealand", "label": { "en": "New Zealand", "fr": "Néo-Zélandais", "ar": "النيوزيلندي" } },
+    { "breed": "harlequin", "label": { "en": "Harlequin", "fr": "Arlequin", "ar": "هارلكوين" } },
+    { "breed": "himalayan_rabbit", "label": { "en": "Himalayan", "fr": "Himalayen", "ar": "الهيمالايا" } },
+    { "breed": "dwarf_hotot", "label": { "en": "Dwarf Hotot", "fr": "Nain Hotot", "ar": "هوتو القزم" } },
+    { "breed": "continental_giant", "label": { "en": "Continental Giant", "fr": "Géant Continental", "ar": "العملاق القاري" } },
     { "breed": "mixed_breed", "label": { "en": "Mixed Breed", "fr": "Croisé", "ar": "سلالة مختلطة" } }
 ]
