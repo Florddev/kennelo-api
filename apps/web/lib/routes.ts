@@ -140,6 +140,11 @@ type ExploreResultsParams = {
     search_params?: Record<string, string | number | boolean>;
 };
 
+type FavoritesParams = {
+    locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
 type HostBookParams = {
     locale?: string | number;
     id: string;
@@ -153,6 +158,11 @@ type HostDetailParams = {
 };
 
 type MessagesParams = {
+    locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type NotificationsParams = {
     locale?: string | number;
     search_params?: Record<string, string | number | boolean>;
 };
@@ -348,6 +358,10 @@ function ExploreResults(params?: ExploreResultsParams): string {
     return buildRoute("/[locale]/explore/results", params);
 }
 
+function Favorites(params?: FavoritesParams): string {
+    return buildRoute("/[locale]/favorites", params);
+}
+
 function HostBook(params: HostBookParams): string {
     return buildRoute("/[locale]/host/[id]/book", params);
 }
@@ -358,6 +372,10 @@ function HostDetail(params: HostDetailParams): string {
 
 function Messages(params?: MessagesParams): string {
     return buildRoute("/[locale]/messages", params);
+}
+
+function Notifications(params?: NotificationsParams): string {
+    return buildRoute("/[locale]/notifications", params);
 }
 
 function LivePet(params?: LivePetParams): string {
@@ -454,9 +472,11 @@ export const routes = {
     BookingDetail,
     Explore,
     ExploreResults,
+    Favorites,
     HostBook,
     HostDetail,
     Messages,
+    Notifications,
     LivePet,
     NewPet,
     MyPets,

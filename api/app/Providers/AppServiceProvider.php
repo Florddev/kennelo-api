@@ -7,6 +7,7 @@ namespace App\Providers;
 use App\Models\Activity;
 use App\Models\Booking;
 use App\Models\Conversation;
+use App\Models\Notification;
 use App\Models\Pet;
 use App\Models\Review;
 use App\Models\ReviewReport;
@@ -14,6 +15,7 @@ use App\Models\User;
 use App\Policies\ActivityPolicy;
 use App\Policies\BookingPolicy;
 use App\Policies\ConversationPolicy;
+use App\Policies\NotificationPolicy;
 use App\Policies\PetPolicy;
 use App\Policies\ReviewPolicy;
 use App\Policies\ReviewReportPolicy;
@@ -46,6 +48,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Conversation::class, ConversationPolicy::class);
         Gate::policy(Review::class, ReviewPolicy::class);
         Gate::policy(ReviewReport::class, ReviewReportPolicy::class);
+        Gate::policy(Notification::class, NotificationPolicy::class);
 
         Route::bind('media', fn (string $value) => Media::where('uuid', $value)->firstOrFail());
 

@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace App\Services\Stripe;
 
 use App\Enums\BookingStatusEnum;
+use App\Enums\NotificationTypeEnum;
 use App\Enums\PaymentStatusEnum;
 use App\Models\Activity;
 use App\Models\Booking;
 use App\Models\User;
+use App\Services\Notification\NotificationService;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Stripe\Account;
@@ -20,6 +23,10 @@ use Stripe\Transfer;
 
 class StripeWebhookService
 {
+    public function __construct(
+        private NotificationService $notifications
+    ) {}
+
     public function handleEvent(Event $event): void
     {
         match ($event->type) {
@@ -43,6 +50,12 @@ class StripeWebhookService
 
         $onboardingCompleted = $object->details_submitted && $object->charges_enabled;
 
+        $newlyOnboardedUsers = $onboardingCompleted
+            ? User::where('stripe_account_id', $object->id)
+                ->where('stripe_onboarding_completed', false)
+                ->get()
+            : new EloquentCollection;
+
         User::where('stripe_account_id', $object->id)
             ->update([
                 'stripe_charges_enabled' => $object->charges_enabled,
@@ -56,6 +69,14 @@ class StripeWebhookService
                 'stripe_payouts_enabled' => $object->payouts_enabled,
                 'stripe_onboarding_completed' => $onboardingCompleted,
             ]);
+
+        foreach ($newlyOnboardedUsers as $manager) {
+            $this->notifications->notify(
+                $manager,
+                NotificationTypeEnum::STRIPE_ACCOUNT_ACTIVATED,
+                ['stripe_account_id' => $object->id],
+            );
+        }
     }
 
     private function onPaymentIntentSucceeded(Event $event): void
@@ -97,6 +118,8 @@ class StripeWebhookService
             }
 
             $booking->update($updates);
+
+            $this->notifyBookingUser($booking, NotificationTypeEnum::PAYMENT_SUCCEEDED);
         });
     }
 
@@ -117,6 +140,8 @@ class StripeWebhookService
                 'stripe_payment_intent_id' => $paymentIntent->id,
                 'payment_status' => PaymentStatusEnum::FAILED,
             ]);
+
+            $this->notifyBookingUser($booking, NotificationTypeEnum::PAYMENT_FAILED);
         });
     }
 
@@ -137,6 +162,8 @@ class StripeWebhookService
                 'stripe_payment_intent_id' => $paymentIntent->id,
                 'payment_status' => PaymentStatusEnum::PROCESSING,
             ]);
+
+            $this->notifyBookingUser($booking, NotificationTypeEnum::PAYMENT_PROCESSING);
         });
     }
 
@@ -169,6 +196,8 @@ class StripeWebhookService
                 'refunded_at' => Carbon::now(),
                 'payment_status' => PaymentStatusEnum::REFUNDED,
             ]);
+
+            $this->notifyBookingUser($booking, NotificationTypeEnum::PAYMENT_REFUNDED);
         });
     }
 
@@ -236,5 +265,24 @@ class StripeWebhookService
         $object = $event->data->object ?? null;
 
         return $object instanceof PaymentIntent ? $object : null;
+    }
+
+    private function notifyBookingUser(Booking $booking, NotificationTypeEnum $type): void
+    {
+        $booking->loadMissing('user');
+
+        if ($booking->user === null) {
+            return;
+        }
+
+        $this->notifications->notify(
+            $booking->user,
+            $type,
+            [
+                'booking_id' => $booking->id,
+                'activity_id' => $booking->activity_id,
+                'amount' => $booking->total_price,
+            ],
+        );
     }
 }

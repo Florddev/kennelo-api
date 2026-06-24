@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, PenNewSquare } from "@solar-icons/react";
+import { ArrowLeft, PenNewSquare, ChatRoundLine } from "@solar-icons/react";
 import { useTranslations } from "next-intl";
 import { Button } from "@workspace/ui/components/button";
 import { usePet } from "@/features/pets/hooks/use-pet";
@@ -9,6 +9,7 @@ import { PetImageEmptyState } from "@/features/pets/components/pet-image-empty-s
 import { PetDetailSkeleton } from "@/features/pets/components/pet-detail-skeleton";
 import { useAuth } from "@/features/auth";
 import { useNavigation } from "@/hooks/use-navigation";
+import { useOpenConversation } from "@/features/conversations/hooks/use-open-conversation";
 import { formatAgeDisplay } from "@/features/pets/lib/pet-age";
 import { DetailPageLayout } from "@/components/layouts/detail-page-layout";
 import Link from "next/link";
@@ -16,12 +17,69 @@ import { useIsMobile } from "@/hooks/use-mobile";
 
 type Query = { id: string };
 
+function PetHeaderActions({
+    isOwner,
+    canContactOwner,
+    isMobile,
+    mobileEditHref,
+    desktopEditHref,
+    editLabel,
+    contactLabel,
+    isContactPending,
+    onContact,
+}: {
+    isOwner: boolean;
+    canContactOwner: boolean;
+    isMobile: boolean;
+    mobileEditHref: string;
+    desktopEditHref: string;
+    editLabel: string;
+    contactLabel: string;
+    isContactPending: boolean;
+    onContact: () => void;
+}) {
+    return (
+        <>
+            {isOwner && (
+                <Button size="sm" className="text-primary bg-card hover:bg-muted gap-1.5" asChild>
+                    <Link href={isMobile ? mobileEditHref : desktopEditHref}>
+                        <PenNewSquare />
+                        {editLabel}
+                    </Link>
+                </Button>
+            )}
+            {canContactOwner && (
+                <Button
+                    size="icon-sm"
+                    className="text-primary bg-card hover:bg-muted"
+                    disabled={isContactPending}
+                    onClick={onContact}
+                    aria-label={contactLabel}
+                >
+                    <ChatRoundLine />
+                </Button>
+            )}
+        </>
+    );
+}
+
+function PetOwnerFooter({ label }: { label: string }) {
+    return (
+        <div className="h-16 bg-card border-t px-2 flex justify-center items-center sm:hidden">
+            <Button className="w-full" size="xl">
+                {label}
+            </Button>
+        </div>
+    );
+}
+
 export default function PetDetailsPage() {
     const t = useTranslations();
     const { params, routes } = useNavigation<Query>();
     const { pet, isLoading } = usePet(params.id);
     const isMobile = useIsMobile();
-    const { user } = useAuth();
+    const { user, activities } = useAuth();
+    const { openWithActivity, isPending: isContactPending } = useOpenConversation();
 
     if (!pet && isLoading) {
         return <PetDetailSkeleton />;
@@ -38,6 +96,7 @@ export default function PetDetailsPage() {
     );
 
     const isOwner = user?.id === pet.userId;
+    const canContactOwner = !isOwner && activities.length > 0;
     const typeCode = pet.animalType?.code?.toLowerCase() ?? "";
     const images = pet.getGalleryImages();
 
@@ -57,34 +116,23 @@ export default function PetDetailsPage() {
                 </Button>
             }
             headerEnd={
-                <>
-                    {isOwner && (
-                        <Button
-                            size="sm"
-                            className="text-primary bg-card hover:bg-muted gap-1.5"
-                            asChild
-                        >
-                            <Link
-                                href={
-                                    isMobile
-                                        ? routes.PetEditPage({ id: pet.id })
-                                        : routes.PetEditGeneral({ id: pet.id })
-                                }
-                            >
-                                <PenNewSquare />
-                                {t("common.actions.edit")}
-                            </Link>
-                        </Button>
-                    )}
-                </>
+                <PetHeaderActions
+                    isOwner={isOwner}
+                    canContactOwner={canContactOwner}
+                    isMobile={isMobile}
+                    mobileEditHref={routes.PetEditPage({ id: pet.id })}
+                    desktopEditHref={routes.PetEditGeneral({ id: pet.id })}
+                    editLabel={t("common.actions.edit")}
+                    contactLabel={t("features.conversations.contactOwner")}
+                    isContactPending={isContactPending}
+                    onContact={() => openWithActivity(activities[0]!.id, pet.userId)}
+                />
             }
             footer={
                 isOwner ? (
-                    <div className="h-16 bg-card border-t px-2 flex justify-center items-center sm:hidden">
-                        <Button className="w-full" size="xl">
-                            {t("features.pets.profile.findHost", { name: pet.name })}
-                        </Button>
-                    </div>
+                    <PetOwnerFooter
+                        label={t("features.pets.profile.findHost", { name: pet.name })}
+                    />
                 ) : undefined
             }
             className="pb-6"

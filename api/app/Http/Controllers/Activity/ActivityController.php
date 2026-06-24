@@ -8,13 +8,12 @@ use App\Enums\ApiStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Activity\ListActivitiesRequest;
 use App\Http\Requests\Activity\StoreActivityRequest;
-use App\Http\Requests\Activity\SyncCollaboratorPermissionsRequest;
 use App\Http\Requests\Activity\UpdateActivityRequest;
 use App\Http\Resources\ActivityResource;
 use App\Models\Activity;
-use App\Models\User;
 use App\Services\Activity\ActivityService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
 /**
@@ -55,9 +54,9 @@ class ActivityController extends Controller
             ->setStatusCode(201);
     }
 
-    public function show(string $id): JsonResponse
+    public function show(Request $request, string $id): JsonResponse
     {
-        $activity = $this->activityService->findById($id);
+        $activity = $this->activityService->findById($id, $request->user());
 
         $this->authorize('view', $activity);
 
@@ -90,21 +89,5 @@ class ActivityController extends Controller
         $this->activityService->delete($activity);
 
         return response()->json(null, 204);
-    }
-
-    public function syncCollaboratorPermissions(SyncCollaboratorPermissionsRequest $request, Activity $activity, User $user): JsonResponse
-    {
-        $this->authorize('update', $activity);
-
-        if (! $activity->collaborators()->where('users.id', $user->id)->exists()) {
-            abort(422, 'User is not a collaborator of this activity.');
-        }
-
-        $this->activityService->syncCollaboratorPermissions($activity, $user, $request->validated('permissions'));
-
-        return response()->json([
-            'status' => ApiStatusEnum::SUCCESS,
-            'timestamp' => human_date(Carbon::now()),
-        ]);
     }
 }

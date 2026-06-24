@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Conversation;
 
 use App\Enums\MessageTypeEnum;
+use App\Enums\NotificationTypeEnum;
 use App\Enums\SenderTypeEnum;
 use App\Events\MessageSent;
 use App\Events\MessagesRead;
@@ -16,6 +17,8 @@ use App\Models\Conversation;
 use App\Models\Message;
 use App\Models\MessageFile;
 use App\Models\User;
+use App\Services\Notification\NotificationRecipientResolver;
+use App\Services\Notification\NotificationService;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -23,6 +26,11 @@ use Illuminate\Support\Facades\Storage;
 
 class ConversationService
 {
+    public function __construct(
+        private NotificationService $notifications,
+        private NotificationRecipientResolver $recipients
+    ) {}
+
     public function getUserConversations(User $user, array $filters = []): LengthAwarePaginator
     {
         $perPage = $filters['per_page'] ?? 15;
@@ -78,6 +86,21 @@ class ConversationService
                 'booking_id' => $booking->id,
             ]);
         }
+
+        return $conversation->load(['activity', 'user', 'bookingThreads.booking']);
+    }
+
+    public function getOrCreateForActivity(User $user, Activity $activity): Conversation
+    {
+        $conversation = Conversation::firstOrCreate(
+            [
+                'user_id' => $user->id,
+                'activity_id' => $activity->id,
+            ],
+            [
+                'last_message_at' => now(),
+            ]
+        );
 
         return $conversation->load(['activity', 'user', 'bookingThreads.booking']);
     }
@@ -144,6 +167,19 @@ class ConversationService
 
             event(new MessageSent($message));
             event(new NewMessageNotification($message));
+
+            if (in_array($messageType, [MessageTypeEnum::TEXT, MessageTypeEnum::FILE], true)) {
+                $this->notifications->notify(
+                    $this->recipients->forMessage($message),
+                    NotificationTypeEnum::NEW_MESSAGE,
+                    [
+                        'conversation_id' => $conversation->id,
+                        'message_id' => $message->id,
+                        'sender_id' => $user->id,
+                        'content_preview' => str($message->content ?? '')->limit(100)->toString(),
+                    ],
+                );
+            }
 
             return $message;
         });

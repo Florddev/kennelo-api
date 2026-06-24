@@ -36,20 +36,12 @@ class ActivitySeeder extends Seeder
             throw new \RuntimeException('Not enough addresses. Run AddressSeeder first.');
         }
 
-        $collaborators = User::where('id', '!=', $manager->id)->get();
-
-        $addresses->each(function ($address) use ($manager, $collaborators) {
+        $addresses->each(function ($address) use ($manager) {
             /** @var Activity $activity */
             $activity = Activity::factory()->create([
                 'address_id' => $address->id,
                 'manager_id' => $manager->id,
             ]);
-
-            if ($collaborators->isNotEmpty()) {
-                $activity->collaborators()->attach(
-                    $collaborators->random(min(2, $collaborators->count()))->pluck('id')
-                );
-            }
 
             $keyword = $this->imageKeywords[array_rand($this->imageKeywords)];
             $this->seedActivityImages($activity, $keyword, rand(2, 4), true);

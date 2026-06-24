@@ -14,7 +14,10 @@ import type {
 import type { DateRange } from "react-day-picker";
 
 import { useNavigation } from "@/hooks/use-navigation";
+import { useAuth } from "@/features/auth";
+import { useOpenConversation } from "@/features/conversations/hooks/use-open-conversation";
 import { DetailPageLayout } from "@/components/layouts/detail-page-layout";
+import { FavoriteButton } from "@/features/activities";
 
 import { minPricePerNight } from "../lib/pricing";
 import { HostHeaderSection } from "./host-header-section";
@@ -44,9 +47,13 @@ export function HostDetailContent({
 }: HostDetailContentProps) {
     const t = useTranslations();
     const { router, routes } = useNavigation();
+    const { user, isAuthenticated } = useAuth();
+    const { openWithActivity, isPending: isContactPending } = useOpenConversation();
     const [dateRange, setDateRange] = useState<DateRange | undefined>(initialDateRange);
     const pricePerNight = minPricePerNight(capacities);
     const canBook = Boolean(dateRange?.from && dateRange?.to);
+    const isHost = user?.id === activity.managerId;
+    const canContact = isAuthenticated && !isHost;
 
     const handleBook = () => {
         if (!dateRange?.from || !dateRange?.to) return;
@@ -83,12 +90,17 @@ export function HostDetailContent({
                     <ArrowLeft />
                 </Button>
             }
+            headerEnd={
+                <FavoriteButton activityId={activity.id} isFavorited={activity.isFavorited} />
+            }
             footer={
                 <HostBookingBar
                     pricePerNight={pricePerNight}
                     dateRange={dateRange}
                     canBook={canBook}
                     onBook={handleBook}
+                    onContact={canContact ? () => openWithActivity(activity.id) : undefined}
+                    isContactPending={isContactPending}
                 />
             }
             className="bg-white pb-[140px] md:pb-20"

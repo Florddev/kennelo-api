@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Enums\ApiStatusEnum;
 use App\Http\Middleware\AuthenticateJWT;
+use App\Http\Middleware\AuthenticateJWTOptional;
 use App\Http\Middleware\EnsureEmailIsVerified;
 use App\Http\Middleware\SetLocale;
 use App\Services\Review\ReviewPublicationService;
@@ -45,6 +46,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'verified' => EnsureEmailIsVerified::class,
             'role' => RoleMiddleware::class,
             'auth.jwt' => AuthenticateJWT::class,
+            'auth.jwt.optional' => AuthenticateJWTOptional::class,
         ]);
 
     })

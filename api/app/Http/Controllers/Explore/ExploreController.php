@@ -21,7 +21,7 @@ class ExploreController extends Controller
     {
         [$lat, $lng] = $this->resolveCoords($request);
 
-        $sections = $this->service->getSections($lat, $lng);
+        $sections = $this->service->getSections($lat, $lng, $request->user());
 
         $sectionsData = array_map(fn ($section) => [
             'id' => $section['id'],
@@ -41,7 +41,7 @@ class ExploreController extends Controller
         [$lat, $lng] = $this->resolveCoords($request);
         $page = max(1, (int) $request->input('page', 1));
 
-        $result = $this->service->getSectionPage($sectionId, $lat, $lng, $page);
+        $result = $this->service->getSectionPage($sectionId, $lat, $lng, $page, $request->user());
 
         if ($result === null) {
             abort(404);
@@ -66,7 +66,7 @@ class ExploreController extends Controller
         [$lat, $lng] = $this->resolveCoords($request);
         $page = max(1, (int) $request->input('page', 1));
 
-        $result = $this->service->search($request->validated(), $lat, $lng, $page);
+        $result = $this->service->search($request->validated(), $lat, $lng, $page, $request->user());
 
         return response()->json([
             'data' => [

@@ -1,0 +1,87 @@
+{
+    "title": "Notifications",
+    "markAllAsRead": "Tout marquer comme lu",
+    "empty": "Vous n'avez aucune notification",
+    "loadMore": "Charger plus",
+    "delete": "Supprimer la notification",
+    "generic": {
+        "title": "Nouvelle notification"
+    },
+    "booking_created": {
+        "title": "Nouvelle demande de réservation",
+        "body": "Une nouvelle réservation pour {activity}"
+    },
+    "booking_confirmed": {
+        "title": "Réservation confirmée",
+        "body": "Votre réservation pour {activity} est confirmée"
+    },
+    "booking_rejected": {
+        "title": "Réservation refusée",
+        "body": "Votre réservation pour {activity} a été refusée"
+    },
+    "booking_completed": {
+        "title": "Séjour terminé",
+        "body": "Votre séjour chez {activity} est terminé"
+    },
+    "booking_cancelled_by_client": {
+        "title": "Réservation annulée",
+        "body": "Une réservation pour {activity} a été annulée"
+    },
+    "payment_succeeded": {
+        "title": "Paiement reçu"
+    },
+    "payment_failed": {
+        "title": "Échec du paiement"
+    },
+    "payment_processing": {
+        "title": "Paiement en cours"
+    },
+    "payment_refunded": {
+        "title": "Paiement remboursé"
+    },
+    "stripe_account_activated": {
+        "title": "Votre compte de paiement est actif"
+    },
+    "new_message": {
+        "title": "Nouveau message"
+    },
+    "review_received": {
+        "title": "Nouvel avis reçu"
+    },
+    "review_published": {
+        "title": "Votre avis est publié"
+    },
+    "review_response": {
+        "title": "Nouvelle réponse à votre avis"
+    },
+    "review_reported": {
+        "title": "Un avis a été signalé"
+    },
+    "review_report_resolved": {
+        "title": "Signalement d'avis traité"
+    },
+    "identity_submitted": {
+        "title": "Vérification d'identité envoyée"
+    },
+    "identity_approved": {
+        "title": "Identité vérifiée"
+    },
+    "identity_rejected": {
+        "title": "Vérification d'identité refusée"
+    },
+    "account_status_changed": {
+        "title": "Le statut de votre compte a changé"
+    },
+    "collaborator_invited": {
+        "title": "Invitation à collaborer",
+        "body": "Vous avez été invité à collaborer sur {activity}"
+    },
+    "collaborator_accepted": {
+        "title": "Invitation acceptée",
+        "body": "Votre invitation à collaborer sur {activity} a été acceptée"
+    },
+    "collaborator_declined": {
+        "title": "Invitation refusée",
+        "body": "Votre invitation à collaborer sur {activity} a été refusée"
+    }
+}

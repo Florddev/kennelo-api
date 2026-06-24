@@ -59,11 +59,7 @@ it('collaborator with MANAGE_CYCLES can create a cycle', function () {
     $activity = Activity::factory()->create(['manager_id' => $manager->id]);
 
     $collaborator = User::factory()->create();
-    $activity->collaborators()->attach($collaborator->id);
-    $activity->collaboratorPermissions()->create([
-        'user_id' => $collaborator->id,
-        'permission' => ActivityPermissionEnum::MANAGE_CYCLES->value,
-    ]);
+    attachCollaborator($activity, $collaborator, [ActivityPermissionEnum::MANAGE_CYCLES]);
 
     $this->withHeaders(asUser($collaborator))
         ->postJson("/api/activities/{$activity->id}/cycles", ['priority' => 1])
@@ -75,7 +71,7 @@ it('collaborator without MANAGE_CYCLES cannot create a cycle', function () {
     $activity = Activity::factory()->create(['manager_id' => $manager->id]);
 
     $collaborator = User::factory()->create();
-    $activity->collaborators()->attach($collaborator->id);
+    attachCollaborator($activity, $collaborator);
 
     $this->withHeaders(asUser($collaborator))
         ->postJson("/api/activities/{$activity->id}/cycles", ['priority' => 1])

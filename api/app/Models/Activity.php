@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Enums\ActivityPermissionEnum;
 use App\Enums\ActivityTypeEnum;
+use App\Enums\CollaboratorStatusEnum;
 use App\Enums\ReviewerTypeEnum;
 use App\Services\MediaService;
 use Illuminate\Database\Eloquent\Builder;
@@ -92,12 +93,32 @@ class Activity extends Model implements HasMedia
 
     public function collaborators(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'activity_collaborators', 'activity_id', 'user_id');
+        return $this->belongsToMany(User::class, 'activity_collaborators', 'activity_id', 'user_id')
+            ->wherePivot('status', CollaboratorStatusEnum::ACCEPTED->value);
     }
 
-    public function collaboratorPermissions(): HasMany
+    public function roles(): HasMany
     {
-        return $this->hasMany(ActivityCollaboratorPermission::class);
+        return $this->hasMany(ActivityRole::class);
+    }
+
+    public function collaboratorLinks(): HasMany
+    {
+        return $this->hasMany(ActivityCollaborator::class);
+    }
+
+    public function favoritedBy(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'favorites', 'activity_id', 'user_id');
+    }
+
+    public function scopeWithIsFavorited(Builder $query, ?User $user): Builder
+    {
+        if ($user === null) {
+            return $query;
+        }
+
+        return $query->withExists(['favoritedBy as is_favorited' => fn (Builder $q) => $q->where('users.id', $user->id)]);
     }
 
     public function cycles(): HasMany
@@ -128,13 +149,11 @@ class Activity extends Model implements HasMedia
 
     public function collaboratorHasPermission(User $user, ActivityPermissionEnum $permission): bool
     {
-        if (! $this->collaborators()->where('users.id', $user->id)->exists()) {
-            return false;
-        }
-
-        return $this->collaboratorPermissions()
+        return ActivityCollaborator::query()
+            ->where('activity_id', $this->id)
             ->where('user_id', $user->id)
-            ->where('permission', $permission->value)
+            ->accepted()
+            ->withPermission($permission)
             ->exists();
     }
 

@@ -80,7 +80,7 @@ class User extends Authenticatable implements HasMedia, JWTSubject, MustVerifyEm
     protected static function booted(): void
     {
         static::addGlobalScope('active', function (Builder $query): void {
-            $query->where('status', UserStatusEnum::ACTIVE);
+            $query->where('users.status', UserStatusEnum::ACTIVE);
         });
     }
 
@@ -107,6 +107,17 @@ class User extends Authenticatable implements HasMedia, JWTSubject, MustVerifyEm
     public function collaboratedActivities(): BelongsToMany
     {
         return $this->belongsToMany(Activity::class, 'activity_collaborators', 'user_id', 'activity_id');
+    }
+
+    public function collaboratorLinks(): HasMany
+    {
+        return $this->hasMany(ActivityCollaborator::class, 'user_id');
+    }
+
+    public function favoriteActivities(): BelongsToMany
+    {
+        return $this->belongsToMany(Activity::class, 'favorites', 'user_id', 'activity_id')
+            ->withPivot('created_at');
     }
 
     public function scanners(): HasMany

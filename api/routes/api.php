@@ -3,10 +3,13 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Activity\ActivityAvailabilityController;
+use App\Http\Controllers\Activity\ActivityCollaboratorController;
 use App\Http\Controllers\Activity\ActivityController;
 use App\Http\Controllers\Activity\ActivityCycleController;
 use App\Http\Controllers\Activity\ActivityDashboardController;
 use App\Http\Controllers\Activity\ActivityImageController;
+use App\Http\Controllers\Activity\ActivityRoleController;
+use App\Http\Controllers\Activity\CollaboratorInvitationController;
 use App\Http\Controllers\Activity\StripeConnectController;
 use App\Http\Controllers\Booking\ActivityBookingController;
 use App\Http\Controllers\Booking\BookingController;
@@ -14,7 +17,9 @@ use App\Http\Controllers\Conversation\ActivityConversationController;
 use App\Http\Controllers\Conversation\ConversationController;
 use App\Http\Controllers\Conversation\MessageController;
 use App\Http\Controllers\Explore\ExploreController;
+use App\Http\Controllers\Favorite\FavoriteController;
 use App\Http\Controllers\Hosting\HostScanController;
+use App\Http\Controllers\Notification\NotificationController;
 use App\Http\Controllers\PaymentMethod\PaymentMethodController;
 use App\Http\Controllers\Pet\AnimalTypeController;
 use App\Http\Controllers\Pet\PetAttributeController;
@@ -43,17 +48,29 @@ use Illuminate\Support\Facades\Route;
 Route::get('/test', [TestController::class, 'index']);
 
 Route::get('/animal-types', [AnimalTypeController::class, 'index']);
-Route::post('/pets/broadcast', [PetBroadcastController::class, 'broadcast']);
+Route::middleware('auth.jwt.optional')->group(function () {
+    Route::post('/pets/broadcast', [PetBroadcastController::class, 'broadcast']);
 
-Route::get('/explore/activities', [ExploreController::class, 'activities']);
-Route::get('/explore/activities/sections/{sectionId}', [ExploreController::class, 'sectionPage']);
-Route::get('/explore/search', [ExploreController::class, 'search']);
+    Route::get('/explore/activities', [ExploreController::class, 'activities']);
+    Route::get('/explore/activities/sections/{sectionId}', [ExploreController::class, 'sectionPage']);
+    Route::get('/explore/search', [ExploreController::class, 'search']);
+});
 Route::post('/webhooks/stripe', [StripeWebhookController::class, 'handle']);
 
 Route::middleware(['auth.jwt'])->group(function () {
     // Activities
     Route::apiResource('activities', ActivityController::class);
-    Route::put('/activities/{activity}/collaborators/{user}/permissions', [ActivityController::class, 'syncCollaboratorPermissions']);
+    Route::get('/activities/{activity}/roles', [ActivityRoleController::class, 'index']);
+    Route::post('/activities/{activity}/roles', [ActivityRoleController::class, 'store']);
+    Route::put('/activities/{activity}/roles/{role}', [ActivityRoleController::class, 'update']);
+    Route::delete('/activities/{activity}/roles/{role}', [ActivityRoleController::class, 'destroy']);
+    Route::get('/activities/{activity}/collaborators', [ActivityCollaboratorController::class, 'index']);
+    Route::post('/activities/{activity}/collaborators', [ActivityCollaboratorController::class, 'store']);
+    Route::put('/activities/{activity}/collaborators/accept', [CollaboratorInvitationController::class, 'accept']);
+    Route::put('/activities/{activity}/collaborators/decline', [CollaboratorInvitationController::class, 'decline']);
+    Route::put('/activities/{activity}/collaborators/{user}/role', [ActivityCollaboratorController::class, 'assignRole']);
+    Route::delete('/activities/{activity}/collaborators/{user}', [ActivityCollaboratorController::class, 'destroy']);
+    Route::get('/collaborator-invitations', [CollaboratorInvitationController::class, 'index']);
     Route::get('/activities/{activity}/dashboard', [ActivityDashboardController::class, 'show']);
     Route::get('/activities/{activity}/availabilities', [ActivityAvailabilityController::class, 'index']);
     Route::get('/activities/{activity}/availabilities/range', [ActivityAvailabilityController::class, 'range']);
@@ -99,6 +116,18 @@ Route::middleware(['auth.jwt'])->group(function () {
     Route::delete('/pets/{pet}/images/{media}', [PetImageController::class, 'destroy']);
     Route::get('/pets/{pet}/reviews', [PetReviewController::class, 'index']);
 
+    // Favorites
+    Route::get('/favorites', [FavoriteController::class, 'index']);
+    Route::post('/favorites', [FavoriteController::class, 'store']);
+    Route::delete('/favorites/{activity}', [FavoriteController::class, 'destroy']);
+
+    // Notifications
+    Route::get('/notifications', [NotificationController::class, 'index']);
+    Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
+    Route::put('/notifications/read-all', [NotificationController::class, 'markAllAsRead']);
+    Route::put('/notifications/{notification}/read', [NotificationController::class, 'markAsRead']);
+    Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy']);
+
     // Users (admin)
     Route::apiResource('users', UserController::class)->only(['index', 'show', 'update']);
     Route::put('/users/{id}/status', [UserController::class, 'updateStatus']);
@@ -115,6 +144,7 @@ Route::middleware(['auth.jwt'])->group(function () {
 
     // Conversations (activity)
     Route::get('/activities/{activity}/conversations', [ActivityConversationController::class, 'index']);
+    Route::post('/activities/{activity}/conversations', [ActivityConversationController::class, 'store']);
 
     // Messages
     Route::get('/conversations/{conversation}/messages', [MessageController::class, 'index']);

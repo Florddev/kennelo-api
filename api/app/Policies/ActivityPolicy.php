@@ -37,6 +37,11 @@ class ActivityPolicy
         return $user->hasRole('admin') || $user->id === $activity->manager_id;
     }
 
+    public function manageCollaborators(User $user, Activity $activity): bool
+    {
+        return $user->hasRole('admin') || $user->id === $activity->manager_id;
+    }
+
     public function managePayments(User $user, Activity $activity): bool
     {
         return $user->hasRole('admin') || $user->id === $activity->manager_id;

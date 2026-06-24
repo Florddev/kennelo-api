@@ -1,0 +1,12 @@
+{
+    "title": "Favoris",
+    "description": "Les activités que vous avez enregistrées",
+    "empty": {
+        "title": "Aucun favori pour l'instant",
+        "description": "Les activités que vous ajoutez à vos favoris apparaîtront ici.",
+        "cta": "Explorer les activités"
+    },
+    "loadMore": "Charger plus",
+    "please-login": "Connectez-vous pour consulter vos favoris",
+    "please-login-description": "Une fois votre connexion effectuée, les activités enregistrées apparaîtront ici."
+}

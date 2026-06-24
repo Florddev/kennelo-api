@@ -56,8 +56,22 @@
                 "name": "الاسم",
                 "email": "البريد الإلكتروني",
                 "phone": "الهاتف",
-                "role": "الدور"
-            }
+                "role": "الدور",
+                "status": "الحالة"
+            },
+            "statuses": {
+                "pending": "قيد الانتظار",
+                "accepted": "مقبول",
+                "refused": "مرفوض"
+            },
+            "invite": "دعوة متعاون",
+            "sendInvite": "إرسال الدعوة",
+            "invited": "تم إرسال الدعوة",
+            "assignRole": "تعيين دور",
+            "roleAssigned": "تم تعيين الدور",
+            "selectRole": "اختر دورًا",
+            "noRoles": "أنشئ دورًا أولاً لتتمكن من تعيينه.",
+            "removed": "تمت إزالة المتعاون"
         },
         "availabilities": {
             "filter": "تصفية حسب الملاحظة...",
@@ -69,6 +83,26 @@
         "capacities": {
             "filter": "تصفية حسب نوع الحيوان...",
             "count": "{count, plural, =1 {# سعة} other {# سعات}}"
+        },
+        "roles": {
+            "title": "الأدوار",
+            "description": "حدّد الأدوار وصلاحياتها لهذا النشاط.",
+            "create": "دور جديد",
+            "edit": "تعديل الدور",
+            "saved": "تم حفظ الدور",
+            "deleted": "تم حذف الدور",
+            "empty": "لا توجد أدوار",
+            "name": "الاسم",
+            "namePlaceholder": "مثال: سكرتير",
+            "permissions": "الصلاحيات",
+            "noPermissions": "لا توجد صلاحيات"
+        },
+        "permissions": {
+            "update_activity": "تعديل النشاط",
+            "manage_cycles": "إدارة الدورات",
+            "manage_availabilities": "إدارة التوفر",
+            "manage_bookings": "إدارة الحجوزات",
+            "manage_messages": "إدارة الرسائل"
         }
     },
     "empty": {
@@ -180,5 +214,13 @@
         "home-care": "رعاية منزلية",
         "host-family": "عائلة مضيفة",
         "mobile-boarding": "نزل متنقل"
+    },
+    "invitations": {
+        "title": "دعوات التعاون",
+        "description": "تمت دعوتك للتعاون في هذه الأنشطة.",
+        "accept": "قبول",
+        "decline": "رفض",
+        "accepted": "تم قبول الدعوة",
+        "declined": "تم رفض الدعوة"
     }
 }

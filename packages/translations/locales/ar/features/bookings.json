@@ -43,7 +43,8 @@
             "pending": "قيد الانتظار",
             "refunded": "مسترد",
             "failed": "فشل",
-            "no_payment_required": "لا يلزم دفع"
+            "no_payment_required": "لا يلزم دفع",
+            "succeeded": "نجح"
         },
         "viewInvoice": "عرض الإيصال / الفاتورة",
         "tabDetails": "التفاصيل",

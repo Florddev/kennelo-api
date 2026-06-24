@@ -23,6 +23,7 @@ import { ShapeMedia } from "@/components/media/shape-media";
 import { PetTypeIllustration } from "@/features/pets/components/pet-type-illustration";
 import { UserAvatar } from "@/features/auth/components/user-avatar";
 import { useNavigation } from "@/hooks/use-navigation";
+import { useOpenConversation } from "@/features/conversations/hooks/use-open-conversation";
 import { BookingDetailHostActions } from "./booking-detail-host-actions";
 
 function GuestInfo({ user }: { user: UserModel | null }) {
@@ -56,6 +57,7 @@ export function BookingDetailTabDetails({
     const t = useTranslations();
     const locale = useLocale();
     const { routes } = useNavigation();
+    const { openWithBooking, isPending: isContactPending } = useOpenConversation();
 
     const canModifyOrCancel = booking.isPending() || booking.isConfirmed();
 
@@ -218,7 +220,8 @@ export function BookingDetailTabDetails({
                             : t("features.bookings.detail.messageHost")
                     }
                     displayArrow
-                    comingSoon
+                    disabled={isContactPending}
+                    onClick={() => openWithBooking(booking.id)}
                 />
                 {!isHost && canModifyOrCancel && (
                     <>

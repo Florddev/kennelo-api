@@ -56,8 +56,22 @@
                 "name": "Name",
                 "email": "Email",
                 "phone": "Phone",
-                "role": "Role"
-            }
+                "role": "Role",
+                "status": "Status"
+            },
+            "statuses": {
+                "pending": "Pending",
+                "accepted": "Accepted",
+                "refused": "Declined"
+            },
+            "invite": "Invite a collaborator",
+            "sendInvite": "Send invitation",
+            "invited": "Invitation sent",
+            "assignRole": "Assign a role",
+            "roleAssigned": "Role assigned",
+            "selectRole": "Select a role",
+            "noRoles": "Create a role first to be able to assign it.",
+            "removed": "Collaborator removed"
         },
         "availabilities": {
             "filter": "Filter by note...",
@@ -69,6 +83,26 @@
         "capacities": {
             "filter": "Filter by animal type...",
             "count": "{count, plural, =1 {# capacity} other {# capacities}}"
+        },
+        "roles": {
+            "title": "Roles",
+            "description": "Define roles and their permissions for this activity.",
+            "create": "New role",
+            "edit": "Edit role",
+            "saved": "Role saved",
+            "deleted": "Role deleted",
+            "empty": "No roles yet",
+            "name": "Name",
+            "namePlaceholder": "e.g. Secretary",
+            "permissions": "Permissions",
+            "noPermissions": "No permissions"
+        },
+        "permissions": {
+            "update_activity": "Edit the activity",
+            "manage_cycles": "Manage cycles",
+            "manage_availabilities": "Manage availabilities",
+            "manage_bookings": "Manage bookings",
+            "manage_messages": "Manage messages"
         }
     },
     "empty": {
@@ -191,5 +225,13 @@
         "home-care": "Home care",
         "host-family": "Host family",
         "mobile-boarding": "Mobile boarding"
+    },
+    "invitations": {
+        "title": "Collaboration invitations",
+        "description": "You have been invited to collaborate on these activities.",
+        "accept": "Accept",
+        "decline": "Decline",
+        "accepted": "Invitation accepted",
+        "declined": "Invitation declined"
     }
 }

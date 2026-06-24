@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { cn } from "@workspace/ui/lib/utils";
 import { useNavigation } from "@/hooks/use-navigation";
+import { FavoriteButton } from "@/features/activities";
 import type { ActivityModel } from "@workspace/modules/activities";
 import { CrownStar, Gallery, Star, UsersGroupRounded } from "@solar-icons/react";
 
@@ -96,12 +97,14 @@ export function HostCard({
 
     if (variant === "horizontal") {
         return (
-            <button
+            <div
                 data-slot="host-card-horizontal"
-                type="button"
+                role="button"
+                tabIndex={0}
                 onClick={handleClick}
+                onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && handleClick()}
                 className={cn(
-                    "group flex w-full items-stretch gap-3 rounded-[1.75rem] text-start",
+                    "group flex w-full cursor-pointer items-stretch gap-3 rounded-[1.75rem] text-start",
                     highlighted
                         ? "border-secondary/30 bg-secondary/5 shadow-[0_20px_40px_-30px_hsl(var(--secondary))]"
                         : "border-border/60 bg-card hover:border-border/90",
@@ -115,6 +118,11 @@ export function HostCard({
                     <div className="absolute start-2 top-2">
                         <ProBadge isPro={host.isProfessional} showText={false} />
                     </div>
+                    <FavoriteButton
+                        activityId={host.id}
+                        isFavorited={host.isFavorited}
+                        className="absolute end-2 top-2 z-10"
+                    />
                 </div>
                 <div className="flex flex-col justify-between py-2">
                     <div className="min-w-0 space-y-1">
@@ -137,7 +145,7 @@ export function HostCard({
                         </div>
                     </div>
                 </div>
-            </button>
+            </div>
         );
     }
 
@@ -172,6 +180,11 @@ export function HostCard({
                         </div>
                     </div>
                 )}
+                <FavoriteButton
+                    activityId={host.id}
+                    isFavorited={host.isFavorited}
+                    className="absolute end-3 top-3 z-10"
+                />
             </div>
 
             <div className="flex flex-1 flex-col gap-2 pt-2 px-1">

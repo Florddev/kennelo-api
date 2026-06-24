@@ -3,7 +3,9 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Image as ImageIcon } from "lucide-react";
 import { ActivityModel } from "@workspace/modules/activities";
+import { Skeleton } from "@workspace/ui/components/skeleton";
 import { cn } from "@workspace/ui/lib/utils";
+import { FavoriteButton } from "@/features/activities";
 
 type ActivityCardProps = {
     activity: ActivityModel;
@@ -45,6 +47,11 @@ export function ActivityCard({ activity, href, className }: ActivityCardProps) {
                         </div>
                     </div>
                 )}
+                <FavoriteButton
+                    activityId={activity.id}
+                    isFavorited={activity.isFavorited}
+                    className="absolute end-3 top-3 z-10"
+                />
             </div>
             <div className="flex flex-col gap-2 px-3 py-4">
                 <h3 className="text-xl font-semibold text-foreground line-clamp-1">
@@ -62,5 +69,20 @@ export function ActivityCard({ activity, href, className }: ActivityCardProps) {
                 )}
             </div>
         </Link>
+    );
+}
+
+export function ActivityCardSkeleton({ className }: { className?: string }) {
+    return (
+        <div
+            data-slot="activity-card-skeleton"
+            className={cn("block overflow-hidden rounded-2xl bg-card", className)}
+        >
+            <Skeleton className="h-64 w-full rounded-2xl" />
+            <div className="flex flex-col gap-2 px-3 py-4">
+                <Skeleton className="h-6 w-2/3" />
+                <Skeleton className="h-4 w-1/2" />
+            </div>
+        </div>
     );
 }

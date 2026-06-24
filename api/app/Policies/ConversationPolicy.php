@@ -6,6 +6,7 @@ namespace App\Policies;
 
 use App\Enums\ActivityPermissionEnum;
 use App\Models\Activity;
+use App\Models\Booking;
 use App\Models\Conversation;
 use App\Models\User;
 
@@ -43,5 +44,22 @@ class ConversationPolicy
         }
 
         return $activity->collaboratorHasPermission($user, ActivityPermissionEnum::MANAGE_MESSAGES);
+    }
+
+    public function createForBooking(User $user, Booking $booking): bool
+    {
+        if ((string) $booking->user_id === (string) $user->id) {
+            return true;
+        }
+
+        $booking->loadMissing('activity');
+
+        return $booking->activity !== null
+            && (string) $booking->activity->manager_id === (string) $user->id;
+    }
+
+    public function createForActivityAsGuest(User $user, Activity $activity): bool
+    {
+        return (string) $activity->manager_id !== (string) $user->id;
     }
 }

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Enums\ActivityPermissionEnum;
+use App\Enums\CollaboratorStatusEnum;
 use App\Models\Activity;
 use App\Models\User;
 
@@ -21,6 +22,31 @@ it('authenticated user can list activities', function () {
 it('unauthenticated user cannot list activities', function () {
     $this->getJson('/api/activities')
         ->assertUnauthorized();
+});
+
+it('accepted collaborator sees the collaborated activity in their activities list', function () {
+    $manager = User::factory()->create();
+    $activity = Activity::factory()->create(['manager_id' => $manager->id]);
+    $collaborator = User::factory()->create();
+    attachCollaborator($activity, $collaborator);
+
+    $this->withHeaders(asUser($collaborator))
+        ->getJson('/api/activities')
+        ->assertOk()
+        ->assertJsonCount(1, 'data')
+        ->assertJsonPath('data.0.id', $activity->id);
+});
+
+it('pending collaborator does not see the activity in their activities list', function () {
+    $manager = User::factory()->create();
+    $activity = Activity::factory()->create(['manager_id' => $manager->id]);
+    $collaborator = User::factory()->create();
+    attachCollaborator($activity, $collaborator, [], CollaboratorStatusEnum::PENDING);
+
+    $this->withHeaders(asUser($collaborator))
+        ->getJson('/api/activities')
+        ->assertOk()
+        ->assertJsonCount(0, 'data');
 });
 
 // ─── show ─────────────────────────────────────────────────────────────────────
@@ -115,11 +141,7 @@ it('collaborator with UPDATE_ACTIVITY can update', function () {
     $activity = Activity::factory()->create(['manager_id' => $manager->id]);
 
     $collaborator = User::factory()->create();
-    $activity->collaborators()->attach($collaborator->id);
-    $activity->collaboratorPermissions()->create([
-        'user_id' => $collaborator->id,
-        'permission' => ActivityPermissionEnum::UPDATE_ACTIVITY->value,
-    ]);
+    attachCollaborator($activity, $collaborator, [ActivityPermissionEnum::UPDATE_ACTIVITY]);
 
     $this->withHeaders(asUser($collaborator))
         ->putJson("/api/activities/{$activity->id}", ['name' => 'Modifié par collab'])
@@ -140,7 +162,7 @@ it('collaborator without UPDATE_ACTIVITY cannot update', function () {
     $activity = Activity::factory()->create(['manager_id' => $manager->id]);
 
     $collaborator = User::factory()->create();
-    $activity->collaborators()->attach($collaborator->id);
+    attachCollaborator($activity, $collaborator);
 
     $this->withHeaders(asUser($collaborator))
         ->putJson("/api/activities/{$activity->id}", ['name' => 'Hack'])
@@ -176,7 +198,7 @@ it('collaborator cannot delete an activity', function () {
     $activity = Activity::factory()->create(['manager_id' => $manager->id]);
 
     $collaborator = User::factory()->create();
-    $activity->collaborators()->attach($collaborator->id);
+    attachCollaborator($activity, $collaborator);
 
     $this->withHeaders(asUser($collaborator))
         ->deleteJson("/api/activities/{$activity->id}")
@@ -190,82 +212,4 @@ it('random user cannot delete an activity', function () {
     $this->withHeaders(asUser($user))
         ->deleteJson("/api/activities/{$activity->id}")
         ->assertForbidden();
-});
-
-// ─── syncCollaboratorPermissions ──────────────────────────────────────────────
-
-it('manager can sync permissions for a collaborator', function () {
-    $manager = User::factory()->create();
-    $manager->assignRole('manager');
-    $activity = Activity::factory()->create(['manager_id' => $manager->id]);
-
-    $collaborator = User::factory()->create();
-    $activity->collaborators()->attach($collaborator->id);
-
-    $this->withHeaders(asUser($manager))
-        ->putJson("/api/activities/{$activity->id}/collaborators/{$collaborator->id}/permissions", [
-            'permissions' => [ActivityPermissionEnum::MANAGE_CYCLES->value],
-        ])
-        ->assertOk();
-});
-
-it('admin can sync permissions for a collaborator', function () {
-    $admin = User::factory()->create();
-    $admin->assignRole('admin');
-    $manager = User::factory()->create();
-    $activity = Activity::factory()->create(['manager_id' => $manager->id]);
-
-    $collaborator = User::factory()->create();
-    $activity->collaborators()->attach($collaborator->id);
-
-    $this->withHeaders(asUser($admin))
-        ->putJson("/api/activities/{$activity->id}/collaborators/{$collaborator->id}/permissions", [
-            'permissions' => [ActivityPermissionEnum::MANAGE_AVAILABILITIES->value],
-        ])
-        ->assertOk();
-});
-
-it('syncing permissions for a non-collaborator returns 422', function () {
-    $manager = User::factory()->create();
-    $manager->assignRole('manager');
-    $activity = Activity::factory()->create(['manager_id' => $manager->id]);
-
-    $stranger = User::factory()->create();
-
-    $this->withHeaders(asUser($manager))
-        ->putJson("/api/activities/{$activity->id}/collaborators/{$stranger->id}/permissions", [
-            'permissions' => [ActivityPermissionEnum::MANAGE_CYCLES->value],
-        ])
-        ->assertUnprocessable();
-});
-
-it('non-manager cannot sync collaborator permissions', function () {
-    $manager = User::factory()->create();
-    $activity = Activity::factory()->create(['manager_id' => $manager->id]);
-
-    $collaborator = User::factory()->create();
-    $activity->collaborators()->attach($collaborator->id);
-
-    $randomUser = User::factory()->create();
-
-    $this->withHeaders(asUser($randomUser))
-        ->putJson("/api/activities/{$activity->id}/collaborators/{$collaborator->id}/permissions", [
-            'permissions' => [ActivityPermissionEnum::MANAGE_CYCLES->value],
-        ])
-        ->assertForbidden();
-});
-
-it('syncing with an invalid permission value returns 422', function () {
-    $manager = User::factory()->create();
-    $manager->assignRole('manager');
-    $activity = Activity::factory()->create(['manager_id' => $manager->id]);
-
-    $collaborator = User::factory()->create();
-    $activity->collaborators()->attach($collaborator->id);
-
-    $this->withHeaders(asUser($manager))
-        ->putJson("/api/activities/{$activity->id}/collaborators/{$collaborator->id}/permissions", [
-            'permissions' => ['invalid_permission'],
-        ])
-        ->assertUnprocessable();
 });

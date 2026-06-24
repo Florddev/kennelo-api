@@ -1,0 +1,87 @@
+{
+    "title": "Notifications",
+    "markAllAsRead": "Mark all as read",
+    "empty": "You have no notifications",
+    "loadMore": "Load more",
+    "delete": "Delete notification",
+    "generic": {
+        "title": "New notification"
+    },
+    "booking_created": {
+        "title": "New booking request",
+        "body": "A new booking for {activity}"
+    },
+    "booking_confirmed": {
+        "title": "Booking confirmed",
+        "body": "Your booking for {activity} is confirmed"
+    },
+    "booking_rejected": {
+        "title": "Booking declined",
+        "body": "Your booking for {activity} was declined"
+    },
+    "booking_completed": {
+        "title": "Stay completed",
+        "body": "Your stay at {activity} is complete"
+    },
+    "booking_cancelled_by_client": {
+        "title": "Booking cancelled",
+        "body": "A booking for {activity} was cancelled"
+    },
+    "payment_succeeded": {
+        "title": "Payment received"
+    },
+    "payment_failed": {
+        "title": "Payment failed"
+    },
+    "payment_processing": {
+        "title": "Payment processing"
+    },
+    "payment_refunded": {
+        "title": "Payment refunded"
+    },
+    "stripe_account_activated": {
+        "title": "Your payout account is active"
+    },
+    "new_message": {
+        "title": "New message"
+    },
+    "review_received": {
+        "title": "New review received"
+    },
+    "review_published": {
+        "title": "Your review is published"
+    },
+    "review_response": {
+        "title": "New response to your review"
+    },
+    "review_reported": {
+        "title": "A review was reported"
+    },
+    "review_report_resolved": {
+        "title": "Review report resolved"
+    },
+    "identity_submitted": {
+        "title": "Identity verification submitted"
+    },
+    "identity_approved": {
+        "title": "Identity verified"
+    },
+    "identity_rejected": {
+        "title": "Identity verification declined"
+    },
+    "account_status_changed": {
+        "title": "Your account status changed"
+    },
+    "collaborator_invited": {
+        "title": "Collaboration invitation",
+        "body": "You were invited to collaborate on {activity}"
+    },
+    "collaborator_accepted": {
+        "title": "Invitation accepted",
+        "body": "Your collaboration invitation for {activity} was accepted"
+    },
+    "collaborator_declined": {
+        "title": "Invitation declined",
+        "body": "Your collaboration invitation for {activity} was declined"
+    }
+}

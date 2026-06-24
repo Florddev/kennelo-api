@@ -43,6 +43,10 @@ class ActivityResource extends JsonResource
             'timezone' => $this->timezone,
             'is_active' => $this->is_active,
             'manager_id' => $this->manager_id,
+            'is_favorited' => $this->when(
+                array_key_exists('is_favorited', $this->resource->getAttributes()),
+                fn (): bool => (bool) $this->resource->getAttribute('is_favorited')
+            ),
             'is_professional' => $this->siret !== null,
             'type' => $this->resource->getRawOriginal('type'),
             'min_price' => $minPrice,

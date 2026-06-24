@@ -43,7 +43,8 @@
             "pending": "Pending",
             "refunded": "Refunded",
             "failed": "Failed",
-            "no_payment_required": "No payment required"
+            "no_payment_required": "No payment required",
+            "succeeded": "Succeeded"
         },
         "viewInvoice": "View receipt / Invoice",
         "tabDetails": "Details",

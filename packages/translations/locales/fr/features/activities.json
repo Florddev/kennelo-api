@@ -56,8 +56,22 @@
                 "name": "Nom",
                 "email": "E-mail",
                 "phone": "Téléphone",
-                "role": "Rôle"
-            }
+                "role": "Rôle",
+                "status": "Statut"
+            },
+            "statuses": {
+                "pending": "En attente",
+                "accepted": "Accepté",
+                "refused": "Refusé"
+            },
+            "invite": "Inviter un collaborateur",
+            "sendInvite": "Envoyer l'invitation",
+            "invited": "Invitation envoyée",
+            "assignRole": "Assigner un rôle",
+            "roleAssigned": "Rôle assigné",
+            "selectRole": "Sélectionner un rôle",
+            "noRoles": "Créez d'abord un rôle pour pouvoir l'assigner.",
+            "removed": "Collaborateur retiré"
         },
         "availabilities": {
             "filter": "Filtrer par note...",
@@ -69,6 +83,26 @@
         "capacities": {
             "filter": "Filtrer par type d'animal...",
             "count": "{count, plural, =1 {# capacité} other {# capacités}}"
+        },
+        "roles": {
+            "title": "Rôles",
+            "description": "Définissez des rôles et leurs permissions pour cette activité.",
+            "create": "Nouveau rôle",
+            "edit": "Modifier le rôle",
+            "saved": "Rôle enregistré",
+            "deleted": "Rôle supprimé",
+            "empty": "Aucun rôle",
+            "name": "Nom",
+            "namePlaceholder": "ex. Secrétaire",
+            "permissions": "Permissions",
+            "noPermissions": "Aucune permission"
+        },
+        "permissions": {
+            "update_activity": "Modifier l'activité",
+            "manage_cycles": "Gérer les cycles",
+            "manage_availabilities": "Gérer les disponibilités",
+            "manage_bookings": "Gérer les réservations",
+            "manage_messages": "Gérer les messages"
         }
     },
     "empty": {
@@ -180,5 +214,13 @@
         "home-care": "Garde à domicile",
         "host-family": "Famille d'accueil",
         "mobile-boarding": "Pension mobile"
+    },
+    "invitations": {
+        "title": "Invitations de collaboration",
+        "description": "Vous avez été invité à collaborer sur ces activités.",
+        "accept": "Accepter",
+        "decline": "Refuser",
+        "accepted": "Invitation acceptée",
+        "declined": "Invitation refusée"
     }
 }
