@@ -4,6 +4,10 @@
 
 import { buildRoute } from "./config/routes.config";
 
+type RootPageParams = {
+    search_params?: Record<string, string | number | boolean>;
+};
+
 type LoginParams = {
     locale?: string | number;
     search_params?: Record<string, string | number | boolean>;
@@ -20,6 +24,16 @@ type HomeParams = {
 };
 
 type HostingCalendarParams = {
+    locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type MyActivitiesParams = {
+    locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type TempParams = {
     locale?: string | number;
     search_params?: Record<string, string | number | boolean>;
 };
@@ -84,16 +98,6 @@ type ActivityPaymentParams = {
     search_params?: Record<string, string | number | boolean>;
 };
 
-type MyActivitiesParams = {
-    locale?: string | number;
-    search_params?: Record<string, string | number | boolean>;
-};
-
-type TempParams = {
-    locale?: string | number;
-    search_params?: Record<string, string | number | boolean>;
-};
-
 type HostingMessagesParams = {
     locale?: string | number;
     search_params?: Record<string, string | number | boolean>;
@@ -152,6 +156,16 @@ type NotificationsParams = {
     search_params?: Record<string, string | number | boolean>;
 };
 
+type NewPetParams = {
+    locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type MyPetsParams = {
+    locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
 type PetEditGeneralParams = {
     locale?: string | number;
     id: string | number;
@@ -185,16 +199,6 @@ type PetEditPhotosParams = {
 type PetDetailsParams = {
     locale?: string | number;
     id: string;
-    search_params?: Record<string, string | number | boolean>;
-};
-
-type NewPetParams = {
-    locale?: string | number;
-    search_params?: Record<string, string | number | boolean>;
-};
-
-type MyPetsParams = {
-    locale?: string | number;
     search_params?: Record<string, string | number | boolean>;
 };
 
@@ -233,9 +237,9 @@ type MyProfilePreferencesNotificationParams = {
     search_params?: Record<string, string | number | boolean>;
 };
 
-type RootPageParams = {
-    search_params?: Record<string, string | number | boolean>;
-};
+function RootPage(params?: RootPageParams): string {
+    return buildRoute("/", params);
+}
 
 function Login(params?: LoginParams): string {
     return buildRoute("/[locale]/login", params);
@@ -251,6 +255,14 @@ function Home(params?: HomeParams): string {
 
 function HostingCalendar(params?: HostingCalendarParams): string {
     return buildRoute("/[locale]/hosting/calendar", params);
+}
+
+function MyActivities(params?: MyActivitiesParams): string {
+    return buildRoute("/[locale]/hosting/host", params);
+}
+
+function Temp(params?: TempParams): string {
+    return buildRoute("/[locale]/hosting/host/temp", params);
 }
 
 function ActivityBookings(params: ActivityBookingsParams): string {
@@ -291,14 +303,6 @@ function ActivitySettings(params: ActivitySettingsParams): string {
 
 function ActivityPayment(params: ActivityPaymentParams): string {
     return buildRoute("/[locale]/hosting/host/[id]/settings/payment", params);
-}
-
-function MyActivities(params?: MyActivitiesParams): string {
-    return buildRoute("/[locale]/hosting/host", params);
-}
-
-function Temp(params?: TempParams): string {
-    return buildRoute("/[locale]/hosting/host/temp", params);
 }
 
 function HostingMessages(params?: HostingMessagesParams): string {
@@ -345,6 +349,14 @@ function Notifications(params?: NotificationsParams): string {
     return buildRoute("/[locale]/notifications", params);
 }
 
+function NewPet(params?: NewPetParams): string {
+    return buildRoute("/[locale]/pets/new", params);
+}
+
+function MyPets(params?: MyPetsParams): string {
+    return buildRoute("/[locale]/pets", params);
+}
+
 function PetEditGeneral(params: PetEditGeneralParams): string {
     return buildRoute("/[locale]/pets/[id]/edit/general", params);
 }
@@ -367,14 +379,6 @@ function PetEditPhotos(params: PetEditPhotosParams): string {
 
 function PetDetails(params: PetDetailsParams): string {
     return buildRoute("/[locale]/pets/[id]", params);
-}
-
-function NewPet(params?: NewPetParams): string {
-    return buildRoute("/[locale]/pets/new", params);
-}
-
-function MyPets(params?: MyPetsParams): string {
-    return buildRoute("/[locale]/pets", params);
 }
 
 function Profile(params?: ProfileParams): string {
@@ -405,15 +409,14 @@ function MyProfilePreferencesNotification(params?: MyProfilePreferencesNotificat
     return buildRoute("/[locale]/settings/preferences-notification", params);
 }
 
-function RootPage(params?: RootPageParams): string {
-    return buildRoute("/", params);
-}
-
 export const routes = {
+    RootPage,
     Login,
     Register,
     Home,
     HostingCalendar,
+    MyActivities,
+    Temp,
     ActivityBookings,
     ActivityInvoices,
     ActivityOverview,
@@ -424,8 +427,6 @@ export const routes = {
     ActivitySettingsInformations,
     ActivitySettings,
     ActivityPayment,
-    MyActivities,
-    Temp,
     HostingMessages,
     HostingNow,
     BecomeHost,
@@ -437,14 +438,14 @@ export const routes = {
     HostDetail,
     Messages,
     Notifications,
+    NewPet,
+    MyPets,
     PetEditGeneral,
     PetEditHealth,
     PetEditPage,
     PetEditPersonality,
     PetEditPhotos,
     PetDetails,
-    NewPet,
-    MyPets,
     Profile,
     MyProfileAbout,
     MyProfileChangePassword,
@@ -452,7 +453,6 @@ export const routes = {
     PaymentMethodsPage,
     MyProfileEmailPreferences,
     MyProfilePreferencesNotification,
-    RootPage,
 } as const;
 
 export type RouteName = keyof typeof routes;

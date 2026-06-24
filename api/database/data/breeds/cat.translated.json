@@ -1,0 +1,21 @@
+[
+    { "breed": "domestic_shorthair", "label": { "en": "Domestic Shorthair", "fr": "Européen à poil court", "ar": "قط منزلي قصير الشعر" } },
+    { "breed": "domestic_longhair", "label": { "en": "Domestic Longhair", "fr": "Européen à poil long", "ar": "قط منزلي طويل الشعر" } },
+    { "breed": "maine_coon", "label": { "en": "Maine Coon", "fr": "Maine Coon", "ar": "مين كون" } },
+    { "breed": "persian", "label": { "en": "Persian", "fr": "Persan", "ar": "شيرازي" } },
+    { "breed": "siamese", "label": { "en": "Siamese", "fr": "Siamois", "ar": "سيامي" } },
+    { "breed": "ragdoll", "label": { "en": "Ragdoll", "fr": "Ragdoll", "ar": "راغدول" } },
+    { "breed": "british_shorthair", "label": { "en": "British Shorthair", "fr": "British Shorthair", "ar": "بريطاني قصير الشعر" } },
+    { "breed": "bengal", "label": { "en": "Bengal", "fr": "Bengal", "ar": "بنغالي" } },
+    { "breed": "sphynx", "label": { "en": "Sphynx", "fr": "Sphynx", "ar": "سفنكس" } },
+    { "breed": "scottish_fold", "label": { "en": "Scottish Fold", "fr": "Scottish Fold", "ar": "سكوتش فولد" } },
+    { "breed": "abyssinian", "label": { "en": "Abyssinian", "fr": "Abyssin", "ar": "حبشي" } },
+    { "breed": "norwegian_forest_cat", "label": { "en": "Norwegian Forest Cat", "fr": "Chat des forêts norvégiennes", "ar": "قط الغابة النرويجي" } },
+    { "breed": "russian_blue", "label": { "en": "Russian Blue", "fr": "Bleu Russe", "ar": "الأزرق الروسي" } },
+    { "breed": "birman", "label": { "en": "Birman", "fr": "Sacré de Birmanie", "ar": "البيرمان المقدس" } },
+    { "breed": "oriental_shorthair", "label": { "en": "Oriental Shorthair", "fr": "Oriental à poil court", "ar": "شرقي قصير الشعر" } },
+    { "breed": "chartreux", "label": { "en": "Chartreux", "fr": "Chartreux", "ar": "شارتروه" } },
+    { "breed": "devon_rex", "label": { "en": "Devon Rex", "fr": "Devon Rex", "ar": "ديفون ريكس" } },
+    { "breed": "burmese", "label": { "en": "Burmese", "fr": "Burmese", "ar": "بورمي" } },
+    { "breed": "mixed_breed", "label": { "en": "Mixed Breed", "fr": "Croisé", "ar": "سلالة مختلطة" } }
+]

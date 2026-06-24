@@ -1,0 +1,12 @@
+[
+    { "breed": "leopard_gecko", "label": { "en": "Leopard Gecko", "fr": "Gecko léopard", "ar": "أبو بريص النمري" } },
+    { "breed": "crested_gecko", "label": { "en": "Crested Gecko", "fr": "Gecko à crête", "ar": "أبو بريص المتوج" } },
+    { "breed": "bearded_dragon", "label": { "en": "Bearded Dragon", "fr": "Dragon barbu", "ar": "التنين الملتحي" } },
+    { "breed": "ball_python", "label": { "en": "Ball Python", "fr": "Python royal", "ar": "بايثون الكرة" } },
+    { "breed": "corn_snake", "label": { "en": "Corn Snake", "fr": "Serpent des blés", "ar": "ثعبان الذرة" } },
+    { "breed": "red_eared_slider", "label": { "en": "Red-Eared Slider", "fr": "Tortue de Floride", "ar": "السلحفاة حمراء الأذن" } },
+    { "breed": "hermann_tortoise", "label": { "en": "Hermann's Tortoise", "fr": "Tortue d'Hermann", "ar": "سلحفاة هيرمان" } },
+    { "breed": "green_iguana", "label": { "en": "Green Iguana", "fr": "Iguane vert", "ar": "الإغوانا الخضراء" } },
+    { "breed": "blue_tongue_skink", "label": { "en": "Blue-Tongue Skink", "fr": "Scinque à langue bleue", "ar": "السقنقور أزرق اللسان" } },
+    { "breed": "chameleon", "label": { "en": "Chameleon", "fr": "Caméléon", "ar": "حرباء" } }
+]

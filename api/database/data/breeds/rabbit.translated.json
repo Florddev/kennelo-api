@@ -1,0 +1,13 @@
+[
+    { "breed": "holland_lop", "label": { "en": "Holland Lop", "fr": "Bélier de Hollande", "ar": "هولاند لوب" } },
+    { "breed": "netherland_dwarf", "label": { "en": "Netherland Dwarf", "fr": "Nain de couleur", "ar": "القزم الهولندي" } },
+    { "breed": "mini_rex", "label": { "en": "Mini Rex", "fr": "Mini Rex", "ar": "ميني ريكس" } },
+    { "breed": "lionhead", "label": { "en": "Lionhead", "fr": "Tête de lion", "ar": "رأس الأسد" } },
+    { "breed": "flemish_giant", "label": { "en": "Flemish Giant", "fr": "Géant des Flandres", "ar": "العملاق الفلمنكي" } },
+    { "breed": "dutch", "label": { "en": "Dutch", "fr": "Hollandais", "ar": "هولندي" } },
+    { "breed": "english_angora", "label": { "en": "English Angora", "fr": "Angora anglais", "ar": "أنغورا إنجليزي" } },
+    { "breed": "french_lop", "label": { "en": "French Lop", "fr": "Bélier français", "ar": "لوب فرنسي" } },
+    { "breed": "mini_lop", "label": { "en": "Mini Lop", "fr": "Mini Bélier", "ar": "ميني لوب" } },
+    { "breed": "rex", "label": { "en": "Rex", "fr": "Rex", "ar": "ريكس" } },
+    { "breed": "mixed_breed", "label": { "en": "Mixed Breed", "fr": "Croisé", "ar": "سلالة مختلطة" } }
+]

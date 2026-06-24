@@ -6,6 +6,7 @@ import type { CreatePetInput } from "../../validators/create-pet.schema";
 export async function createPet(input: CreatePetInput): Promise<PetModel> {
     const response = await api.post<PetDto>("/pets", {
         animal_type_id: input.animalTypeId,
+        animal_breed_id: input.animalBreedId,
         name: input.name,
         breed: input.breed,
         birth_date: input.birthDate,

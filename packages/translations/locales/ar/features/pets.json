@@ -59,6 +59,10 @@
     "fields": {
         "name": "الاسم",
         "breed": "السلالة",
+        "breedPlaceholder": "اختر سلالة",
+        "breedOther": "أخرى",
+        "breedCustom": "اسم السلالة",
+        "breedCustomPlaceholder": "أدخل السلالة",
         "birthDate": "تاريخ الميلاد",
         "age": "العمر",
         "ageYears": "سنوات",

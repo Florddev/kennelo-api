@@ -12,14 +12,14 @@ class AnimalTypeSeeder extends Seeder
     public function run(): void
     {
         $animalTypes = [
-            ['code' => 'dog', 'name' => 'Chien', 'category' => 'mammals'],
-            ['code' => 'cat', 'name' => 'Chat', 'category' => 'mammals'],
-            ['code' => 'rabbit', 'name' => 'Lapin', 'category' => 'small_mammals'],
-            ['code' => 'rodent', 'name' => 'Rongeur', 'category' => 'small_mammals'],
-            ['code' => 'ferret', 'name' => 'Furet', 'category' => 'small_mammals'],
-            ['code' => 'bird', 'name' => 'Oiseau', 'category' => 'birds'],
-            ['code' => 'reptile', 'name' => 'Reptile', 'category' => 'reptiles'],
-            ['code' => 'amphibian', 'name' => 'Amphibien', 'category' => 'amphibians'],
+            ['code' => 'dog', 'name' => ['en' => 'Dog', 'fr' => 'Chien', 'ar' => 'كلب'], 'category' => 'mammals'],
+            ['code' => 'cat', 'name' => ['en' => 'Cat', 'fr' => 'Chat', 'ar' => 'قط'], 'category' => 'mammals'],
+            ['code' => 'rabbit', 'name' => ['en' => 'Rabbit', 'fr' => 'Lapin', 'ar' => 'أرنب'], 'category' => 'small_mammals'],
+            ['code' => 'rodent', 'name' => ['en' => 'Rodent', 'fr' => 'Rongeur', 'ar' => 'قارض'], 'category' => 'small_mammals'],
+            ['code' => 'ferret', 'name' => ['en' => 'Ferret', 'fr' => 'Furet', 'ar' => 'نمس'], 'category' => 'small_mammals'],
+            ['code' => 'bird', 'name' => ['en' => 'Bird', 'fr' => 'Oiseau', 'ar' => 'طائر'], 'category' => 'birds'],
+            ['code' => 'reptile', 'name' => ['en' => 'Reptile', 'fr' => 'Reptile', 'ar' => 'زاحف'], 'category' => 'reptiles'],
+            ['code' => 'amphibian', 'name' => ['en' => 'Amphibian', 'fr' => 'Amphibien', 'ar' => 'برمائي'], 'category' => 'amphibians'],
         ];
 
         foreach ($animalTypes as $animalType) {

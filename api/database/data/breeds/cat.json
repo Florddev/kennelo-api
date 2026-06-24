@@ -1,0 +1,21 @@
+[
+    { "breed": "domestic_shorthair" },
+    { "breed": "domestic_longhair" },
+    { "breed": "maine_coon" },
+    { "breed": "persian" },
+    { "breed": "siamese" },
+    { "breed": "ragdoll" },
+    { "breed": "british_shorthair" },
+    { "breed": "bengal" },
+    { "breed": "sphynx" },
+    { "breed": "scottish_fold" },
+    { "breed": "abyssinian" },
+    { "breed": "norwegian_forest_cat" },
+    { "breed": "russian_blue" },
+    { "breed": "birman" },
+    { "breed": "oriental_shorthair" },
+    { "breed": "chartreux" },
+    { "breed": "devon_rex" },
+    { "breed": "burmese" },
+    { "breed": "mixed_breed" }
+]

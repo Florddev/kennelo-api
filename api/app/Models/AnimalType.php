@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Spatie\Translatable\HasTranslations;
 
 /**
  * @property int $id
@@ -17,7 +18,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class AnimalType extends Model
 {
-    use HasUuids;
+    use HasTranslations, HasUuids;
 
     protected $fillable = [
         'code',
@@ -25,9 +26,18 @@ class AnimalType extends Model
         'category',
     ];
 
+    public array $translatable = [
+        'name',
+    ];
+
     public function pets(): HasMany
     {
         return $this->hasMany(Pet::class);
+    }
+
+    public function breeds(): HasMany
+    {
+        return $this->hasMany(AnimalBreed::class);
     }
 
     public function attributeDefinitions(): BelongsToMany

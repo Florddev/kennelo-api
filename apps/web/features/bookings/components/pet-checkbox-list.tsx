@@ -115,8 +115,8 @@ function PetRow({
                 )}
                 <div className="flex flex-1 flex-col">
                     <span className="text-sm font-semibold">{pet.name}</span>
-                    {pet.breed && (
-                        <span className="text-xs text-muted-foreground">{pet.breed}</span>
+                    {pet.getBreedLabel() && (
+                        <span className="text-xs text-muted-foreground">{pet.getBreedLabel()}</span>
                     )}
                     {reasonLabel && (
                         <span className="mt-1 text-xs text-amber-700">{reasonLabel}</span>

@@ -1,0 +1,12 @@
+[
+    { "breed": "budgerigar", "label": { "en": "Budgerigar", "fr": "Perruche ondulée", "ar": "ببغاء البادجي" } },
+    { "breed": "cockatiel", "label": { "en": "Cockatiel", "fr": "Calopsitte", "ar": "كوكاتيل" } },
+    { "breed": "lovebird", "label": { "en": "Lovebird", "fr": "Inséparable", "ar": "طائر الحب" } },
+    { "breed": "canary", "label": { "en": "Canary", "fr": "Canari", "ar": "كناري" } },
+    { "breed": "zebra_finch", "label": { "en": "Zebra Finch", "fr": "Diamant mandarin", "ar": "عصفور الزرد" } },
+    { "breed": "african_grey_parrot", "label": { "en": "African Grey Parrot", "fr": "Perroquet gris du Gabon", "ar": "الببغاء الرمادي الأفريقي" } },
+    { "breed": "cockatoo", "label": { "en": "Cockatoo", "fr": "Cacatoès", "ar": "كوكاتو" } },
+    { "breed": "macaw", "label": { "en": "Macaw", "fr": "Ara", "ar": "مكاو" } },
+    { "breed": "conure", "label": { "en": "Conure", "fr": "Conure", "ar": "كونيور" } },
+    { "breed": "parrotlet", "label": { "en": "Parrotlet", "fr": "Toui", "ar": "ببغاء صغير" } }
+]

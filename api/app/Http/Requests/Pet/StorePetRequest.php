@@ -17,6 +17,7 @@ class StorePetRequest extends FormRequest
     {
         return [
             'animal_type_id' => ['required', 'uuid', 'exists:animal_types,id'],
+            'animal_breed_id' => ['sometimes', 'nullable', 'uuid', 'exists:animal_breeds,id'],
             'name' => ['required', 'string', 'max:255'],
             'breed' => ['sometimes', 'nullable', 'string', 'max:255'],
             'birth_date' => ['sometimes', 'nullable', 'date', 'before:today'],

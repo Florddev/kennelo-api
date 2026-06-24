@@ -1,0 +1,4 @@
+[
+    { "breed": "standard_ferret", "label": { "en": "Standard Ferret", "fr": "Furet standard", "ar": "نمس قياسي" } },
+    { "breed": "angora_ferret", "label": { "en": "Angora Ferret", "fr": "Furet angora", "ar": "نمس أنغورا" } }
+]
