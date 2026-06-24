@@ -7,7 +7,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
+/**
+ * @property string $id
+ * @property string $microchip_number
+ * @property bool $found
+ * @property Carbon $scanned_at
+ * @property-read Scanner $scanner
+ * @property-read Pet|null $pet
+ */
 class ScannerScan extends Model
 {
     use HasUuids;

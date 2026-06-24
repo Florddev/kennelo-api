@@ -14,6 +14,7 @@ use App\Http\Controllers\Conversation\ActivityConversationController;
 use App\Http\Controllers\Conversation\ConversationController;
 use App\Http\Controllers\Conversation\MessageController;
 use App\Http\Controllers\Explore\ExploreController;
+use App\Http\Controllers\Hosting\HostScanController;
 use App\Http\Controllers\PaymentMethod\PaymentMethodController;
 use App\Http\Controllers\Pet\AnimalTypeController;
 use App\Http\Controllers\Pet\PetAttributeController;
@@ -32,6 +33,7 @@ use App\Http\Controllers\Review\ReviewReportController;
 use App\Http\Controllers\Review\ReviewResponseController;
 use App\Http\Controllers\Review\UserReviewController;
 use App\Http\Controllers\Scanner\ScannerController;
+use App\Http\Controllers\Scanner\ScannerScanController;
 use App\Http\Controllers\Stripe\StripeWebhookController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\User\UserController;
@@ -141,6 +143,13 @@ Route::middleware(['auth.jwt'])->group(function () {
     Route::post('/user/scanners', [ScannerController::class, 'store']);
     Route::put('/user/scanners/{scanner}', [ScannerController::class, 'update']);
     Route::delete('/user/scanners/{scanner}', [ScannerController::class, 'destroy']);
+    Route::get('/user/scanner-scans', [ScannerScanController::class, 'index']);
+
+    // Hosting — scan
+    Route::get('/hosting/scan-lookup/{microchipNumber}', [HostScanController::class, 'show']);
+    Route::get('/hosting/in-care-pets', [HostScanController::class, 'inCare']);
+    Route::put('/hosting/pets/{pet}/microchip', [HostScanController::class, 'assignMicrochip']);
+    Route::post('/hosting/bookings/{booking}/conversation', [HostScanController::class, 'conversation']);
 
     // Current user
     Route::get('/user', [UserController::class, 'getCurrentUser']);

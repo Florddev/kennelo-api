@@ -5,18 +5,16 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Pet;
 
 use App\Enums\ApiStatusEnum;
-use App\Events\PetBroadcast;
 use App\Http\Controllers\Controller;
-use App\Models\Pet;
-use App\Models\Scanner;
-use App\Models\ScannerScan;
+use App\Services\Scanner\ScannerScanService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 
 class PetBroadcastController extends Controller
 {
-    private const DEDUPE_WINDOW_SECONDS = 5;
+    public function __construct(
+        private ScannerScanService $scannerScanService
+    ) {}
 
     public function broadcast(Request $request): JsonResponse
     {
@@ -25,22 +23,10 @@ class PetBroadcastController extends Controller
             'scanner_code' => ['required', 'string', 'exists:scanners,code'],
         ]);
 
-        $scanner = Scanner::where('code', $validated['scanner_code'])->firstOrFail();
-        $pet = Pet::with('animalType')->where('microchip_number', $validated['microchip_number'])->first();
-
-        $dedupeKey = "pet-broadcast:{$validated['scanner_code']}:{$validated['microchip_number']}";
-
-        if (Cache::add($dedupeKey, true, self::DEDUPE_WINDOW_SECONDS)) {
-            ScannerScan::create([
-                'scanner_id' => $scanner->id,
-                'pet_id' => $pet?->id,
-                'microchip_number' => $validated['microchip_number'],
-                'found' => $pet !== null,
-                'scanned_at' => now(),
-            ]);
-
-            event(new PetBroadcast($validated['microchip_number'], $scanner->user_id, $scanner->code, $pet));
-        }
+        $pet = $this->scannerScanService->recordAndBroadcast(
+            $validated['microchip_number'],
+            $validated['scanner_code'],
+        );
 
         return response()->json([
             'status' => ApiStatusEnum::SUCCESS,

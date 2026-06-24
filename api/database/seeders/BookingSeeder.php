@@ -28,14 +28,19 @@ class BookingSeeder extends Seeder
     private array $dogPets = ['Rex', 'Max'];
 
     private array $templates = [
-        ['status' => 'completed', 'startOffset' => -40, 'nights' => 5, 'pets' => ['Rex'], 'requests' => 'Rex adore jouer avec la balle.'],
-        ['status' => 'completed', 'startOffset' => -32, 'nights' => 3, 'pets' => ['Minou'], 'requests' => 'Minou est très calme et reste cachée la journée.'],
-        ['status' => 'completed', 'startOffset' => -22, 'nights' => 7, 'pets' => ['Rex', 'Minou'], 'requests' => 'Prévoir des espaces séparés pour les repas.'],
-        ['status' => 'confirmed', 'startOffset' => 3, 'nights' => 5, 'pets' => ['Max'], 'requests' => 'Max prend ses médicaments matin et soir.'],
-        ['status' => 'confirmed', 'startOffset' => 9, 'nights' => 7, 'pets' => ['Rex', 'Kiwi'], 'requests' => 'Kiwi a besoin de lumière naturelle.'],
-        ['status' => 'confirmed', 'startOffset' => 16, 'nights' => 4, 'pets' => ['Minou', 'Max'], 'requests' => null],
-        ['status' => 'pending', 'startOffset' => 26, 'nights' => 6, 'pets' => ['Kiwi'], 'requests' => 'Kiwi aime chanter le matin !'],
-        ['status' => 'cancelled', 'startOffset' => 12, 'nights' => 3, 'pets' => ['Rex'], 'requests' => null],
+        ['status' => 'completed', 'startOffset' => -45, 'nights' => 5, 'pets' => ['Rex'], 'requests' => 'Rex adore jouer avec la balle.'],
+        ['status' => 'completed', 'startOffset' => -30, 'nights' => 3, 'pets' => ['Minou'], 'requests' => 'Minou est très calme et reste cachée la journée.'],
+        ['status' => 'completed', 'startOffset' => -20, 'nights' => 7, 'pets' => ['Rex', 'Minou'], 'requests' => 'Prévoir des espaces séparés pour les repas.'],
+        ['status' => 'completed', 'startOffset' => -14, 'nights' => 4, 'pets' => ['Max'], 'requests' => 'Max prend ses médicaments matin et soir.'],
+
+        ['status' => 'in_progress', 'startOffset' => -2, 'nights' => 6, 'pets' => ['Rex'], 'requests' => 'Séjour en cours, Rex sort deux fois par jour.'],
+        ['status' => 'in_progress', 'startOffset' => -1, 'nights' => 5, 'pets' => ['Max'], 'requests' => 'Max prend ses médicaments matin et soir.'],
+        ['status' => 'in_progress', 'startOffset' => -3, 'nights' => 8, 'pets' => ['Minou', 'Kiwi'], 'requests' => 'Kiwi a besoin de lumière naturelle.'],
+
+        ['status' => 'confirmed', 'startOffset' => 4, 'nights' => 5, 'pets' => ['Max'], 'requests' => null],
+        ['status' => 'confirmed', 'startOffset' => 12, 'nights' => 7, 'pets' => ['Rex', 'Kiwi'], 'requests' => null],
+        ['status' => 'pending', 'startOffset' => 20, 'nights' => 6, 'pets' => ['Kiwi'], 'requests' => 'Kiwi aime chanter le matin !'],
+        ['status' => 'cancelled', 'startOffset' => 8, 'nights' => 3, 'pets' => ['Rex'], 'requests' => null],
     ];
 
     public function run(): void
@@ -92,10 +97,12 @@ class BookingSeeder extends Seeder
         $checkIn = Carbon::now()->addDays($template['startOffset'])->startOfDay();
         $checkOut = $checkIn->copy()->addDays($template['nights']);
 
-        $createdAt = Carbon::now()->subDays(10);
-        $updatedAt = $template['status'] === 'completed'
-            ? $checkOut->copy()
-            : Carbon::now()->subDays(1);
+        $createdAt = $checkIn->copy()->subDays(7);
+        $updatedAt = match ($template['status']) {
+            'completed' => $checkOut->copy(),
+            'in_progress' => $checkIn->copy(),
+            default => $createdAt->copy(),
+        };
 
         $petsSubtotal = 0.0;
         $hasDog = false;

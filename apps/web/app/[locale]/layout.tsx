@@ -5,6 +5,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { DirectionProvider } from "@workspace/ui/components/direction";
 import { LocaleDirection } from "@/dictionaries";
 import LocaleUpdater from "@/components/i18n/locale-updater";
+import { HostingScanNotifier } from "@/features/hosting-scan";
 import { JSX } from "react";
 
 export function generateStaticParams() {
@@ -40,7 +41,10 @@ export default async function LocaleLayout({
     return (
         <DirectionProvider direction={dir} dir={dir}>
             <LocaleUpdater locale={locale} direction={dir} />
-            <NextIntlClientProvider locale={locale}>{children}</NextIntlClientProvider>
+            <NextIntlClientProvider locale={locale}>
+                <HostingScanNotifier />
+                {children}
+            </NextIntlClientProvider>
         </DirectionProvider>
     );
 }

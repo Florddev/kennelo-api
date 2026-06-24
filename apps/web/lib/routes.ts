@@ -108,6 +108,17 @@ type HostingNowParams = {
     search_params?: Record<string, string | number | boolean>;
 };
 
+type HostingScanParams = {
+    locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type HostingScanResultParams = {
+    locale?: string | number;
+    microchip: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
 type BecomeHostParams = {
     locale?: string | number;
     search_params?: Record<string, string | number | boolean>;
@@ -313,6 +324,14 @@ function HostingNow(params?: HostingNowParams): string {
     return buildRoute("/[locale]/hosting/now", params);
 }
 
+function HostingScan(params?: HostingScanParams): string {
+    return buildRoute("/[locale]/hosting/scan", params);
+}
+
+function HostingScanResult(params: HostingScanResultParams): string {
+    return buildRoute("/[locale]/hosting/scan/[microchip]", params);
+}
+
 function BecomeHost(params?: BecomeHostParams): string {
     return buildRoute("/[locale]/become-host", params);
 }
@@ -429,6 +448,8 @@ export const routes = {
     ActivityPayment,
     HostingMessages,
     HostingNow,
+    HostingScan,
+    HostingScanResult,
     BecomeHost,
     BookingDetail,
     Explore,

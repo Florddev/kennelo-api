@@ -2,7 +2,7 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
-import { Buildings, Calendar, ChatRoundLine, SunFog } from "@solar-icons/react";
+import { Buildings, Calendar, ChatRoundLine, Magnifer, SunFog } from "@solar-icons/react";
 
 import { cn } from "@workspace/ui/lib/utils";
 import { isActivePath } from "@workspace/common";
@@ -38,6 +38,12 @@ export default function HostingLayout({ children, className }: HostingLayoutProp
             label: t("ui.navigation.hosting.calendar"),
             icon: Calendar,
             active: isActive(routes.HostingCalendar()),
+        },
+        {
+            href: routes.HostingScan(),
+            label: t("ui.navigation.hosting.scan"),
+            icon: Magnifer,
+            active: isActive(routes.HostingScan()),
         },
         {
             href: routes.MyActivities(),

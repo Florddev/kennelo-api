@@ -22,6 +22,7 @@ import {
     MessageModel,
     type MessageDto,
     getConversations,
+    getConversation,
     getActivityConversations,
     getMessages,
     sendMessage as sendMessageAction,
@@ -70,10 +71,17 @@ interface ConversationsContextValue {
 
 const ConversationsContext = createContext<ConversationsContextValue | undefined>(undefined);
 
-export function ConversationsProvider({ children }: { children: ReactNode }) {
+export function ConversationsProvider({
+    children,
+    initialConversationId = null,
+}: {
+    children: ReactNode;
+    initialConversationId?: string | null;
+}) {
     const [selectedConversation, setSelectedConversation] = useState<ConversationModel | null>(
         null,
     );
+    const autoSelectedRef = useRef(false);
     const [activeFilter, setActiveFilter] = useState<ConversationFilter>("all");
     const [searchQuery, setSearchQuery] = useState("");
     const [pendingMessages, setPendingMessages] = useState<PendingMessage[]>([]);
@@ -116,6 +124,20 @@ export function ConversationsProvider({ children }: { children: ReactNode }) {
             })
             .sort(sortByLastMessage);
     }, [ownerConversations, hostConversations]);
+
+    const initialFromList = useMemo(
+        () =>
+            initialConversationId
+                ? (allConversations.find((c) => c.id === initialConversationId) ?? null)
+                : null,
+        [initialConversationId, allConversations],
+    );
+
+    const { data: fetchedInitialConversation = null } = useQuery({
+        queryKey: ["conversation", initialConversationId],
+        queryFn: () => getConversation(initialConversationId!),
+        enabled: !!initialConversationId && !initialFromList,
+    });
 
     const filteredConversations = useMemo(() => {
         let base: ConversationModel[];
@@ -245,6 +267,15 @@ export function ConversationsProvider({ children }: { children: ReactNode }) {
         setSelectedConversation(null);
         setPendingMessages([]);
     }, []);
+
+    useEffect(() => {
+        if (autoSelectedRef.current || !initialConversationId) return;
+        const target = initialFromList ?? fetchedInitialConversation;
+        if (!target) return;
+        autoSelectedRef.current = true;
+        const timeout = window.setTimeout(() => selectConversation(target), 0);
+        return () => window.clearTimeout(timeout);
+    }, [initialConversationId, initialFromList, fetchedInitialConversation, selectConversation]);
 
     const notifyTyping = useCallback(() => {
         if (!conversationChannelRef.current || !user || typingThrottleRef.current) return;

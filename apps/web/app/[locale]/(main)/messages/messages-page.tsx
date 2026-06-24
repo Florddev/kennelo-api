@@ -18,6 +18,7 @@ import { ConversationView } from "@/features/conversations/components/conversati
 import { Separator } from "@workspace/ui/components/separator";
 import { ChatRoundLine, MinimalisticMagnifier } from "@solar-icons/react";
 import { routes } from "@/lib/routes";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 
 function ConversationPanels({
@@ -198,8 +199,11 @@ function MessagePageContent() {
 }
 
 export default function MessagesPage() {
+    const searchParams = useSearchParams();
+    const initialConversationId = searchParams.get("conversation");
+
     return (
-        <ConversationsProvider>
+        <ConversationsProvider initialConversationId={initialConversationId}>
             <MessagePageContent />
         </ConversationsProvider>
     );
