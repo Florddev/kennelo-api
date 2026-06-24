@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
+use App\Services\Translation\DeeplTranslator;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 
 class TranslateBreedsCommand extends Command
@@ -15,19 +15,13 @@ class TranslateBreedsCommand extends Command
 
     protected $description = 'Fill the breeds translation cache by translating missing labels through DeepL';
 
-    public function handle(): int
+    public function handle(DeeplTranslator $translator): int
     {
-        $key = config('services.deepl.key');
-
-        if (empty($key)) {
+        if (! $translator->isConfigured()) {
             $this->error('DEEPL_API_KEY is not configured.');
 
             return self::FAILURE;
         }
-
-        $sourceLocale = config('services.deepl.source_locale');
-        $locales = $this->locales();
-        $targetLocales = array_values(array_diff($locales, [$sourceLocale]));
 
         $directory = database_path('data/breeds');
         $sourceFiles = File::glob($directory.'/*.json');
@@ -49,22 +43,9 @@ class TranslateBreedsCommand extends Command
 
             foreach ($source as $entry) {
                 $slug = $entry['breed'];
-                $label = $cache[$slug]['label'] ?? [];
-
-                $label[$sourceLocale] = $label[$sourceLocale] ?? Str::headline($slug);
-
-                foreach ($targetLocales as $targetLocale) {
-                    if (! empty($label[$targetLocale])) {
-                        continue;
-                    }
-
-                    $label[$targetLocale] = $this->translate($label[$sourceLocale], $sourceLocale, $targetLocale);
-                    $translatedCount++;
-
-                    $this->line(sprintf('  %s [%s] -> %s', $slug, $targetLocale, $label[$targetLocale]));
-                }
-
-                $cache[$slug] = ['breed' => $slug, 'label' => $label];
+                $result = $translator->fillMissing($cache[$slug]['label'] ?? [], Str::headline($slug));
+                $translatedCount += $result['translated'];
+                $cache[$slug] = ['breed' => $slug, 'label' => $result['label']];
             }
 
             $ordered = array_map(static fn (array $entry): array => $cache[$entry['breed']], $source);
@@ -77,30 +58,5 @@ class TranslateBreedsCommand extends Command
         $this->info(sprintf('Done. %d labels translated.', $translatedCount));
 
         return self::SUCCESS;
-    }
-
-    /**
-     * @return array<int, string>
-     */
-    private function locales(): array
-    {
-        return collect(explode(',', (string) config('app.available_locales')))
-            ->map(static fn (string $locale): string => trim($locale))
-            ->filter()
-            ->values()
-            ->all();
-    }
-
-    private function translate(string $text, string $source, string $target): string
-    {
-        $response = Http::withHeaders([
-            'Authorization' => 'DeepL-Auth-Key '.config('services.deepl.key'),
-        ])->asForm()->post(config('services.deepl.url'), [
-            'text' => $text,
-            'source_lang' => strtoupper($source),
-            'target_lang' => strtoupper($target),
-        ])->throw();
-
-        return $response->json('translations.0.text', $text);
     }
 }

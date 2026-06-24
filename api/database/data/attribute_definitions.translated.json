@@ -1,0 +1,1832 @@
+[
+    {
+        "code": "amphibian_species",
+        "category": "info",
+        "value_type": "text",
+        "input_type": "textarea",
+        "icon_name": "Book",
+        "animal_types": [
+            "amphibian"
+        ],
+        "label": {
+            "en": "Species",
+            "fr": "Espèce",
+            "ar": "النوع"
+        },
+        "options": []
+    },
+    {
+        "code": "bath_method",
+        "category": "hygiene",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "Waterdrop",
+        "animal_types": [
+            "bird"
+        ],
+        "label": {
+            "en": "Bathing Method",
+            "fr": "Méthode de bain",
+            "ar": "طريقة الاستحمام"
+        },
+        "options": [
+            {
+                "value": "misting",
+                "label": {
+                    "en": "Misting",
+                    "fr": "Brumisation",
+                    "ar": "رذاذ"
+                }
+            },
+            {
+                "value": "shallow_dish",
+                "label": {
+                    "en": "Shallow dish",
+                    "fr": "Coupelle peu profonde",
+                    "ar": "وعاء ضحل"
+                }
+            },
+            {
+                "value": "both",
+                "label": {
+                    "en": "Both",
+                    "fr": "Les deux",
+                    "ar": "كلاهما"
+                }
+            },
+            {
+                "value": "none_needed",
+                "label": {
+                    "en": "None needed",
+                    "fr": "Aucun nécessaire",
+                    "ar": "لا حاجة لشيء"
+                }
+            }
+        ]
+    },
+    {
+        "code": "bird_species",
+        "category": "info",
+        "value_type": "text",
+        "input_type": "textarea",
+        "icon_name": "Book",
+        "animal_types": [
+            "bird"
+        ],
+        "label": {
+            "en": "Species",
+            "fr": "Espèce",
+            "ar": "النوع"
+        },
+        "options": []
+    },
+    {
+        "code": "biting_tendency",
+        "category": "behavior",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "DangerTriangle",
+        "animal_types": [
+            "ferret",
+            "rodent"
+        ],
+        "label": {
+            "en": "Biting Tendency",
+            "fr": "Tendance à mordre",
+            "ar": "ميل العض"
+        },
+        "options": [
+            {
+                "value": "never",
+                "label": {
+                    "en": "Never",
+                    "fr": "Jamais",
+                    "ar": "أبدًا"
+                }
+            },
+            {
+                "value": "rarely",
+                "label": {
+                    "en": "Rarely",
+                    "fr": "Rarement",
+                    "ar": "نادرًا"
+                }
+            },
+            {
+                "value": "when_stressed",
+                "label": {
+                    "en": "When stressed",
+                    "fr": "En cas de stress",
+                    "ar": "عند التوتر"
+                }
+            }
+        ]
+    },
+    {
+        "code": "can_be_handled",
+        "category": "behavior",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "HandShake",
+        "animal_types": [
+            "amphibian",
+            "bird",
+            "ferret",
+            "rabbit",
+            "reptile",
+            "rodent"
+        ],
+        "label": {
+            "en": "Handleability",
+            "fr": "Facilité de manipulation",
+            "ar": "سهولة التعامل"
+        },
+        "options": [
+            {
+                "value": "yes_easily",
+                "label": {
+                    "en": "Yes, easily",
+                    "fr": "Oui, facilement",
+                    "ar": "نعم، بسهولة"
+                }
+            },
+            {
+                "value": "yes_with_care",
+                "label": {
+                    "en": "Yes, with care",
+                    "fr": "Oui, avec précaution",
+                    "ar": "نعم، بحذر"
+                }
+            },
+            {
+                "value": "requires_experience",
+                "label": {
+                    "en": "Requires experience",
+                    "fr": "Nécessite de l'expérience",
+                    "ar": "يتطلب خبرة"
+                }
+            },
+            {
+                "value": "no",
+                "label": {
+                    "en": "Prefer not to be handled",
+                    "fr": "Préfère ne pas être manipulé",
+                    "ar": "يفضّل عدم التعامل معه"
+                }
+            }
+        ]
+    },
+    {
+        "code": "can_be_left_alone",
+        "category": "behavior",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "HomeSmile",
+        "animal_types": [
+            "cat",
+            "dog",
+            "ferret"
+        ],
+        "label": {
+            "en": "Max Time Alone",
+            "fr": "Temps seul maximum",
+            "ar": "أقصى وقت بمفرده"
+        },
+        "options": [
+            {
+                "value": "1h",
+                "label": {
+                    "en": "1 hour",
+                    "fr": "1 heure",
+                    "ar": "ساعة واحدة"
+                }
+            },
+            {
+                "value": "4h",
+                "label": {
+                    "en": "4 hours",
+                    "fr": "4 heures",
+                    "ar": "4 ساعات"
+                }
+            },
+            {
+                "value": "8h",
+                "label": {
+                    "en": "8 hours",
+                    "fr": "8 heures",
+                    "ar": "8 ساعات"
+                }
+            },
+            {
+                "value": "never",
+                "label": {
+                    "en": "Never",
+                    "fr": "Jamais",
+                    "ar": "أبدًا"
+                }
+            }
+        ]
+    },
+    {
+        "code": "can_talk",
+        "category": "behavior",
+        "value_type": "boolean",
+        "input_type": "boolean",
+        "icon_name": "ChatRound",
+        "animal_types": [
+            "bird"
+        ],
+        "label": {
+            "en": "Can Talk",
+            "fr": "Peut parler",
+            "ar": "يمكنه الكلام"
+        },
+        "options": []
+    },
+    {
+        "code": "daily_walks",
+        "category": "care",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "Running",
+        "animal_types": [
+            "dog"
+        ],
+        "label": {
+            "en": "Daily Walks Needed",
+            "fr": "Promenades quotidiennes nécessaires",
+            "ar": "عدد النزهات اليومية المطلوبة"
+        },
+        "options": [
+            {
+                "value": "one",
+                "label": {
+                    "en": "1 walk",
+                    "fr": "1 promenade",
+                    "ar": "نزهة واحدة"
+                }
+            },
+            {
+                "value": "two",
+                "label": {
+                    "en": "2 walks",
+                    "fr": "2 promenades",
+                    "ar": "نزهتان"
+                }
+            },
+            {
+                "value": "three_plus",
+                "label": {
+                    "en": "3+ walks",
+                    "fr": "3 promenades ou plus",
+                    "ar": "3 نزهات أو أكثر"
+                }
+            }
+        ]
+    },
+    {
+        "code": "declawed",
+        "category": "health",
+        "value_type": "boolean",
+        "input_type": "boolean",
+        "icon_name": "Scissors",
+        "animal_types": [
+            "cat"
+        ],
+        "label": {
+            "en": "Declawed",
+            "fr": "Dégriffé",
+            "ar": "منزوع المخالب"
+        },
+        "options": []
+    },
+    {
+        "code": "diet_type",
+        "category": "diet",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "Leaf",
+        "animal_types": [
+            "amphibian",
+            "reptile"
+        ],
+        "label": {
+            "en": "Diet Type",
+            "fr": "Type de régime",
+            "ar": "نوع النظام الغذائي"
+        },
+        "options": [
+            {
+                "value": "insects",
+                "label": {
+                    "en": "Insects",
+                    "fr": "Insectes",
+                    "ar": "حشرات"
+                }
+            },
+            {
+                "value": "rodents",
+                "label": {
+                    "en": "Rodents / Pinky mice",
+                    "fr": "Rongeurs / Souriceaux",
+                    "ar": "قوارض / فئران وليدة"
+                }
+            },
+            {
+                "value": "worms",
+                "label": {
+                    "en": "Worms",
+                    "fr": "Vers",
+                    "ar": "ديدان"
+                }
+            },
+            {
+                "value": "vegetables",
+                "label": {
+                    "en": "Vegetables / Fruit",
+                    "fr": "Légumes / Fruits",
+                    "ar": "خضروات / فواكه"
+                }
+            },
+            {
+                "value": "omnivore",
+                "label": {
+                    "en": "Omnivore",
+                    "fr": "Omnivore",
+                    "ar": "قارت"
+                }
+            },
+            {
+                "value": "carnivore",
+                "label": {
+                    "en": "Carnivore",
+                    "fr": "Carnivore",
+                    "ar": "آكل اللحوم"
+                }
+            }
+        ]
+    },
+    {
+        "code": "energy_level",
+        "category": "behavior",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "BoltCircle",
+        "animal_types": [
+            "bird",
+            "cat",
+            "dog",
+            "ferret",
+            "rabbit",
+            "rodent"
+        ],
+        "label": {
+            "en": "Energy Level",
+            "fr": "Niveau d'énergie",
+            "ar": "مستوى الطاقة"
+        },
+        "options": [
+            {
+                "value": "low",
+                "label": {
+                    "en": "Low",
+                    "fr": "Faible",
+                    "ar": "منخفض"
+                }
+            },
+            {
+                "value": "medium",
+                "label": {
+                    "en": "Medium",
+                    "fr": "Moyen",
+                    "ar": "متوسط"
+                }
+            },
+            {
+                "value": "high",
+                "label": {
+                    "en": "High",
+                    "fr": "Élevé",
+                    "ar": "مرتفع"
+                }
+            },
+            {
+                "value": "very_high",
+                "label": {
+                    "en": "Very High",
+                    "fr": "Très élevé",
+                    "ar": "مرتفع جدًا"
+                }
+            }
+        ]
+    },
+    {
+        "code": "feeding_frequency",
+        "category": "diet",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "Calendar",
+        "animal_types": [
+            "amphibian",
+            "reptile"
+        ],
+        "label": {
+            "en": "Feeding Frequency",
+            "fr": "Fréquence des repas",
+            "ar": "تكرار التغذية"
+        },
+        "options": [
+            {
+                "value": "daily",
+                "label": {
+                    "en": "Once a day",
+                    "fr": "Une fois par jour",
+                    "ar": "مرة واحدة يوميًا"
+                }
+            },
+            {
+                "value": "every_2_days",
+                "label": {
+                    "en": "Every 2 days",
+                    "fr": "Tous les 2 jours",
+                    "ar": "كل يومين"
+                }
+            },
+            {
+                "value": "twice_weekly",
+                "label": {
+                    "en": "Twice a week",
+                    "fr": "Deux fois par semaine",
+                    "ar": "مرتين أسبوعيًا"
+                }
+            },
+            {
+                "value": "weekly",
+                "label": {
+                    "en": "Once a week",
+                    "fr": "Une fois par semaine",
+                    "ar": "مرة واحدة أسبوعيًا"
+                }
+            }
+        ]
+    },
+    {
+        "code": "feeding_schedule",
+        "category": "diet",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "Calendar",
+        "animal_types": [
+            "bird",
+            "cat",
+            "dog",
+            "ferret",
+            "rabbit",
+            "rodent"
+        ],
+        "label": {
+            "en": "Feeding Schedule",
+            "fr": "Horaire des repas",
+            "ar": "جدول التغذية"
+        },
+        "options": [
+            {
+                "value": "morning_only",
+                "label": {
+                    "en": "Morning only",
+                    "fr": "Le matin uniquement",
+                    "ar": "صباحًا فقط"
+                }
+            },
+            {
+                "value": "evening_only",
+                "label": {
+                    "en": "Evening only",
+                    "fr": "Le soir uniquement",
+                    "ar": "مساءً فقط"
+                }
+            },
+            {
+                "value": "morning_and_evening",
+                "label": {
+                    "en": "Morning & Evening",
+                    "fr": "Matin et soir",
+                    "ar": "صباحًا ومساءً"
+                }
+            },
+            {
+                "value": "three_times_daily",
+                "label": {
+                    "en": "Three times a day",
+                    "fr": "Trois fois par jour",
+                    "ar": "ثلاث مرات يوميًا"
+                }
+            },
+            {
+                "value": "free_feeding",
+                "label": {
+                    "en": "Free feeding (always available)",
+                    "fr": "À volonté (toujours disponible)",
+                    "ar": "تغذية حرة (متاحة دائمًا)"
+                }
+            }
+        ]
+    },
+    {
+        "code": "flight_status",
+        "category": "behavior",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "Plain",
+        "animal_types": [
+            "bird"
+        ],
+        "label": {
+            "en": "Flight Status",
+            "fr": "Statut de vol",
+            "ar": "حالة الطيران"
+        },
+        "options": [
+            {
+                "value": "fully_flighted",
+                "label": {
+                    "en": "Fully flighted",
+                    "fr": "Vol complet",
+                    "ar": "قادر على الطيران بالكامل"
+                }
+            },
+            {
+                "value": "wings_clipped",
+                "label": {
+                    "en": "Wings clipped",
+                    "fr": "Ailes taillées",
+                    "ar": "أجنحة مقصوصة"
+                }
+            },
+            {
+                "value": "limited_flight",
+                "label": {
+                    "en": "Limited flight",
+                    "fr": "Vol limité",
+                    "ar": "طيران محدود"
+                }
+            }
+        ]
+    },
+    {
+        "code": "free_roam_time",
+        "category": "care",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "Running",
+        "animal_types": [
+            "rabbit"
+        ],
+        "label": {
+            "en": "Daily Free Roam Time",
+            "fr": "Temps de liberté quotidien",
+            "ar": "وقت التجول الحر اليومي"
+        },
+        "options": [
+            {
+                "value": "less_than_1h",
+                "label": {
+                    "en": "Less than 1 hour",
+                    "fr": "Moins d'1 heure",
+                    "ar": "أقل من ساعة"
+                }
+            },
+            {
+                "value": "1_to_3h",
+                "label": {
+                    "en": "1 to 3 hours",
+                    "fr": "1 à 3 heures",
+                    "ar": "من 1 إلى 3 ساعات"
+                }
+            },
+            {
+                "value": "3_to_6h",
+                "label": {
+                    "en": "3 to 6 hours",
+                    "fr": "3 à 6 heures",
+                    "ar": "من 3 إلى 6 ساعات"
+                }
+            },
+            {
+                "value": "all_day",
+                "label": {
+                    "en": "All day",
+                    "fr": "Toute la journée",
+                    "ar": "طوال اليوم"
+                }
+            }
+        ]
+    },
+    {
+        "code": "friendly_with_birds",
+        "category": "social",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "UsersGroupRounded",
+        "animal_types": [
+            "bird"
+        ],
+        "label": {
+            "en": "Friendly with Other Birds",
+            "fr": "Sociable avec les autres oiseaux",
+            "ar": "ودود مع الطيور الأخرى"
+        },
+        "options": [
+            {
+                "value": "yes",
+                "label": {
+                    "en": "Yes",
+                    "fr": "Oui",
+                    "ar": "نعم"
+                }
+            },
+            {
+                "value": "no",
+                "label": {
+                    "en": "No",
+                    "fr": "Non",
+                    "ar": "لا"
+                }
+            },
+            {
+                "value": "unknown",
+                "label": {
+                    "en": "Unknown",
+                    "fr": "Inconnu",
+                    "ar": "غير معروف"
+                }
+            }
+        ]
+    },
+    {
+        "code": "friendly_with_cats",
+        "category": "social",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "Cat",
+        "animal_types": [
+            "dog",
+            "ferret"
+        ],
+        "label": {
+            "en": "Friendly with Cats",
+            "fr": "Sociable avec les chats",
+            "ar": "ودود مع القطط"
+        },
+        "options": [
+            {
+                "value": "yes",
+                "label": {
+                    "en": "Yes",
+                    "fr": "Oui",
+                    "ar": "نعم"
+                }
+            },
+            {
+                "value": "no",
+                "label": {
+                    "en": "No",
+                    "fr": "Non",
+                    "ar": "لا"
+                }
+            },
+            {
+                "value": "unknown",
+                "label": {
+                    "en": "Unknown",
+                    "fr": "Inconnu",
+                    "ar": "غير معروف"
+                }
+            }
+        ]
+    },
+    {
+        "code": "friendly_with_children",
+        "category": "social",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "UsersGroupRounded",
+        "animal_types": [
+            "bird",
+            "cat",
+            "dog",
+            "ferret",
+            "rabbit",
+            "rodent"
+        ],
+        "label": {
+            "en": "Friendly with Children",
+            "fr": "Sociable avec les enfants",
+            "ar": "ودود مع الأطفال"
+        },
+        "options": [
+            {
+                "value": "yes",
+                "label": {
+                    "en": "Yes",
+                    "fr": "Oui",
+                    "ar": "نعم"
+                }
+            },
+            {
+                "value": "supervised_only",
+                "label": {
+                    "en": "Supervised Only",
+                    "fr": "Sous surveillance uniquement",
+                    "ar": "تحت الإشراف فقط"
+                }
+            },
+            {
+                "value": "no",
+                "label": {
+                    "en": "No",
+                    "fr": "Non",
+                    "ar": "لا"
+                }
+            },
+            {
+                "value": "unknown",
+                "label": {
+                    "en": "Unknown",
+                    "fr": "Inconnu",
+                    "ar": "غير معروف"
+                }
+            }
+        ]
+    },
+    {
+        "code": "friendly_with_dogs",
+        "category": "social",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "Paw",
+        "animal_types": [
+            "cat",
+            "dog",
+            "ferret"
+        ],
+        "label": {
+            "en": "Friendly with Dogs",
+            "fr": "Sociable avec les chiens",
+            "ar": "ودود مع الكلاب"
+        },
+        "options": [
+            {
+                "value": "yes",
+                "label": {
+                    "en": "Yes",
+                    "fr": "Oui",
+                    "ar": "نعم"
+                }
+            },
+            {
+                "value": "no",
+                "label": {
+                    "en": "No",
+                    "fr": "Non",
+                    "ar": "لا"
+                }
+            },
+            {
+                "value": "unknown",
+                "label": {
+                    "en": "Unknown",
+                    "fr": "Inconnu",
+                    "ar": "غير معروف"
+                }
+            }
+        ]
+    },
+    {
+        "code": "friendly_with_other_cats",
+        "category": "social",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "Cat",
+        "animal_types": [
+            "cat"
+        ],
+        "label": {
+            "en": "Friendly with Other Cats",
+            "fr": "Sociable avec les autres chats",
+            "ar": "ودود مع القطط الأخرى"
+        },
+        "options": [
+            {
+                "value": "yes",
+                "label": {
+                    "en": "Yes",
+                    "fr": "Oui",
+                    "ar": "نعم"
+                }
+            },
+            {
+                "value": "no",
+                "label": {
+                    "en": "No",
+                    "fr": "Non",
+                    "ar": "لا"
+                }
+            },
+            {
+                "value": "unknown",
+                "label": {
+                    "en": "Unknown",
+                    "fr": "Inconnu",
+                    "ar": "غير معروف"
+                }
+            }
+        ]
+    },
+    {
+        "code": "habitat_type",
+        "category": "habitat",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "Water",
+        "animal_types": [
+            "amphibian"
+        ],
+        "label": {
+            "en": "Habitat Type",
+            "fr": "Type de milieu",
+            "ar": "نوع الموطن"
+        },
+        "options": [
+            {
+                "value": "aquatic",
+                "label": {
+                    "en": "Aquatic",
+                    "fr": "Aquatique",
+                    "ar": "مائي"
+                }
+            },
+            {
+                "value": "semi_aquatic",
+                "label": {
+                    "en": "Semi-aquatic",
+                    "fr": "Semi-aquatique",
+                    "ar": "شبه مائي"
+                }
+            },
+            {
+                "value": "terrestrial",
+                "label": {
+                    "en": "Terrestrial",
+                    "fr": "Terrestre",
+                    "ar": "بري"
+                }
+            }
+        ]
+    },
+    {
+        "code": "handling_frequency",
+        "category": "care",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "ClockCircle",
+        "animal_types": [
+            "amphibian",
+            "reptile"
+        ],
+        "label": {
+            "en": "Handling Frequency",
+            "fr": "Fréquence de manipulation",
+            "ar": "تكرار التعامل"
+        },
+        "options": [
+            {
+                "value": "daily",
+                "label": {
+                    "en": "Daily",
+                    "fr": "Quotidien",
+                    "ar": "يوميًا"
+                }
+            },
+            {
+                "value": "few_per_week",
+                "label": {
+                    "en": "A few times a week",
+                    "fr": "Quelques fois par semaine",
+                    "ar": "بضع مرات أسبوعيًا"
+                }
+            },
+            {
+                "value": "weekly",
+                "label": {
+                    "en": "Weekly",
+                    "fr": "Hebdomadaire",
+                    "ar": "أسبوعيًا"
+                }
+            },
+            {
+                "value": "rarely",
+                "label": {
+                    "en": "Rarely / Never",
+                    "fr": "Rarement / Jamais",
+                    "ar": "نادرًا / أبدًا"
+                }
+            }
+        ]
+    },
+    {
+        "code": "hay_type",
+        "category": "diet",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "Leaf",
+        "animal_types": [
+            "rabbit"
+        ],
+        "label": {
+            "en": "Primary Hay",
+            "fr": "Foin principal",
+            "ar": "التبن الأساسي"
+        },
+        "options": [
+            {
+                "value": "timothy",
+                "label": {
+                    "en": "Timothy",
+                    "fr": "Fléole (Timothy)",
+                    "ar": "تيموثي"
+                }
+            },
+            {
+                "value": "orchard",
+                "label": {
+                    "en": "Orchard grass",
+                    "fr": "Dactyle",
+                    "ar": "عشب البساتين"
+                }
+            },
+            {
+                "value": "meadow",
+                "label": {
+                    "en": "Meadow hay",
+                    "fr": "Foin de prairie",
+                    "ar": "تبن المروج"
+                }
+            },
+            {
+                "value": "alfalfa",
+                "label": {
+                    "en": "Alfalfa (young/ill)",
+                    "fr": "Luzerne (jeune/malade)",
+                    "ar": "برسيم (صغير/مريض)"
+                }
+            }
+        ]
+    },
+    {
+        "code": "housing_size",
+        "category": "habitat",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "Home2",
+        "animal_types": [
+            "bird",
+            "ferret",
+            "rabbit",
+            "rodent"
+        ],
+        "label": {
+            "en": "Housing Size",
+            "fr": "Taille de l'habitat",
+            "ar": "حجم المسكن"
+        },
+        "options": [
+            {
+                "value": "small",
+                "label": {
+                    "en": "Small",
+                    "fr": "Petit",
+                    "ar": "صغير"
+                }
+            },
+            {
+                "value": "medium",
+                "label": {
+                    "en": "Medium",
+                    "fr": "Moyen",
+                    "ar": "متوسط"
+                }
+            },
+            {
+                "value": "large",
+                "label": {
+                    "en": "Large",
+                    "fr": "Grand",
+                    "ar": "كبير"
+                }
+            },
+            {
+                "value": "extra_large",
+                "label": {
+                    "en": "Extra Large / Aviary",
+                    "fr": "Très grand / Volière",
+                    "ar": "كبير جدًا / قفص طيور"
+                }
+            }
+        ]
+    },
+    {
+        "code": "housing_type",
+        "category": "habitat",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "HomeSmile",
+        "animal_types": [
+            "rabbit"
+        ],
+        "label": {
+            "en": "Housing Type",
+            "fr": "Type d'habitat",
+            "ar": "نوع المسكن"
+        },
+        "options": [
+            {
+                "value": "indoor_cage",
+                "label": {
+                    "en": "Indoor cage",
+                    "fr": "Cage d'intérieur",
+                    "ar": "قفص داخلي"
+                }
+            },
+            {
+                "value": "outdoor_hutch",
+                "label": {
+                    "en": "Outdoor hutch",
+                    "fr": "Clapier d'extérieur",
+                    "ar": "قفص خارجي"
+                }
+            },
+            {
+                "value": "free_roam",
+                "label": {
+                    "en": "Free roam",
+                    "fr": "En liberté",
+                    "ar": "تجول حر"
+                }
+            },
+            {
+                "value": "cage_with_exercise",
+                "label": {
+                    "en": "Cage + exercise area",
+                    "fr": "Cage + espace d'exercice",
+                    "ar": "قفص + منطقة تمارين"
+                }
+            }
+        ]
+    },
+    {
+        "code": "humidity_level",
+        "category": "habitat",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "Waterdrops",
+        "animal_types": [
+            "amphibian",
+            "reptile"
+        ],
+        "label": {
+            "en": "Humidity Level",
+            "fr": "Niveau d'humidité",
+            "ar": "مستوى الرطوبة"
+        },
+        "options": [
+            {
+                "value": "low",
+                "label": {
+                    "en": "Low (30–40%)",
+                    "fr": "Faible (30–40 %)",
+                    "ar": "منخفضة (30–40٪)"
+                }
+            },
+            {
+                "value": "medium",
+                "label": {
+                    "en": "Medium (50–60%)",
+                    "fr": "Moyenne (50–60 %)",
+                    "ar": "متوسطة (50–60٪)"
+                }
+            },
+            {
+                "value": "high",
+                "label": {
+                    "en": "High (70–80%)",
+                    "fr": "Élevée (70–80 %)",
+                    "ar": "مرتفعة (70–80٪)"
+                }
+            },
+            {
+                "value": "very_high",
+                "label": {
+                    "en": "Very High (80%+)",
+                    "fr": "Très élevée (80 %+)",
+                    "ar": "مرتفعة جدًا (80٪+)"
+                }
+            }
+        ]
+    },
+    {
+        "code": "indoor_outdoor",
+        "category": "habitat",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "Home2",
+        "animal_types": [
+            "cat"
+        ],
+        "label": {
+            "en": "Indoor / Outdoor",
+            "fr": "Intérieur / Extérieur",
+            "ar": "داخلي / خارجي"
+        },
+        "options": [
+            {
+                "value": "indoor_only",
+                "label": {
+                    "en": "Indoor only",
+                    "fr": "Intérieur uniquement",
+                    "ar": "داخلي فقط"
+                }
+            },
+            {
+                "value": "outdoor_access",
+                "label": {
+                    "en": "Outdoor access",
+                    "fr": "Accès extérieur",
+                    "ar": "إمكانية الخروج"
+                }
+            },
+            {
+                "value": "outdoor",
+                "label": {
+                    "en": "Outdoor",
+                    "fr": "Extérieur",
+                    "ar": "خارجي"
+                }
+            }
+        ]
+    },
+    {
+        "code": "is_nocturnal",
+        "category": "behavior",
+        "value_type": "boolean",
+        "input_type": "boolean",
+        "icon_name": "Moon",
+        "animal_types": [
+            "amphibian",
+            "reptile",
+            "rodent"
+        ],
+        "label": {
+            "en": "Nocturnal",
+            "fr": "Nocturne",
+            "ar": "ليلي"
+        },
+        "options": []
+    },
+    {
+        "code": "is_venomous",
+        "category": "health",
+        "value_type": "boolean",
+        "input_type": "boolean",
+        "icon_name": "DangerTriangle",
+        "animal_types": [
+            "amphibian",
+            "reptile"
+        ],
+        "label": {
+            "en": "Venomous / Toxic",
+            "fr": "Venimeux / Toxique",
+            "ar": "سام / سُمّي"
+        },
+        "options": []
+    },
+    {
+        "code": "leash_trained",
+        "category": "behavior",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "WalkingRound",
+        "animal_types": [
+            "dog"
+        ],
+        "label": {
+            "en": "Leash Trained",
+            "fr": "Habitué à la laisse",
+            "ar": "مدرب على المقود"
+        },
+        "options": [
+            {
+                "value": "yes",
+                "label": {
+                    "en": "Yes",
+                    "fr": "Oui",
+                    "ar": "نعم"
+                }
+            },
+            {
+                "value": "in_training",
+                "label": {
+                    "en": "In training",
+                    "fr": "En apprentissage",
+                    "ar": "قيد التدريب"
+                }
+            },
+            {
+                "value": "no",
+                "label": {
+                    "en": "No",
+                    "fr": "Non",
+                    "ar": "لا"
+                }
+            }
+        ]
+    },
+    {
+        "code": "litter_trained",
+        "category": "hygiene",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "Waterdrop",
+        "animal_types": [
+            "cat",
+            "ferret",
+            "rabbit"
+        ],
+        "label": {
+            "en": "Litter Trained",
+            "fr": "Propreté (litière)",
+            "ar": "مدرب على صندوق الفضلات"
+        },
+        "options": [
+            {
+                "value": "yes",
+                "label": {
+                    "en": "Yes",
+                    "fr": "Oui",
+                    "ar": "نعم"
+                }
+            },
+            {
+                "value": "in_training",
+                "label": {
+                    "en": "In training",
+                    "fr": "En apprentissage",
+                    "ar": "قيد التدريب"
+                }
+            },
+            {
+                "value": "no",
+                "label": {
+                    "en": "No",
+                    "fr": "Non",
+                    "ar": "لا"
+                }
+            }
+        ]
+    },
+    {
+        "code": "medications",
+        "category": "health",
+        "value_type": "text",
+        "input_type": "multi-list",
+        "icon_name": "Pill",
+        "animal_types": [
+            "amphibian",
+            "bird",
+            "cat",
+            "dog",
+            "ferret",
+            "rabbit",
+            "reptile",
+            "rodent"
+        ],
+        "label": {
+            "en": "Current Medications",
+            "fr": "Médicaments actuels",
+            "ar": "الأدوية الحالية"
+        },
+        "options": []
+    },
+    {
+        "code": "noise_level",
+        "category": "behavior",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "Speaker",
+        "animal_types": [
+            "bird"
+        ],
+        "label": {
+            "en": "Noise Level",
+            "fr": "Niveau sonore",
+            "ar": "مستوى الضوضاء"
+        },
+        "options": [
+            {
+                "value": "quiet",
+                "label": {
+                    "en": "Quiet",
+                    "fr": "Calme",
+                    "ar": "هادئ"
+                }
+            },
+            {
+                "value": "moderate",
+                "label": {
+                    "en": "Moderate",
+                    "fr": "Modéré",
+                    "ar": "متوسط"
+                }
+            },
+            {
+                "value": "loud",
+                "label": {
+                    "en": "Loud",
+                    "fr": "Bruyant",
+                    "ar": "صاخب"
+                }
+            },
+            {
+                "value": "very_loud",
+                "label": {
+                    "en": "Very loud",
+                    "fr": "Très bruyant",
+                    "ar": "صاخب جدًا"
+                }
+            }
+        ]
+    },
+    {
+        "code": "out_of_cage_time",
+        "category": "care",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "Calendar",
+        "animal_types": [
+            "bird"
+        ],
+        "label": {
+            "en": "Daily Out-of-Cage Time",
+            "fr": "Temps quotidien hors de la cage",
+            "ar": "وقت الخروج من القفص يوميًا"
+        },
+        "options": [
+            {
+                "value": "not_needed",
+                "label": {
+                    "en": "Not needed",
+                    "fr": "Non nécessaire",
+                    "ar": "غير مطلوب"
+                }
+            },
+            {
+                "value": "less_than_1h",
+                "label": {
+                    "en": "Less than 1 hour",
+                    "fr": "Moins d'1 heure",
+                    "ar": "أقل من ساعة"
+                }
+            },
+            {
+                "value": "1_to_3h",
+                "label": {
+                    "en": "1 to 3 hours",
+                    "fr": "1 à 3 heures",
+                    "ar": "من 1 إلى 3 ساعات"
+                }
+            },
+            {
+                "value": "more_than_3h",
+                "label": {
+                    "en": "More than 3 hours",
+                    "fr": "Plus de 3 heures",
+                    "ar": "أكثر من 3 ساعات"
+                }
+            }
+        ]
+    },
+    {
+        "code": "potty_break_frequency",
+        "category": "hygiene",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "ClockCircle",
+        "animal_types": [
+            "dog"
+        ],
+        "label": {
+            "en": "Potty Break Frequency",
+            "fr": "Fréquence des pauses toilette",
+            "ar": "تكرار فترات قضاء الحاجة"
+        },
+        "options": [
+            {
+                "value": "every_2h",
+                "label": {
+                    "en": "Every 2 hours",
+                    "fr": "Toutes les 2 heures",
+                    "ar": "كل ساعتين"
+                }
+            },
+            {
+                "value": "every_4h",
+                "label": {
+                    "en": "Every 4 hours",
+                    "fr": "Toutes les 4 heures",
+                    "ar": "كل 4 ساعات"
+                }
+            },
+            {
+                "value": "every_6h_plus",
+                "label": {
+                    "en": "Every 6+ hours",
+                    "fr": "Toutes les 6 heures et plus",
+                    "ar": "كل 6 ساعات أو أكثر"
+                }
+            }
+        ]
+    },
+    {
+        "code": "potty_trained",
+        "category": "hygiene",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "Waterdrop",
+        "animal_types": [
+            "dog"
+        ],
+        "label": {
+            "en": "Potty Trained",
+            "fr": "Propreté",
+            "ar": "مدرب على قضاء الحاجة"
+        },
+        "options": [
+            {
+                "value": "fully_trained",
+                "label": {
+                    "en": "Fully trained",
+                    "fr": "Entièrement dressé",
+                    "ar": "مدرب بالكامل"
+                }
+            },
+            {
+                "value": "in_training",
+                "label": {
+                    "en": "In training",
+                    "fr": "En apprentissage",
+                    "ar": "قيد التدريب"
+                }
+            },
+            {
+                "value": "not_trained",
+                "label": {
+                    "en": "Not trained",
+                    "fr": "Non dressé",
+                    "ar": "غير مدرب"
+                }
+            }
+        ]
+    },
+    {
+        "code": "reptile_species",
+        "category": "info",
+        "value_type": "text",
+        "input_type": "textarea",
+        "icon_name": "Book",
+        "animal_types": [
+            "reptile"
+        ],
+        "label": {
+            "en": "Species",
+            "fr": "Espèce",
+            "ar": "النوع"
+        },
+        "options": []
+    },
+    {
+        "code": "requires_live_food",
+        "category": "diet",
+        "value_type": "boolean",
+        "input_type": "boolean",
+        "icon_name": "DangerSquare",
+        "animal_types": [
+            "amphibian",
+            "reptile"
+        ],
+        "label": {
+            "en": "Requires Live Food",
+            "fr": "Nécessite des proies vivantes",
+            "ar": "يتطلب طعامًا حيًا"
+        },
+        "options": []
+    },
+    {
+        "code": "rodent_species",
+        "category": "info",
+        "value_type": "text",
+        "input_type": "textarea",
+        "icon_name": "Book",
+        "animal_types": [
+            "rodent"
+        ],
+        "label": {
+            "en": "Species",
+            "fr": "Espèce",
+            "ar": "النوع"
+        },
+        "options": []
+    },
+    {
+        "code": "separation_anxiety",
+        "category": "behavior",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "HeartPulse",
+        "animal_types": [
+            "dog"
+        ],
+        "label": {
+            "en": "Separation Anxiety",
+            "fr": "Anxiété de séparation",
+            "ar": "قلق الانفصال"
+        },
+        "options": [
+            {
+                "value": "none",
+                "label": {
+                    "en": "None",
+                    "fr": "Aucun",
+                    "ar": "لا شيء"
+                }
+            },
+            {
+                "value": "mild",
+                "label": {
+                    "en": "Mild",
+                    "fr": "Léger",
+                    "ar": "خفيف"
+                }
+            },
+            {
+                "value": "moderate",
+                "label": {
+                    "en": "Moderate",
+                    "fr": "Modéré",
+                    "ar": "متوسط"
+                }
+            },
+            {
+                "value": "severe",
+                "label": {
+                    "en": "Severe",
+                    "fr": "Sévère",
+                    "ar": "شديد"
+                }
+            }
+        ]
+    },
+    {
+        "code": "skin_care_notes",
+        "category": "health",
+        "value_type": "text",
+        "input_type": "textarea",
+        "icon_name": "Health",
+        "animal_types": [
+            "amphibian"
+        ],
+        "label": {
+            "en": "Skin Care Notes",
+            "fr": "Notes sur les soins de la peau",
+            "ar": "ملاحظات العناية بالجلد"
+        },
+        "options": []
+    },
+    {
+        "code": "social_living",
+        "category": "social",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "UsersGroupRounded",
+        "animal_types": [
+            "rodent"
+        ],
+        "label": {
+            "en": "Social Living",
+            "fr": "Mode de vie social",
+            "ar": "نمط العيش الاجتماعي"
+        },
+        "options": [
+            {
+                "value": "alone",
+                "label": {
+                    "en": "Lives alone",
+                    "fr": "Vit seul",
+                    "ar": "يعيش بمفرده"
+                }
+            },
+            {
+                "value": "pair",
+                "label": {
+                    "en": "Bonded pair",
+                    "fr": "Couple lié",
+                    "ar": "زوج مترابط"
+                }
+            },
+            {
+                "value": "group",
+                "label": {
+                    "en": "Group",
+                    "fr": "Groupe",
+                    "ar": "مجموعة"
+                }
+            }
+        ]
+    },
+    {
+        "code": "social_with_ferrets",
+        "category": "social",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "UsersGroupRounded",
+        "animal_types": [
+            "ferret"
+        ],
+        "label": {
+            "en": "Social with Other Ferrets",
+            "fr": "Sociable avec les autres furets",
+            "ar": "ودود مع النموس الأخرى"
+        },
+        "options": [
+            {
+                "value": "yes",
+                "label": {
+                    "en": "Yes",
+                    "fr": "Oui",
+                    "ar": "نعم"
+                }
+            },
+            {
+                "value": "no",
+                "label": {
+                    "en": "No",
+                    "fr": "Non",
+                    "ar": "لا"
+                }
+            },
+            {
+                "value": "unknown",
+                "label": {
+                    "en": "Unknown",
+                    "fr": "Inconnu",
+                    "ar": "غير معروف"
+                }
+            }
+        ]
+    },
+    {
+        "code": "special_diet",
+        "category": "diet",
+        "value_type": "text",
+        "input_type": "textarea",
+        "icon_name": "Notes",
+        "animal_types": [
+            "amphibian",
+            "bird",
+            "cat",
+            "dog",
+            "ferret",
+            "rabbit",
+            "reptile",
+            "rodent"
+        ],
+        "label": {
+            "en": "Special Diet Notes",
+            "fr": "Notes sur le régime spécial",
+            "ar": "ملاحظات النظام الغذائي الخاص"
+        },
+        "options": []
+    },
+    {
+        "code": "temperature_day",
+        "category": "habitat",
+        "value_type": "integer",
+        "input_type": "number",
+        "icon_name": "Thermometer",
+        "animal_types": [
+            "reptile"
+        ],
+        "label": {
+            "en": "Day Temperature (°C)",
+            "fr": "Température de jour (°C)",
+            "ar": "درجة حرارة النهار (°م)"
+        },
+        "options": []
+    },
+    {
+        "code": "temperature_night",
+        "category": "habitat",
+        "value_type": "integer",
+        "input_type": "number",
+        "icon_name": "Moon",
+        "animal_types": [
+            "reptile"
+        ],
+        "label": {
+            "en": "Night Temperature (°C)",
+            "fr": "Température de nuit (°C)",
+            "ar": "درجة حرارة الليل (°م)"
+        },
+        "options": []
+    },
+    {
+        "code": "terrarium_type",
+        "category": "habitat",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "Home2",
+        "animal_types": [
+            "reptile"
+        ],
+        "label": {
+            "en": "Terrarium Type",
+            "fr": "Type de terrarium",
+            "ar": "نوع التيراريوم"
+        },
+        "options": [
+            {
+                "value": "desert",
+                "label": {
+                    "en": "Desert",
+                    "fr": "Désert",
+                    "ar": "صحراوي"
+                }
+            },
+            {
+                "value": "tropical",
+                "label": {
+                    "en": "Tropical",
+                    "fr": "Tropical",
+                    "ar": "استوائي"
+                }
+            },
+            {
+                "value": "woodland",
+                "label": {
+                    "en": "Woodland",
+                    "fr": "Forestier",
+                    "ar": "حرجي"
+                }
+            },
+            {
+                "value": "aqua_terrarium",
+                "label": {
+                    "en": "Aqua-terrarium",
+                    "fr": "Aqua-terrarium",
+                    "ar": "حوض مائي أرضي"
+                }
+            }
+        ]
+    },
+    {
+        "code": "uv_light_needed",
+        "category": "care",
+        "value_type": "boolean",
+        "input_type": "boolean",
+        "icon_name": "Sun",
+        "animal_types": [
+            "reptile"
+        ],
+        "label": {
+            "en": "UV Light Required",
+            "fr": "Lumière UV requise",
+            "ar": "يتطلب ضوء الأشعة فوق البنفسجية"
+        },
+        "options": []
+    },
+    {
+        "code": "water_quality",
+        "category": "health",
+        "value_type": "text",
+        "input_type": "textarea",
+        "icon_name": "Shield",
+        "animal_types": [
+            "amphibian"
+        ],
+        "label": {
+            "en": "Water Quality Requirements",
+            "fr": "Exigences de qualité de l'eau",
+            "ar": "متطلبات جودة المياه"
+        },
+        "options": []
+    }
+]
