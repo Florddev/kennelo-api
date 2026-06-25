@@ -12,6 +12,7 @@ use App\Http\Requests\Activity\UpsertClosedWeekDaysRequest;
 use App\Http\Requests\Activity\UpsertCycleSettingsRequest;
 use App\Http\Resources\ActivityCycleResource;
 use App\Http\Resources\ActivityCycleSettingResource;
+use App\Http\Resources\AnimalTypeResource;
 use App\Models\Activity;
 use App\Models\ActivityCycle;
 use App\Services\Activity\ActivityCycleService;
@@ -54,6 +55,49 @@ class ActivityCycleController extends Controller
                 'timestamp' => human_date(Carbon::now()),
             ])
             ->response();
+    }
+
+    public function priceCalendar(Request $request, Activity $activity): JsonResponse
+    {
+        $validated = $request->validate([
+            'from' => ['required', 'date_format:Y-m-d'],
+            'to' => ['required', 'date_format:Y-m-d', 'after_or_equal:from'],
+        ]);
+
+        $prices = $this->service->priceCalendar($activity, $validated['from'], $validated['to']);
+
+        return response()->json([
+            'status' => ApiStatusEnum::SUCCESS,
+            'timestamp' => human_date(Carbon::now()),
+            'data' => $prices,
+        ]);
+    }
+
+    public function publicIndex(Activity $activity): JsonResponse
+    {
+        $cycles = $this->service->publicList($activity);
+
+        return ActivityCycleResource::collection($cycles)
+            ->additional([
+                'status' => ApiStatusEnum::SUCCESS,
+                'timestamp' => human_date(Carbon::now()),
+            ])
+            ->response();
+    }
+
+    public function animalTypePrices(Activity $activity): JsonResponse
+    {
+        $ranges = $this->service->animalTypePriceRanges($activity);
+
+        return response()->json([
+            'status' => ApiStatusEnum::SUCCESS,
+            'timestamp' => human_date(Carbon::now()),
+            'data' => $ranges->map(fn (array $range): array => [
+                'animal_type' => new AnimalTypeResource($range['animal_type']),
+                'min_price' => $range['min_price'],
+                'max_price' => $range['max_price'],
+            ]),
+        ]);
     }
 
     public function store(StoreActivityCycleRequest $request, Activity $activity): JsonResponse

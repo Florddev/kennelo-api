@@ -122,6 +122,95 @@ class ActivityCycleService
         });
     }
 
+    public function priceCalendar(Activity $activity, string $from, string $to): array
+    {
+        $start = Carbon::parse($from)->startOfDay();
+        $end = Carbon::parse($to)->startOfDay();
+
+        if ($start->diffInDays($end) > 370) {
+            $end = $start->copy()->addDays(370);
+        }
+
+        $cycles = ActivityCycle::with(['settings', 'closedWeekDays'])
+            ->where('activity_id', $activity->id)
+            ->where('is_active', true)
+            ->orderByDesc('priority')
+            ->get();
+
+        $prices = [];
+
+        for ($date = $start->copy(); $date->lte($end); $date->addDay()) {
+            $prices[$date->toDateString()] = $this->lowestPriceForDate($cycles, $date);
+        }
+
+        return $prices;
+    }
+
+    public function publicList(Activity $activity): Collection
+    {
+        return ActivityCycle::with(['settings.animalType', 'closedWeekDays'])
+            ->where('activity_id', $activity->id)
+            ->where('is_active', true)
+            ->orderByDesc('priority')
+            ->get();
+    }
+
+    public function animalTypePriceRanges(Activity $activity): Collection
+    {
+        $settings = ActivityCycle::with(['settings.animalType'])
+            ->where('activity_id', $activity->id)
+            ->where('is_active', true)
+            ->get()
+            ->flatMap(fn (ActivityCycle $cycle): Collection => $cycle->settings);
+
+        return $settings
+            ->groupBy('animal_type_id')
+            ->map(function (Collection $group): array {
+                $prices = $group->map(fn (ActivityCycleSetting $setting): float => (float) $setting->price);
+
+                return [
+                    'animal_type' => $group->first()->animalType,
+                    'min_price' => (float) $prices->min(),
+                    'max_price' => (float) $prices->max(),
+                ];
+            })
+            ->values();
+    }
+
+    private function lowestPriceForDate(Collection $cycles, Carbon $date): ?float
+    {
+        $cycle = $cycles->first(function (ActivityCycle $cycle) use ($date): bool {
+            $startsBefore = $cycle->start_date === null || Carbon::parse($cycle->start_date)->lte($date);
+            $endsAfter = $cycle->end_date === null || Carbon::parse($cycle->end_date)->gte($date);
+
+            return $startsBefore && $endsAfter;
+        });
+
+        if ($cycle === null) {
+            return null;
+        }
+
+        $weekDay = $this->weekDayForDate($date->toDateString());
+
+        $isClosed = $cycle->closedWeekDays->contains(
+            fn ($closedWeekDay): bool => WeekDayEnum::contains((int) $closedWeekDay->sum_weekdays, $weekDay),
+        );
+
+        if ($isClosed) {
+            return null;
+        }
+
+        $prices = $cycle->settings
+            ->filter(fn (ActivityCycleSetting $setting): bool => WeekDayEnum::contains((int) $setting->sum_weekdays, $weekDay))
+            ->map(fn (ActivityCycleSetting $setting): float => (float) $setting->price);
+
+        if ($prices->isEmpty()) {
+            return null;
+        }
+
+        return (float) $prices->min();
+    }
+
     private function weekDayForDate(string $date): WeekDayEnum
     {
         return match (Carbon::parse($date)->dayOfWeekIso) {

@@ -91,6 +91,7 @@
         "back": "رجوع",
         "tripSection": "رحلتك",
         "datesLabel": "التواريخ",
+        "selectDates": "اختر التواريخ",
         "datesValue": "{from} - {to}",
         "petsLabel": "الحيوانات",
         "petsCount": "{count, plural, =0 {لا يوجد حيوان} =1 {# حيوان} other {# حيوانات}}",

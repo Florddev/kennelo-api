@@ -91,6 +91,7 @@
         "back": "Retour",
         "tripSection": "Votre voyage",
         "datesLabel": "Dates",
+        "selectDates": "Sélectionner les dates",
         "datesValue": "{from} - {to}",
         "petsLabel": "Animaux",
         "petsCount": "{count, plural, =0 {Aucun animal} =1 {# animal} other {# animaux}}",

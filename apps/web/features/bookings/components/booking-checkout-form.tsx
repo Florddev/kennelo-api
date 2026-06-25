@@ -6,13 +6,19 @@ import { toast } from "sonner";
 import { Separator } from "@workspace/ui/components/separator";
 import { createBooking } from "@workspace/modules/bookings";
 import { computeNights, formatDateRange, toApiDate } from "@workspace/common";
-import type { ActivityCycleSettingModel, ActivityModel } from "@workspace/modules/activities";
+import type {
+    ActivityCycleSettingModel,
+    ActivityModel,
+    AvailabilityModel,
+    PriceCalendar,
+} from "@workspace/modules/activities";
 import type { PetModel } from "@workspace/modules/pets";
+import type { DateRange } from "react-day-picker";
 
 import { getStripe } from "@/lib/stripe";
 import { useNavigation } from "@/hooks/use-navigation";
 import { useAsyncState } from "@/hooks/use-async-state";
-import { resolvePetsAvailability } from "@/features/host";
+import { acceptedAnimalTypeIds, resolvePetsAvailability } from "@/features/host";
 import { ActivitySummaryCard } from "@/features/activities/components/activity-summary-card";
 import { PaymentMethodPicker } from "@/features/payment-methods/components/payment-method-picker";
 
@@ -31,7 +37,10 @@ type BookingCheckoutFormProps = {
     capacities: ActivityCycleSettingModel[];
     pets: PetModel[];
     isLoadingPets: boolean;
-    dateRange: { from: Date; to: Date };
+    initialDateRange: { from: Date; to: Date } | null;
+    initialPetIds: string[];
+    availabilities: AvailabilityModel[];
+    priceMap: PriceCalendar;
 };
 
 export function BookingCheckoutForm({
@@ -39,20 +48,31 @@ export function BookingCheckoutForm({
     capacities,
     pets,
     isLoadingPets,
-    dateRange,
+    initialDateRange,
+    initialPetIds,
+    availabilities,
+    priceMap,
 }: BookingCheckoutFormProps) {
     const t = useTranslations();
     const { router, routes } = useNavigation();
-    const [selectedPetIds, setSelectedPetIds] = useState<string[]>([]);
+    const [dateRange, setDateRange] = useState<DateRange | undefined>(
+        initialDateRange ?? undefined,
+    );
+    const [selectedPetIds, setSelectedPetIds] = useState<string[]>(initialPetIds);
     const [specialRequests, setSpecialRequests] = useState("");
     const [paymentMethodId, setPaymentMethodId] = useState<string | null>(null);
     const { execute, isLoading: isSubmitting } = useAsyncState();
 
-    const petsAvailability = resolvePetsAvailability(pets, capacities);
-    const selectedPets = pets.filter((pet) => selectedPetIds.includes(pet.id));
-    const nights = computeNights(dateRange.from, dateRange.to);
+    const acceptedTypeIds = acceptedAnimalTypeIds(capacities);
+    const eligiblePets = pets.filter((pet) => acceptedTypeIds.includes(pet.animalTypeId));
+    const petsAvailability = resolvePetsAvailability(eligiblePets, capacities);
+    const selectedPets = eligiblePets.filter((pet) => selectedPetIds.includes(pet.id));
+    const from = dateRange?.from;
+    const to = dateRange?.to;
+    const hasDates = Boolean(from && to);
+    const nights = from && to ? computeNights(from, to) : 0;
     const totals = computeBookingTotals(selectedPets, capacities, nights);
-    const canSubmit = selectedPetIds.length > 0 && nights > 0 && paymentMethodId !== null;
+    const canSubmit = hasDates && selectedPets.length > 0 && nights > 0 && paymentMethodId !== null;
 
     const togglePet = (petId: string) => {
         setSelectedPetIds((current) =>
@@ -63,18 +83,26 @@ export function BookingCheckoutForm({
     };
 
     const handleSubmit = async () => {
+        if (!dateRange?.from || !dateRange?.to) {
+            toast.error(t("features.bookings.checkout.selectDates"));
+            return;
+        }
+
         if (!paymentMethodId) {
             toast.error(t("features.bookings.checkout.selectPaymentMethod"));
             return;
         }
 
+        const checkInDate = toApiDate(dateRange.from);
+        const checkOutDate = toApiDate(dateRange.to);
+
         const result = await execute(
             () =>
                 createBooking({
                     activityId: activity.id,
-                    checkInDate: toApiDate(dateRange.from),
-                    checkOutDate: toApiDate(dateRange.to),
-                    petIds: selectedPetIds,
+                    checkInDate,
+                    checkOutDate,
+                    petIds: selectedPets.map((pet) => pet.id),
                     specialRequests: specialRequests.trim() || undefined,
                     paymentMethodId,
                     savePaymentMethod: false,
@@ -108,7 +136,7 @@ export function BookingCheckoutForm({
     };
 
     const locale = typeof navigator !== "undefined" ? navigator.language : "fr-FR";
-    const datesLabel = formatDateRange(dateRange.from, dateRange.to, locale);
+    const datesLabel = from && to ? formatDateRange(from, to, locale) : null;
     const petsCountLabel = t("features.bookings.checkout.petsCount", {
         count: selectedPetIds.length,
     });
@@ -123,7 +151,14 @@ export function BookingCheckoutForm({
             <div className="flex flex-col gap-6 px-4 py-4">
                 <ActivitySummaryCard activity={activity} />
 
-                <BookingTripSection datesLabel={datesLabel} petsCountLabel={petsCountLabel} />
+                <BookingTripSection
+                    datesLabel={datesLabel}
+                    petsCountLabel={petsCountLabel}
+                    dateRange={dateRange}
+                    onDateRangeChange={setDateRange}
+                    availabilities={availabilities}
+                    priceMap={priceMap}
+                />
 
                 <Separator />
 

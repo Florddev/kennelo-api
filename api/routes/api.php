@@ -71,6 +71,9 @@ Route::middleware(['auth.jwt'])->group(function () {
     Route::put('/activities/{activity}/availabilities/{availability}', [ActivityAvailabilityController::class, 'update']);
     Route::delete('/activities/{activity}/availabilities/{availability}', [ActivityAvailabilityController::class, 'destroy']);
     Route::get('/activities/{activity}/cycle-settings', [ActivityCycleController::class, 'settingsIndex']);
+    Route::get('/activities/{activity}/price-calendar', [ActivityCycleController::class, 'priceCalendar']);
+    Route::get('/activities/{activity}/animal-type-prices', [ActivityCycleController::class, 'animalTypePrices']);
+    Route::get('/activities/{activity}/public-cycles', [ActivityCycleController::class, 'publicIndex']);
     Route::get('/activities/{activity}/cycles', [ActivityCycleController::class, 'index']);
     Route::post('/activities/{activity}/cycles', [ActivityCycleController::class, 'store']);
     Route::put('/activities/{activity}/cycles/{cycle}', [ActivityCycleController::class, 'update']);

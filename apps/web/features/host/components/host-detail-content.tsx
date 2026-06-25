@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { ArrowLeft, Image as ImageIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@workspace/ui/components/button";
 import { Separator } from "@workspace/ui/components/separator";
+import { Sticky } from "@workspace/ui/components/sticky";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@workspace/ui/components/tabs";
 import { toApiDate, fromApiDate } from "@workspace/common";
 import type {
     ActivityCycleSettingModel,
@@ -15,12 +17,15 @@ import type { DateRange } from "react-day-picker";
 
 import { useNavigation } from "@/hooks/use-navigation";
 import { useAuth } from "@/features/auth";
+import { usePets } from "@/features/pets/hooks/use-pets";
 import { useOpenConversation } from "@/features/conversations/hooks/use-open-conversation";
 import { useHostReviews } from "../hooks/use-host-reviews";
+import { useHostPriceCalendar } from "../hooks/use-host-price-calendar";
+import { useHostAnimalTypePrices } from "../hooks/use-host-animal-type-prices";
+import { useHostPublicCycles } from "../hooks/use-host-public-cycles";
 import { DetailPageLayout } from "@/components/layouts/detail-page-layout";
 import { FavoriteButton } from "@/features/activities";
 
-import { minPricePerNight } from "../lib/pricing";
 import { HostHeaderSection } from "./host-header-section";
 import { HostManagerSection } from "./host-manager-section";
 import { HostVerifiedBanner } from "./host-verified-banner";
@@ -28,8 +33,12 @@ import { HostSpeciesSection } from "./host-species-section";
 import { HostAboutSection } from "./host-about-section";
 import { HostLocationSection } from "./host-location-section";
 import { HostDateSection } from "./host-date-section";
+import { HostPetEstimationSelector } from "./host-pet-estimation-selector";
+import { HostCyclePricingSection } from "./host-cycle-pricing-section";
 import { HostReviewsSection } from "./host-reviews-section";
 import { HostBookingBar } from "./host-booking-bar";
+
+import { acceptedAnimalTypeIds, buildPetPriceMap } from "../lib/pricing";
 
 type HostDetailContentProps = {
     activity: ActivityModel;
@@ -56,21 +65,50 @@ export function HostDetailContent({
         reviewCount,
         isLoading: areReviewsLoading,
     } = useHostReviews(activity.id);
+    const { priceMap } = useHostPriceCalendar(activity.id);
+    const { priceRanges, isLoading: areSpeciesPricesLoading } = useHostAnimalTypePrices(
+        activity.id,
+    );
+    const { cycles, isLoading: areCyclesLoading } = useHostPublicCycles(activity.id);
+    const { pets } = usePets();
     const [dateRange, setDateRange] = useState<DateRange | undefined>(initialDateRange);
-    const pricePerNight = minPricePerNight(capacities);
-    const canBook = Boolean(dateRange?.from && dateRange?.to);
+    const [selectedPetIds, setSelectedPetIds] = useState<string[]>([]);
     const isHost = user?.id === activity.managerId;
+
+    const eligiblePets = useMemo(() => {
+        const acceptedTypeIds = acceptedAnimalTypeIds(capacities);
+        return pets.filter((pet) => acceptedTypeIds.includes(pet.animalTypeId));
+    }, [pets, capacities]);
+
+    const togglePet = (petId: string) => {
+        setSelectedPetIds((current) =>
+            current.includes(petId)
+                ? current.filter((value) => value !== petId)
+                : [...current, petId],
+        );
+    };
+
+    const effectivePriceMap = useMemo(() => {
+        const animalTypeIds = eligiblePets
+            .filter((pet) => selectedPetIds.includes(pet.id))
+            .map((pet) => pet.animalTypeId);
+        return buildPetPriceMap(priceMap, animalTypeIds, cycles);
+    }, [priceMap, cycles, eligiblePets, selectedPetIds]);
     const canContact = isAuthenticated && !isHost;
 
     const handleBook = () => {
-        if (!dateRange?.from || !dateRange?.to) return;
+        const params: Record<string, string> = {};
+        if (dateRange?.from && dateRange?.to) {
+            params.check_in = toApiDate(dateRange.from);
+            params.check_out = toApiDate(dateRange.to);
+        }
+        if (selectedPetIds.length > 0) {
+            params.pet_ids = selectedPetIds.join(",");
+        }
         router.push(
             routes.HostBook({
                 id: activity.id,
-                search_params: {
-                    check_in: toApiDate(dateRange.from),
-                    check_out: toApiDate(dateRange.to),
-                },
+                search_params: Object.keys(params).length > 0 ? params : undefined,
             }),
         );
     };
@@ -102,9 +140,8 @@ export function HostDetailContent({
             }
             footer={
                 <HostBookingBar
-                    pricePerNight={pricePerNight}
+                    priceMap={effectivePriceMap}
                     dateRange={dateRange}
-                    canBook={canBook}
                     onBook={handleBook}
                     onContact={canContact ? () => openWithActivity(activity.id) : undefined}
                     isContactPending={isContactPending}
@@ -131,33 +168,79 @@ export function HostDetailContent({
                     </>
                 )}
 
-                <HostAboutSection description={activity.description} />
-
-                <Separator className="my-6" />
-
-                <HostSpeciesSection capacities={capacities} />
-
-                <Separator className="my-6" />
-
-                <HostLocationSection address={activity.address} />
-
-                <Separator className="my-6" />
-
-                <HostDateSection
-                    dateRange={dateRange}
-                    onDateRangeChange={setDateRange}
-                    availabilities={availabilities}
-                />
-
-                <Separator className="my-6" />
-
-                <HostReviewsSection
-                    reviews={reviews}
-                    averageRating={averageRating}
-                    reviewCount={reviewCount}
-                    isLoading={areReviewsLoading}
-                />
+                <HostAboutSection activity={activity} />
             </div>
+
+            <Tabs defaultValue="general" className="flex flex-col gap-0 pt-2">
+                <Sticky
+                    top={0}
+                    className="bg-white w-full z-20"
+                    stickyClassName="border-b border-border/30"
+                >
+                    <TabsList variant="line" className="w-full">
+                        <div className="grid w-full grid-cols-3 px-4 py-2">
+                            <div className="flex justify-start">
+                                <TabsTrigger value="general" className="max-w-fit">
+                                    <span data-slot="tab-label" className="!text-base">
+                                        {t("features.host.detail.tabs.general")}
+                                    </span>
+                                    <span data-slot="tab-indicator" />
+                                </TabsTrigger>
+                            </div>
+                            <div className="flex justify-center">
+                                <TabsTrigger value="availability" className="max-w-fit">
+                                    <span data-slot="tab-label" className="!text-base">
+                                        {t("features.host.detail.tabs.availability")}
+                                    </span>
+                                    <span data-slot="tab-indicator" />
+                                </TabsTrigger>
+                            </div>
+                            <div className="flex justify-end">
+                                <TabsTrigger value="reviews" className="max-w-fit">
+                                    <span data-slot="tab-label" className="!text-base">
+                                        {t("features.host.detail.tabs.reviews")}
+                                    </span>
+                                    <span data-slot="tab-indicator" />
+                                </TabsTrigger>
+                            </div>
+                        </div>
+                    </TabsList>
+                </Sticky>
+
+                <TabsContent value="general" className="flex flex-col gap-6 px-4 py-6">
+                    <HostSpeciesSection
+                        priceRanges={priceRanges}
+                        isLoading={areSpeciesPricesLoading}
+                    />
+                    <Separator />
+                    <HostLocationSection address={activity.address} />
+                </TabsContent>
+
+                <TabsContent value="availability" className="flex flex-col gap-6 px-4 py-6">
+                    <HostPetEstimationSelector
+                        pets={eligiblePets}
+                        selectedPetIds={selectedPetIds}
+                        onToggle={togglePet}
+                    />
+                    <HostDateSection
+                        dateRange={dateRange}
+                        onDateRangeChange={setDateRange}
+                        availabilities={availabilities}
+                        priceMap={effectivePriceMap}
+                    />
+                    <Separator />
+                    <HostCyclePricingSection cycles={cycles} isLoading={areCyclesLoading} />
+                </TabsContent>
+
+                <TabsContent value="reviews" className="px-4 py-6">
+                    <HostReviewsSection
+                        reviews={reviews}
+                        averageRating={averageRating}
+                        reviewCount={reviewCount}
+                        isLoading={areReviewsLoading}
+                    />
+                </TabsContent>
+            </Tabs>
         </DetailPageLayout>
     );
 }
