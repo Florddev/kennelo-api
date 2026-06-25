@@ -49,7 +49,7 @@ Route::get('/test', [TestController::class, 'index']);
 
 Route::get('/animal-types', [AnimalTypeController::class, 'index']);
 Route::middleware('auth.jwt.optional')->group(function () {
-    Route::post('/pets/broadcast', [PetBroadcastController::class, 'broadcast']);
+    Route::post('/pets/broadcast', [PetBroadcastController::class, 'broadcast'])->middleware('throttle:30,1');
 
     Route::get('/explore/activities', [ExploreController::class, 'activities']);
     Route::get('/explore/activities/sections/{sectionId}', [ExploreController::class, 'sectionPage']);

@@ -16,6 +16,9 @@ use Illuminate\Support\Collection;
 
 class HostScanService
 {
+    /** @var array<string, Collection<int, string>> */
+    private array $hostActivityIdsCache = [];
+
     public function findPetByMicrochip(string $microchipNumber): ?Pet
     {
         return Pet::where('microchip_number', $microchipNumber)
@@ -117,7 +120,7 @@ class HostScanService
     /** @return Collection<int, string> */
     public function hostActivityIds(User $user): Collection
     {
-        return Activity::where('manager_id', $user->id)->pluck('id');
+        return $this->hostActivityIdsCache[(string) $user->id] ??= Activity::where('manager_id', $user->id)->pluck('id');
     }
 
     /** @return Builder<Booking> */

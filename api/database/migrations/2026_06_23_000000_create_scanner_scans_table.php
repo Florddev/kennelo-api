@@ -17,6 +17,8 @@ return new class extends Migration
             $table->string('microchip_number')->index();
             $table->boolean('found')->default(false);
             $table->timestamp('scanned_at');
+
+            $table->index(['scanner_id', 'scanned_at']);
         });
     }
 
