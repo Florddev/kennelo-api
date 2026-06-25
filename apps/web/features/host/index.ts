@@ -19,5 +19,6 @@ export * from "./components/host-verified-banner";
 export * from "./components/review-item";
 export * from "./hooks/use-host-activity";
 export * from "./hooks/use-host-availabilities";
+export * from "./hooks/use-host-reviews";
 export * from "./lib/availability-helpers";
 export * from "./lib/pricing";

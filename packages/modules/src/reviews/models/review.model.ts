@@ -29,7 +29,7 @@ export class ReviewModel {
             dto.booking_id,
             dto.reviewer_id,
             dto.reviewer_type,
-            dto.overall_rating,
+            Number(dto.overall_rating),
             dto.comment,
             dto.private_feedback,
             dto.would_recommend,

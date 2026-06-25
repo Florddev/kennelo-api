@@ -16,6 +16,7 @@ import type { DateRange } from "react-day-picker";
 import { useNavigation } from "@/hooks/use-navigation";
 import { useAuth } from "@/features/auth";
 import { useOpenConversation } from "@/features/conversations/hooks/use-open-conversation";
+import { useHostReviews } from "../hooks/use-host-reviews";
 import { DetailPageLayout } from "@/components/layouts/detail-page-layout";
 import { FavoriteButton } from "@/features/activities";
 
@@ -49,6 +50,12 @@ export function HostDetailContent({
     const { router, routes } = useNavigation();
     const { user, isAuthenticated } = useAuth();
     const { openWithActivity, isPending: isContactPending } = useOpenConversation();
+    const {
+        reviews,
+        averageRating,
+        reviewCount,
+        isLoading: areReviewsLoading,
+    } = useHostReviews(activity.id);
     const [dateRange, setDateRange] = useState<DateRange | undefined>(initialDateRange);
     const pricePerNight = minPricePerNight(capacities);
     const canBook = Boolean(dateRange?.from && dateRange?.to);
@@ -110,6 +117,8 @@ export function HostDetailContent({
                     name={activity.name}
                     address={activity.address}
                     capacities={capacities}
+                    averageRating={averageRating}
+                    reviewCount={reviewCount}
                 />
                 {activity.manager && (
                     <>
@@ -142,7 +151,12 @@ export function HostDetailContent({
 
                 <Separator className="my-6" />
 
-                <HostReviewsSection reviews={[]} />
+                <HostReviewsSection
+                    reviews={reviews}
+                    averageRating={averageRating}
+                    reviewCount={reviewCount}
+                    isLoading={areReviewsLoading}
+                />
             </div>
         </DetailPageLayout>
     );
