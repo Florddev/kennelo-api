@@ -6,69 +6,65 @@ namespace App\Http\Controllers\Scanner;
 
 use App\Enums\ApiStatusEnum;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Scanner\StoreScannerRequest;
+use App\Http\Requests\Scanner\UpdateScannerRequest;
+use App\Http\Resources\ScannerResource;
 use App\Models\Scanner;
+use App\Services\Scanner\ScannerService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class ScannerController extends Controller
 {
+    public function __construct(
+        private ScannerService $scannerService
+    ) {}
+
     public function index(Request $request): JsonResponse
     {
-        $scanners = $request->user()->scanners()->orderBy('created_at', 'desc')->get();
+        $scanners = $this->scannerService->getUserScanners($request->user());
 
-        return response()->json([
-            'status' => ApiStatusEnum::SUCCESS,
-            'data' => $scanners,
-            'timestamp' => human_date(now()),
-        ]);
+        return ScannerResource::collection($scanners)
+            ->additional([
+                'status' => ApiStatusEnum::SUCCESS,
+                'timestamp' => human_date(now()),
+            ])
+            ->response();
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreScannerRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'code' => ['required', 'string', 'unique:scanners,code'],
-            'name' => ['nullable', 'string', 'max:100'],
-        ]);
+        $scanner = $this->scannerService->create($request->user(), $request->validated());
 
-        $scanner = Scanner::create([
-            'user_id' => $request->user()->id,
-            'code' => $validated['code'],
-            'name' => $validated['name'] ?? null,
-        ]);
-
-        return response()->json([
-            'status' => ApiStatusEnum::SUCCESS,
-            'data' => $scanner,
-            'timestamp' => human_date(now()),
-        ], 201);
+        return (new ScannerResource($scanner))
+            ->additional([
+                'status' => ApiStatusEnum::SUCCESS,
+                'timestamp' => human_date(now()),
+            ])
+            ->response()
+            ->setStatusCode(Response::HTTP_CREATED);
     }
 
-    public function update(Request $request, Scanner $scanner): JsonResponse
+    public function update(UpdateScannerRequest $request, Scanner $scanner): JsonResponse
     {
-        if ($scanner->user_id !== $request->user()->id) {
-            abort(403);
-        }
+        $this->authorize('update', $scanner);
 
-        $validated = $request->validate([
-            'name' => ['nullable', 'string', 'max:100'],
-        ]);
+        $scanner = $this->scannerService->update($scanner, $request->validated());
 
-        $scanner->update($validated);
-
-        return response()->json([
-            'status' => ApiStatusEnum::SUCCESS,
-            'data' => $scanner,
-            'timestamp' => human_date(now()),
-        ]);
+        return (new ScannerResource($scanner))
+            ->additional([
+                'status' => ApiStatusEnum::SUCCESS,
+                'timestamp' => human_date(now()),
+            ])
+            ->response();
     }
 
     public function destroy(Request $request, Scanner $scanner): JsonResponse
     {
-        if ($scanner->user_id !== $request->user()->id) {
-            abort(403);
-        }
+        $this->authorize('delete', $scanner);
 
-        $scanner->delete();
+        $this->scannerService->delete($scanner);
 
         return response()->json([
             'status' => ApiStatusEnum::SUCCESS,

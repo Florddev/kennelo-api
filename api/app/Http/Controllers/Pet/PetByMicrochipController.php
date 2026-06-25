@@ -7,16 +7,18 @@ namespace App\Http\Controllers\Pet;
 use App\Enums\ApiStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PetResource;
-use App\Models\Pet;
+use App\Services\Pet\PetService;
 use Illuminate\Http\JsonResponse;
 
 class PetByMicrochipController extends Controller
 {
+    public function __construct(
+        private PetService $petService
+    ) {}
+
     public function show(string $microchipNumber): JsonResponse
     {
-        $pet = Pet::where('microchip_number', $microchipNumber)
-            ->with(['animalType', 'petAttributes.attributeDefinition', 'petAttributes.attributeOption', 'media'])
-            ->firstOrFail();
+        $pet = $this->petService->findByMicrochip($microchipNumber);
 
         return (new PetResource($pet))
             ->additional(['status' => ApiStatusEnum::SUCCESS, 'timestamp' => human_date(now())])

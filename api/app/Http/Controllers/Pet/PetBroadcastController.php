@@ -6,9 +6,9 @@ namespace App\Http\Controllers\Pet;
 
 use App\Enums\ApiStatusEnum;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Pet\BroadcastPetRequest;
 use App\Services\Scanner\ScannerScanService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class PetBroadcastController extends Controller
 {
@@ -16,12 +16,9 @@ class PetBroadcastController extends Controller
         private ScannerScanService $scannerScanService
     ) {}
 
-    public function broadcast(Request $request): JsonResponse
+    public function broadcast(BroadcastPetRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'microchip_number' => ['required', 'string'],
-            'scanner_code' => ['required', 'string', 'exists:scanners,code'],
-        ]);
+        $validated = $request->validated();
 
         $pet = $this->scannerScanService->recordAndBroadcast(
             $validated['microchip_number'],

@@ -6,10 +6,10 @@ namespace App\Http\Controllers\Scanner;
 
 use App\Enums\ApiStatusEnum;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Scanner\ListScannerScansRequest;
 use App\Http\Resources\ScannerScanResource;
 use App\Services\Scanner\ScannerScanService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class ScannerScanController extends Controller
 {
@@ -17,9 +17,9 @@ class ScannerScanController extends Controller
         private ScannerScanService $scannerScanService
     ) {}
 
-    public function index(Request $request): JsonResponse
+    public function index(ListScannerScansRequest $request): JsonResponse
     {
-        $scans = $this->scannerScanService->getUserScans($request->user());
+        $scans = $this->scannerScanService->getUserScans($request->user(), $request->validated());
 
         return ScannerScanResource::collection($scans)
             ->additional([

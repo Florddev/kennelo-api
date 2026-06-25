@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Hosting;
 
 use App\Enums\ApiStatusEnum;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Hosting\AssignMicrochipRequest;
 use App\Http\Resources\BookingResource;
 use App\Http\Resources\ConversationResource;
 use App\Http\Resources\PetResource;
@@ -15,7 +16,6 @@ use App\Services\Conversation\ConversationService;
 use App\Services\Hosting\HostScanService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 class HostScanController extends Controller
 {
@@ -81,15 +81,9 @@ class HostScanController extends Controller
         ]);
     }
 
-    public function assignMicrochip(Request $request, Pet $pet): JsonResponse
+    public function assignMicrochip(AssignMicrochipRequest $request, Pet $pet): JsonResponse
     {
-        abort_unless($this->hostScanService->isPetInCare($request->user(), $pet), 403);
-
-        $validated = $request->validate([
-            'microchip_number' => ['required', 'string', Rule::unique('pets', 'microchip_number')->ignore($pet->id)],
-        ]);
-
-        $pet = $this->hostScanService->assignMicrochip($pet, $validated['microchip_number']);
+        $pet = $this->hostScanService->assignMicrochip($pet, $request->validated()['microchip_number']);
 
         return (new PetResource($pet))
             ->additional([
