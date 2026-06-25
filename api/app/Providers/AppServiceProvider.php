@@ -11,6 +11,7 @@ use App\Models\Notification;
 use App\Models\Pet;
 use App\Models\Review;
 use App\Models\ReviewReport;
+use App\Models\Scanner;
 use App\Models\User;
 use App\Policies\ActivityPolicy;
 use App\Policies\BookingPolicy;
@@ -19,6 +20,7 @@ use App\Policies\NotificationPolicy;
 use App\Policies\PetPolicy;
 use App\Policies\ReviewPolicy;
 use App\Policies\ReviewReportPolicy;
+use App\Policies\ScannerPolicy;
 use App\Policies\UserPolicy;
 use Dedoc\Scramble\Scramble;
 use Dedoc\Scramble\Support\Generator\OpenApi;
@@ -49,6 +51,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Review::class, ReviewPolicy::class);
         Gate::policy(ReviewReport::class, ReviewReportPolicy::class);
         Gate::policy(Notification::class, NotificationPolicy::class);
+        Gate::policy(Scanner::class, ScannerPolicy::class);
 
         Route::bind('media', fn (string $value) => Media::where('uuid', $value)->firstOrFail());
 
