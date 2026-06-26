@@ -32,12 +32,20 @@ export function PriceBreakdown({ quote, isLoading }: PriceBreakdownProps) {
 
     return (
         <div data-slot="price-breakdown" className="flex flex-col gap-3">
-            <div className="flex items-center justify-between text-sm">
-                <span className="text-foreground">
-                    {t("features.bookings.checkout.accommodation", { count: quote.nights })}
-                </span>
-                <span className="text-foreground">{formatAmount(quote.basePrice)} €</span>
-            </div>
+            {quote.pets.map((pet) => (
+                <div key={pet.id} className="flex items-center justify-between gap-3 text-sm">
+                    <div className="flex flex-col">
+                        <span className="text-foreground">{pet.name}</span>
+                        <span className="text-xs text-muted-foreground">
+                            {t("features.bookings.checkout.priceNights", {
+                                price: formatAmount(pet.pricePerNight),
+                                count: pet.numberOfNights,
+                            })}
+                        </span>
+                    </div>
+                    <span className="text-foreground">{formatAmount(pet.subtotal)} €</span>
+                </div>
+            ))}
             <div className="flex items-center justify-between text-sm">
                 <span className="text-foreground">
                     {t("features.bookings.checkout.serviceFee", {

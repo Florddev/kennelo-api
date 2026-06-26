@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Separator } from "@workspace/ui/components/separator";
 import { createBooking } from "@workspace/modules/bookings";
-import { computeNights, formatDateRange, toApiDate } from "@workspace/common";
+import { computeNights, toApiDate } from "@workspace/common";
 import type {
     ActivityCycleModel,
     ActivityCycleSettingModel,
@@ -21,6 +21,8 @@ import { useNavigation } from "@/hooks/use-navigation";
 import { useAsyncState } from "@/hooks/use-async-state";
 import {
     acceptedAnimalTypeIds,
+    buildPetPriceMap,
+    HostDateSection,
     HostPetEstimationSelector,
     isAnimalTypeAvailableForDates,
 } from "@/features/host";
@@ -31,7 +33,6 @@ import { useBookingQuote } from "../hooks/use-booking-quote";
 
 const stripePromise = getStripe();
 import { BookingHeader } from "./booking-header";
-import { BookingTripSection } from "./booking-trip-section";
 import { PriceBreakdown } from "./price-breakdown";
 import { BookingMessageSection } from "./booking-message-section";
 import { BookingFooter } from "./booking-footer";
@@ -128,6 +129,12 @@ export function BookingCheckoutForm({
         hasDates && selectedPets.length > 0 && nights > 0 && paymentMethodId && quote,
     );
 
+    const effectivePriceMap = buildPetPriceMap(
+        priceMap,
+        selectedPets.map((pet) => pet.animalTypeId),
+        cycles,
+    );
+
     const togglePet = (petId: string) => {
         setSelectedPetIds((current) =>
             current.includes(petId)
@@ -186,14 +193,8 @@ export function BookingCheckoutForm({
         router.push(routes.Explore());
     };
 
-    const locale = typeof navigator !== "undefined" ? navigator.language : "fr-FR";
-    const datesLabel = from && to ? formatDateRange(from, to, locale) : null;
-    const petsCountLabel = t("features.bookings.checkout.petsCount", {
-        count: selectedPets.length,
-    });
-
     return (
-        <div className="relative flex flex-col pb-[140px] md:pb-20">
+        <div className="relative flex flex-col pb-20">
             <BookingHeader
                 title={t("features.bookings.checkout.title")}
                 onBack={() => router.back()}
@@ -202,17 +203,6 @@ export function BookingCheckoutForm({
             <div className="flex flex-col gap-6 px-4 py-4">
                 <ActivitySummaryCard activity={activity} />
 
-                <BookingTripSection
-                    datesLabel={datesLabel}
-                    petsCountLabel={petsCountLabel}
-                    dateRange={dateRange}
-                    onDateRangeChange={setDateRange}
-                    availabilities={availabilities}
-                    priceMap={priceMap}
-                />
-
-                <Separator />
-
                 <HostPetEstimationSelector
                     pets={eligiblePets}
                     selectedPetIds={selectedPetIds}
@@ -220,6 +210,15 @@ export function BookingCheckoutForm({
                     disabledPetIds={disabledPetIds}
                     hiddenCount={hiddenCount}
                     emptyHref={routes.MyPets()}
+                />
+
+                <Separator />
+
+                <HostDateSection
+                    dateRange={dateRange}
+                    onDateRangeChange={setDateRange}
+                    availabilities={availabilities}
+                    priceMap={effectivePriceMap}
                 />
 
                 <Separator />

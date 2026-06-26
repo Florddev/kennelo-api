@@ -1,5 +1,13 @@
 import type { BookingQuoteDto } from "./dtos/booking-quote.dto";
 
+export type BookingQuotePetLine = {
+    id: string;
+    name: string;
+    pricePerNight: number;
+    numberOfNights: number;
+    subtotal: number;
+};
+
 export class BookingQuoteModel {
     private constructor(
         public readonly nights: number,
@@ -8,6 +16,7 @@ export class BookingQuoteModel {
         public readonly platformFee: number,
         public readonly activityAmount: number,
         public readonly totalPrice: number,
+        public readonly pets: BookingQuotePetLine[],
     ) {}
 
     static from(dto: BookingQuoteDto): BookingQuoteModel {
@@ -22,6 +31,13 @@ export class BookingQuoteModel {
             Number(dto.platform_fee),
             Number(dto.activity_amount),
             totalPrice,
+            dto.pets.map((pet) => ({
+                id: pet.id,
+                name: pet.name,
+                pricePerNight: Number(pet.price_per_night),
+                numberOfNights: pet.number_of_nights,
+                subtotal: Number(pet.subtotal),
+            })),
         );
     }
 

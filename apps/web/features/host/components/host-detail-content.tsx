@@ -172,7 +172,7 @@ export function HostDetailContent({
                     isContactPending={isContactPending}
                 />
             }
-            className="bg-white pb-[140px] md:pb-20"
+            className="bg-white pb-20"
         >
             <div className="flex flex-col gap-1 px-4 pt-4">
                 <HostHeaderSection
@@ -229,6 +229,8 @@ export function HostDetailContent({
                         </div>
                     </TabsList>
                 </Sticky>
+
+                <Separator className="bg-border/50" />
 
                 <TabsContent value="general" className="flex flex-col gap-6 px-4">
                     <HostAboutSection activity={activity} />

@@ -61,9 +61,9 @@ export function HostCyclePricingSection({ cycles, isLoading }: HostCyclePricingS
         return (
             <div className="flex flex-col gap-3">
                 {cycles.map((cycle) => (
-                    <div key={cycle.id} className="flex flex-col gap-3 rounded-2xl border p-4">
-                        <div className="flex items-center gap-1.5 text-sm font-semibold text-slate-900">
-                            <CalendarDays className="size-4 text-primary" />
+                    <div key={cycle.id} className="flex flex-col gap-3">
+                        <div className="flex items-center gap-1.5 text-sm font-medium text-slate-900">
+                            {/* <CalendarDays className="size-4 text-primary" /> */}
                             {cyclePeriodLabel(cycle)}
                         </div>
                         {cycle.settings.length === 0 ? (
@@ -71,7 +71,7 @@ export function HostCyclePricingSection({ cycles, isLoading }: HostCyclePricingS
                                 {t("features.host.detail.cyclePricingEmpty")}
                             </p>
                         ) : (
-                            <div className="flex flex-col gap-2.5">
+                            <div className="flex flex-col gap-4">
                                 {cycle.settings.map((setting) => (
                                     <div
                                         key={setting.id}
@@ -111,7 +111,7 @@ export function HostCyclePricingSection({ cycles, isLoading }: HostCyclePricingS
     }
 
     return (
-        <section data-slot="host-cycle-pricing-section" className="flex flex-col gap-3">
+        <section data-slot="host-cycle-pricing-section" className="flex flex-col gap-4">
             <h2 className="text-lg font-semibold text-slate-900">
                 {t("features.host.detail.cyclePricingTitle")}
             </h2>

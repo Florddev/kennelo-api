@@ -27,7 +27,8 @@ export function BookingFooter({ total, canSubmit, isSubmitting, onSubmit }: Book
                     onClick={onSubmit}
                     disabled={!canSubmit || isSubmitting}
                     variant="default"
-                    size="xl"
+                    size="lg"
+                    className="rounded-full bg-foreground px-10 text-base font-medium text-background hover:bg-foreground/90"
                 >
                     {isSubmitting ? "…" : t("features.bookings.checkout.confirmCta")}
                 </Button>
