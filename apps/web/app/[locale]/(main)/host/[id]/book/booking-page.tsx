@@ -7,7 +7,12 @@ import { fromApiDate } from "@workspace/common";
 import { useNavigation } from "@/hooks/use-navigation";
 import { useAuth } from "@/features/auth";
 import { usePets } from "@/features/pets/hooks/use-pets";
-import { useHostActivity, useHostAvailabilities, useHostPriceCalendar } from "@/features/host";
+import {
+    useHostActivity,
+    useHostAvailabilities,
+    useHostPriceCalendar,
+    useHostPublicCycles,
+} from "@/features/host";
 import { BookingCheckoutForm, BookingSkeleton } from "@/features/bookings";
 
 export default function BookingPage() {
@@ -22,7 +27,8 @@ export default function BookingPage() {
     const { activity, capacities, isLoading } = useHostActivity(id);
     const { availabilities } = useHostAvailabilities(id);
     const { priceMap } = useHostPriceCalendar(id);
-    const { pets, isLoading: isLoadingPets } = usePets();
+    const { cycles } = useHostPublicCycles(id);
+    const { pets } = usePets();
 
     const initialDateRange = useMemo(() => {
         if (!checkIn || !checkOut) return null;
@@ -52,7 +58,7 @@ export default function BookingPage() {
             activity={activity}
             capacities={capacities}
             pets={pets}
-            isLoadingPets={isLoadingPets}
+            cycles={cycles}
             initialDateRange={initialDateRange}
             initialPetIds={initialPetIds}
             availabilities={availabilities}

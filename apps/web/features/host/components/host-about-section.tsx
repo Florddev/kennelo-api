@@ -2,10 +2,9 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { CalendarDays, FileText, Globe, Mail, Phone } from "lucide-react";
+import { CalendarDays, Globe, Mail, Phone } from "lucide-react";
 import { CrownStar, UsersGroupRounded } from "@solar-icons/react";
 import { Button } from "@workspace/ui/components/button";
-import { Empty, EmptyHeader, EmptyMedia, EmptyTitle } from "@workspace/ui/components/empty";
 import { cn } from "@workspace/ui/lib/utils";
 import type { ActivityModel } from "@workspace/modules/activities";
 
@@ -66,16 +65,7 @@ function Description({ description }: { description: string | null }) {
     const [expanded, setExpanded] = useState(false);
 
     if (!description) {
-        return (
-            <Empty className="rounded-2xl border py-8">
-                <EmptyHeader>
-                    <EmptyMedia variant="icon">
-                        <FileText />
-                    </EmptyMedia>
-                    <EmptyTitle>{t("features.host.detail.aboutEmpty")}</EmptyTitle>
-                </EmptyHeader>
-            </Empty>
-        );
+        return null;
     }
 
     const shouldTruncate = description.length > DESCRIPTION_MAX;

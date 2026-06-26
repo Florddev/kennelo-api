@@ -15,7 +15,7 @@ class ActivityPolicy
         return true;
     }
 
-    public function view(User $user, Activity $activity): bool
+    public function view(?User $user, Activity $activity): bool
     {
         return true;
     }

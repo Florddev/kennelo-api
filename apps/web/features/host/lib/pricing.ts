@@ -131,23 +131,32 @@ export function acceptedAnimalTypeIds(capacities: ActivityCycleSettingModel[]): 
     return capacities.map((capacity) => capacity.animalType.id);
 }
 
-export type PetAvailability = {
-    pet: PetModel;
-    status: "available" | "type-not-accepted" | "capacity-full";
-};
-
-export function resolvePetsAvailability(
-    pets: PetModel[],
+export function isAnimalTypeAvailableForDates(
+    animalTypeId: string,
     capacities: ActivityCycleSettingModel[],
-): PetAvailability[] {
-    return pets.map((pet) => {
-        const capacity = capacities.find((c) => c.animalType.id === pet.animalTypeId);
-        if (!capacity) {
-            return { pet, status: "type-not-accepted" };
+    cycles: ActivityCycleModel[],
+    from: Date | undefined,
+    to: Date | undefined,
+): boolean {
+    const capacity = capacities.find((c) => c.animalType.id === animalTypeId);
+    if (!capacity || capacity.availableSpots <= 0) {
+        return false;
+    }
+    if (!from || !to) {
+        return true;
+    }
+
+    const cursor = new Date(from);
+    cursor.setHours(0, 0, 0, 0);
+    const end = new Date(to);
+    end.setHours(0, 0, 0, 0);
+
+    while (cursor < end) {
+        if (priceForAnimalTypeOnDate(cursor, animalTypeId, cycles) === null) {
+            return false;
         }
-        if (capacity.availableSpots <= 0) {
-            return { pet, status: "capacity-full" };
-        }
-        return { pet, status: "available" };
-    });
+        cursor.setDate(cursor.getDate() + 1);
+    }
+
+    return true;
 }

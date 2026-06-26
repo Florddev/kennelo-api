@@ -4,6 +4,7 @@
 
 export * from "./components/availability-calendar";
 export * from "./components/host-about-section";
+export * from "./components/host-animal-type-estimation-selector";
 export * from "./components/host-booking-bar";
 export * from "./components/host-cycle-pricing-section";
 export * from "./components/host-date-section";

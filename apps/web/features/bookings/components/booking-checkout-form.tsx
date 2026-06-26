@@ -7,6 +7,7 @@ import { Separator } from "@workspace/ui/components/separator";
 import { createBooking } from "@workspace/modules/bookings";
 import { computeNights, formatDateRange, toApiDate } from "@workspace/common";
 import type {
+    ActivityCycleModel,
     ActivityCycleSettingModel,
     ActivityModel,
     AvailabilityModel,
@@ -18,7 +19,11 @@ import type { DateRange } from "react-day-picker";
 import { getStripe } from "@/lib/stripe";
 import { useNavigation } from "@/hooks/use-navigation";
 import { useAsyncState } from "@/hooks/use-async-state";
-import { acceptedAnimalTypeIds, resolvePetsAvailability } from "@/features/host";
+import {
+    acceptedAnimalTypeIds,
+    HostPetEstimationSelector,
+    isAnimalTypeAvailableForDates,
+} from "@/features/host";
 import { ActivitySummaryCard } from "@/features/activities/components/activity-summary-card";
 import { PaymentMethodPicker } from "@/features/payment-methods/components/payment-method-picker";
 
@@ -27,7 +32,6 @@ import { computeBookingTotals } from "../lib/pricing";
 const stripePromise = getStripe();
 import { BookingHeader } from "./booking-header";
 import { BookingTripSection } from "./booking-trip-section";
-import { BookingPetsSection } from "./booking-pets-section";
 import { PriceBreakdown } from "./price-breakdown";
 import { BookingMessageSection } from "./booking-message-section";
 import { BookingFooter } from "./booking-footer";
@@ -36,7 +40,7 @@ type BookingCheckoutFormProps = {
     activity: ActivityModel;
     capacities: ActivityCycleSettingModel[];
     pets: PetModel[];
-    isLoadingPets: boolean;
+    cycles: ActivityCycleModel[];
     initialDateRange: { from: Date; to: Date } | null;
     initialPetIds: string[];
     availabilities: AvailabilityModel[];
@@ -47,7 +51,7 @@ export function BookingCheckoutForm({
     activity,
     capacities,
     pets,
-    isLoadingPets,
+    cycles,
     initialDateRange,
     initialPetIds,
     availabilities,
@@ -65,10 +69,17 @@ export function BookingCheckoutForm({
 
     const acceptedTypeIds = acceptedAnimalTypeIds(capacities);
     const eligiblePets = pets.filter((pet) => acceptedTypeIds.includes(pet.animalTypeId));
-    const petsAvailability = resolvePetsAvailability(eligiblePets, capacities);
-    const selectedPets = eligiblePets.filter((pet) => selectedPetIds.includes(pet.id));
+    const hiddenCount = pets.length - eligiblePets.length;
     const from = dateRange?.from;
     const to = dateRange?.to;
+    const disabledPetIds = eligiblePets
+        .filter(
+            (pet) => !isAnimalTypeAvailableForDates(pet.animalTypeId, capacities, cycles, from, to),
+        )
+        .map((pet) => pet.id);
+    const selectedPets = eligiblePets.filter(
+        (pet) => selectedPetIds.includes(pet.id) && !disabledPetIds.includes(pet.id),
+    );
     const hasDates = Boolean(from && to);
     const nights = from && to ? computeNights(from, to) : 0;
     const totals = computeBookingTotals(selectedPets, capacities, nights);
@@ -138,7 +149,7 @@ export function BookingCheckoutForm({
     const locale = typeof navigator !== "undefined" ? navigator.language : "fr-FR";
     const datesLabel = from && to ? formatDateRange(from, to, locale) : null;
     const petsCountLabel = t("features.bookings.checkout.petsCount", {
-        count: selectedPetIds.length,
+        count: selectedPets.length,
     });
 
     return (
@@ -162,12 +173,13 @@ export function BookingCheckoutForm({
 
                 <Separator />
 
-                <BookingPetsSection
-                    petsAvailability={petsAvailability}
-                    selectedIds={selectedPetIds}
-                    isLoading={isLoadingPets}
+                <HostPetEstimationSelector
+                    pets={eligiblePets}
+                    selectedPetIds={selectedPetIds}
                     onToggle={togglePet}
-                    managePetsHref={routes.MyPets()}
+                    disabledPetIds={disabledPetIds}
+                    hiddenCount={hiddenCount}
+                    emptyHref={routes.MyPets()}
                 />
 
                 <Separator />

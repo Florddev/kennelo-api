@@ -34,6 +34,7 @@ import { HostAboutSection } from "./host-about-section";
 import { HostLocationSection } from "./host-location-section";
 import { HostDateSection } from "./host-date-section";
 import { HostPetEstimationSelector } from "./host-pet-estimation-selector";
+import { HostAnimalTypeEstimationSelector } from "./host-animal-type-estimation-selector";
 import { HostCyclePricingSection } from "./host-cycle-pricing-section";
 import { HostReviewsSection } from "./host-reviews-section";
 import { HostBookingBar } from "./host-booking-bar";
@@ -70,15 +71,18 @@ export function HostDetailContent({
         activity.id,
     );
     const { cycles, isLoading: areCyclesLoading } = useHostPublicCycles(activity.id);
-    const { pets } = usePets();
+    const { pets } = usePets({ enabled: isAuthenticated });
     const [dateRange, setDateRange] = useState<DateRange | undefined>(initialDateRange);
     const [selectedPetIds, setSelectedPetIds] = useState<string[]>([]);
+    const [animalTypeCounts, setAnimalTypeCounts] = useState<Record<string, number>>({});
     const isHost = user?.id === activity.managerId;
 
     const eligiblePets = useMemo(() => {
         const acceptedTypeIds = acceptedAnimalTypeIds(capacities);
         return pets.filter((pet) => acceptedTypeIds.includes(pet.animalTypeId));
     }, [pets, capacities]);
+
+    const usePetSelector = isAuthenticated && eligiblePets.length > 0;
 
     const togglePet = (petId: string) => {
         setSelectedPetIds((current) =>
@@ -88,12 +92,33 @@ export function HostDetailContent({
         );
     };
 
-    const effectivePriceMap = useMemo(() => {
-        const animalTypeIds = eligiblePets
-            .filter((pet) => selectedPetIds.includes(pet.id))
-            .map((pet) => pet.animalTypeId);
-        return buildPetPriceMap(priceMap, animalTypeIds, cycles);
-    }, [priceMap, cycles, eligiblePets, selectedPetIds]);
+    const setAnimalTypeCount = (animalTypeId: string, count: number) => {
+        setAnimalTypeCounts((current) => {
+            const next = { ...current };
+            if (count <= 0) {
+                delete next[animalTypeId];
+            } else {
+                next[animalTypeId] = count;
+            }
+            return next;
+        });
+    };
+
+    const selectedAnimalTypeIds = useMemo(() => {
+        if (usePetSelector) {
+            return eligiblePets
+                .filter((pet) => selectedPetIds.includes(pet.id))
+                .map((pet) => pet.animalTypeId);
+        }
+        return Object.entries(animalTypeCounts).flatMap(([animalTypeId, count]) =>
+            Array.from({ length: count }, () => animalTypeId),
+        );
+    }, [usePetSelector, eligiblePets, selectedPetIds, animalTypeCounts]);
+
+    const effectivePriceMap = useMemo(
+        () => buildPetPriceMap(priceMap, selectedAnimalTypeIds, cycles),
+        [priceMap, cycles, selectedAnimalTypeIds],
+    );
     const canContact = isAuthenticated && !isHost;
 
     const handleBook = () => {
@@ -167,8 +192,6 @@ export function HostDetailContent({
                         )}
                     </>
                 )}
-
-                <HostAboutSection activity={activity} />
             </div>
 
             <Tabs defaultValue="general" className="flex flex-col gap-0 pt-2">
@@ -188,9 +211,9 @@ export function HostDetailContent({
                                 </TabsTrigger>
                             </div>
                             <div className="flex justify-center">
-                                <TabsTrigger value="availability" className="max-w-fit">
+                                <TabsTrigger value="pricing" className="max-w-fit">
                                     <span data-slot="tab-label" className="!text-base">
-                                        {t("features.host.detail.tabs.availability")}
+                                        {t("features.host.detail.tabs.pricing")}
                                     </span>
                                     <span data-slot="tab-indicator" />
                                 </TabsTrigger>
@@ -207,7 +230,9 @@ export function HostDetailContent({
                     </TabsList>
                 </Sticky>
 
-                <TabsContent value="general" className="flex flex-col gap-6 px-4 py-6">
+                <TabsContent value="general" className="flex flex-col gap-6 px-4">
+                    <HostAboutSection activity={activity} />
+                    <Separator />
                     <HostSpeciesSection
                         priceRanges={priceRanges}
                         isLoading={areSpeciesPricesLoading}
@@ -216,12 +241,20 @@ export function HostDetailContent({
                     <HostLocationSection address={activity.address} />
                 </TabsContent>
 
-                <TabsContent value="availability" className="flex flex-col gap-6 px-4 py-6">
-                    <HostPetEstimationSelector
-                        pets={eligiblePets}
-                        selectedPetIds={selectedPetIds}
-                        onToggle={togglePet}
-                    />
+                <TabsContent value="pricing" className="flex flex-col gap-6 p-4">
+                    {usePetSelector ? (
+                        <HostPetEstimationSelector
+                            pets={eligiblePets}
+                            selectedPetIds={selectedPetIds}
+                            onToggle={togglePet}
+                        />
+                    ) : (
+                        <HostAnimalTypeEstimationSelector
+                            priceRanges={priceRanges}
+                            counts={animalTypeCounts}
+                            onCountChange={setAnimalTypeCount}
+                        />
+                    )}
                     <HostDateSection
                         dateRange={dateRange}
                         onDateRangeChange={setDateRange}
@@ -232,7 +265,7 @@ export function HostDetailContent({
                     <HostCyclePricingSection cycles={cycles} isLoading={areCyclesLoading} />
                 </TabsContent>
 
-                <TabsContent value="reviews" className="px-4 py-6">
+                <TabsContent value="reviews" className="p-4">
                     <HostReviewsSection
                         reviews={reviews}
                         averageRating={averageRating}

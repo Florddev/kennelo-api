@@ -46,12 +46,20 @@ Route::middleware('auth.jwt.optional')->group(function () {
     Route::get('/explore/activities', [ExploreController::class, 'activities']);
     Route::get('/explore/activities/sections/{sectionId}', [ExploreController::class, 'sectionPage']);
     Route::get('/explore/search', [ExploreController::class, 'search']);
+
+    Route::get('/activities/{activity}', [ActivityController::class, 'show']);
+    Route::get('/activities/{activity}/availabilities/range', [ActivityAvailabilityController::class, 'range']);
+    Route::get('/activities/{activity}/cycle-settings', [ActivityCycleController::class, 'settingsIndex']);
+    Route::get('/activities/{activity}/animal-type-prices', [ActivityCycleController::class, 'animalTypePrices']);
+    Route::get('/activities/{activity}/public-cycles', [ActivityCycleController::class, 'publicIndex']);
+    Route::get('/activities/{activity}/price-calendar', [ActivityCycleController::class, 'priceCalendar']);
+    Route::get('/activities/{activity}/reviews', [ActivityReviewController::class, 'index']);
 });
 Route::post('/webhooks/stripe', [StripeWebhookController::class, 'handle']);
 
 Route::middleware(['auth.jwt'])->group(function () {
     // Activities
-    Route::apiResource('activities', ActivityController::class);
+    Route::apiResource('activities', ActivityController::class)->except(['show']);
     Route::get('/activities/{activity}/roles', [ActivityRoleController::class, 'index']);
     Route::post('/activities/{activity}/roles', [ActivityRoleController::class, 'store']);
     Route::put('/activities/{activity}/roles/{role}', [ActivityRoleController::class, 'update']);
@@ -65,15 +73,10 @@ Route::middleware(['auth.jwt'])->group(function () {
     Route::get('/collaborator-invitations', [CollaboratorInvitationController::class, 'index']);
     Route::get('/activities/{activity}/dashboard', [ActivityDashboardController::class, 'show']);
     Route::get('/activities/{activity}/availabilities', [ActivityAvailabilityController::class, 'index']);
-    Route::get('/activities/{activity}/availabilities/range', [ActivityAvailabilityController::class, 'range']);
     Route::post('/activities/{activity}/availabilities', [ActivityAvailabilityController::class, 'store']);
     Route::post('/activities/{activity}/availabilities/bulk', [ActivityAvailabilityController::class, 'bulk']);
     Route::put('/activities/{activity}/availabilities/{availability}', [ActivityAvailabilityController::class, 'update']);
     Route::delete('/activities/{activity}/availabilities/{availability}', [ActivityAvailabilityController::class, 'destroy']);
-    Route::get('/activities/{activity}/cycle-settings', [ActivityCycleController::class, 'settingsIndex']);
-    Route::get('/activities/{activity}/price-calendar', [ActivityCycleController::class, 'priceCalendar']);
-    Route::get('/activities/{activity}/animal-type-prices', [ActivityCycleController::class, 'animalTypePrices']);
-    Route::get('/activities/{activity}/public-cycles', [ActivityCycleController::class, 'publicIndex']);
     Route::get('/activities/{activity}/cycles', [ActivityCycleController::class, 'index']);
     Route::post('/activities/{activity}/cycles', [ActivityCycleController::class, 'store']);
     Route::put('/activities/{activity}/cycles/{cycle}', [ActivityCycleController::class, 'update']);
@@ -147,7 +150,6 @@ Route::middleware(['auth.jwt'])->group(function () {
 
     // Reviews
     Route::get('/review-criteria', [ReviewCriteriaController::class, 'index']);
-    Route::get('/activities/{activity}/reviews', [ActivityReviewController::class, 'index']);
     Route::get('/users/{user}/reviews', [UserReviewController::class, 'index']);
     Route::get('/reviews/{review}', [ReviewController::class, 'show']);
     Route::post('/bookings/{booking}/reviews', [BookingReviewController::class, 'store']);
