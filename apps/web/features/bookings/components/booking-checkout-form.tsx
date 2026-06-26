@@ -27,7 +27,7 @@ import {
 import { ActivitySummaryCard } from "@/features/activities/components/activity-summary-card";
 import { PaymentMethodPicker } from "@/features/payment-methods/components/payment-method-picker";
 
-import { computeBookingTotals } from "../lib/pricing";
+import { useBookingQuote } from "../hooks/use-booking-quote";
 
 const stripePromise = getStripe();
 import { BookingHeader } from "./booking-header";
@@ -46,6 +46,46 @@ type BookingCheckoutFormProps = {
     availabilities: AvailabilityModel[];
     priceMap: PriceCalendar;
 };
+
+function resolveDates(dateRange: DateRange | undefined) {
+    const from = dateRange?.from;
+    const to = dateRange?.to;
+    return {
+        from,
+        to,
+        hasDates: Boolean(from && to),
+        nights: from && to ? computeNights(from, to) : 0,
+        checkInDate: from ? toApiDate(from) : null,
+        checkOutDate: to ? toApiDate(to) : null,
+    };
+}
+
+function derivePetSelection(
+    pets: PetModel[],
+    capacities: ActivityCycleSettingModel[],
+    cycles: ActivityCycleModel[],
+    from: Date | undefined,
+    to: Date | undefined,
+    selectedPetIds: string[],
+) {
+    const acceptedTypeIds = acceptedAnimalTypeIds(capacities);
+    const eligiblePets = pets.filter((pet) => acceptedTypeIds.includes(pet.animalTypeId));
+    const disabledPetIds = eligiblePets
+        .filter(
+            (pet) => !isAnimalTypeAvailableForDates(pet.animalTypeId, capacities, cycles, from, to),
+        )
+        .map((pet) => pet.id);
+    const selectedPets = eligiblePets.filter(
+        (pet) => selectedPetIds.includes(pet.id) && !disabledPetIds.includes(pet.id),
+    );
+
+    return {
+        eligiblePets,
+        disabledPetIds,
+        selectedPets,
+        hiddenCount: pets.length - eligiblePets.length,
+    };
+}
 
 export function BookingCheckoutForm({
     activity,
@@ -67,23 +107,26 @@ export function BookingCheckoutForm({
     const [paymentMethodId, setPaymentMethodId] = useState<string | null>(null);
     const { execute, isLoading: isSubmitting } = useAsyncState();
 
-    const acceptedTypeIds = acceptedAnimalTypeIds(capacities);
-    const eligiblePets = pets.filter((pet) => acceptedTypeIds.includes(pet.animalTypeId));
-    const hiddenCount = pets.length - eligiblePets.length;
-    const from = dateRange?.from;
-    const to = dateRange?.to;
-    const disabledPetIds = eligiblePets
-        .filter(
-            (pet) => !isAnimalTypeAvailableForDates(pet.animalTypeId, capacities, cycles, from, to),
-        )
-        .map((pet) => pet.id);
-    const selectedPets = eligiblePets.filter(
-        (pet) => selectedPetIds.includes(pet.id) && !disabledPetIds.includes(pet.id),
+    const { from, to, hasDates, nights, checkInDate, checkOutDate } = resolveDates(dateRange);
+    const { eligiblePets, disabledPetIds, selectedPets, hiddenCount } = derivePetSelection(
+        pets,
+        capacities,
+        cycles,
+        from,
+        to,
+        selectedPetIds,
     );
-    const hasDates = Boolean(from && to);
-    const nights = from && to ? computeNights(from, to) : 0;
-    const totals = computeBookingTotals(selectedPets, capacities, nights);
-    const canSubmit = hasDates && selectedPets.length > 0 && nights > 0 && paymentMethodId !== null;
+
+    const { quote, isLoading: isQuoteLoading } = useBookingQuote({
+        activityId: activity.id,
+        checkInDate,
+        checkOutDate,
+        petIds: selectedPets.map((pet) => pet.id),
+    });
+
+    const canSubmit = Boolean(
+        hasDates && selectedPets.length > 0 && nights > 0 && paymentMethodId && quote,
+    );
 
     const togglePet = (petId: string) => {
         setSelectedPetIds((current) =>
@@ -94,7 +137,7 @@ export function BookingCheckoutForm({
     };
 
     const handleSubmit = async () => {
-        if (!dateRange?.from || !dateRange?.to) {
+        if (!checkInDate || !checkOutDate) {
             toast.error(t("features.bookings.checkout.selectDates"));
             return;
         }
@@ -103,9 +146,6 @@ export function BookingCheckoutForm({
             toast.error(t("features.bookings.checkout.selectPaymentMethod"));
             return;
         }
-
-        const checkInDate = toApiDate(dateRange.from);
-        const checkOutDate = toApiDate(dateRange.to);
 
         const result = await execute(
             () =>
@@ -188,7 +228,7 @@ export function BookingCheckoutForm({
                     <h2 className="text-lg font-semibold text-slate-900">
                         {t("features.bookings.checkout.priceSection")}
                     </h2>
-                    <PriceBreakdown totals={totals} />
+                    <PriceBreakdown quote={quote} isLoading={isQuoteLoading} />
                 </section>
 
                 <Separator />
@@ -206,7 +246,7 @@ export function BookingCheckoutForm({
             </div>
 
             <BookingFooter
-                total={totals.total}
+                total={quote?.totalPrice ?? 0}
                 canSubmit={canSubmit}
                 isSubmitting={isSubmitting}
                 onSubmit={handleSubmit}

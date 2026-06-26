@@ -22,6 +22,7 @@ class BookingResource extends JsonResource
             'check_in_date' => $this->check_in_date->toDateString(),
             'check_out_date' => $this->check_out_date->toDateString(),
             'total_price' => $this->total_price,
+            'service_fee' => $this->service_fee,
             'platform_fee' => $this->platform_fee,
             'activity_amount' => $this->activity_amount,
             'status' => $this->status->value,
