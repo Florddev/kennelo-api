@@ -64,8 +64,10 @@ it('cycle settings reject an invalid date format', function () {
         ->assertUnprocessable();
 });
 
-it('unauthenticated user cannot read cycle settings', function () {
+it('unauthenticated user can read cycle settings', function () {
     [$activity] = makeCycleSettingFixtures();
 
-    $this->getJson("/api/activities/{$activity->id}/cycle-settings")->assertUnauthorized();
+    $this->getJson("/api/activities/{$activity->id}/cycle-settings")
+        ->assertOk()
+        ->assertJsonCount(1, 'data');
 });

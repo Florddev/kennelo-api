@@ -16,12 +16,7 @@ export function BookingFooter({ total, canSubmit, isSubmitting, onSubmit }: Book
     const t = useTranslations();
 
     return (
-        <div
-            className={cn(
-                "fixed inset-x-0 z-20 border-t bg-background px-4 py-3",
-                "bottom-13 md:bottom-0",
-            )}
-        >
+        <div className={cn("fixed inset-x-0 z-20 border-t bg-card px-4 py-3 bottom-0")}>
             <div className="container mx-auto flex h-full items-center justify-between gap-4">
                 <p className="text-sm font-semibold text-slate-900">
                     {t("features.bookings.checkout.confirmFooterTotal", {
@@ -31,7 +26,8 @@ export function BookingFooter({ total, canSubmit, isSubmitting, onSubmit }: Book
                 <Button
                     onClick={onSubmit}
                     disabled={!canSubmit || isSubmitting}
-                    className="h-12 rounded-full bg-foreground px-8 text-base font-medium text-background hover:bg-foreground/90 disabled:opacity-50"
+                    variant="default"
+                    size="xl"
                 >
                     {isSubmitting ? "…" : t("features.bookings.checkout.confirmCta")}
                 </Button>

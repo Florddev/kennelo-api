@@ -193,7 +193,7 @@ export function BookingCheckoutForm({
     });
 
     return (
-        <div className="relative flex flex-col bg-background pb-[140px] md:pb-20">
+        <div className="relative flex flex-col pb-[140px] md:pb-20">
             <BookingHeader
                 title={t("features.bookings.checkout.title")}
                 onBack={() => router.back()}

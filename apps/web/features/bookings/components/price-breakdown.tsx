@@ -1,5 +1,4 @@
 import { useTranslations } from "next-intl";
-import { Separator } from "@workspace/ui/components/separator";
 import { Skeleton } from "@workspace/ui/components/skeleton";
 import { formatAmount } from "@workspace/common";
 import type { BookingQuoteModel } from "@workspace/modules/bookings";
@@ -14,11 +13,11 @@ export function PriceBreakdown({ quote, isLoading }: PriceBreakdownProps) {
 
     if (isLoading) {
         return (
-            <div data-slot="price-breakdown" className="flex flex-col gap-3">
+            <div data-slot="price-breakdown" className="flex flex-col gap-2">
                 <Skeleton className="h-5 w-full" />
                 <Skeleton className="h-5 w-full" />
-                <Separator />
-                <Skeleton className="h-6 w-full" />
+                {/* <Separator /> */}
+                <Skeleton className="h-6 w-full mt-3" />
             </div>
         );
     }
@@ -47,8 +46,8 @@ export function PriceBreakdown({ quote, isLoading }: PriceBreakdownProps) {
                 </span>
                 <span className="text-foreground">{formatAmount(quote.serviceFee)} €</span>
             </div>
-            <Separator />
-            <div className="flex items-center justify-between text-base font-semibold">
+            {/* <Separator /> */}
+            <div className="flex items-center justify-between text-base font-semibold mt-3">
                 <span>{t("features.bookings.checkout.totalCurrency")}</span>
                 <span>{formatAmount(quote.totalPrice)} €</span>
             </div>
