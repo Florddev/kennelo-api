@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { LoginForm } from "@/features/auth";
+import { LoginForm, GoogleSignInButton } from "@/features/auth";
 import { useNavigation } from "@/hooks/use-navigation";
 import { useTranslations } from "next-intl";
 import { FieldDescription, FieldGroup } from "@workspace/ui/components/field";
@@ -29,7 +29,10 @@ export default function LoginPage() {
                                 {t("features.auth.login.description")}
                             </p>
                         </div>
-                        <LoginForm onSuccess={handleSuccess} />
+                        <div className="flex flex-col gap-6">
+                            <LoginForm onSuccess={handleSuccess} />
+                            <GoogleSignInButton onSuccess={handleSuccess} />
+                        </div>
                     </FieldGroup>
                     <FieldDescription className="px-6 text-center">
                         {t("features.auth.noAccount")}{" "}

@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { TooltipProvider } from "@workspace/ui/components/tooltip";
 import { Toaster } from "@workspace/ui/components/sonner";
@@ -29,7 +30,9 @@ export function Providers({
             }),
     );
 
-    return (
+    const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? "";
+
+    const tree = (
         <NextThemesProvider attribute="class" defaultTheme="light" enableSystem enableColorScheme>
             <TooltipProvider>
                 <QueryClientProvider client={queryClient}>
@@ -42,4 +45,6 @@ export function Providers({
             <Toaster />
         </NextThemesProvider>
     );
+
+    return <GoogleOAuthProvider clientId={googleClientId}>{tree}</GoogleOAuthProvider>;
 }

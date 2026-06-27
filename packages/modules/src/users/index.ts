@@ -8,6 +8,7 @@ export * from "./actions/commands/change-password";
 export * from "./actions/commands/create-stripe-account-session";
 export * from "./actions/commands/destroy-user";
 export * from "./actions/commands/login-user";
+export * from "./actions/commands/login-with-google";
 export * from "./actions/commands/logout-user";
 export * from "./actions/commands/refresh-token";
 export * from "./actions/commands/register-user";
