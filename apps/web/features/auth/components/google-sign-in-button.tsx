@@ -70,7 +70,11 @@ export function GoogleSignInButton({ onSuccess }: { onSuccess?: (locale: Locale)
                 disabled={isLoading}
                 onClick={() => login()}
             >
-                <GoogleIcon />
+                {isLoading ? (
+                    <span className="size-4 rounded-full border-2 border-muted-foreground/30 border-t-primary animate-spin" />
+                ) : (
+                    <GoogleIcon />
+                )}
                 {t("features.auth.continueWithGoogle")}
             </Button>
         </div>

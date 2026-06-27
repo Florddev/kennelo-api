@@ -8,8 +8,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\GoogleAuthRequest;
 use App\Models\User;
 use App\Services\JWTService;
+use App\Services\MediaService;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Laravel\Socialite\Facades\Socialite;
 use Laravel\Socialite\Two\AbstractProvider;
@@ -74,6 +76,20 @@ class GoogleAuthController extends Controller
             $user->assignRole('user');
 
             event(new Registered($user));
+        }
+
+        $avatarUrl = $googleUser->getAvatar();
+
+        if ($avatarUrl && ! $user->getFirstMedia(MediaService::COLLECTION_AVATAR)) {
+            try {
+                $contents = Http::get($avatarUrl)->throw()->body();
+
+                $user->addMediaFromString($contents)
+                    ->usingFileName('avatar.jpg')
+                    ->toMediaCollection(MediaService::COLLECTION_AVATAR);
+            } catch (\Throwable $e) {
+                Log::warning('Failed to import Google avatar: '.$e->getMessage());
+            }
         }
 
         $user->load('roles');
