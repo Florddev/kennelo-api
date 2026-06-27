@@ -81,6 +81,11 @@ class Activity extends Model implements HasMedia
         return $query->where('is_active', true);
     }
 
+    public function scopeWhereManagerVerified(Builder $query): Builder
+    {
+        return $query->whereHas('manager', fn (Builder $q) => $q->whereNotNull('email_verified_at'));
+    }
+
     public function address(): BelongsTo
     {
         return $this->belongsTo(Address::class);

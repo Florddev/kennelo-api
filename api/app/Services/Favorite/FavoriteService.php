@@ -25,6 +25,7 @@ class FavoriteService
         return $user->favoriteActivities()
             ->with(['address', 'manager', 'cycles.settings.animalType'])
             ->withExists(['favoritedBy as is_favorited' => fn (Builder $q) => $q->where('users.id', $user->id)])
+            ->whereManagerVerified()
             ->orderByPivot('created_at', 'desc')
             ->paginate($perPage);
     }
