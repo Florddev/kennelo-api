@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\GoogleAuthRequest;
+use App\Http\Resources\AuthTokenResource;
 use App\Models\User;
 use App\Services\JWTService;
 use App\Services\MediaService;
@@ -54,25 +55,35 @@ class GoogleAuthController extends Controller
             abort(401, 'Unable to authenticate with Google.');
         }
 
-        $user = User::where('google_id', $googleUser->getId())->first()
-            ?? User::where('email', $googleUser->getEmail())->first();
+        $raw = $googleUser->getRaw();
 
-        if ($user) {
-            if (! $user->google_id) {
-                $user->update(['google_id' => $googleUser->getId()]);
+        $user = User::where('google_id', $googleUser->getId())->first();
+
+        if (! $user) {
+            $existingByEmail = User::where('email', $googleUser->getEmail())->first();
+
+            if ($existingByEmail) {
+                if ($existingByEmail->hasVerifiedEmail()) {
+                    abort(409, 'An account with this email already exists. Please sign in with your password.');
+                }
+
+                $existingByEmail->update(['google_id' => $googleUser->getId()]);
+                $existingByEmail->markEmailAsVerified();
+
+                $user = $existingByEmail;
             }
-        } else {
-            $raw = $googleUser->getRaw();
+        }
 
+        if (! $user) {
             $user = User::create([
                 'first_name' => $raw['given_name'] ?? $googleUser->getName() ?? '',
                 'last_name' => $raw['family_name'] ?? '',
                 'email' => $googleUser->getEmail(),
                 'google_id' => $googleUser->getId(),
-                'email_verified_at' => now(),
-                'locale' => $request->locale ?? config('app.locale', 'en'),
+                'locale' => $request->validated('locale') ?? config('app.locale', 'en'),
             ]);
 
+            $user->markEmailAsVerified();
             $user->assignRole('user');
 
             event(new Registered($user));
@@ -82,7 +93,7 @@ class GoogleAuthController extends Controller
 
         if ($avatarUrl && ! $user->getFirstMedia(MediaService::COLLECTION_AVATAR)) {
             try {
-                $contents = Http::get($avatarUrl)->throw()->body();
+                $contents = Http::timeout(5)->get($avatarUrl)->throw()->body();
 
                 $user->addMediaFromString($contents)
                     ->usingFileName('avatar.jpg')
@@ -97,22 +108,8 @@ class GoogleAuthController extends Controller
         $accessToken = $this->jwtService->generateAccessToken($user);
         $refreshToken = $this->jwtService->generateRefreshToken($user);
 
-        return response()->json([
-            'access_token' => $accessToken,
-            'refresh_token' => $refreshToken,
-            'token_type' => 'Bearer',
-            'expires_in' => config('jwt.ttl') * 60,
-            'user' => [
-                'id' => $user->id,
-                'first_name' => $user->first_name,
-                'last_name' => $user->last_name,
-                'email' => $user->email,
-                'phone' => $user->phone,
-                'locale' => $user->locale,
-                'is_id_verified' => $user->is_id_verified,
-                'email_verified_at' => $user->email_verified_at,
-                'roles' => $user->roles->pluck('name'),
-            ],
-        ]);
+        return (new AuthTokenResource($user, $accessToken, $refreshToken))
+            ->response()
+            ->setStatusCode(200);
     }
 }

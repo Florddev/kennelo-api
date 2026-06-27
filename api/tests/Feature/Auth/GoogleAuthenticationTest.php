@@ -45,11 +45,14 @@ test('new users can register with google', function () {
         'last_name' => 'Lovelace',
     ]);
 
-    expect(User::where('email', 'ada@example.com')->first()->hasRole('user'))->toBeTrue();
+    $created = User::where('email', 'ada@example.com')->first();
+
+    expect($created->hasRole('user'))->toBeTrue()
+        ->and($created->hasVerifiedEmail())->toBeTrue();
 });
 
-test('google login merges with an existing email account', function () {
-    $user = User::factory()->create(['email' => 'ada@example.com', 'google_id' => null]);
+test('google login merges with an existing unverified email account and verifies it', function () {
+    $user = User::factory()->unverified()->create(['email' => 'ada@example.com', 'google_id' => null]);
 
     fakeGoogleUser('google-123', 'ada@example.com');
 
@@ -59,10 +62,10 @@ test('google login merges with an existing email account', function () {
 
     expect(User::where('email', 'ada@example.com')->count())->toBe(1);
 
-    $this->assertDatabaseHas('users', [
-        'id' => $user->id,
-        'google_id' => 'google-123',
-    ]);
+    $user->refresh();
+
+    expect($user->google_id)->toBe('google-123')
+        ->and($user->hasVerifiedEmail())->toBeTrue();
 });
 
 test('returning google users can authenticate', function () {
@@ -76,6 +79,21 @@ test('returning google users can authenticate', function () {
         ->assertJsonPath('user.id', $user->id);
 
     expect(User::where('google_id', 'google-123')->count())->toBe(1);
+});
+
+test('google login is refused when a verified password account already owns the email', function () {
+    $user = User::factory()->create(['email' => 'ada@example.com', 'google_id' => null]);
+
+    fakeGoogleUser('google-123', 'ada@example.com');
+
+    $response = $this->post('/api/login/google', ['token' => 'google-access-token']);
+
+    $response->assertConflict();
+
+    $this->assertDatabaseHas('users', [
+        'id' => $user->id,
+        'google_id' => null,
+    ]);
 });
 
 test('google login fails without a token', function () {
