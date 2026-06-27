@@ -20,5 +20,6 @@ export * from "./components/status-dot";
 export * from "./components/system-message";
 export * from "./components/typing-indicator";
 export * from "./hooks/use-conversations";
+export * from "./hooks/use-open-conversation";
 export * from "./lib/types";
 export * from "./lib/utils";

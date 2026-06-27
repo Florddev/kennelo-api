@@ -46,7 +46,7 @@ return new class extends Migration
             DB::table('animal_types')
                 ->where('id', $animalType->id)
                 ->update([
-                    'name_single' => $translations['fr'] ?? $translations['en'] ?? reset($translations) ?: '',
+                    'name_single' => $translations['en'] ?? $translations['fr'] ?? reset($translations) ?: '',
                 ]);
         }
 

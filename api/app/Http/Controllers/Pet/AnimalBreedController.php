@@ -27,8 +27,9 @@ class AnimalBreedController extends Controller
                 isset($validated['animal_type_id']),
                 fn ($query) => $query->where('animal_type_id', $validated['animal_type_id'])
             )
-            ->orderBy('breed')
-            ->get();
+            ->get()
+            ->sortBy('label', SORT_NATURAL | SORT_FLAG_CASE)
+            ->values();
 
         return AnimalBreedResource::collection($breeds)
             ->additional([

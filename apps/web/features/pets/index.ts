@@ -11,6 +11,7 @@ export * from "./components/pet-profile-info";
 export * from "./components/pet-profile-reviews";
 export * from "./components/pet-review-card";
 export * from "./components/pet-type-illustration";
+export * from "./components/forms/breed-select-field";
 export * from "./components/forms/create-pet-stepper.constants";
 export * from "./components/forms/create-pet-stepper.mappers";
 export * from "./components/forms/create-pet-stepper.selectors";

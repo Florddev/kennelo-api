@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Translatable\HasTranslations;
 
 /**
- * @property int $id
+ * @property string $id
  * @property string $code
  * @property string $name
  * @property string $category
