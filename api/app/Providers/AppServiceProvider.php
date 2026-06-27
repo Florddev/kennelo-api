@@ -24,8 +24,10 @@ use Dedoc\Scramble\Scramble;
 use Dedoc\Scramble\Support\Generator\OpenApi;
 use Dedoc\Scramble\Support\Generator\SecurityScheme;
 use Illuminate\Auth\Notifications\ResetPassword;
+use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Stripe\StripeClient;
@@ -53,7 +55,27 @@ class AppServiceProvider extends ServiceProvider
         Route::bind('media', fn (string $value) => Media::where('uuid', $value)->firstOrFail());
 
         ResetPassword::createUrlUsing(function (object $notifiable, string $token) {
-            return config('app.frontend_url')."/password-reset/$token?email={$notifiable->getEmailForPasswordReset()}";
+            return config('app.frontend_url').'/reset-password?'.http_build_query([
+                'token' => $token,
+                'email' => $notifiable->getEmailForPasswordReset(),
+            ]);
+        });
+
+        VerifyEmail::createUrlUsing(function (object $notifiable) {
+            $signedUrl = URL::temporarySignedRoute(
+                'verification.verify',
+                now()->addMinutes((int) config('auth.verification.expire', 60)),
+                ['id' => $notifiable->getKey(), 'hash' => sha1($notifiable->getEmailForVerification())]
+            );
+
+            parse_str((string) parse_url($signedUrl, PHP_URL_QUERY), $params);
+
+            return config('app.frontend_url').'/verify-email?'.http_build_query([
+                'id' => $notifiable->getKey(),
+                'hash' => sha1($notifiable->getEmailForVerification()),
+                'expires' => $params['expires'] ?? '',
+                'signature' => $params['signature'] ?? '',
+            ]);
         });
 
         Scramble::routes(fn () => app()->environment('local', 'staging'));
