@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Activity;
 
 use App\Enums\ApiStatusEnum;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Activity\PriceCalendarRequest;
 use App\Http\Requests\Activity\StoreActivityCycleRequest;
 use App\Http\Requests\Activity\UpdateActivityCycleRequest;
 use App\Http\Requests\Activity\UpsertClosedWeekDaysRequest;
@@ -43,6 +44,8 @@ class ActivityCycleController extends Controller
 
     public function settingsIndex(Request $request, Activity $activity): JsonResponse
     {
+        $this->authorize('view', $activity);
+
         $validated = $request->validate([
             'date' => ['sometimes', 'date_format:Y-m-d'],
         ]);
@@ -57,14 +60,11 @@ class ActivityCycleController extends Controller
             ->response();
     }
 
-    public function priceCalendar(Request $request, Activity $activity): JsonResponse
+    public function priceCalendar(PriceCalendarRequest $request, Activity $activity): JsonResponse
     {
-        $validated = $request->validate([
-            'from' => ['required', 'date_format:Y-m-d'],
-            'to' => ['required', 'date_format:Y-m-d', 'after_or_equal:from'],
-        ]);
+        $this->authorize('view', $activity);
 
-        $prices = $this->service->priceCalendar($activity, $validated['from'], $validated['to']);
+        $prices = $this->service->priceCalendar($activity, $request->validated('from'), $request->validated('to'));
 
         return response()->json([
             'status' => ApiStatusEnum::SUCCESS,
@@ -75,6 +75,8 @@ class ActivityCycleController extends Controller
 
     public function publicIndex(Activity $activity): JsonResponse
     {
+        $this->authorize('view', $activity);
+
         $cycles = $this->service->publicList($activity);
 
         return ActivityCycleResource::collection($cycles)
@@ -87,6 +89,8 @@ class ActivityCycleController extends Controller
 
     public function animalTypePrices(Activity $activity): JsonResponse
     {
+        $this->authorize('view', $activity);
+
         $ranges = $this->service->animalTypePriceRanges($activity);
 
         return response()->json([

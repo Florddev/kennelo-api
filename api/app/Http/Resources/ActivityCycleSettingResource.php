@@ -28,8 +28,8 @@ class ActivityCycleSettingResource extends JsonResource
             'price' => $this->price,
             'sum_weekdays' => $this->sum_weekdays,
             'week_days' => array_map(fn (WeekDayEnum $day): int => $day->value, WeekDayEnum::fromMask($this->sum_weekdays)),
-            'occupied_spots' => $occupiedSpots,
-            'available_spots' => $this->max_capacity - $occupiedSpots,
+            'occupied_spots' => $this->when($request->user() !== null, $occupiedSpots),
+            'available_spots' => $this->when($request->user() !== null, $this->max_capacity - $occupiedSpots),
         ];
     }
 }
