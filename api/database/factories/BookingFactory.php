@@ -20,8 +20,8 @@ class BookingFactory extends Factory
         $checkIn = fake()->dateTimeBetween('+1 day', '+30 days');
         $checkOut = fake()->dateTimeBetween($checkIn, '+60 days');
         $basePrice = fake()->randomFloat(2, 50, 500);
-        $serviceFee = round($basePrice * (float) config('booking.user_service_fee_rate'), 2);
-        $platformFee = round($basePrice * (float) config('booking.host_commission_rate'), 2);
+        $serviceFee = round($basePrice * (float) config('booking.user_service_fee_rate', '0.08'), 2);
+        $platformFee = round($basePrice * (float) config('booking.host_commission_rate', '0.06'), 2);
 
         return [
             'user_id' => User::factory(),

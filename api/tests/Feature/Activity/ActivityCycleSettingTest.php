@@ -64,10 +64,20 @@ it('cycle settings reject an invalid date format', function () {
         ->assertUnprocessable();
 });
 
-it('unauthenticated user can read cycle settings', function () {
+it('unauthenticated user can read cycle settings without occupancy data', function () {
     [$activity] = makeCycleSettingFixtures();
 
     $this->getJson("/api/activities/{$activity->id}/cycle-settings")
         ->assertOk()
-        ->assertJsonCount(1, 'data');
+        ->assertJsonCount(1, 'data')
+        ->assertJsonMissingPath('data.0.occupied_spots')
+        ->assertJsonMissingPath('data.0.available_spots');
+});
+
+it('unauthenticated user cannot read cycle settings of an inactive activity', function () {
+    [$activity] = makeCycleSettingFixtures();
+    $activity->update(['is_active' => false]);
+
+    $this->getJson("/api/activities/{$activity->id}/cycle-settings")
+        ->assertForbidden();
 });
