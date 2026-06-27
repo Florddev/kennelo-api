@@ -35,14 +35,6 @@ export default function LoginPage() {
                         </div>
                     </FieldGroup>
                     <FieldDescription className="px-6 text-center">
-                        <Link
-                            href={routes.ForgotPassword()}
-                            className="text-primary hover:underline"
-                        >
-                            {t("features.auth.forgotPassword.link")}
-                        </Link>
-                    </FieldDescription>
-                    <FieldDescription className="px-6 text-center">
                         {t("features.auth.noAccount")}{" "}
                         <Link
                             href={routes.Register(

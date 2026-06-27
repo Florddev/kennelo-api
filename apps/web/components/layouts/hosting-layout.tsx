@@ -10,7 +10,7 @@ import { isActivePath } from "@workspace/common";
 import { useNavigation } from "@/hooks/use-navigation";
 import { useNavVisibility } from "@/providers/navigation-visibility-provider";
 import { NavigationItem } from "@/components/navigation/nav-item";
-import { HostUnverifiedAlert } from "@/features/auth";
+import { EmailVerificationAlert } from "@/features/auth";
 import { BottomNavbar } from "../navigation/navbar/bottom-navbar";
 import { HostingNavbar } from "../navigation/navbar/hosting-navbar";
 
@@ -71,7 +71,11 @@ export default function HostingLayout({ children, className }: HostingLayoutProp
     return (
         <div className={cn("bg-card min-h-[100dvh]")}>
             <HostingNavbar className="hidden md:flex" links={desktopLinks} />
-            <HostUnverifiedAlert />
+            <EmailVerificationAlert
+                title={t("features.auth.hostUnverified.title")}
+                description={t("features.auth.hostUnverified.description")}
+                className="px-4 pt-4 md:px-6"
+            />
             <main className={cn("w-full h-full", className)}>{children}</main>
             {isBottomNavbarVisible && (
                 <BottomNavbar className="block md:hidden" navigationItems={mobileNavigationItems} />

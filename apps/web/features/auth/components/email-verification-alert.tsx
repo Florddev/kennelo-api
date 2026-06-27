@@ -8,7 +8,15 @@ import { useTranslations } from "next-intl";
 import { useAsyncState } from "@/hooks/use-async-state";
 import { useAuth } from "@/features/auth/hooks/use-auth";
 
-export function HostUnverifiedAlert() {
+export function EmailVerificationAlert({
+    title,
+    description,
+    className,
+}: {
+    title: string;
+    description: string;
+    className?: string;
+}) {
     const { user, isLoaded } = useAuth();
     const t = useTranslations();
     const { isLoading, execute } = useAsyncState();
@@ -25,10 +33,10 @@ export function HostUnverifiedAlert() {
     };
 
     return (
-        <div className="px-4 pt-4 md:px-6">
-            <Alert variant="destructive" data-slot="host-unverified-alert">
-                <AlertTitle>{t("features.auth.hostUnverified.title")}</AlertTitle>
-                <AlertDescription>{t("features.auth.hostUnverified.description")}</AlertDescription>
+        <div className={className}>
+            <Alert variant="destructive" data-slot="email-verification-alert">
+                <AlertTitle>{title}</AlertTitle>
+                <AlertDescription>{description}</AlertDescription>
                 <AlertAction>
                     {resent ? (
                         <span className="text-xs text-muted-foreground">

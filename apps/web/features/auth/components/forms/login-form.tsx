@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginUserSchema, type LoginUserInput, loginUser } from "@workspace/modules/users";
@@ -8,6 +10,7 @@ import { Alert, AlertDescription } from "@workspace/ui/components/alert";
 import { useTranslations } from "next-intl";
 import { useAsyncState } from "@/hooks/use-async-state";
 import { InputController } from "@/components/forms/input-controller";
+import { useNavigation } from "@/hooks/use-navigation";
 import { useAuth } from "@/features/auth/hooks/use-auth";
 import { localeOrDefault, type Locale } from "@/dictionaries";
 import { Letter, LockKeyholeMinimalistic } from "@solar-icons/react";
@@ -15,6 +18,7 @@ import { Letter, LockKeyholeMinimalistic } from "@solar-icons/react";
 export function LoginForm({ onSuccess }: { onSuccess?: (locale: Locale) => void }) {
     const { error, isLoading, execute } = useAsyncState();
     const { refreshUser } = useAuth();
+    const { routes } = useNavigation();
     const t = useTranslations();
 
     const { handleSubmit, control, setError } = useForm<LoginUserInput>({
@@ -56,6 +60,14 @@ export function LoginForm({ onSuccess }: { onSuccess?: (locale: Locale) => void 
                 isLoading={isLoading}
                 autoComplete="current-password"
                 Icon={LockKeyholeMinimalistic}
+                labelAction={
+                    <Link
+                        href={routes.ForgotPassword()}
+                        className="text-sm font-medium text-primary hover:underline"
+                    >
+                        {t("features.auth.forgotPassword.link")}
+                    </Link>
+                }
             />
             {error && (
                 <Alert variant="destructive">

@@ -41,6 +41,7 @@ type InputControllerProps<TFieldValues extends FieldValues> = {
     type?: string;
     Icon?: React.ComponentType<IconProps>;
     defaultCountry?: string;
+    labelAction?: React.ReactNode;
 };
 
 type InputFieldProps = Omit<InputControllerProps<FieldValues>, "name" | "control"> & {
@@ -312,6 +313,7 @@ function InputField({
     description,
     showPasswordIndicator,
     defaultCountry,
+    labelAction,
 }: InputFieldProps) {
     const isPassword = type === "password";
     const fieldId = field.name;
@@ -319,7 +321,13 @@ function InputField({
 
     return (
         <Field data-invalid={showError} className="gap-1.5 group">
-            {label && <FieldLabel htmlFor={fieldId}>{label}</FieldLabel>}
+            {label && !labelAction && <FieldLabel htmlFor={fieldId}>{label}</FieldLabel>}
+            {labelAction && (
+                <div className="flex items-center justify-between gap-2">
+                    {label && <FieldLabel htmlFor={fieldId}>{label}</FieldLabel>}
+                    {labelAction}
+                </div>
+            )}
 
             <InputControl
                 field={field}
