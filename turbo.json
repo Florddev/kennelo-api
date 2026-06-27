@@ -19,6 +19,7 @@
                 "NEXT_PUBLIC_REVERB_HOST",
                 "NEXT_PUBLIC_REVERB_PORT",
                 "NEXT_PUBLIC_REVERB_SCHEME",
+                "NEXT_PUBLIC_GOOGLE_CLIENT_ID",
                 "MOBILE_BUILD",
                 "NODE_ENV"
             ]
@@ -34,7 +35,8 @@
                 "NEXT_PUBLIC_REVERB_APP_KEY",
                 "NEXT_PUBLIC_REVERB_HOST",
                 "NEXT_PUBLIC_REVERB_PORT",
-                "NEXT_PUBLIC_REVERB_SCHEME"
+                "NEXT_PUBLIC_REVERB_SCHEME",
+                "NEXT_PUBLIC_GOOGLE_CLIENT_ID"
             ]
         },
         "lint:fix": {
