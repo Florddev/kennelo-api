@@ -12,6 +12,8 @@ import { Alert, AlertDescription } from "@workspace/ui/components/alert";
 import { Field, FieldError, FieldLabel } from "@workspace/ui/components/field";
 import { Input } from "@workspace/ui/components/input";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@workspace/ui/components/input-otp";
+import { Checkbox } from "@workspace/ui/components/checkbox";
+import { Label } from "@workspace/ui/components/label";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useAsyncState } from "@/hooks/use-async-state";
@@ -29,6 +31,7 @@ export function TwoFactorChallengeForm({
     const { refreshUser } = useAuth();
     const t = useTranslations();
     const [useRecovery, setUseRecovery] = useState(false);
+    const [remember, setRemember] = useState(false);
 
     const { handleSubmit, control } = useForm<TwoFactorChallengeInput>({
         resolver: zodResolver(twoFactorChallengeSchema),
@@ -36,7 +39,7 @@ export function TwoFactorChallengeForm({
     });
 
     const onSubmit = async (data: TwoFactorChallengeInput) => {
-        await execute(() => verifyTwoFactorChallenge(challengeToken, data), {
+        await execute(() => verifyTwoFactorChallenge(challengeToken, data, remember), {
             onSuccess: async () => {
                 const freshUser = await refreshUser();
                 onSuccess?.(localeOrDefault(freshUser?.locale));
@@ -105,6 +108,21 @@ export function TwoFactorChallengeForm({
                     <AlertDescription>{error}</AlertDescription>
                 </Alert>
             )}
+
+            <div className="flex items-center gap-2">
+                <Checkbox
+                    id="remember-device"
+                    checked={remember}
+                    onCheckedChange={(value) => setRemember(value === true)}
+                    disabled={isLoading}
+                />
+                <Label
+                    htmlFor="remember-device"
+                    className="text-sm font-normal text-muted-foreground"
+                >
+                    {t("features.auth.twoFactor.challenge.remember")}
+                </Label>
+            </div>
 
             <Button
                 type="submit"

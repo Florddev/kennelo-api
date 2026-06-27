@@ -21,13 +21,32 @@ import {
 } from "@workspace/ui/components/dialog";
 import { Input } from "@workspace/ui/components/input";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@workspace/ui/components/input-otp";
+import { cn } from "@workspace/ui/lib/utils";
 import { ShieldCheck } from "@solar-icons/react";
 import { useTranslations } from "next-intl";
 import { useAsyncState } from "@/hooks/use-async-state";
 import { useAuth } from "@/features/auth";
 
+type DialogKind = "enable" | "disable" | "regenerate";
+
+type DialogCopy = { title: string; warning: string; confirm: string };
+
 function RecoveryCodes({ codes, onDone }: { codes: string[]; onDone: () => void }) {
     const t = useTranslations();
+
+    const handleCopy = () => {
+        navigator.clipboard.writeText(codes.join("\n")).catch(() => undefined);
+    };
+
+    const handleDownload = () => {
+        const blob = new Blob([codes.join("\n")], { type: "text/plain" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "kennelo-recovery-codes.txt";
+        link.click();
+        URL.revokeObjectURL(url);
+    };
 
     return (
         <Card className="ring-0">
@@ -45,11 +64,130 @@ function RecoveryCodes({ codes, onDone }: { codes: string[]; onDone: () => void 
                         </span>
                     ))}
                 </div>
-                <Button type="button" className="w-fit" onClick={onDone}>
-                    {t("features.auth.twoFactor.setup.done")}
-                </Button>
+                <div className="flex flex-wrap gap-2">
+                    <Button type="button" variant="outline" onClick={handleCopy}>
+                        {t("features.auth.twoFactor.setup.copy")}
+                    </Button>
+                    <Button type="button" variant="outline" onClick={handleDownload}>
+                        {t("features.auth.twoFactor.setup.download")}
+                    </Button>
+                    <Button type="button" onClick={onDone}>
+                        {t("features.auth.twoFactor.setup.done")}
+                    </Button>
+                </div>
             </CardContent>
         </Card>
+    );
+}
+
+function SetupCard({
+    setup,
+    code,
+    setCode,
+    isLoading,
+    onCancel,
+    onConfirm,
+}: {
+    setup: TwoFactorEnableDto;
+    code: string;
+    setCode: (value: string) => void;
+    isLoading: boolean;
+    onCancel: () => void;
+    onConfirm: () => void;
+}) {
+    const t = useTranslations();
+
+    return (
+        <Card className="ring-0">
+            <CardContent className="flex flex-col items-center gap-4 p-6 text-center">
+                <p className="text-sm text-muted-foreground">
+                    {t("features.auth.twoFactor.setup.scanInstruction")}
+                </p>
+                <Image src={setup.qr_svg} alt="" width={200} height={200} unoptimized />
+                <p className="text-xs text-muted-foreground">
+                    {t("features.auth.twoFactor.setup.manualSecret")}
+                </p>
+                <code className="rounded-2xl bg-muted px-3 py-2 font-mono text-sm tracking-widest">
+                    {setup.secret}
+                </code>
+                <p className="text-sm font-medium">
+                    {t("features.auth.twoFactor.setup.enterCode")}
+                </p>
+                <InputOTP maxLength={6} value={code} onChange={setCode} disabled={isLoading}>
+                    <InputOTPGroup>
+                        {[0, 1, 2, 3, 4, 5].map((index) => (
+                            <InputOTPSlot key={index} index={index} className="size-11" />
+                        ))}
+                    </InputOTPGroup>
+                </InputOTP>
+                <div className="flex gap-2">
+                    <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>
+                        {t("common.actions.cancel")}
+                    </Button>
+                    <Button
+                        type="button"
+                        onClick={onConfirm}
+                        disabled={isLoading || code.length !== 6}
+                    >
+                        {t("features.auth.twoFactor.setup.confirm")}
+                    </Button>
+                </div>
+            </CardContent>
+        </Card>
+    );
+}
+
+function PasswordDialog({
+    kind,
+    copy,
+    password,
+    setPassword,
+    isLoading,
+    onClose,
+    onConfirm,
+}: {
+    kind: DialogKind | null;
+    copy: DialogCopy | null;
+    password: string;
+    setPassword: (value: string) => void;
+    isLoading: boolean;
+    onClose: () => void;
+    onConfirm: () => void;
+}) {
+    const t = useTranslations();
+
+    return (
+        <Dialog
+            open={kind !== null}
+            onOpenChange={(open) => {
+                if (!open) {
+                    onClose();
+                }
+            }}
+        >
+            <DialogContent className="max-w-md p-6">
+                <DialogHeader>
+                    <DialogTitle>{copy?.title}</DialogTitle>
+                    <DialogDescription>{copy?.warning}</DialogDescription>
+                </DialogHeader>
+                <Input
+                    type="password"
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                    placeholder={t("common.placeholders.password")}
+                    autoComplete="current-password"
+                    disabled={isLoading}
+                />
+                <Button
+                    type="button"
+                    variant={kind === "disable" ? "destructive" : "default"}
+                    onClick={onConfirm}
+                    disabled={isLoading || password.length === 0}
+                >
+                    {copy?.confirm}
+                </Button>
+            </DialogContent>
+        </Dialog>
     );
 }
 
@@ -60,16 +198,16 @@ export function TwoFactorSection() {
     const [setup, setSetup] = useState<TwoFactorEnableDto | null>(null);
     const [code, setCode] = useState("");
     const [recoveryCodes, setRecoveryCodes] = useState<string[] | null>(null);
-    const [dialog, setDialog] = useState<"disable" | "regenerate" | null>(null);
+    const [dialog, setDialog] = useState<DialogKind | null>(null);
     const [password, setPassword] = useState("");
 
     const enabled = user?.twoFactorEnabled ?? false;
+    const recoveryCount = user?.twoFactorRecoveryCodesCount ?? 0;
+    const lowRecoveryCodes = recoveryCount <= 2;
 
-    const handleEnable = async () => {
-        const result = await execute(() => enableTwoFactor());
-        if (result) {
-            setSetup(result);
-        }
+    const closeDialog = () => {
+        setDialog(null);
+        setPassword("");
     };
 
     const handleConfirm = async () => {
@@ -83,11 +221,19 @@ export function TwoFactorSection() {
     };
 
     const handlePasswordConfirm = async () => {
+        if (dialog === "enable") {
+            const result = await execute(() => enableTwoFactor(password));
+            if (result) {
+                closeDialog();
+                setSetup(result);
+            }
+            return;
+        }
+
         if (dialog === "disable") {
             const ok = await execute(() => disableTwoFactor({ password }).then(() => true));
             if (ok) {
-                setDialog(null);
-                setPassword("");
+                closeDialog();
                 await refreshUser();
             }
             return;
@@ -95,10 +241,28 @@ export function TwoFactorSection() {
 
         const codes = await execute(() => regenerateRecoveryCodes({ password }));
         if (codes) {
-            setDialog(null);
-            setPassword("");
+            closeDialog();
             setRecoveryCodes(codes);
+            await refreshUser();
         }
+    };
+
+    const dialogCopy: Record<DialogKind, DialogCopy> = {
+        enable: {
+            title: t("features.auth.twoFactor.section.enableTitle"),
+            warning: t("features.auth.twoFactor.section.enableWarning"),
+            confirm: t("features.auth.twoFactor.section.enable"),
+        },
+        disable: {
+            title: t("features.auth.twoFactor.disable.title"),
+            warning: t("features.auth.twoFactor.disable.warning"),
+            confirm: t("features.auth.twoFactor.disable.confirm"),
+        },
+        regenerate: {
+            title: t("features.auth.twoFactor.regenerate.title"),
+            warning: t("features.auth.twoFactor.regenerate.warning"),
+            confirm: t("features.auth.twoFactor.regenerate.confirm"),
+        },
     };
 
     if (recoveryCodes) {
@@ -107,50 +271,17 @@ export function TwoFactorSection() {
 
     if (setup) {
         return (
-            <Card className="ring-0">
-                <CardContent className="flex flex-col items-center gap-4 p-6 text-center">
-                    <p className="text-sm text-muted-foreground">
-                        {t("features.auth.twoFactor.setup.scanInstruction")}
-                    </p>
-                    <Image src={setup.qr_svg} alt="" width={200} height={200} unoptimized />
-                    <p className="text-xs text-muted-foreground">
-                        {t("features.auth.twoFactor.setup.manualSecret")}
-                    </p>
-                    <code className="rounded-2xl bg-muted px-3 py-2 font-mono text-sm tracking-widest">
-                        {setup.secret}
-                    </code>
-                    <p className="text-sm font-medium">
-                        {t("features.auth.twoFactor.setup.enterCode")}
-                    </p>
-                    <InputOTP maxLength={6} value={code} onChange={setCode} disabled={isLoading}>
-                        <InputOTPGroup>
-                            {[0, 1, 2, 3, 4, 5].map((index) => (
-                                <InputOTPSlot key={index} index={index} className="size-11" />
-                            ))}
-                        </InputOTPGroup>
-                    </InputOTP>
-                    <div className="flex gap-2">
-                        <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => {
-                                setSetup(null);
-                                setCode("");
-                            }}
-                            disabled={isLoading}
-                        >
-                            {t("common.actions.cancel")}
-                        </Button>
-                        <Button
-                            type="button"
-                            onClick={handleConfirm}
-                            disabled={isLoading || code.length !== 6}
-                        >
-                            {t("features.auth.twoFactor.setup.confirm")}
-                        </Button>
-                    </div>
-                </CardContent>
-            </Card>
+            <SetupCard
+                setup={setup}
+                code={code}
+                setCode={setCode}
+                isLoading={isLoading}
+                onCancel={() => {
+                    setSetup(null);
+                    setCode("");
+                }}
+                onConfirm={handleConfirm}
+            />
         );
     }
 
@@ -172,75 +303,52 @@ export function TwoFactorSection() {
                 </div>
 
                 {enabled ? (
-                    <div className="flex flex-wrap gap-2">
-                        <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => setDialog("regenerate")}
+                    <>
+                        <p
+                            className={cn(
+                                "text-sm",
+                                lowRecoveryCodes ? "text-destructive" : "text-muted-foreground",
+                            )}
                         >
-                            {t("features.auth.twoFactor.regenerate.action")}
-                        </Button>
-                        <Button
-                            type="button"
-                            variant="destructive"
-                            onClick={() => setDialog("disable")}
-                        >
-                            {t("features.auth.twoFactor.disable.action")}
-                        </Button>
-                    </div>
+                            {t("features.auth.twoFactor.recoveryCount", { count: recoveryCount })}
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => setDialog("regenerate")}
+                            >
+                                {t("features.auth.twoFactor.regenerate.action")}
+                            </Button>
+                            <Button
+                                type="button"
+                                variant="destructive"
+                                onClick={() => setDialog("disable")}
+                            >
+                                {t("features.auth.twoFactor.disable.action")}
+                            </Button>
+                        </div>
+                    </>
                 ) : (
                     <Button
                         type="button"
                         className="w-fit"
-                        onClick={handleEnable}
+                        onClick={() => setDialog("enable")}
                         disabled={isLoading}
                     >
                         {t("features.auth.twoFactor.section.enable")}
                     </Button>
                 )}
 
-                <Dialog
-                    open={dialog !== null}
-                    onOpenChange={(open) => {
-                        if (!open) {
-                            setDialog(null);
-                            setPassword("");
-                        }
-                    }}
-                >
-                    <DialogContent className="max-w-md p-6">
-                        <DialogHeader>
-                            <DialogTitle>
-                                {dialog === "disable"
-                                    ? t("features.auth.twoFactor.disable.title")
-                                    : t("features.auth.twoFactor.regenerate.title")}
-                            </DialogTitle>
-                            <DialogDescription>
-                                {dialog === "disable"
-                                    ? t("features.auth.twoFactor.disable.warning")
-                                    : t("features.auth.twoFactor.regenerate.warning")}
-                            </DialogDescription>
-                        </DialogHeader>
-                        <Input
-                            type="password"
-                            value={password}
-                            onChange={(event) => setPassword(event.target.value)}
-                            placeholder={t("common.placeholders.password")}
-                            autoComplete="current-password"
-                            disabled={isLoading}
-                        />
-                        <Button
-                            type="button"
-                            variant={dialog === "disable" ? "destructive" : "default"}
-                            onClick={handlePasswordConfirm}
-                            disabled={isLoading || password.length === 0}
-                        >
-                            {dialog === "disable"
-                                ? t("features.auth.twoFactor.disable.confirm")
-                                : t("features.auth.twoFactor.regenerate.confirm")}
-                        </Button>
-                    </DialogContent>
-                </Dialog>
+                <PasswordDialog
+                    kind={dialog}
+                    copy={dialog ? dialogCopy[dialog] : null}
+                    password={password}
+                    setPassword={setPassword}
+                    isLoading={isLoading}
+                    onClose={closeDialog}
+                    onConfirm={handlePasswordConfirm}
+                />
             </CardContent>
         </Card>
     );

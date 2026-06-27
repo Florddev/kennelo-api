@@ -4,6 +4,7 @@ import { UserRole } from "../types/user-roles.type";
 
 const ACCESS_TOKEN_KEY = "access_token";
 const REFRESH_TOKEN_KEY = "refresh_token";
+const REMEMBER_TOKEN_KEY = "two_factor_remember_token";
 
 let _storage: IStorageService = new LocalStorageService();
 
@@ -33,6 +34,14 @@ export const authService = {
             _storage.set(ACCESS_TOKEN_KEY, accessToken),
             _storage.set(REFRESH_TOKEN_KEY, refreshToken),
         ]);
+    },
+
+    async getRememberToken(): Promise<string | null> {
+        return _storage.get(REMEMBER_TOKEN_KEY);
+    },
+
+    async setRememberToken(token: string): Promise<void> {
+        await _storage.set(REMEMBER_TOKEN_KEY, token);
     },
 
     async isAccessTokenExpired(): Promise<boolean> {

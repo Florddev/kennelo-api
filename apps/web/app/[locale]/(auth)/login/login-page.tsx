@@ -48,7 +48,10 @@ export default function LoginPage() {
                                     onSuccess={handleSuccess}
                                     onTwoFactorRequired={setChallengeToken}
                                 />
-                                <GoogleSignInButton onSuccess={handleSuccess} />
+                                <GoogleSignInButton
+                                    onSuccess={handleSuccess}
+                                    onTwoFactorRequired={setChallengeToken}
+                                />
                             </div>
                         )}
                     </FieldGroup>

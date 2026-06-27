@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Models\User;
 use App\Services\MediaService;
+use App\Services\TwoFactorService;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
@@ -101,6 +102,20 @@ test('google login fails without a token', function () {
 
     $response->assertUnprocessable()
         ->assertJsonValidationErrors(['token']);
+});
+
+test('google login returns a challenge when the user has 2FA enabled', function () {
+    $user = User::factory()->create(['email' => 'ada@example.com', 'google_id' => 'google-123']);
+    $user->two_factor_secret = app(TwoFactorService::class)->generateSecret();
+    $user->two_factor_confirmed_at = now();
+    $user->save();
+
+    fakeGoogleUser('google-123', 'ada@example.com');
+
+    $this->post('/api/login/google', ['token' => 'google-access-token'])
+        ->assertOk()
+        ->assertJsonPath('two_factor', true)
+        ->assertJsonStructure(['challenge_token']);
 });
 
 test('google login imports the google profile picture into media', function () {

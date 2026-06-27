@@ -60,4 +60,28 @@ class TwoFactorService
 
         return true;
     }
+
+    public function rememberDevice(User $user, int $days = 30): string
+    {
+        $token = Str::random(64);
+
+        $user->rememberedDevices()->create([
+            'token_hash' => hash('sha256', $token),
+            'expires_at' => now()->addDays($days),
+        ]);
+
+        return $token;
+    }
+
+    public function deviceIsRemembered(User $user, ?string $token): bool
+    {
+        if ($token === null || $token === '') {
+            return false;
+        }
+
+        return $user->rememberedDevices()
+            ->where('token_hash', hash('sha256', $token))
+            ->where('expires_at', '>', now())
+            ->exists();
+    }
 }

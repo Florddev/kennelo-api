@@ -145,6 +145,11 @@ class User extends Authenticatable implements HasMedia, JWTSubject, MustVerifyEm
         return $this->hasMany(Booking::class);
     }
 
+    public function rememberedDevices(): HasMany
+    {
+        return $this->hasMany(TwoFactorRememberedDevice::class);
+    }
+
     public function getJWTIdentifier(): mixed
     {
         return $this->getKey();

@@ -3,7 +3,9 @@
 declare(strict_types=1);
 
 use App\Models\User;
+use App\Notifications\TwoFactorStatusNotification;
 use App\Services\TwoFactorService;
+use Illuminate\Support\Facades\Notification;
 use PragmaRX\Google2FAQRCode\Google2FA;
 
 function enableTwoFactor(User $user): string
@@ -99,12 +101,22 @@ test('a user can enable two-factor authentication', function () {
     $user = User::factory()->create();
 
     $this->withHeaders(asUser($user))
-        ->postJson('/api/user/two-factor')
+        ->postJson('/api/user/two-factor', ['password' => 'password'])
         ->assertOk()
         ->assertJsonStructure(['qr_svg', 'secret']);
 
     expect($user->fresh()->two_factor_secret)->not->toBeNull();
     expect($user->fresh()->two_factor_confirmed_at)->toBeNull();
+});
+
+test('enabling fails with a wrong password', function () {
+    $user = User::factory()->create();
+
+    $this->withHeaders(asUser($user))
+        ->postJson('/api/user/two-factor', ['password' => 'wrong-password'])
+        ->assertUnprocessable();
+
+    expect($user->fresh()->two_factor_secret)->toBeNull();
 });
 
 test('a user can confirm two-factor authentication', function () {
@@ -159,4 +171,102 @@ test('the user resource exposes two_factor_enabled for self', function () {
         ->getJson('/api/user')
         ->assertOk()
         ->assertJsonPath('data.two_factor_enabled', true);
+});
+
+test('the user resource exposes the remaining recovery codes count', function () {
+    $user = User::factory()->create();
+    enableTwoFactor($user);
+
+    $this->withHeaders(asUser($user))
+        ->getJson('/api/user')
+        ->assertOk()
+        ->assertJsonPath('data.two_factor_recovery_codes_count', 2);
+});
+
+test('a challenge with remember registers the device and returns a remember token', function () {
+    $user = User::factory()->create();
+    $secret = enableTwoFactor($user);
+
+    $challenge = $this->postJson('/api/login', ['email' => $user->email, 'password' => 'password'])
+        ->json('challenge_token');
+
+    $response = $this->postJson('/api/login/two-factor-challenge', [
+        'challenge_token' => $challenge,
+        'code' => currentOtp($secret),
+        'remember' => true,
+    ])->assertOk();
+
+    expect($response->json('remember_token'))->not->toBeNull();
+    expect($user->rememberedDevices()->count())->toBe(1);
+});
+
+test('a remembered device skips the challenge on login', function () {
+    $user = User::factory()->create();
+    enableTwoFactor($user);
+
+    $rememberToken = app(TwoFactorService::class)->rememberDevice($user);
+
+    $this->postJson('/api/login', [
+        'email' => $user->email,
+        'password' => 'password',
+        'remember_token' => $rememberToken,
+    ])
+        ->assertOk()
+        ->assertJsonStructure(['access_token', 'refresh_token']);
+});
+
+test('an unknown remember token still triggers the challenge', function () {
+    $user = User::factory()->create();
+    enableTwoFactor($user);
+
+    $this->postJson('/api/login', [
+        'email' => $user->email,
+        'password' => 'password',
+        'remember_token' => 'not-a-real-token',
+    ])
+        ->assertOk()
+        ->assertJsonPath('two_factor', true);
+});
+
+test('disabling two-factor clears remembered devices', function () {
+    $user = User::factory()->create();
+    enableTwoFactor($user);
+    $user->rememberedDevices()->create([
+        'token_hash' => hash('sha256', 'token'),
+        'expires_at' => now()->addDays(30),
+    ]);
+
+    $this->withHeaders(asUser($user))
+        ->deleteJson('/api/user/two-factor', ['password' => 'password'])
+        ->assertNoContent();
+
+    expect($user->rememberedDevices()->count())->toBe(0);
+});
+
+test('confirming two-factor notifies the user', function () {
+    Notification::fake();
+
+    $user = User::factory()->create();
+    $secret = app(TwoFactorService::class)->generateSecret();
+    $user->two_factor_secret = $secret;
+    $user->save();
+
+    $this->withHeaders(asUser($user))
+        ->postJson('/api/user/two-factor/confirm', ['code' => currentOtp($secret)])
+        ->assertOk();
+
+    Notification::assertSentTo($user, TwoFactorStatusNotification::class);
+});
+
+test('disabling two-factor notifies the user', function () {
+    Notification::fake();
+
+    $user = User::factory()->create();
+    enableTwoFactor($user);
+
+    $this->withHeaders(asUser($user))
+        ->deleteJson('/api/user/two-factor', ['password' => 'password'])
+        ->assertNoContent();
+
+    Notification::assertSentTo($user, TwoFactorStatusNotification::class);
 });

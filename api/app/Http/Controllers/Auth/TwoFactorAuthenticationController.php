@@ -7,9 +7,10 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\ConfirmTwoFactorRequest;
 use App\Http\Requests\Auth\DisableTwoFactorRequest;
+use App\Http\Requests\Auth\EnableTwoFactorRequest;
+use App\Notifications\TwoFactorStatusNotification;
 use App\Services\TwoFactorService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -24,12 +25,16 @@ class TwoFactorAuthenticationController extends Controller
     /**
      * Enable two-factor authentication
      */
-    public function store(Request $request): JsonResponse
+    public function store(EnableTwoFactorRequest $request): JsonResponse
     {
         $user = $request->user();
 
         if ($user->two_factor_confirmed_at !== null) {
             abort(409, 'Two-factor authentication is already enabled.');
+        }
+
+        if (! Hash::check((string) $request->validated('password'), (string) $user->password)) {
+            throw ValidationException::withMessages(['password' => 'The provided password is incorrect.']);
         }
 
         $secret = $this->twoFactorService->generateSecret();
@@ -64,6 +69,8 @@ class TwoFactorAuthenticationController extends Controller
         $user->two_factor_confirmed_at = now();
         $user->save();
 
+        $user->notify(new TwoFactorStatusNotification(true));
+
         return response()->json(['recovery_codes' => $recoveryCodes]);
     }
 
@@ -82,6 +89,10 @@ class TwoFactorAuthenticationController extends Controller
         $user->two_factor_recovery_codes = null;
         $user->two_factor_confirmed_at = null;
         $user->save();
+
+        $user->rememberedDevices()->delete();
+
+        $user->notify(new TwoFactorStatusNotification(false));
 
         return response()->noContent();
     }

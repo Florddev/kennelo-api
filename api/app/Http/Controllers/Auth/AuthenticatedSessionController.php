@@ -50,7 +50,8 @@ class AuthenticatedSessionController extends Controller
 
         $user->load('roles');
 
-        if ($user->two_factor_confirmed_at !== null) {
+        if ($user->two_factor_confirmed_at !== null
+            && ! $this->twoFactorService->deviceIsRemembered($user, $request->string('remember_token')->toString())) {
             return response()->json([
                 'two_factor' => true,
                 'challenge_token' => $this->jwtService->generateChallengeToken($user),
@@ -77,15 +78,22 @@ class AuthenticatedSessionController extends Controller
             abort(401, 'Invalid or expired challenge token.');
         }
 
-        $code = (string) $request->input('code');
+        $code = trim((string) $request->input('code'));
 
         $verified = $code !== ''
             ? $this->twoFactorService->verify((string) $user->two_factor_secret, $code)
-            : $this->twoFactorService->consumeRecoveryCode($user, (string) $request->input('recovery_code'));
+            : $this->twoFactorService->consumeRecoveryCode(
+                $user,
+                strtoupper(trim((string) $request->input('recovery_code'))),
+            );
 
         if (! $verified) {
             throw ValidationException::withMessages(['code' => 'The provided two-factor code is invalid.']);
         }
+
+        $rememberToken = $request->boolean('remember')
+            ? $this->twoFactorService->rememberDevice($user)
+            : null;
 
         $user->load('roles');
 
@@ -94,8 +102,13 @@ class AuthenticatedSessionController extends Controller
 
         $this->jwtService->blacklistToken((string) $request->input('challenge_token'));
 
-        return (new AuthTokenResource($user, $accessToken, $refreshToken))
-            ->response();
+        $resource = new AuthTokenResource($user, $accessToken, $refreshToken);
+
+        if ($rememberToken !== null) {
+            $resource->additional(['remember_token' => $rememberToken]);
+        }
+
+        return $resource->response();
     }
 
     /**

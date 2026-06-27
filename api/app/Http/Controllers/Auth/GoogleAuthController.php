@@ -10,6 +10,7 @@ use App\Http\Resources\AuthTokenResource;
 use App\Models\User;
 use App\Services\JWTService;
 use App\Services\MediaService;
+use App\Services\TwoFactorService;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Http;
@@ -27,12 +28,15 @@ class GoogleAuthController extends Controller
      */
     protected JWTService $jwtService;
 
+    protected TwoFactorService $twoFactorService;
+
     /**
      * Create a new controller instance.
      */
-    public function __construct(JWTService $jwtService)
+    public function __construct(JWTService $jwtService, TwoFactorService $twoFactorService)
     {
         $this->jwtService = $jwtService;
+        $this->twoFactorService = $twoFactorService;
     }
 
     /**
@@ -104,6 +108,14 @@ class GoogleAuthController extends Controller
         }
 
         $user->load('roles');
+
+        if ($user->two_factor_confirmed_at !== null
+            && ! $this->twoFactorService->deviceIsRemembered($user, $request->string('remember_token')->toString())) {
+            return response()->json([
+                'two_factor' => true,
+                'challenge_token' => $this->jwtService->generateChallengeToken($user),
+            ]);
+        }
 
         $accessToken = $this->jwtService->generateAccessToken($user);
         $refreshToken = $this->jwtService->generateRefreshToken($user);

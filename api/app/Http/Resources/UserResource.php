@@ -31,6 +31,9 @@ class UserResource extends JsonResource
                 ? human_date($this->email_verified_at)
                 : null,
             'two_factor_enabled' => $isSelf ? ($this->two_factor_confirmed_at !== null) : false,
+            'two_factor_recovery_codes_count' => $isSelf && $this->two_factor_confirmed_at !== null
+                ? count($this->two_factor_recovery_codes ?? [])
+                : 0,
             'status' => $this->when(
                 auth()->user()?->hasRole('admin'),
                 fn () => $this->status->value

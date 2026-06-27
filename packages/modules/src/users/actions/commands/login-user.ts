@@ -10,9 +10,12 @@ export type TwoFactorRequired = {
 };
 
 export async function loginUser(input: LoginUserInput): Promise<AuthModel | TwoFactorRequired> {
+    const rememberToken = await authService.getRememberToken();
+
     const response = await api.post<AuthResponseDto>("/login", {
         email: input.email,
         password: input.password,
+        remember_token: rememberToken ?? undefined,
     });
 
     if (response.status !== 200) {

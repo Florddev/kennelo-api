@@ -31,7 +31,13 @@ function GoogleIcon() {
     );
 }
 
-export function GoogleSignInButton({ onSuccess }: { onSuccess?: (locale: Locale) => void }) {
+export function GoogleSignInButton({
+    onSuccess,
+    onTwoFactorRequired,
+}: {
+    onSuccess?: (locale: Locale) => void;
+    onTwoFactorRequired?: (challengeToken: string) => void;
+}) {
     const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
     const locale = useLocale();
     const t = useTranslations();
@@ -42,12 +48,19 @@ export function GoogleSignInButton({ onSuccess }: { onSuccess?: (locale: Locale)
         flow: "implicit",
         scope: "openid email profile",
         onSuccess: async (response) => {
-            await execute(() => loginWithGoogle(response.access_token, locale), {
-                onSuccess: async () => {
-                    const freshUser = await refreshUser();
-                    onSuccess?.(localeOrDefault(freshUser?.locale));
-                },
-            });
+            const result = await execute(() => loginWithGoogle(response.access_token, locale));
+
+            if (!result) {
+                return;
+            }
+
+            if ("twoFactor" in result) {
+                onTwoFactorRequired?.(result.challengeToken);
+                return;
+            }
+
+            const freshUser = await refreshUser();
+            onSuccess?.(localeOrDefault(freshUser?.locale));
         },
     });
 

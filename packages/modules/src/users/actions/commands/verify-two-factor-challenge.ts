@@ -7,11 +7,13 @@ import { authService } from "../../services/auth.service";
 export async function verifyTwoFactorChallenge(
     challengeToken: string,
     input: TwoFactorChallengeInput,
+    remember = false,
 ): Promise<AuthModel> {
     const response = await api.post<AuthResponseDto>("/login/two-factor-challenge", {
         challenge_token: challengeToken,
         code: input.code,
         recovery_code: input.recoveryCode,
+        remember,
     });
 
     if (response.status !== 200) {
@@ -25,6 +27,10 @@ export async function verifyTwoFactorChallenge(
     const authModel = AuthModel.from(response.data);
 
     await authService.setTokens(authModel.accessToken, authModel.refreshToken);
+
+    if (response.data.remember_token) {
+        await authService.setRememberToken(response.data.remember_token);
+    }
 
     return authModel;
 }
