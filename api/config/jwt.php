@@ -16,6 +16,8 @@ return [
 
     'ttl' => (int) env('JWT_TTL', 60),
 
+    'two_factor_challenge_ttl' => (int) env('JWT_TWO_FACTOR_CHALLENGE_TTL', 5),
+
     'refresh_token_ttl' => (int) env('JWT_REFRESH_TOKEN_TTL', 43200),
 
     'refresh_ttl' => (int) env('JWT_REFRESH_TTL', 43200),

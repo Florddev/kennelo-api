@@ -252,6 +252,11 @@ type MyProfilePreferencesNotificationParams = {
     search_params?: Record<string, string | number | boolean>;
 };
 
+type MyProfileTwoFactorParams = {
+    locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
 function RootPage(params?: RootPageParams): string {
     return buildRoute("/", params);
 }
@@ -436,6 +441,10 @@ function MyProfilePreferencesNotification(params?: MyProfilePreferencesNotificat
     return buildRoute("/[locale]/settings/preferences-notification", params);
 }
 
+function MyProfileTwoFactor(params?: MyProfileTwoFactorParams): string {
+    return buildRoute("/[locale]/settings/two-factor", params);
+}
+
 export const routes = {
     RootPage,
     ForgotPassword,
@@ -483,6 +492,7 @@ export const routes = {
     PaymentMethodsPage,
     MyProfileEmailPreferences,
     MyProfilePreferencesNotification,
+    MyProfileTwoFactor,
 } as const;
 
 export type RouteName = keyof typeof routes;

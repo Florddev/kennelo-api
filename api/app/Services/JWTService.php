@@ -124,4 +124,30 @@ class JWTService
 
         return ['access_token' => $this->generateAccessToken($user)];
     }
+
+    public function generateChallengeToken(User $user): string
+    {
+        $this->jwt->factory()->setTTL((int) config('jwt.two_factor_challenge_ttl', 5));
+        $token = $this->jwt->claims(['type' => '2fa'])->fromUser($user);
+        $this->jwt->factory()->setTTL((int) config('jwt.ttl'));
+
+        return $token;
+    }
+
+    public function validateChallengeToken(string $token): User
+    {
+        $payload = $this->validateToken($token);
+
+        if (! isset($payload->type) || $payload->type !== '2fa') {
+            throw new \Exception('Invalid token type');
+        }
+
+        $user = User::find($payload->sub);
+
+        if (! $user) {
+            throw new \Exception('User not found');
+        }
+
+        return $user;
+    }
 }

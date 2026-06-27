@@ -15,7 +15,13 @@ import { useAuth } from "@/features/auth/hooks/use-auth";
 import { localeOrDefault, type Locale } from "@/dictionaries";
 import { Letter, LockKeyholeMinimalistic } from "@solar-icons/react";
 
-export function LoginForm({ onSuccess }: { onSuccess?: (locale: Locale) => void }) {
+export function LoginForm({
+    onSuccess,
+    onTwoFactorRequired,
+}: {
+    onSuccess?: (locale: Locale) => void;
+    onTwoFactorRequired?: (challengeToken: string) => void;
+}) {
     const { error, isLoading, execute } = useAsyncState();
     const { refreshUser } = useAuth();
     const { routes } = useNavigation();
@@ -30,13 +36,21 @@ export function LoginForm({ onSuccess }: { onSuccess?: (locale: Locale) => void 
     });
 
     const onSubmit = async (data: LoginUserInput) => {
-        await execute(() => loginUser(data), {
+        const result = await execute(() => loginUser(data), {
             setFieldError: setError,
-            onSuccess: async () => {
-                const freshUser = await refreshUser();
-                onSuccess?.(localeOrDefault(freshUser?.locale));
-            },
         });
+
+        if (!result) {
+            return;
+        }
+
+        if ("twoFactor" in result) {
+            onTwoFactorRequired?.(result.challengeToken);
+            return;
+        }
+
+        const freshUser = await refreshUser();
+        onSuccess?.(localeOrDefault(freshUser?.locale));
     };
 
     return (

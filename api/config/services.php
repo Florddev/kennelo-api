@@ -50,4 +50,8 @@ return [
         'currency' => env('STRIPE_CURRENCY', 'eur'),
     ],
 
+    'two_factor' => [
+        'issuer' => env('APP_NAME', 'Kennelo'),
+    ],
+
 ];

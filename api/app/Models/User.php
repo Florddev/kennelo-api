@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Carbon;
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -24,6 +25,9 @@ use Spatie\Permission\Traits\HasRoles;
 
 /**
  * @property UserStatusEnum $status
+ * @property string|null $two_factor_secret
+ * @property array<int, string>|null $two_factor_recovery_codes
+ * @property Carbon|null $two_factor_confirmed_at
  */
 class User extends Authenticatable implements HasMedia, JWTSubject, MustVerifyEmail
 {
@@ -52,6 +56,8 @@ class User extends Authenticatable implements HasMedia, JWTSubject, MustVerifyEm
     protected $hidden = [
         'password',
         'remember_token',
+        'two_factor_secret',
+        'two_factor_recovery_codes',
     ];
 
     protected function casts(): array
@@ -64,6 +70,9 @@ class User extends Authenticatable implements HasMedia, JWTSubject, MustVerifyEm
             'stripe_charges_enabled' => 'boolean',
             'stripe_payouts_enabled' => 'boolean',
             'stripe_onboarding_completed' => 'boolean',
+            'two_factor_secret' => 'encrypted',
+            'two_factor_recovery_codes' => 'encrypted:array',
+            'two_factor_confirmed_at' => 'datetime',
         ];
     }
 

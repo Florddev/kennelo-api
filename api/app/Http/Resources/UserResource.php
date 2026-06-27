@@ -30,6 +30,7 @@ class UserResource extends JsonResource
             'email_verified_at' => $this->email_verified_at
                 ? human_date($this->email_verified_at)
                 : null,
+            'two_factor_enabled' => $isSelf ? ($this->two_factor_confirmed_at !== null) : false,
             'status' => $this->when(
                 auth()->user()?->hasRole('admin'),
                 fn () => $this->status->value

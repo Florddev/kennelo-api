@@ -11,6 +11,7 @@ use App\Http\Controllers\Activity\ActivityImageController;
 use App\Http\Controllers\Activity\ActivityRoleController;
 use App\Http\Controllers\Activity\CollaboratorInvitationController;
 use App\Http\Controllers\Activity\StripeConnectController;
+use App\Http\Controllers\Auth\TwoFactorAuthenticationController;
 use App\Http\Controllers\Booking\ActivityBookingController;
 use App\Http\Controllers\Booking\BookingController;
 use App\Http\Controllers\Conversation\ActivityConversationController;
@@ -171,6 +172,11 @@ Route::middleware(['auth.jwt'])->group(function () {
     Route::get('/user/identity-verification', [UserController::class, 'getIdentityVerification']);
     Route::post('/user/identity-verification', [UserController::class, 'submitIdentityVerification']);
     Route::delete('/user', [UserController::class, 'destroy']);
+
+    Route::post('/user/two-factor', [TwoFactorAuthenticationController::class, 'store']);
+    Route::post('/user/two-factor/confirm', [TwoFactorAuthenticationController::class, 'confirm']);
+    Route::delete('/user/two-factor', [TwoFactorAuthenticationController::class, 'destroy']);
+    Route::post('/user/two-factor/recovery-codes', [TwoFactorAuthenticationController::class, 'recoveryCodes']);
 
     Route::get('/me/payment-methods', [PaymentMethodController::class, 'index']);
     Route::post('/me/payment-methods/setup-intent', [PaymentMethodController::class, 'setupIntent']);

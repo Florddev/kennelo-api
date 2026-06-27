@@ -12,6 +12,7 @@ export type UserDto = {
     locale: string;
     address: AddressDto | null;
     email_verified_at: string | null;
+    two_factor_enabled?: boolean;
     roles: string[];
     created_at: string;
     updated_at: string;
