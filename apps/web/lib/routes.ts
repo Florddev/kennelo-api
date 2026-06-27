@@ -8,12 +8,27 @@ type RootPageParams = {
     search_params?: Record<string, string | number | boolean>;
 };
 
+type ForgotPasswordParams = {
+    locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
 type LoginParams = {
     locale?: string | number;
     search_params?: Record<string, string | number | boolean>;
 };
 
 type RegisterParams = {
+    locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type ResetPasswordParams = {
+    locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type VerifyEmailParams = {
     locale?: string | number;
     search_params?: Record<string, string | number | boolean>;
 };
@@ -241,12 +256,24 @@ function RootPage(params?: RootPageParams): string {
     return buildRoute("/", params);
 }
 
+function ForgotPassword(params?: ForgotPasswordParams): string {
+    return buildRoute("/[locale]/forgot-password", params);
+}
+
 function Login(params?: LoginParams): string {
     return buildRoute("/[locale]/login", params);
 }
 
 function Register(params?: RegisterParams): string {
     return buildRoute("/[locale]/register", params);
+}
+
+function ResetPassword(params?: ResetPasswordParams): string {
+    return buildRoute("/[locale]/reset-password", params);
+}
+
+function VerifyEmail(params?: VerifyEmailParams): string {
+    return buildRoute("/[locale]/verify-email", params);
 }
 
 function Home(params?: HomeParams): string {
@@ -411,8 +438,11 @@ function MyProfilePreferencesNotification(params?: MyProfilePreferencesNotificat
 
 export const routes = {
     RootPage,
+    ForgotPassword,
     Login,
     Register,
+    ResetPassword,
+    VerifyEmail,
     Home,
     HostingCalendar,
     MyActivities,
