@@ -15,8 +15,6 @@ class EmailVerificationNotificationController extends Controller
 {
     /**
      * Resend verification email
-     *
-     * @unauthenticated
      */
     public function store(Request $request): JsonResponse
     {

@@ -64,7 +64,7 @@ class AppServiceProvider extends ServiceProvider
         VerifyEmail::createUrlUsing(function (object $notifiable) {
             $signedUrl = URL::temporarySignedRoute(
                 'verification.verify',
-                now()->addMinutes((int) config('auth.verification.expire', 60)),
+                now()->addMinutes((int) config('auth.verification.expire')),
                 ['id' => $notifiable->getKey(), 'hash' => sha1($notifiable->getEmailForVerification())]
             );
 
