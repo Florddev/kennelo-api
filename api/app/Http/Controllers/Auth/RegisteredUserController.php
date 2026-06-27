@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\AuthTokenResource;
 use App\Models\User;
 use App\Services\JWTService;
 use Illuminate\Auth\Events\Registered;
@@ -68,22 +69,8 @@ class RegisteredUserController extends Controller
         $accessToken = $this->jwtService->generateAccessToken($user);
         $refreshToken = $this->jwtService->generateRefreshToken($user);
 
-        return response()->json([
-            'access_token' => $accessToken,
-            'refresh_token' => $refreshToken,
-            'token_type' => 'Bearer',
-            'expires_in' => config('jwt.ttl') * 60,
-            'user' => [
-                'id' => $user->id,
-                'first_name' => $user->first_name,
-                'last_name' => $user->last_name,
-                'email' => $user->email,
-                'phone' => $user->phone,
-                'locale' => $user->locale,
-                'is_id_verified' => $user->is_id_verified,
-                'email_verified_at' => $user->email_verified_at,
-                'roles' => $user->roles->pluck('name'),
-            ],
-        ], 201);
+        return (new AuthTokenResource($user, $accessToken, $refreshToken))
+            ->response()
+            ->setStatusCode(201);
     }
 }
