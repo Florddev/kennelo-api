@@ -33,7 +33,9 @@
         "today": "اليوم",
         "calendar": "التقويم",
         "activity": "النشاط",
-        "messages": "الرسائل"
+        "messages": "الرسائل",
+        "scan": "المسح"
     },
-    "overview": "ملخص"
+    "overview": "ملخص",
+    "scanners": "أجهزة المسح"
 }

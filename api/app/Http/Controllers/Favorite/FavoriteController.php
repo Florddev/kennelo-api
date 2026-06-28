@@ -37,7 +37,7 @@ class FavoriteController extends Controller
 
     public function store(StoreFavoriteRequest $request): JsonResponse
     {
-        $activity = Activity::findOrFail($request->validated('activity_id'));
+        $activity = Activity::whereManagerVerified()->findOrFail($request->validated('activity_id'));
 
         $this->favoriteService->add($request->user(), $activity);
 

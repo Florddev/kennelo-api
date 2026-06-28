@@ -33,7 +33,9 @@
         "today": "Today",
         "calendar": "Calendar",
         "activity": "Activity",
-        "messages": "Messages"
+        "messages": "Messages",
+        "scan": "Scan"
     },
-    "overview": "Overview"
+    "overview": "Overview",
+    "scanners": "My scanners"
 }

@@ -1,0 +1,61 @@
+{
+    "title": "Scan en direct",
+    "description": "Scannez une puce et consultez instantanément l'animal et sa réservation.",
+    "notification": {
+        "foundTitle": "Animal scanné",
+        "notFoundTitle": "Puce inconnue scannée",
+        "view": "Voir"
+    },
+    "waiting": {
+        "title": "En attente d'un scan",
+        "description": "Scannez une puce avec l'un de vos scanners et le profil de l'animal s'ouvrira automatiquement ici.",
+        "listening": "À l'écoute"
+    },
+    "history": {
+        "title": "Historique des scans",
+        "description": "Tous les scans effectués avec vos scanners.",
+        "empty": "Aucun scan pour le moment",
+        "notFound": "Puce inconnue",
+        "via": "via {scanner}"
+    },
+    "detail": {
+        "back": "Retour au scan",
+        "scannedChip": "Puce scannée",
+        "owner": "Propriétaire",
+        "contact": "Contacter",
+        "noOwner": "Aucune information sur le propriétaire.",
+        "tabs": {
+            "stay": "Séjour",
+            "pet": "Animal",
+            "owner": "Propriétaire"
+        }
+    },
+    "currentBooking": {
+        "title": "Réservation en cours",
+        "none": "Aucune réservation en cours pour cet animal dans vos activités.",
+        "activity": "Activité",
+        "dates": "Dates",
+        "nights": "{count, plural, =1 {# nuit} other {# nuits}}",
+        "status": "Statut",
+        "pets": "Animaux",
+        "specialRequests": "Demandes particulières"
+    },
+    "pastBookings": {
+        "title": "Réservations précédentes",
+        "empty": "Aucune réservation précédente dans vos activités.",
+        "count": "{count, plural, =1 {# séjour} other {# séjours}}"
+    },
+    "unknown": {
+        "title": "Puce non reconnue",
+        "description": "Aucun animal n'est associé à ce numéro de puce. Attribuez-la à un animal actuellement en garde.",
+        "chipLabel": "Numéro de puce scannée",
+        "inCareTitle": "Animaux actuellement en garde",
+        "inCareEmpty": "Aucun animal n'est actuellement en garde.",
+        "assign": "Attribuer cette puce",
+        "assigning": "Attribution",
+        "assignSuccess": "Puce attribuée avec succès",
+        "alreadyHasChip": "Déjà pucé",
+        "ownerLabel": "Propriétaire",
+        "activityLabel": "Activité"
+    }
+}

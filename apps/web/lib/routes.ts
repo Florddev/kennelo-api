@@ -8,12 +8,27 @@ type RootPageParams = {
     search_params?: Record<string, string | number | boolean>;
 };
 
+type ForgotPasswordParams = {
+    locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
 type LoginParams = {
     locale?: string | number;
     search_params?: Record<string, string | number | boolean>;
 };
 
 type RegisterParams = {
+    locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type ResetPasswordParams = {
+    locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type VerifyEmailParams = {
     locale?: string | number;
     search_params?: Record<string, string | number | boolean>;
 };
@@ -108,6 +123,17 @@ type HostingNowParams = {
     search_params?: Record<string, string | number | boolean>;
 };
 
+type HostingScanParams = {
+    locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type HostingScanResultParams = {
+    locale?: string | number;
+    microchip: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
 type BecomeHostParams = {
     locale?: string | number;
     search_params?: Record<string, string | number | boolean>;
@@ -115,7 +141,7 @@ type BecomeHostParams = {
 
 type BookingDetailParams = {
     locale?: string | number;
-    id: string | number;
+    id: string;
     search_params?: Record<string, string | number | boolean>;
 };
 
@@ -156,6 +182,11 @@ type NotificationsParams = {
     search_params?: Record<string, string | number | boolean>;
 };
 
+type LivePetParams = {
+    locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
 type NewPetParams = {
     locale?: string | number;
     search_params?: Record<string, string | number | boolean>;
@@ -180,7 +211,7 @@ type PetEditHealthParams = {
 
 type PetEditPageParams = {
     locale?: string | number;
-    id: string | number;
+    id: string;
     search_params?: Record<string, string | number | boolean>;
 };
 
@@ -237,8 +268,17 @@ type MyProfilePreferencesNotificationParams = {
     search_params?: Record<string, string | number | boolean>;
 };
 
+type SettingsScannersParams = {
+    locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
 function RootPage(params?: RootPageParams): string {
     return buildRoute("/", params);
+}
+
+function ForgotPassword(params?: ForgotPasswordParams): string {
+    return buildRoute("/[locale]/forgot-password", params);
 }
 
 function Login(params?: LoginParams): string {
@@ -247,6 +287,14 @@ function Login(params?: LoginParams): string {
 
 function Register(params?: RegisterParams): string {
     return buildRoute("/[locale]/register", params);
+}
+
+function ResetPassword(params?: ResetPasswordParams): string {
+    return buildRoute("/[locale]/reset-password", params);
+}
+
+function VerifyEmail(params?: VerifyEmailParams): string {
+    return buildRoute("/[locale]/verify-email", params);
 }
 
 function Home(params?: HomeParams): string {
@@ -313,6 +361,14 @@ function HostingNow(params?: HostingNowParams): string {
     return buildRoute("/[locale]/hosting/now", params);
 }
 
+function HostingScan(params?: HostingScanParams): string {
+    return buildRoute("/[locale]/hosting/scan", params);
+}
+
+function HostingScanResult(params: HostingScanResultParams): string {
+    return buildRoute("/[locale]/hosting/scan/[microchip]", params);
+}
+
 function BecomeHost(params?: BecomeHostParams): string {
     return buildRoute("/[locale]/become-host", params);
 }
@@ -347,6 +403,10 @@ function Messages(params?: MessagesParams): string {
 
 function Notifications(params?: NotificationsParams): string {
     return buildRoute("/[locale]/notifications", params);
+}
+
+function LivePet(params?: LivePetParams): string {
+    return buildRoute("/[locale]/pets/live", params);
 }
 
 function NewPet(params?: NewPetParams): string {
@@ -409,10 +469,17 @@ function MyProfilePreferencesNotification(params?: MyProfilePreferencesNotificat
     return buildRoute("/[locale]/settings/preferences-notification", params);
 }
 
+function SettingsScanners(params?: SettingsScannersParams): string {
+    return buildRoute("/[locale]/settings/scanners", params);
+}
+
 export const routes = {
     RootPage,
+    ForgotPassword,
     Login,
     Register,
+    ResetPassword,
+    VerifyEmail,
     Home,
     HostingCalendar,
     MyActivities,
@@ -429,6 +496,8 @@ export const routes = {
     ActivityPayment,
     HostingMessages,
     HostingNow,
+    HostingScan,
+    HostingScanResult,
     BecomeHost,
     BookingDetail,
     Explore,
@@ -438,6 +507,7 @@ export const routes = {
     HostDetail,
     Messages,
     Notifications,
+    LivePet,
     NewPet,
     MyPets,
     PetEditGeneral,
@@ -453,6 +523,7 @@ export const routes = {
     PaymentMethodsPage,
     MyProfileEmailPreferences,
     MyProfilePreferencesNotification,
+    SettingsScanners,
 } as const;
 
 export type RouteName = keyof typeof routes;

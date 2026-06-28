@@ -1,0 +1,61 @@
+{
+    "title": "Live scan",
+    "description": "Scan a microchip and instantly view the pet and its stay.",
+    "notification": {
+        "foundTitle": "Pet scanned",
+        "notFoundTitle": "Unknown chip scanned",
+        "view": "View"
+    },
+    "waiting": {
+        "title": "Waiting for a scan",
+        "description": "Scan a microchip with one of your scanners and the pet profile will open automatically here.",
+        "listening": "Listening"
+    },
+    "history": {
+        "title": "Scan history",
+        "description": "Every scan made with your scanners.",
+        "empty": "No scans yet",
+        "notFound": "Unknown chip",
+        "via": "via {scanner}"
+    },
+    "detail": {
+        "back": "Back to scan",
+        "scannedChip": "Scanned chip",
+        "owner": "Owner",
+        "contact": "Contact",
+        "noOwner": "No owner information available.",
+        "tabs": {
+            "stay": "Stay",
+            "pet": "Pet",
+            "owner": "Owner"
+        }
+    },
+    "currentBooking": {
+        "title": "Current stay",
+        "none": "No ongoing stay for this pet in your activities.",
+        "activity": "Activity",
+        "dates": "Dates",
+        "nights": "{count, plural, =1 {# night} other {# nights}}",
+        "status": "Status",
+        "pets": "Pets",
+        "specialRequests": "Special requests"
+    },
+    "pastBookings": {
+        "title": "Previous stays",
+        "empty": "No previous stay in your activities.",
+        "count": "{count, plural, =1 {# stay} other {# stays}}"
+    },
+    "unknown": {
+        "title": "Unrecognized chip",
+        "description": "No pet is linked to this microchip number. Assign it to a pet currently in your care.",
+        "chipLabel": "Scanned chip number",
+        "inCareTitle": "Pets currently in your care",
+        "inCareEmpty": "No pet is currently in your care.",
+        "assign": "Assign this chip",
+        "assigning": "Assigning",
+        "assignSuccess": "Chip assigned successfully",
+        "alreadyHasChip": "Already chipped",
+        "ownerLabel": "Owner",
+        "activityLabel": "Activity"
+    }
+}
