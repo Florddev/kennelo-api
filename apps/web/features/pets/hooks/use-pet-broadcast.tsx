@@ -49,6 +49,7 @@ export function usePetBroadcast() {
                     ? PetModel.from({
                           ...event.pet,
                           user_id: "",
+                          animal_breed_id: null,
                           adoption_date: null,
                           health_notes: null,
                       })
