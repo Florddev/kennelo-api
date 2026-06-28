@@ -35,6 +35,7 @@ class User extends Authenticatable implements HasMedia, JWTSubject, MustVerifyEm
         'first_name',
         'last_name',
         'email',
+        'google_id',
         'phone',
         'is_id_verified',
         'status',

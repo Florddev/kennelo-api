@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
+use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
@@ -18,12 +19,16 @@ Route::post('/login', [AuthenticatedSessionController::class, 'store'])
     ->middleware('guest')
     ->name('login');
 
-Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])
+Route::post('/login/google', [GoogleAuthController::class, 'store'])
     ->middleware('guest')
+    ->name('login.google');
+
+Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])
+    ->middleware(['guest', 'throttle:6,1'])
     ->name('password.email');
 
 Route::post('/reset-password', [NewPasswordController::class, 'store'])
-    ->middleware('guest')
+    ->middleware(['guest', 'throttle:6,1'])
     ->name('password.store');
 
 Route::post('/refresh', [AuthenticatedSessionController::class, 'refresh'])
@@ -31,11 +36,11 @@ Route::post('/refresh', [AuthenticatedSessionController::class, 'refresh'])
     ->name('refresh');
 
 Route::get('/verify-email/{id}/{hash}', VerifyEmailController::class)
-    ->middleware(['auth', 'signed', 'throttle:6,1'])
+    ->middleware(['signed', 'throttle:6,1'])
     ->name('verification.verify');
 
 Route::post('/email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
-    ->middleware(['auth', 'throttle:6,1'])
+    ->middleware(['auth.jwt', 'throttle:6,1'])
     ->name('verification.send');
 
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { RegisterForm } from "@/features/auth";
+import { RegisterForm, GoogleSignInButton } from "@/features/auth";
 import { useNavigation } from "@/hooks/use-navigation";
 import { useTranslations } from "next-intl";
 import { FieldDescription, FieldGroup } from "@workspace/ui/components/field";
@@ -31,7 +31,10 @@ export default function RegisterPage() {
                                 {t("features.auth.register.description")}
                             </p>
                         </div>
-                        <RegisterForm onSuccess={handleSuccess} />
+                        <div className="flex flex-col gap-6">
+                            <RegisterForm onSuccess={handleSuccess} />
+                            <GoogleSignInButton onSuccess={() => handleSuccess()} />
+                        </div>
                     </FieldGroup>
                     <FieldDescription className="px-6 text-center">
                         {t("features.auth.alreadyHaveAccount")}{" "}
