@@ -121,6 +121,11 @@ class User extends Authenticatable implements HasMedia, JWTSubject, MustVerifyEm
             ->withPivot('created_at');
     }
 
+    public function scanners(): HasMany
+    {
+        return $this->hasMany(Scanner::class);
+    }
+
     public function conversations(): HasMany
     {
         return $this->hasMany(Conversation::class);

@@ -19,6 +19,8 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property Carbon|null $birth_date
  * @property Carbon|null $adoption_date
  * @property-read BookingPet $booking_pet
+ * @property-read AnimalType|null $animalType
+ * @property-read User|null $user
  */
 class Pet extends Model implements HasMedia
 {

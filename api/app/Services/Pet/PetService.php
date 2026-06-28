@@ -35,6 +35,13 @@ class PetService
         return Pet::with(['animalType', 'petAttributes.attributeDefinition', 'petAttributes.attributeOption', 'media'])->findOrFail($id);
     }
 
+    public function findByMicrochip(string $microchipNumber): Pet
+    {
+        return Pet::with(['animalType', 'petAttributes.attributeDefinition', 'petAttributes.attributeOption', 'media'])
+            ->where('microchip_number', $microchipNumber)
+            ->firstOrFail();
+    }
+
     public function create(User $user, array $data): Pet
     {
         return tap(Pet::create([...$data, 'user_id' => $user->id]))->load(['animalType']);

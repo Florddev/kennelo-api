@@ -1,6 +1,5 @@
 import { MetadataRoute } from "next";
 import { routing } from "@/lib/i18n/routing";
-import { headers } from "next/headers";
 
 export const dynamic = "force-static";
 
@@ -32,12 +31,6 @@ const routes: RouteConfig[] = [
         priority: 0.7,
     },
 ];
-
-function getCurrentDomain(host: string) {
-    return routing.domains?.find(
-        (domain) => domain.domain === host || domain.domain === `www.${host}`,
-    );
-}
 
 function getLocaleDomainMap() {
     const localeDomainMap = new Map<string, string>();
@@ -111,25 +104,17 @@ function createSitemapEntry(
     };
 }
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+export default function sitemap(): MetadataRoute.Sitemap {
     if (process.env.NEXT_PUBLIC_ROUTE_MODE === "static") return [];
 
-    const headersList = await headers();
-    const host = headersList.get("host") || "";
-
-    const currentDomain = getCurrentDomain(host);
-
-    if (!currentDomain) {
-        return [];
-    }
-
     const localeDomainMap = getLocaleDomainMap();
-
     const entries: MetadataRoute.Sitemap = [];
 
-    for (const route of routes) {
-        for (const locale of currentDomain.locales) {
-            entries.push(createSitemapEntry(route, locale, currentDomain, localeDomainMap));
+    for (const domain of routing.domains || []) {
+        for (const route of routes) {
+            for (const locale of domain.locales) {
+                entries.push(createSitemapEntry(route, locale, domain, localeDomainMap));
+            }
         }
     }
 

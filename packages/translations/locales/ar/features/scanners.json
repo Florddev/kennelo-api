@@ -1,0 +1,63 @@
+{
+    "title": "أجهزة المسح الخاصة بي",
+    "description": "إدارة أجهزة مسح Kennelo",
+    "addBtn": "إضافة جهاز مسح",
+    "noScanners": "لا يوجد جهاز مسح مرتبط",
+    "noScannersHint": "أضف جهاز مسح لبث بيانات حيواناتك الأليفة في الوقت الفعلي",
+    "list": {
+        "scanning": "البحث عن أجهزة المسح القريبة…",
+        "bleDisabled": "البلوتوث معطل. قم بتفعيله للكشف عن أجهزة المسح القريبة.",
+        "nearby": "{count, plural, =1 {تم الكشف عن جهاز مسح واحد قريب} other {تم الكشف عن # أجهزة مسح قريبة}}"
+    },
+    "card": {
+        "code": "الرمز",
+        "configure": "إعداد",
+        "delete": "حذف",
+        "connected": "متصل",
+        "available": "متاح"
+    },
+    "add": {
+        "title": "إضافة جهاز مسح",
+        "description": "تأكد من أن جهاز المسح في وضع Bluetooth للكشف عنه",
+        "scanBtn": "البحث عن أجهزة",
+        "scanning": "جاري البحث…",
+        "noDevices": "لم يتم العثور على أجهزة",
+        "connecting": "جاري الاتصال…",
+        "identifying": "جاري التعرف على الجهاز…",
+        "namePlaceholder": "مثال: جهاز الاستقبال",
+        "nameLabel": "الاسم (اختياري)",
+        "saveBtn": "ربط",
+        "saving": "جاري الربط…",
+        "backBtn": "رجوع",
+        "alreadyAssociated": "هذا الجهاز مرتبط بالفعل بحساب آخر",
+        "errors": {
+            "BLUETOOTH_DISABLED": "البلوتوث معطل",
+            "SCAN_ERROR": "فشل البحث",
+            "CONNECT_FAILED": "فشل الاتصال",
+            "IDENTIFY_FAILED": "تعذر التعرف على هذا الجهاز"
+        }
+    },
+    "configure": {
+        "title": "إعداد",
+        "backBtn": "رجوع",
+        "disconnectBtn": "قطع الاتصال",
+        "scanBtn": "البحث عن أجهزة",
+        "scanning": "جاري البحث…",
+        "connecting": "جاري الاتصال…",
+        "hint": "اتصل بجهاز المسح لتكوين شبكات WiFi الخاصة به",
+        "wrongScanner": "هذا الجهاز لا يطابق جهاز المسح المحدد",
+        "bleModeHint": "تأكد من أن جهاز المسح في وضع BLE (انقر ثلاث مرات على زر الجهاز)",
+        "errors": {
+            "BLUETOOTH_DISABLED": "البلوتوث معطل",
+            "SCAN_ERROR": "فشل البحث",
+            "CONNECT_FAILED": "فشل الاتصال",
+            "IDENTIFY_FAILED": "تعذر التعرف على هذا الجهاز"
+        }
+    },
+    "deleteConfirm": {
+        "title": "إزالة جهاز المسح",
+        "message": "سيتم فصل جهاز المسح هذا عن حسابك. لن يبث بيانات حيواناتك الأليفة بعد الآن.",
+        "confirm": "إزالة",
+        "cancel": "إلغاء"
+    }
+}

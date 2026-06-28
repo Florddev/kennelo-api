@@ -18,10 +18,13 @@ use App\Http\Controllers\Conversation\ConversationController;
 use App\Http\Controllers\Conversation\MessageController;
 use App\Http\Controllers\Explore\ExploreController;
 use App\Http\Controllers\Favorite\FavoriteController;
+use App\Http\Controllers\Hosting\HostScanController;
 use App\Http\Controllers\Notification\NotificationController;
 use App\Http\Controllers\PaymentMethod\PaymentMethodController;
 use App\Http\Controllers\Pet\AnimalTypeController;
 use App\Http\Controllers\Pet\PetAttributeController;
+use App\Http\Controllers\Pet\PetBroadcastController;
+use App\Http\Controllers\Pet\PetByMicrochipController;
 use App\Http\Controllers\Pet\PetController;
 use App\Http\Controllers\Pet\PetImageController;
 use App\Http\Controllers\Pet\PetReviewController;
@@ -34,6 +37,8 @@ use App\Http\Controllers\Review\ReviewCriteriaController;
 use App\Http\Controllers\Review\ReviewReportController;
 use App\Http\Controllers\Review\ReviewResponseController;
 use App\Http\Controllers\Review\UserReviewController;
+use App\Http\Controllers\Scanner\ScannerController;
+use App\Http\Controllers\Scanner\ScannerScanController;
 use App\Http\Controllers\Stripe\StripeWebhookController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\User\UserController;
@@ -41,8 +46,11 @@ use App\Http\Controllers\User\UserStripeController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/test', [TestController::class, 'index']);
+
 Route::get('/animal-types', [AnimalTypeController::class, 'index']);
 Route::middleware('auth.jwt.optional')->group(function () {
+    Route::post('/pets/broadcast', [PetBroadcastController::class, 'broadcast'])->middleware('throttle:30,1');
+
     Route::get('/explore/activities', [ExploreController::class, 'activities']);
     Route::get('/explore/activities/sections/{sectionId}', [ExploreController::class, 'sectionPage']);
     Route::get('/explore/search', [ExploreController::class, 'search']);
@@ -98,6 +106,7 @@ Route::middleware(['auth.jwt'])->group(function () {
     Route::put('/activities/{activity}/bookings/{booking}/complete', [ActivityBookingController::class, 'complete']);
 
     // Pets
+    Route::get('/pets/by-microchip/{microchipNumber}', [PetByMicrochipController::class, 'show']);
     Route::apiResource('pets', PetController::class);
     Route::put('/pets/{pet}/attributes', [PetAttributeController::class, 'upsert']);
     Route::post('/pets/{pet}/avatar', [PetImageController::class, 'uploadAvatar']);
@@ -158,6 +167,19 @@ Route::middleware(['auth.jwt'])->group(function () {
         Route::get('/admin/review-reports', [AdminReviewReportController::class, 'index']);
         Route::put('/admin/review-reports/{report}', [AdminReviewReportController::class, 'update']);
     });
+
+    // Scanners
+    Route::get('/user/scanners', [ScannerController::class, 'index']);
+    Route::post('/user/scanners', [ScannerController::class, 'store']);
+    Route::put('/user/scanners/{scanner}', [ScannerController::class, 'update']);
+    Route::delete('/user/scanners/{scanner}', [ScannerController::class, 'destroy']);
+    Route::get('/user/scanner-scans', [ScannerScanController::class, 'index']);
+
+    // Hosting — scan
+    Route::get('/hosting/scan-lookup/{microchipNumber}', [HostScanController::class, 'show']);
+    Route::get('/hosting/in-care-pets', [HostScanController::class, 'inCare']);
+    Route::put('/hosting/pets/{pet}/microchip', [HostScanController::class, 'assignMicrochip']);
+    Route::post('/hosting/bookings/{booking}/conversation', [HostScanController::class, 'conversation']);
 
     // Current user
     Route::get('/user', [UserController::class, 'getCurrentUser']);

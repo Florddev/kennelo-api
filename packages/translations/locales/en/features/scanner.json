@@ -1,0 +1,43 @@
+{
+    "title": "Scanner Configuration",
+    "description": "Configure your KenoTag scanner",
+    "connect": {
+        "connected": "Scanner connected",
+        "connecting": "Connecting...",
+        "disconnected": "Scanner disconnected",
+        "scanBtn": "Search for scanner",
+        "scanning": "Searching...",
+        "disconnectBtn": "Disconnect",
+        "noDevices": "Make sure the scanner is in Bluetooth mode...",
+        "errors": {
+            "BLUETOOTH_DISABLED": "Please enable Bluetooth to connect the scanner.",
+            "SCAN_ERROR": "Error during BLE scan.",
+            "CONNECT_FAILED": "Connection failed."
+        }
+    },
+    "wifi": {
+        "available": "Available networks",
+        "scan": "Scan",
+        "scanning": "Scanning...",
+        "noNetworks": "Launch a scan to see available networks",
+        "saved": "Saved networks",
+        "refresh": "Refresh",
+        "loading": "Loading...",
+        "noSaved": "No saved networks",
+        "priority": "priority",
+        "delete": "Delete",
+        "addTitle": "Add a WiFi network",
+        "ssidLabel": "Network name (SSID)",
+        "ssidPlaceholder": "MyNetwork",
+        "passwordLabel": "Password",
+        "passwordPlaceholder": "Password",
+        "showPassword": "Show",
+        "hidePassword": "Hide",
+        "priorityLabel": "Priority (1 = highest)",
+        "unknownError": "Unknown error",
+        "sendError": "Send error",
+        "cancel": "Cancel",
+        "save": "Save",
+        "saving": "Saving..."
+    }
+}

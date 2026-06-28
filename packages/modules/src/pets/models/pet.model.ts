@@ -68,6 +68,13 @@ export class PetModel {
         return undefined;
     }
 
+    getGalleryImages(): string[] {
+        return [
+            ...(this.avatarUrl ? [this.avatarUrl] : []),
+            ...this.images.map((image) => image.url),
+        ];
+    }
+
     groupAttributesByCategory(
         categories: PetAttributeCategory | PetAttributeCategory[] | null = null,
     ): PetAttributeByCategory[] {
