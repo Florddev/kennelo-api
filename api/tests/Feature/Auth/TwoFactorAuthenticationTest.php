@@ -5,7 +5,11 @@ declare(strict_types=1);
 use App\Models\User;
 use App\Notifications\TwoFactorStatusNotification;
 use App\Services\TwoFactorService;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
+use Laravel\Socialite\Facades\Socialite;
+use Laravel\Socialite\Two\AbstractProvider;
+use Laravel\Socialite\Two\User as SocialiteUser;
 use PragmaRX\Google2FAQRCode\Google2FA;
 
 function enableTwoFactor(User $user): string
@@ -22,6 +26,26 @@ function enableTwoFactor(User $user): string
 function currentOtp(string $secret): string
 {
     return app(Google2FA::class)->getCurrentOtp($secret);
+}
+
+function makeGoogleUser(string $googleId): User
+{
+    $user = User::factory()->create(['google_id' => $googleId]);
+    DB::table('users')->where('id', $user->id)->update(['password' => null]);
+    $user->refresh();
+
+    return $user;
+}
+
+function mockGoogleReauth(string $googleId): void
+{
+    $socialiteUser = (new SocialiteUser)->map(['id' => $googleId]);
+
+    $provider = Mockery::mock(AbstractProvider::class);
+    $provider->shouldReceive('stateless')->andReturn($provider);
+    $provider->shouldReceive('userFromToken')->andReturn($socialiteUser);
+
+    Socialite::shouldReceive('driver')->with('google')->andReturn($provider);
 }
 
 test('login without 2FA returns tokens directly', function () {
@@ -269,4 +293,125 @@ test('disabling two-factor notifies the user', function () {
         ->assertNoContent();
 
     Notification::assertSentTo($user, TwoFactorStatusNotification::class);
+});
+
+test('the user resource exposes has_password for a password account', function () {
+    $user = User::factory()->create();
+
+    $this->withHeaders(asUser($user))
+        ->getJson('/api/user')
+        ->assertOk()
+        ->assertJsonPath('data.has_password', true);
+});
+
+test('the user resource reports no password for an oauth-only account', function () {
+    $user = makeGoogleUser('google-1');
+
+    $this->withHeaders(asUser($user))
+        ->getJson('/api/user')
+        ->assertOk()
+        ->assertJsonPath('data.has_password', false);
+});
+
+test('a password account must provide a password to enable 2FA', function () {
+    $user = User::factory()->create();
+
+    $this->withHeaders(asUser($user))
+        ->postJson('/api/user/two-factor', [])
+        ->assertUnprocessable();
+});
+
+test('an oauth-only user enables 2FA with a fresh google token', function () {
+    $user = makeGoogleUser('google-xyz');
+    mockGoogleReauth('google-xyz');
+
+    $this->withHeaders(asUser($user))
+        ->postJson('/api/user/two-factor', ['google_token' => 'fresh-token'])
+        ->assertOk()
+        ->assertJsonStructure(['qr_svg', 'secret']);
+
+    expect($user->fresh()->two_factor_secret)->not->toBeNull();
+});
+
+test('an oauth-only user disables 2FA with a fresh google token', function () {
+    $user = makeGoogleUser('google-xyz');
+    enableTwoFactor($user);
+    mockGoogleReauth('google-xyz');
+
+    $this->withHeaders(asUser($user))
+        ->deleteJson('/api/user/two-factor', ['google_token' => 'fresh-token'])
+        ->assertNoContent();
+
+    expect($user->fresh()->two_factor_confirmed_at)->toBeNull();
+});
+
+test('an oauth-only user cannot enable 2FA with a mismatched google token', function () {
+    $user = makeGoogleUser('google-self');
+    mockGoogleReauth('google-other');
+
+    $this->withHeaders(asUser($user))
+        ->postJson('/api/user/two-factor', ['google_token' => 'token'])
+        ->assertUnprocessable();
+
+    expect($user->fresh()->two_factor_secret)->toBeNull();
+});
+
+test('an oauth-only user must provide a google token to enable 2FA', function () {
+    $user = makeGoogleUser('google-1');
+
+    $this->withHeaders(asUser($user))
+        ->postJson('/api/user/two-factor', [])
+        ->assertUnprocessable();
+});
+
+test('a linked account uses its password to enable 2FA', function () {
+    $user = User::factory()->create(['google_id' => 'google-linked']);
+
+    $this->withHeaders(asUser($user))
+        ->postJson('/api/user/two-factor', ['password' => 'password'])
+        ->assertOk()
+        ->assertJsonStructure(['qr_svg', 'secret']);
+});
+
+test('a password user regenerates recovery codes with their password', function () {
+    $user = User::factory()->create();
+    enableTwoFactor($user);
+
+    $this->withHeaders(asUser($user))
+        ->postJson('/api/user/two-factor/recovery-codes', ['password' => 'password'])
+        ->assertOk()
+        ->assertJsonStructure(['recovery_codes']);
+});
+
+test('an oauth-only user regenerates recovery codes with a fresh google token', function () {
+    $user = makeGoogleUser('google-xyz');
+    enableTwoFactor($user);
+    mockGoogleReauth('google-xyz');
+
+    $this->withHeaders(asUser($user))
+        ->postJson('/api/user/two-factor/recovery-codes', ['google_token' => 'fresh-token'])
+        ->assertOk()
+        ->assertJsonStructure(['recovery_codes']);
+});
+
+test('an oauth-only user cannot regenerate recovery codes with a mismatched google token', function () {
+    $user = makeGoogleUser('google-self');
+    enableTwoFactor($user);
+    mockGoogleReauth('google-other');
+
+    $this->withHeaders(asUser($user))
+        ->postJson('/api/user/two-factor/recovery-codes', ['google_token' => 'token'])
+        ->assertUnprocessable();
+});
+
+test('an oauth-only user cannot disable 2FA with a mismatched google token', function () {
+    $user = makeGoogleUser('google-self');
+    enableTwoFactor($user);
+    mockGoogleReauth('google-other');
+
+    $this->withHeaders(asUser($user))
+        ->deleteJson('/api/user/two-factor', ['google_token' => 'token'])
+        ->assertUnprocessable();
+
+    expect($user->fresh()->two_factor_confirmed_at)->not->toBeNull();
 });

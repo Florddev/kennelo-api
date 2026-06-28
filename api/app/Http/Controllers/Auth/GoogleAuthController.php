@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\GoogleAuthRequest;
 use App\Http\Resources\AuthTokenResource;
 use App\Models\User;
+use App\Services\GoogleAuthService;
 use App\Services\JWTService;
 use App\Services\MediaService;
 use App\Services\TwoFactorService;
@@ -15,8 +16,6 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Laravel\Socialite\Facades\Socialite;
-use Laravel\Socialite\Two\AbstractProvider;
 
 /**
  * @tags Auth
@@ -30,13 +29,19 @@ class GoogleAuthController extends Controller
 
     protected TwoFactorService $twoFactorService;
 
+    protected GoogleAuthService $googleAuthService;
+
     /**
      * Create a new controller instance.
      */
-    public function __construct(JWTService $jwtService, TwoFactorService $twoFactorService)
-    {
+    public function __construct(
+        JWTService $jwtService,
+        TwoFactorService $twoFactorService,
+        GoogleAuthService $googleAuthService
+    ) {
         $this->jwtService = $jwtService;
         $this->twoFactorService = $twoFactorService;
+        $this->googleAuthService = $googleAuthService;
     }
 
     /**
@@ -46,16 +51,9 @@ class GoogleAuthController extends Controller
      */
     public function store(GoogleAuthRequest $request): JsonResponse
     {
-        $driver = Socialite::driver('google');
+        $googleUser = $this->googleAuthService->userFromToken((string) $request->string('token'));
 
-        if (! $driver instanceof AbstractProvider) {
-            abort(500, 'Google authentication is not configured.');
-        }
-
-        try {
-            $googleUser = $driver->stateless()->userFromToken((string) $request->string('token'));
-        } catch (\Throwable $e) {
-            Log::warning('Google authentication failed: '.$e->getMessage());
+        if ($googleUser === null) {
             abort(401, 'Unable to authenticate with Google.');
         }
 

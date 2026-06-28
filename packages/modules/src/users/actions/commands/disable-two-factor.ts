@@ -1,9 +1,9 @@
 import { api } from "@workspace/common";
-import { DisableTwoFactorInput } from "../../validators/two-factor.schema";
+import { TwoFactorStepUp, twoFactorStepUpBody } from "../../models/dtos/two-factor.dto";
 
-export async function disableTwoFactor(input: DisableTwoFactorInput): Promise<void> {
+export async function disableTwoFactor(stepUp: TwoFactorStepUp): Promise<void> {
     const response = await api.delete("/user/two-factor", {
-        body: JSON.stringify({ password: input.password }),
+        body: JSON.stringify(twoFactorStepUpBody(stepUp)),
     });
 
     if (response.status !== 204) {

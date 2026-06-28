@@ -1,8 +1,15 @@
 import { api } from "@workspace/common";
-import { TwoFactorEnableDto } from "../../models/dtos/two-factor.dto";
+import {
+    TwoFactorEnableDto,
+    TwoFactorStepUp,
+    twoFactorStepUpBody,
+} from "../../models/dtos/two-factor.dto";
 
-export async function enableTwoFactor(password: string): Promise<TwoFactorEnableDto> {
-    const response = await api.post<TwoFactorEnableDto>("/user/two-factor", { password });
+export async function enableTwoFactor(stepUp: TwoFactorStepUp): Promise<TwoFactorEnableDto> {
+    const response = await api.post<TwoFactorEnableDto>(
+        "/user/two-factor",
+        twoFactorStepUpBody(stepUp),
+    );
 
     if (response.status !== 200) {
         throw new Error("Failed to enable two-factor authentication");

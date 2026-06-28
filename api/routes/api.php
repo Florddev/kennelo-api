@@ -173,10 +173,10 @@ Route::middleware(['auth.jwt'])->group(function () {
     Route::post('/user/identity-verification', [UserController::class, 'submitIdentityVerification']);
     Route::delete('/user', [UserController::class, 'destroy']);
 
-    Route::post('/user/two-factor', [TwoFactorAuthenticationController::class, 'store']);
-    Route::post('/user/two-factor/confirm', [TwoFactorAuthenticationController::class, 'confirm']);
-    Route::delete('/user/two-factor', [TwoFactorAuthenticationController::class, 'destroy']);
-    Route::post('/user/two-factor/recovery-codes', [TwoFactorAuthenticationController::class, 'recoveryCodes']);
+    Route::post('/user/two-factor', [TwoFactorAuthenticationController::class, 'store'])->middleware('throttle:6,1');
+    Route::post('/user/two-factor/confirm', [TwoFactorAuthenticationController::class, 'confirm'])->middleware('throttle:6,1');
+    Route::delete('/user/two-factor', [TwoFactorAuthenticationController::class, 'destroy'])->middleware('throttle:6,1');
+    Route::post('/user/two-factor/recovery-codes', [TwoFactorAuthenticationController::class, 'recoveryCodes'])->middleware('throttle:6,1');
 
     Route::get('/me/payment-methods', [PaymentMethodController::class, 'index']);
     Route::post('/me/payment-methods/setup-intent', [PaymentMethodController::class, 'setupIntent']);

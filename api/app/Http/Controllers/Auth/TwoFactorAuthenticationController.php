@@ -6,9 +6,10 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\ConfirmTwoFactorRequest;
-use App\Http\Requests\Auth\DisableTwoFactorRequest;
-use App\Http\Requests\Auth\EnableTwoFactorRequest;
+use App\Http\Requests\Auth\TwoFactorStepUpRequest;
+use App\Models\User;
 use App\Notifications\TwoFactorStatusNotification;
+use App\Services\GoogleAuthService;
 use App\Services\TwoFactorService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
@@ -20,12 +21,15 @@ use Illuminate\Validation\ValidationException;
  */
 class TwoFactorAuthenticationController extends Controller
 {
-    public function __construct(private readonly TwoFactorService $twoFactorService) {}
+    public function __construct(
+        private readonly TwoFactorService $twoFactorService,
+        private readonly GoogleAuthService $googleAuthService,
+    ) {}
 
     /**
      * Enable two-factor authentication
      */
-    public function store(EnableTwoFactorRequest $request): JsonResponse
+    public function store(TwoFactorStepUpRequest $request): JsonResponse
     {
         $user = $request->user();
 
@@ -33,9 +37,7 @@ class TwoFactorAuthenticationController extends Controller
             abort(409, 'Two-factor authentication is already enabled.');
         }
 
-        if (! Hash::check((string) $request->validated('password'), (string) $user->password)) {
-            throw ValidationException::withMessages(['password' => 'The provided password is incorrect.']);
-        }
+        $this->ensureStepUp($user, $request);
 
         $secret = $this->twoFactorService->generateSecret();
 
@@ -77,13 +79,11 @@ class TwoFactorAuthenticationController extends Controller
     /**
      * Disable two-factor authentication
      */
-    public function destroy(DisableTwoFactorRequest $request): Response
+    public function destroy(TwoFactorStepUpRequest $request): Response
     {
         $user = $request->user();
 
-        if (! Hash::check((string) $request->validated('password'), (string) $user->password)) {
-            throw ValidationException::withMessages(['password' => 'The provided password is incorrect.']);
-        }
+        $this->ensureStepUp($user, $request);
 
         $user->two_factor_secret = null;
         $user->two_factor_recovery_codes = null;
@@ -100,7 +100,7 @@ class TwoFactorAuthenticationController extends Controller
     /**
      * Regenerate recovery codes
      */
-    public function recoveryCodes(DisableTwoFactorRequest $request): JsonResponse
+    public function recoveryCodes(TwoFactorStepUpRequest $request): JsonResponse
     {
         $user = $request->user();
 
@@ -108,9 +108,7 @@ class TwoFactorAuthenticationController extends Controller
             abort(409, 'Two-factor authentication is not enabled.');
         }
 
-        if (! Hash::check((string) $request->validated('password'), (string) $user->password)) {
-            throw ValidationException::withMessages(['password' => 'The provided password is incorrect.']);
-        }
+        $this->ensureStepUp($user, $request);
 
         $recoveryCodes = $this->twoFactorService->generateRecoveryCodes();
 
@@ -118,5 +116,22 @@ class TwoFactorAuthenticationController extends Controller
         $user->save();
 
         return response()->json(['recovery_codes' => $recoveryCodes]);
+    }
+
+    private function ensureStepUp(User $user, TwoFactorStepUpRequest $request): void
+    {
+        if ($user->password !== null) {
+            if (! Hash::check((string) $request->validated('password'), $user->password)) {
+                throw ValidationException::withMessages(['password' => 'The provided password is incorrect.']);
+            }
+
+            return;
+        }
+
+        $googleUser = $this->googleAuthService->userFromToken((string) $request->validated('google_token'));
+
+        if ($user->google_id === null || $googleUser === null || $googleUser->getId() !== $user->google_id) {
+            throw ValidationException::withMessages(['google_token' => 'Google re-authentication failed.']);
+        }
     }
 }

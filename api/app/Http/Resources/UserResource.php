@@ -34,6 +34,7 @@ class UserResource extends JsonResource
             'two_factor_recovery_codes_count' => $isSelf && $this->two_factor_confirmed_at !== null
                 ? count($this->two_factor_recovery_codes ?? [])
                 : 0,
+            'has_password' => $isSelf ? $this->password !== null : null,
             'status' => $this->when(
                 auth()->user()?->hasRole('admin'),
                 fn () => $this->status->value

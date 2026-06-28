@@ -7,7 +7,7 @@ namespace App\Http\Requests\Auth;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class EnableTwoFactorRequest extends FormRequest
+class TwoFactorStepUpRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,8 +24,11 @@ class EnableTwoFactorRequest extends FormRequest
      */
     public function rules(): array
     {
+        $hasPassword = $this->user()?->password !== null;
+
         return [
-            'password' => ['required', 'string'],
+            'password' => [$hasPassword ? 'required' : 'nullable', 'string'],
+            'google_token' => [$hasPassword ? 'nullable' : 'required', 'string'],
         ];
     }
 }

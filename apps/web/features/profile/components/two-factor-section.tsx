@@ -1,13 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Image from "next/image";
+import { useGoogleLogin } from "@react-oauth/google";
 import {
     confirmTwoFactor,
     disableTwoFactor,
     enableTwoFactor,
     regenerateRecoveryCodes,
     type TwoFactorEnableDto,
+    type TwoFactorStepUp,
 } from "@workspace/modules/users";
 import { Alert, AlertDescription, AlertTitle } from "@workspace/ui/components/alert";
 import { Button } from "@workspace/ui/components/button";
@@ -137,22 +139,26 @@ function SetupCard({
     );
 }
 
-function PasswordDialog({
+function StepUpDialog({
     kind,
     copy,
+    hasPassword,
     password,
     setPassword,
     isLoading,
     onClose,
-    onConfirm,
+    onPasswordConfirm,
+    onGoogleConfirm,
 }: {
     kind: DialogKind | null;
     copy: DialogCopy | null;
+    hasPassword: boolean;
     password: string;
     setPassword: (value: string) => void;
     isLoading: boolean;
     onClose: () => void;
-    onConfirm: () => void;
+    onPasswordConfirm: () => void;
+    onGoogleConfirm: () => void;
 }) {
     const t = useTranslations();
 
@@ -168,24 +174,41 @@ function PasswordDialog({
             <DialogContent className="max-w-md p-6">
                 <DialogHeader>
                     <DialogTitle>{copy?.title}</DialogTitle>
-                    <DialogDescription>{copy?.warning}</DialogDescription>
+                    <DialogDescription>
+                        {hasPassword
+                            ? copy?.warning
+                            : t("features.auth.twoFactor.stepUp.googleWarning")}
+                    </DialogDescription>
                 </DialogHeader>
-                <Input
-                    type="password"
-                    value={password}
-                    onChange={(event) => setPassword(event.target.value)}
-                    placeholder={t("common.placeholders.password")}
-                    autoComplete="current-password"
-                    disabled={isLoading}
-                />
-                <Button
-                    type="button"
-                    variant={kind === "disable" ? "destructive" : "default"}
-                    onClick={onConfirm}
-                    disabled={isLoading || password.length === 0}
-                >
-                    {copy?.confirm}
-                </Button>
+                {hasPassword ? (
+                    <>
+                        <Input
+                            type="password"
+                            value={password}
+                            onChange={(event) => setPassword(event.target.value)}
+                            placeholder={t("common.placeholders.password")}
+                            autoComplete="current-password"
+                            disabled={isLoading}
+                        />
+                        <Button
+                            type="button"
+                            variant={kind === "disable" ? "destructive" : "default"}
+                            onClick={onPasswordConfirm}
+                            disabled={isLoading || password.length === 0}
+                        >
+                            {copy?.confirm}
+                        </Button>
+                    </>
+                ) : (
+                    <Button
+                        type="button"
+                        variant="outline"
+                        onClick={onGoogleConfirm}
+                        disabled={isLoading}
+                    >
+                        {t("features.auth.twoFactor.stepUp.google")}
+                    </Button>
+                )}
             </DialogContent>
         </Dialog>
     );
@@ -199,13 +222,21 @@ export function TwoFactorSection() {
     const [code, setCode] = useState("");
     const [recoveryCodes, setRecoveryCodes] = useState<string[] | null>(null);
     const [dialog, setDialog] = useState<DialogKind | null>(null);
+    const dialogRef = useRef<DialogKind | null>(null);
     const [password, setPassword] = useState("");
 
     const enabled = user?.twoFactorEnabled ?? false;
+    const hasPassword = user?.hasPassword ?? true;
     const recoveryCount = user?.twoFactorRecoveryCodesCount ?? 0;
     const lowRecoveryCodes = recoveryCount <= 2;
 
+    const openDialog = (kind: DialogKind) => {
+        dialogRef.current = kind;
+        setDialog(kind);
+    };
+
     const closeDialog = () => {
+        dialogRef.current = null;
         setDialog(null);
         setPassword("");
     };
@@ -220,9 +251,11 @@ export function TwoFactorSection() {
         }
     };
 
-    const handlePasswordConfirm = async () => {
-        if (dialog === "enable") {
-            const result = await execute(() => enableTwoFactor(password));
+    const runStepUp = async (stepUp: TwoFactorStepUp) => {
+        const kind = dialogRef.current;
+
+        if (kind === "enable") {
+            const result = await execute(() => enableTwoFactor(stepUp));
             if (result) {
                 closeDialog();
                 setSetup(result);
@@ -230,8 +263,8 @@ export function TwoFactorSection() {
             return;
         }
 
-        if (dialog === "disable") {
-            const ok = await execute(() => disableTwoFactor({ password }).then(() => true));
+        if (kind === "disable") {
+            const ok = await execute(() => disableTwoFactor(stepUp).then(() => true));
             if (ok) {
                 closeDialog();
                 await refreshUser();
@@ -239,13 +272,23 @@ export function TwoFactorSection() {
             return;
         }
 
-        const codes = await execute(() => regenerateRecoveryCodes({ password }));
-        if (codes) {
-            closeDialog();
-            setRecoveryCodes(codes);
-            await refreshUser();
+        if (kind === "regenerate") {
+            const codes = await execute(() => regenerateRecoveryCodes(stepUp));
+            if (codes) {
+                closeDialog();
+                setRecoveryCodes(codes);
+                await refreshUser();
+            }
         }
     };
+
+    const googleReauth = useGoogleLogin({
+        flow: "implicit",
+        scope: "openid email profile",
+        onSuccess: async (response) => {
+            await runStepUp({ googleToken: response.access_token });
+        },
+    });
 
     const dialogCopy: Record<DialogKind, DialogCopy> = {
         enable: {
@@ -316,14 +359,14 @@ export function TwoFactorSection() {
                             <Button
                                 type="button"
                                 variant="outline"
-                                onClick={() => setDialog("regenerate")}
+                                onClick={() => openDialog("regenerate")}
                             >
                                 {t("features.auth.twoFactor.regenerate.action")}
                             </Button>
                             <Button
                                 type="button"
                                 variant="destructive"
-                                onClick={() => setDialog("disable")}
+                                onClick={() => openDialog("disable")}
                             >
                                 {t("features.auth.twoFactor.disable.action")}
                             </Button>
@@ -333,21 +376,23 @@ export function TwoFactorSection() {
                     <Button
                         type="button"
                         className="w-fit"
-                        onClick={() => setDialog("enable")}
+                        onClick={() => openDialog("enable")}
                         disabled={isLoading}
                     >
                         {t("features.auth.twoFactor.section.enable")}
                     </Button>
                 )}
 
-                <PasswordDialog
+                <StepUpDialog
                     kind={dialog}
                     copy={dialog ? dialogCopy[dialog] : null}
+                    hasPassword={hasPassword}
                     password={password}
                     setPassword={setPassword}
                     isLoading={isLoading}
                     onClose={closeDialog}
-                    onConfirm={handlePasswordConfirm}
+                    onPasswordConfirm={() => runStepUp({ password })}
+                    onGoogleConfirm={() => googleReauth()}
                 />
             </CardContent>
         </Card>

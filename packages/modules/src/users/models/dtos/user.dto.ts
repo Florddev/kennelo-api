@@ -14,6 +14,7 @@ export type UserDto = {
     email_verified_at: string | null;
     two_factor_enabled?: boolean;
     two_factor_recovery_codes_count?: number;
+    has_password?: boolean;
     roles: string[];
     created_at: string;
     updated_at: string;
