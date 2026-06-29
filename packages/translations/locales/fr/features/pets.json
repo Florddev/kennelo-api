@@ -66,6 +66,10 @@
     "fields": {
         "name": "Nom",
         "breed": "Race",
+        "breedPlaceholder": "Choisir une race",
+        "breedOther": "Autre",
+        "breedCustom": "Nom de la race",
+        "breedCustomPlaceholder": "Saisir la race",
         "birthDate": "Date de naissance",
         "age": "Âge",
         "ageYears": "Années",

@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export const updatePetSchema = z.object({
     animalTypeId: z.string().min(1).optional(),
+    animalBreedId: z.string().nullable().optional(),
     name: z.string().min(1).max(255).optional(),
     breed: z.string().max(255).nullable().optional(),
     birthDate: z.string().nullable().optional(),

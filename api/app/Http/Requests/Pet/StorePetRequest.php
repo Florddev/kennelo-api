@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Requests\Pet;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StorePetRequest extends FormRequest
 {
@@ -17,6 +18,12 @@ class StorePetRequest extends FormRequest
     {
         return [
             'animal_type_id' => ['required', 'uuid', 'exists:animal_types,id'],
+            'animal_breed_id' => [
+                'sometimes',
+                'nullable',
+                'uuid',
+                Rule::exists('animal_breeds', 'id')->where('animal_type_id', $this->input('animal_type_id')),
+            ],
             'name' => ['required', 'string', 'max:255'],
             'breed' => ['sometimes', 'nullable', 'string', 'max:255'],
             'birth_date' => ['sometimes', 'nullable', 'date', 'before:today'],

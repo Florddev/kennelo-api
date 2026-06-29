@@ -120,7 +120,7 @@ export function CreatePetStepper() {
         },
         {
             id: Step.IDENTITY_BASICS,
-            fields: ["name", "sex", "breed"],
+            fields: ["name", "sex", "breed", "animalBreedId"],
             groupId: StepGroup.GENERAL,
             component: ({ control, isLoading: loading }) => (
                 <IdentityStep
@@ -128,6 +128,7 @@ export function CreatePetStepper() {
                     isLoading={loading}
                     avatarFile={avatarFile}
                     onAvatarChange={setAvatarFile}
+                    animalTypeId={selectedAnimalType?.id}
                 />
             ),
         },
@@ -304,6 +305,7 @@ export function CreatePetStepper() {
             schema={createPetSchema}
             defaultValues={{
                 animalTypeId: "",
+                animalBreedId: null,
                 name: "",
                 breed: "",
                 birthDate: "",

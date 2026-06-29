@@ -21,6 +21,7 @@ use App\Http\Controllers\Favorite\FavoriteController;
 use App\Http\Controllers\Hosting\HostScanController;
 use App\Http\Controllers\Notification\NotificationController;
 use App\Http\Controllers\PaymentMethod\PaymentMethodController;
+use App\Http\Controllers\Pet\AnimalBreedController;
 use App\Http\Controllers\Pet\AnimalTypeController;
 use App\Http\Controllers\Pet\PetAttributeController;
 use App\Http\Controllers\Pet\PetBroadcastController;
@@ -107,6 +108,7 @@ Route::middleware(['auth.jwt'])->group(function () {
 
     // Pets
     Route::get('/pets/by-microchip/{microchipNumber}', [PetByMicrochipController::class, 'show']);
+    Route::get('/animal-breeds', [AnimalBreedController::class, 'index']);
     Route::apiResource('pets', PetController::class);
     Route::put('/pets/{pet}/attributes', [PetAttributeController::class, 'upsert']);
     Route::post('/pets/{pet}/avatar', [PetImageController::class, 'uploadAvatar']);

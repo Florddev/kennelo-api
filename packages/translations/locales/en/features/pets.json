@@ -66,6 +66,10 @@
     "fields": {
         "name": "Name",
         "breed": "Breed",
+        "breedPlaceholder": "Select a breed",
+        "breedOther": "Other",
+        "breedCustom": "Breed name",
+        "breedCustomPlaceholder": "Enter the breed",
         "birthDate": "Date of birth",
         "age": "Age",
         "ageYears": "Years",

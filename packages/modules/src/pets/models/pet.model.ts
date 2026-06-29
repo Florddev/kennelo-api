@@ -1,4 +1,5 @@
 import type { PetDto } from "./dtos/pet.dto";
+import { AnimalBreedModel } from "./animal-breed.model";
 import { AnimalTypeModel } from "./animal-type.model";
 import { PetAttributeModel } from "./pet-attribute.model";
 import { PetImageModel } from "./pet-image.model";
@@ -14,6 +15,7 @@ export class PetModel {
         public readonly id: string,
         public readonly userId: string,
         public readonly animalTypeId: string,
+        public readonly animalBreedId: string | null,
         public readonly name: string,
         public readonly breed: string | null,
         public readonly birthDate: string | null,
@@ -27,6 +29,7 @@ export class PetModel {
         public readonly healthNotes: string | null,
         public readonly avatarUrl: string | null,
         public readonly animalType: AnimalTypeModel | null,
+        public readonly animalBreed: AnimalBreedModel | null,
         public readonly attributes: PetAttributeModel[] | null,
         public readonly images: PetImageModel[],
         public readonly createdAt: string,
@@ -38,6 +41,7 @@ export class PetModel {
             dto.id,
             dto.user_id,
             dto.animal_type_id,
+            dto.animal_breed_id,
             dto.name,
             dto.breed,
             dto.birth_date,
@@ -51,11 +55,16 @@ export class PetModel {
             dto.health_notes,
             dto.avatar_url ?? null,
             dto.animal_type ? AnimalTypeModel.from(dto.animal_type) : null,
+            dto.animal_breed ? AnimalBreedModel.from(dto.animal_breed) : null,
             dto.attributes ? dto.attributes.map(PetAttributeModel.from) : null,
             dto.images ? dto.images.map(PetImageModel.from) : [],
             dto.created_at,
             dto.updated_at,
         );
+    }
+
+    getBreedLabel(): string | null {
+        return this.animalBreed?.label ?? this.breed;
     }
 
     getAvatarUrl(): string | undefined {

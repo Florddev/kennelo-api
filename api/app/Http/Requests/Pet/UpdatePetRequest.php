@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Pet;
 
+use App\Models\Pet;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdatePetRequest extends FormRequest
 {
@@ -15,8 +17,17 @@ class UpdatePetRequest extends FormRequest
 
     public function rules(): array
     {
+        $pet = $this->route('pet');
+        $animalTypeId = $this->input('animal_type_id', $pet instanceof Pet ? $pet->animal_type_id : null);
+
         return [
             'animal_type_id' => ['sometimes', 'uuid', 'exists:animal_types,id'],
+            'animal_breed_id' => [
+                'sometimes',
+                'nullable',
+                'uuid',
+                Rule::exists('animal_breeds', 'id')->where('animal_type_id', $animalTypeId),
+            ],
             'name' => ['sometimes', 'string', 'max:255'],
             'breed' => ['sometimes', 'nullable', 'string', 'max:255'],
             'birth_date' => ['sometimes', 'nullable', 'date', 'before:today'],

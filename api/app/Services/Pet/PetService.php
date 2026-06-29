@@ -24,7 +24,7 @@ class PetService
     {
         $perPage = $filters['per_page'] ?? 15;
 
-        return Pet::with(['animalType', 'media'])
+        return Pet::with(['animalType', 'animalBreed', 'media'])
             ->forUser((string) $user->id)
             ->latest()
             ->paginate($perPage);
@@ -32,7 +32,7 @@ class PetService
 
     public function findById(int $id): Pet
     {
-        return Pet::with(['animalType', 'petAttributes.attributeDefinition', 'petAttributes.attributeOption', 'media'])->findOrFail($id);
+        return Pet::with(['animalType', 'animalBreed', 'petAttributes.attributeDefinition', 'petAttributes.attributeOption', 'media'])->findOrFail($id);
     }
 
     public function findByMicrochip(string $microchipNumber): Pet
@@ -44,12 +44,12 @@ class PetService
 
     public function create(User $user, array $data): Pet
     {
-        return tap(Pet::create([...$data, 'user_id' => $user->id]))->load(['animalType']);
+        return tap(Pet::create([...$data, 'user_id' => $user->id]))->load(['animalType', 'animalBreed']);
     }
 
     public function update(Pet $pet, array $data): Pet
     {
-        return tap($pet, fn (Pet $p) => $p->update($data))->fresh(['animalType']);
+        return tap($pet, fn (Pet $p) => $p->update($data))->fresh(['animalType', 'animalBreed']);
     }
 
     public function delete(Pet $pet): void

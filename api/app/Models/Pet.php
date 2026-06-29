@@ -20,6 +20,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property Carbon|null $adoption_date
  * @property-read BookingPet $booking_pet
  * @property-read AnimalType|null $animalType
+ * @property-read AnimalBreed|null $animalBreed
  * @property-read User|null $user
  */
 class Pet extends Model implements HasMedia
@@ -29,6 +30,7 @@ class Pet extends Model implements HasMedia
     protected $fillable = [
         'user_id',
         'animal_type_id',
+        'animal_breed_id',
         'name',
         'breed',
         'birth_date',
@@ -76,6 +78,11 @@ class Pet extends Model implements HasMedia
     public function animalType(): BelongsTo
     {
         return $this->belongsTo(AnimalType::class);
+    }
+
+    public function animalBreed(): BelongsTo
+    {
+        return $this->belongsTo(AnimalBreed::class);
     }
 
     public function petAttributes(): HasMany
