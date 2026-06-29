@@ -72,19 +72,21 @@ class AuthenticatedSessionController extends Controller
      */
     public function twoFactorChallenge(TwoFactorChallengeRequest $request): JsonResponse
     {
+        $challengeToken = (string) $request->validated('challenge_token');
+
         try {
-            $user = $this->jwtService->validateChallengeToken((string) $request->input('challenge_token'));
+            $user = $this->jwtService->validateChallengeToken($challengeToken);
         } catch (\Throwable) {
             abort(401, 'Invalid or expired challenge token.');
         }
 
-        $code = trim((string) $request->input('code'));
+        $code = trim((string) $request->validated('code'));
 
         $verified = $code !== ''
             ? $this->twoFactorService->verify((string) $user->two_factor_secret, $code)
             : $this->twoFactorService->consumeRecoveryCode(
                 $user,
-                strtoupper(trim((string) $request->input('recovery_code'))),
+                strtoupper(trim((string) $request->validated('recovery_code'))),
             );
 
         if (! $verified) {
@@ -100,7 +102,7 @@ class AuthenticatedSessionController extends Controller
         $accessToken = $this->jwtService->generateAccessToken($user);
         $refreshToken = $this->jwtService->generateRefreshToken($user);
 
-        $this->jwtService->blacklistToken((string) $request->input('challenge_token'));
+        $this->jwtService->blacklistToken($challengeToken);
 
         $resource = new AuthTokenResource($user, $accessToken, $refreshToken);
 
