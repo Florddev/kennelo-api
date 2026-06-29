@@ -10,7 +10,7 @@ use App\Models\AnimalType;
 use App\Models\Pet;
 use App\Models\User;
 
-function makeQuoteFixtures(): array
+function makeQuoteFixtures(?callable $priceFor = null, int $closedMask = 0): array
 {
     $manager = User::factory()->create();
     $activity = Activity::factory()->create([
@@ -29,13 +29,22 @@ function makeQuoteFixtures(): array
         'end_date' => null,
     ]);
 
-    ActivityCycleSetting::create([
+    $setting = ActivityCycleSetting::create([
         'activity_cycle_id' => $cycle->id,
         'animal_type_id' => $animalType->id,
         'max_capacity' => 5,
-        'price' => 30.00,
-        'sum_weekdays' => WeekDayEnum::ALL,
     ]);
+
+    foreach (WeekDayEnum::values() as $weekday) {
+        $setting->prices()->create([
+            'weekday' => $weekday,
+            'price' => $priceFor !== null ? $priceFor($weekday) : 30.00,
+        ]);
+    }
+
+    if ($closedMask > 0) {
+        $cycle->closedWeekDays()->create(['sum_weekdays' => $closedMask]);
+    }
 
     return [$activity, $animalType];
 }
@@ -77,6 +86,43 @@ it('rejects a quote for an animal type the activity does not accept', function (
         ])
         ->assertUnprocessable()
         ->assertJsonValidationErrors(['pet_ids']);
+});
+
+it('prices a single night using its weekday price', function () {
+    $user = User::factory()->create();
+    [$activity, $animalType] = makeQuoteFixtures(
+        fn (int $weekday): float => $weekday === WeekDayEnum::MONDAY->value ? 10.00 : 25.00,
+    );
+    $pet = Pet::create(['user_id' => $user->id, 'animal_type_id' => $animalType->id, 'name' => 'Rex']);
+
+    $monday = now()->addWeeks(2)->startOfWeek();
+
+    $this->withHeaders(asUser($user))
+        ->postJson('/api/bookings/quote', [
+            'activity_id' => $activity->id,
+            'check_in_date' => $monday->toDateString(),
+            'check_out_date' => $monday->copy()->addDay()->toDateString(),
+            'pet_ids' => [$pet->id],
+        ])
+        ->assertOk()
+        ->assertJsonPath('data.total_price', '10.80');
+});
+
+it('rejects a quote when a night falls on a cycle-closed weekday', function () {
+    $user = User::factory()->create();
+    [$activity, $animalType] = makeQuoteFixtures(null, WeekDayEnum::MONDAY->value);
+    $pet = Pet::create(['user_id' => $user->id, 'animal_type_id' => $animalType->id, 'name' => 'Rex']);
+
+    $monday = now()->addWeeks(2)->startOfWeek();
+
+    $this->withHeaders(asUser($user))
+        ->postJson('/api/bookings/quote', [
+            'activity_id' => $activity->id,
+            'check_in_date' => $monday->toDateString(),
+            'check_out_date' => $monday->copy()->addDay()->toDateString(),
+            'pet_ids' => [$pet->id],
+        ])
+        ->assertUnprocessable();
 });
 
 it('unauthenticated user cannot request a quote', function () {

@@ -9,7 +9,11 @@ use App\Enums\AvailabilityStatusEnum;
 use App\Enums\BookingStatusEnum;
 use App\Enums\NotificationTypeEnum;
 use App\Enums\PaymentStatusEnum;
+use App\Enums\WeekDayEnum;
 use App\Models\Activity;
+use App\Models\ActivityCycle;
+use App\Models\ActivityCycleSetting;
+use App\Models\ActivityCycleSettingPrice;
 use App\Models\Booking;
 use App\Models\BookingThread;
 use App\Models\Conversation;
@@ -76,21 +80,17 @@ class BookingService
 
         $checkIn = Carbon::parse($data['check_in_date']);
         $checkOut = Carbon::parse($data['check_out_date']);
-        $nights = $checkIn->diffInDays($checkOut);
 
         $pets = Pet::whereIn('id', $data['pet_ids'])->get();
         $services = ! empty($data['service_ids'])
             ? Service::whereIn('id', $data['service_ids'])->get()
             : collect();
 
-        [$booking, $totalPrice] = DB::transaction(function () use ($user, $data, $activity, $checkIn, $checkOut, $nights, $pets, $services): array {
-            $capacities = $this->resolveCapacities($activity, $checkIn);
-
+        [$booking, $totalPrice] = DB::transaction(function () use ($user, $data, $activity, $checkIn, $checkOut, $pets, $services): array {
             $this->validateAvailability($activity, $checkIn, $checkOut);
-            $this->validateCapacity($activity, $pets, $capacities, $checkIn, $checkOut);
 
             [$totalPrice, $serviceFee, $platformFee, $activityAmount, $petPivots, $servicePivots] =
-                $this->calculatePrice($pets, $services, $capacities, (int) $nights);
+                $this->priceBooking($activity, $pets, $services, $checkIn, $checkOut);
 
             $booking = Booking::create([
                 'user_id' => $user->id,
@@ -181,13 +181,10 @@ class BookingService
             ? Service::whereIn('id', $data['service_ids'])->get()
             : collect();
 
-        $capacities = $this->resolveCapacities($activity, $checkIn);
-
         $this->validateAvailability($activity, $checkIn, $checkOut);
-        $this->validateCapacity($activity, $pets, $capacities, $checkIn, $checkOut);
 
         [$totalPrice, $serviceFee, $platformFee, $activityAmount, $petPivots, $servicePivots] =
-            $this->calculatePrice($pets, $services, $capacities, $nights);
+            $this->priceBooking($activity, $pets, $services, $checkIn, $checkOut);
 
         return [
             'check_in_date' => $checkIn->toDateString(),
@@ -364,96 +361,84 @@ class BookingService
         );
     }
 
-    private function resolveCapacities(Activity $activity, Carbon $checkIn): Collection
-    {
-        $cycle = $this->cycleService->resolveActiveCycle($activity, $checkIn->toDateString());
-
-        return $cycle === null
-            ? collect()
-            : $cycle->settings->keyBy('animal_type_id');
-    }
-
-    private function assertHostCanAcceptBookings(Activity $activity): void
-    {
-        if (! $activity->resolveChargesEnabled() || $activity->resolveStripeAccountId() === null) {
-            throw ValidationException::withMessages([
-                'activity_id' => ['This host cannot accept bookings yet. Their bank account is not connected.'],
-            ]);
-        }
-    }
-
-    private function validateAvailability(Activity $activity, Carbon $checkIn, Carbon $checkOut): void
-    {
-        $closedDays = $activity->availabilities()
-            ->where('status', AvailabilityStatusEnum::CLOSED)
-            ->whereBetween('date', [$checkIn->toDateString(), $checkOut->copy()->subDay()->toDateString()])
-            ->exists();
-
-        if ($closedDays) {
-            throw ValidationException::withMessages([
-                'check_in_date' => ['The activity is not available for the selected dates.'],
-            ]);
-        }
-    }
-
-    private function validateCapacity(
-        Activity $activity,
-        Collection $pets,
-        Collection $capacities,
-        Carbon $checkIn,
-        Carbon $checkOut
-    ): void {
-        $animalTypeCounts = $pets->groupBy('animal_type_id')->map->count();
-
-        $occupiedByType = Pet::select('pets.animal_type_id')
-            ->selectRaw('COUNT(*) as occupied_count')
-            ->join('booking_pets', 'booking_pets.pet_id', '=', 'pets.id')
-            ->join('bookings', 'bookings.id', '=', 'booking_pets.booking_id')
-            ->where('bookings.activity_id', $activity->id)
-            ->whereIn('bookings.status', [BookingStatusEnum::CONFIRMED->value, BookingStatusEnum::IN_PROGRESS->value])
-            ->where('bookings.check_in_date', '<', $checkOut->toDateString())
-            ->where('bookings.check_out_date', '>', $checkIn->toDateString())
-            ->whereIn('pets.animal_type_id', $animalTypeCounts->keys())
-            ->groupBy('pets.animal_type_id')
-            ->pluck('occupied_count', 'animal_type_id');
-
-        foreach ($animalTypeCounts as $animalTypeId => $requestedCount) {
-            if (! $capacities->has($animalTypeId)) {
-                throw ValidationException::withMessages([
-                    'pet_ids' => ['The activity does not accept this animal type.'],
-                ]);
-            }
-
-            $occupied = (int) ($occupiedByType[$animalTypeId] ?? 0);
-            $maxCapacity = $capacities->get($animalTypeId)->max_capacity;
-
-            if (($occupied + $requestedCount) > $maxCapacity) {
-                throw ValidationException::withMessages([
-                    'pet_ids' => ['The activity does not have enough capacity for the selected dates.'],
-                ]);
-            }
-        }
-    }
-
     /**
      * @return array{string, string, string, string, array<string, array{price_per_night: string, number_of_nights: int, subtotal: string}>, array<string, array{quantity: int, unit_price: string, subtotal: string}>}
      */
-    private function calculatePrice(
+    private function priceBooking(
+        Activity $activity,
         Collection $pets,
         Collection $services,
-        Collection $capacities,
-        int $nights
+        Carbon $checkIn,
+        Carbon $checkOut
     ): array {
+        $cycles = $this->activeCyclesFor($activity);
+        $requestedCounts = $pets->groupBy('animal_type_id')->map->count();
+        $occupancy = $this->overlappingOccupancy($activity, $requestedCounts->keys()->all(), $checkIn, $checkOut);
+
+        $petSubtotals = [];
+        foreach ($pets as $pet) {
+            $petSubtotals[$pet->id] = '0.00';
+        }
+
+        $nights = 0;
+
+        for ($date = $checkIn->copy(); $date->lt($checkOut); $date->addDay()) {
+            $nights++;
+            $dateString = $date->toDateString();
+            $cycle = $this->resolveCycleForDate($cycles, $dateString);
+            $weekday = $this->cycleService->weekDayForDate($dateString);
+
+            if ($cycle === null || $this->cycleClosedOn($cycle, $weekday)) {
+                throw ValidationException::withMessages([
+                    'check_in_date' => ['The activity is not available for the selected dates.'],
+                ]);
+            }
+
+            $settingsByType = $cycle->settings->keyBy('animal_type_id');
+
+            foreach ($requestedCounts as $animalTypeId => $requestedCount) {
+                $setting = $settingsByType->get($animalTypeId);
+
+                if (! $setting instanceof ActivityCycleSetting) {
+                    throw ValidationException::withMessages([
+                        'pet_ids' => ['The activity does not accept this animal type.'],
+                    ]);
+                }
+
+                $occupied = $this->occupiedOn($occupancy, (string) $animalTypeId, $dateString);
+
+                if (($occupied + $requestedCount) > $setting->max_capacity) {
+                    throw ValidationException::withMessages([
+                        'pet_ids' => ['The activity does not have enough capacity for the selected dates.'],
+                    ]);
+                }
+            }
+
+            foreach ($pets as $pet) {
+                $setting = $settingsByType->get($pet->animal_type_id);
+                $price = $setting instanceof ActivityCycleSetting
+                    ? $this->settingPriceForWeekday($setting, $weekday)
+                    : null;
+
+                if ($price === null) {
+                    throw ValidationException::withMessages([
+                        'check_in_date' => ['The activity is not available for the selected dates.'],
+                    ]);
+                }
+
+                $petSubtotals[$pet->id] = bcadd($petSubtotals[$pet->id], $price, 2);
+            }
+        }
+
         $petPivots = [];
         $basePrice = '0.00';
 
         foreach ($pets as $pet) {
-            $pricePerNight = (string) $capacities->get($pet->animal_type_id)->price;
-            $subtotal = bcmul($pricePerNight, (string) $nights, 2);
+            $subtotal = $petSubtotals[$pet->id];
             $basePrice = bcadd($basePrice, $subtotal, 2);
 
             $petPivots[$pet->id] = [
-                'price_per_night' => $pricePerNight,
+                'price_per_night' => $nights > 0 ? bcdiv($subtotal, (string) $nights, 2) : '0.00',
                 'number_of_nights' => $nights,
                 'subtotal' => $subtotal,
             ];
@@ -481,6 +466,104 @@ class BookingService
         $activityAmount = bcsub($basePrice, $platformFee, 2);
 
         return [$totalPrice, $serviceFee, $platformFee, $activityAmount, $petPivots, $servicePivots];
+    }
+
+    /**
+     * @return Collection<int, ActivityCycle>
+     */
+    private function activeCyclesFor(Activity $activity): Collection
+    {
+        return ActivityCycle::with(['settings.prices', 'closedWeekDays'])
+            ->where('activity_id', $activity->id)
+            ->where('is_active', true)
+            ->orderByDesc('priority')
+            ->get();
+    }
+
+    /**
+     * @param  Collection<int, ActivityCycle>  $cycles
+     */
+    private function resolveCycleForDate(Collection $cycles, string $date): ?ActivityCycle
+    {
+        return $cycles->first(
+            fn (ActivityCycle $cycle): bool => ($cycle->start_date === null || $cycle->start_date->toDateString() <= $date)
+                && ($cycle->end_date === null || $cycle->end_date->toDateString() >= $date)
+        );
+    }
+
+    private function cycleClosedOn(ActivityCycle $cycle, WeekDayEnum $weekday): bool
+    {
+        $mask = (int) ($cycle->closedWeekDays->pluck('sum_weekdays')->first() ?? 0);
+
+        return WeekDayEnum::contains($mask, $weekday);
+    }
+
+    private function settingPriceForWeekday(ActivityCycleSetting $setting, WeekDayEnum $weekday): ?string
+    {
+        $price = $setting->prices->first(
+            fn (ActivityCycleSettingPrice $price): bool => $price->weekday === $weekday->value
+        );
+
+        return $price === null ? null : (string) $price->price;
+    }
+
+    /**
+     * @param  array<int, mixed>  $animalTypeIds
+     * @return Collection<int, \stdClass>
+     */
+    private function overlappingOccupancy(Activity $activity, array $animalTypeIds, Carbon $checkIn, Carbon $checkOut): Collection
+    {
+        if ($animalTypeIds === []) {
+            return collect();
+        }
+
+        return DB::table('booking_pets')
+            ->join('pets', 'booking_pets.pet_id', '=', 'pets.id')
+            ->join('bookings', 'bookings.id', '=', 'booking_pets.booking_id')
+            ->where('bookings.activity_id', $activity->id)
+            ->whereIn('bookings.status', [BookingStatusEnum::CONFIRMED->value, BookingStatusEnum::IN_PROGRESS->value])
+            ->where('bookings.check_in_date', '<', $checkOut->toDateString())
+            ->where('bookings.check_out_date', '>', $checkIn->toDateString())
+            ->whereIn('pets.animal_type_id', $animalTypeIds)
+            ->get(['pets.animal_type_id', 'bookings.check_in_date', 'bookings.check_out_date']);
+    }
+
+    /**
+     * @param  Collection<int, \stdClass>  $occupancy
+     */
+    private function occupiedOn(Collection $occupancy, string $animalTypeId, string $date): int
+    {
+        return $occupancy->filter(function (\stdClass $row) use ($animalTypeId, $date): bool {
+            $rowCheckIn = substr((string) $row->check_in_date, 0, 10);
+            $rowCheckOut = substr((string) $row->check_out_date, 0, 10);
+
+            return (string) $row->animal_type_id === $animalTypeId
+                && $rowCheckIn <= $date
+                && $rowCheckOut > $date;
+        })->count();
+    }
+
+    private function assertHostCanAcceptBookings(Activity $activity): void
+    {
+        if (! $activity->resolveChargesEnabled() || $activity->resolveStripeAccountId() === null) {
+            throw ValidationException::withMessages([
+                'activity_id' => ['This host cannot accept bookings yet. Their bank account is not connected.'],
+            ]);
+        }
+    }
+
+    private function validateAvailability(Activity $activity, Carbon $checkIn, Carbon $checkOut): void
+    {
+        $closedDays = $activity->availabilities()
+            ->where('status', AvailabilityStatusEnum::CLOSED)
+            ->whereBetween('date', [$checkIn->toDateString(), $checkOut->copy()->subDay()->toDateString()])
+            ->exists();
+
+        if ($closedDays) {
+            throw ValidationException::withMessages([
+                'check_in_date' => ['The activity is not available for the selected dates.'],
+            ]);
+        }
     }
 
     private function sendBookingReferenceIfConversationExists(Booking $booking, User $actor, ?string $message = null): void

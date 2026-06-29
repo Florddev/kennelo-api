@@ -88,6 +88,7 @@ Route::middleware(['auth.jwt'])->group(function () {
     Route::delete('/activities/{activity}/availabilities/{availability}', [ActivityAvailabilityController::class, 'destroy']);
     Route::get('/activities/{activity}/cycles', [ActivityCycleController::class, 'index']);
     Route::post('/activities/{activity}/cycles', [ActivityCycleController::class, 'store']);
+    Route::put('/activities/{activity}/cycles/reorder', [ActivityCycleController::class, 'reorder']);
     Route::put('/activities/{activity}/cycles/{cycle}', [ActivityCycleController::class, 'update']);
     Route::delete('/activities/{activity}/cycles/{cycle}', [ActivityCycleController::class, 'destroy']);
     Route::put('/activities/{activity}/cycles/{cycle}/settings', [ActivityCycleController::class, 'settings']);

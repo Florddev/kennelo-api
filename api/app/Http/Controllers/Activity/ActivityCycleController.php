@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Activity;
 use App\Enums\ApiStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Activity\PriceCalendarRequest;
+use App\Http\Requests\Activity\ReorderActivityCyclesRequest;
 use App\Http\Requests\Activity\StoreActivityCycleRequest;
 use App\Http\Requests\Activity\UpdateActivityCycleRequest;
 use App\Http\Requests\Activity\UpsertClosedWeekDaysRequest;
@@ -117,6 +118,20 @@ class ActivityCycleController extends Controller
             ])
             ->response()
             ->setStatusCode(201);
+    }
+
+    public function reorder(ReorderActivityCyclesRequest $request, Activity $activity): JsonResponse
+    {
+        $this->authorize('manageCycles', $activity);
+
+        $cycles = $this->service->reorder($activity, $request->validated()['cycles']);
+
+        return ActivityCycleResource::collection($cycles)
+            ->additional([
+                'status' => ApiStatusEnum::SUCCESS,
+                'timestamp' => human_date(Carbon::now()),
+            ])
+            ->response();
     }
 
     public function update(UpdateActivityCycleRequest $request, Activity $activity, ActivityCycle $cycle): JsonResponse

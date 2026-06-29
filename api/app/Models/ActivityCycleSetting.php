@@ -4,15 +4,18 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property int $occupied_spots
  * @property-read AnimalType $animalType
  * @property-read ActivityCycle $cycle
+ * @property-read Collection<int, ActivityCycleSettingPrice> $prices
  */
 class ActivityCycleSetting extends Model
 {
@@ -24,15 +27,12 @@ class ActivityCycleSetting extends Model
         'activity_cycle_id',
         'animal_type_id',
         'max_capacity',
-        'price',
-        'sum_weekdays',
     ];
 
     protected function casts(): array
     {
         return [
-            'price' => 'decimal:2',
-            'sum_weekdays' => 'integer',
+            'max_capacity' => 'integer',
         ];
     }
 
@@ -44,5 +44,10 @@ class ActivityCycleSetting extends Model
     public function animalType(): BelongsTo
     {
         return $this->belongsTo(AnimalType::class);
+    }
+
+    public function prices(): HasMany
+    {
+        return $this->hasMany(ActivityCycleSettingPrice::class);
     }
 }

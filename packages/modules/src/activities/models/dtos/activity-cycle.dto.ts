@@ -8,6 +8,7 @@ export type ActivityCycleDto = {
     end_date: string | null;
     priority: number;
     is_active: boolean;
+    color: string | null;
     settings?: ActivityCycleSettingDto[];
     closed_week_days?: ActivityCycleClosedWeekDayDto[];
     created_at: string;

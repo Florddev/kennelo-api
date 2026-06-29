@@ -1,5 +1,4 @@
-import { weekdaysFromMask } from "@workspace/common";
-
+import { ActivityCycleSettingPriceModel } from "./activity-cycle-setting-price.model";
 import { AnimalTypeModel } from "./animal-type.model";
 import type { ActivityCycleSettingDto } from "./dtos/activity-cycle-setting.dto";
 
@@ -8,9 +7,7 @@ export class ActivityCycleSettingModel {
         public readonly id: string,
         public readonly animalType: AnimalTypeModel,
         public readonly maxCapacity: number,
-        public readonly price: number,
-        public readonly sumWeekdays: number,
-        public readonly weekDays: number[],
+        public readonly prices: ActivityCycleSettingPriceModel[],
         public readonly occupiedSpots: number,
         public readonly availableSpots: number,
     ) {}
@@ -20,11 +17,36 @@ export class ActivityCycleSettingModel {
             dto.id,
             AnimalTypeModel.from(dto.animal_type),
             dto.max_capacity,
-            parseFloat(dto.price),
-            dto.sum_weekdays,
-            dto.week_days ?? weekdaysFromMask(dto.sum_weekdays),
+            (dto.prices ?? []).map(ActivityCycleSettingPriceModel.from),
             dto.occupied_spots,
             dto.available_spots,
         );
+    }
+
+    priceForWeekday(weekday: number): number | null {
+        const match = this.prices.find((price) => price.weekday === weekday);
+
+        return match ? match.price : null;
+    }
+
+    minPrice(): number {
+        if (this.prices.length === 0) {
+            return 0;
+        }
+
+        return this.prices.reduce(
+            (min, price) => (price.price < min ? price.price : min),
+            this.prices[0]!.price,
+        );
+    }
+
+    averagePrice(): number {
+        if (this.prices.length === 0) {
+            return 0;
+        }
+
+        const total = this.prices.reduce((sum, price) => sum + price.price, 0);
+
+        return total / this.prices.length;
     }
 }

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Resources;
 
-use App\Enums\WeekDayEnum;
 use App\Models\ActivityCycleSetting;
+use App\Models\ActivityCycleSettingPrice;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -25,9 +25,13 @@ class ActivityCycleSettingResource extends JsonResource
                 'category' => $this->animalType->category,
             ],
             'max_capacity' => $this->max_capacity,
-            'price' => $this->price,
-            'sum_weekdays' => $this->sum_weekdays,
-            'week_days' => array_map(fn (WeekDayEnum $day): int => $day->value, WeekDayEnum::fromMask($this->sum_weekdays)),
+            'prices' => $this->prices
+                ->map(fn (ActivityCycleSettingPrice $price): array => [
+                    'weekday' => $price->weekday,
+                    'price' => $price->price,
+                ])
+                ->values()
+                ->all(),
             'occupied_spots' => $this->when($request->user() !== null, $occupiedSpots),
             'available_spots' => $this->when($request->user() !== null, $this->max_capacity - $occupiedSpots),
         ];

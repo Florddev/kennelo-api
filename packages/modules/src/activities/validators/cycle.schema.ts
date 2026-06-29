@@ -5,6 +5,10 @@ export const createCycleSchema = z.object({
     endDate: z.union([z.string().regex(/^\d{4}-\d{2}-\d{2}$/), z.literal("")]).optional(),
     priority: z.coerce.number().int().min(0).optional(),
     isActive: z.boolean().optional(),
+    color: z
+        .union([z.string().regex(/^#[0-9a-fA-F]{6}$/), z.literal("")])
+        .nullable()
+        .optional(),
 });
 
 export type CreateCycleInput = z.infer<typeof createCycleSchema>;
