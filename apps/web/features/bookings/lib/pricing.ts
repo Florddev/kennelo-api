@@ -7,7 +7,7 @@ export function sumPetsPricePerNight(
 ): number {
     return selectedPets.reduce((total, pet) => {
         const capacity = capacities.find((c) => c.animalType.id === pet.animalTypeId);
-        return capacity ? total + capacity.price : total;
+        return capacity ? total + capacity.averagePrice() : total;
     }, 0);
 }
 

@@ -20,6 +20,7 @@ class ActivityCycleResource extends JsonResource
             'end_date' => $this->end_date?->toDateString(),
             'priority' => $this->priority,
             'is_active' => $this->is_active,
+            'color' => $this->color,
             'settings' => ActivityCycleSettingResource::collection($this->whenLoaded('settings')),
             'closed_week_days' => ActivityCycleClosedWeekDayResource::collection($this->whenLoaded('closedWeekDays')),
             'created_at' => human_date($this->created_at),

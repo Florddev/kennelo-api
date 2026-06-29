@@ -21,8 +21,17 @@ class ActivityCycleSettingFactory extends Factory
             'activity_cycle_id' => ActivityCycle::factory(),
             'animal_type_id' => fn (): string => (string) AnimalType::query()->inRandomOrder()->value('id'),
             'max_capacity' => fake()->numberBetween(5, 30),
-            'price' => fake()->randomFloat(2, 15, 60),
-            'sum_weekdays' => WeekDayEnum::ALL,
         ];
+    }
+
+    public function configure(): static
+    {
+        return $this->afterCreating(function (ActivityCycleSetting $setting): void {
+            $price = fake()->randomFloat(2, 15, 60);
+
+            foreach (WeekDayEnum::values() as $weekday) {
+                $setting->prices()->create(['weekday' => $weekday, 'price' => $price]);
+            }
+        });
     }
 }
