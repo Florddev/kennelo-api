@@ -11,6 +11,7 @@ import {
     ShieldCheck,
     UserCircle,
     Card as CardIcon,
+    Scanner,
 } from "@solar-icons/react";
 
 import { Button } from "@workspace/ui/components/button";
@@ -64,6 +65,12 @@ export default function ProfileSettingsLayout({ children }: { children: React.Re
             label: t("ui.navigation.notificationPreferences"),
             href: routes.MyProfilePreferencesNotification(),
             comingSoon: true,
+        },
+        {
+            icon: Scanner,
+            label: t("ui.navigation.scanners"),
+            href: routes.SettingsScanners(),
+            comingSoon: false,
         },
     ];
 

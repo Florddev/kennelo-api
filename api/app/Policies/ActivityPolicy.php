@@ -15,9 +15,17 @@ class ActivityPolicy
         return true;
     }
 
-    public function view(User $user, Activity $activity): bool
+    public function view(?User $user, Activity $activity): bool
     {
-        return true;
+        if ($activity->is_active) {
+            return true;
+        }
+
+        return $user !== null && (
+            $user->hasRole('admin')
+            || $user->id === $activity->manager_id
+            || $activity->collaborators()->where('users.id', $user->id)->exists()
+        );
     }
 
     public function create(User $user): bool

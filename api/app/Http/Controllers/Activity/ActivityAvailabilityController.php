@@ -41,7 +41,7 @@ class ActivityAvailabilityController extends Controller
 
     public function range(RangeAvailabilitiesRequest $request, Activity $activity): JsonResponse
     {
-        $this->authorize('viewAvailabilities', $activity);
+        $this->authorize('view', $activity);
 
         $availabilities = $this->service->getRange(
             $activity,

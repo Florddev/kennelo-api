@@ -9,7 +9,11 @@ use App\Enums\AvailabilityStatusEnum;
 use App\Enums\BookingStatusEnum;
 use App\Enums\NotificationTypeEnum;
 use App\Enums\PaymentStatusEnum;
+use App\Enums\WeekDayEnum;
 use App\Models\Activity;
+use App\Models\ActivityCycle;
+use App\Models\ActivityCycleSetting;
+use App\Models\ActivityCycleSettingPrice;
 use App\Models\Booking;
 use App\Models\BookingThread;
 use App\Models\Conversation;
@@ -76,21 +80,17 @@ class BookingService
 
         $checkIn = Carbon::parse($data['check_in_date']);
         $checkOut = Carbon::parse($data['check_out_date']);
-        $nights = $checkIn->diffInDays($checkOut);
 
         $pets = Pet::whereIn('id', $data['pet_ids'])->get();
         $services = ! empty($data['service_ids'])
             ? Service::whereIn('id', $data['service_ids'])->get()
             : collect();
 
-        [$booking, $totalPrice] = DB::transaction(function () use ($user, $data, $activity, $checkIn, $checkOut, $nights, $pets, $services): array {
-            $capacities = $this->resolveCapacities($activity, $checkIn);
-
+        [$booking, $totalPrice] = DB::transaction(function () use ($user, $data, $activity, $checkIn, $checkOut, $pets, $services): array {
             $this->validateAvailability($activity, $checkIn, $checkOut);
-            $this->validateCapacity($activity, $pets, $capacities, $checkIn, $checkOut);
 
-            [$totalPrice, $platformFee, $activityAmount, $petPivots, $servicePivots] =
-                $this->calculatePrice($pets, $services, $capacities, (int) $nights);
+            [$totalPrice, $serviceFee, $platformFee, $activityAmount, $petPivots, $servicePivots] =
+                $this->priceBooking($activity, $pets, $services, $checkIn, $checkOut);
 
             $booking = Booking::create([
                 'user_id' => $user->id,
@@ -98,6 +98,7 @@ class BookingService
                 'check_in_date' => $data['check_in_date'],
                 'check_out_date' => $data['check_out_date'],
                 'total_price' => $totalPrice,
+                'service_fee' => $serviceFee,
                 'platform_fee' => $platformFee,
                 'activity_amount' => $activityAmount,
                 'status' => BookingStatusEnum::PENDING,
@@ -161,7 +162,7 @@ class BookingService
     }
 
     /**
-     * @return array{check_in_date: string, check_out_date: string, nights: int, total_price: string, platform_fee: string, activity_amount: string, pets: array<int, array<string, mixed>>, services: array<int, array<string, mixed>>}
+     * @return array{check_in_date: string, check_out_date: string, nights: int, total_price: string, service_fee: string, platform_fee: string, activity_amount: string, pets: array<int, array<string, mixed>>, services: array<int, array<string, mixed>>}
      */
     public function quote(array $data): array
     {
@@ -180,19 +181,17 @@ class BookingService
             ? Service::whereIn('id', $data['service_ids'])->get()
             : collect();
 
-        $capacities = $this->resolveCapacities($activity, $checkIn);
-
         $this->validateAvailability($activity, $checkIn, $checkOut);
-        $this->validateCapacity($activity, $pets, $capacities, $checkIn, $checkOut);
 
-        [$totalPrice, $platformFee, $activityAmount, $petPivots, $servicePivots] =
-            $this->calculatePrice($pets, $services, $capacities, $nights);
+        [$totalPrice, $serviceFee, $platformFee, $activityAmount, $petPivots, $servicePivots] =
+            $this->priceBooking($activity, $pets, $services, $checkIn, $checkOut);
 
         return [
             'check_in_date' => $checkIn->toDateString(),
             'check_out_date' => $checkOut->toDateString(),
             'nights' => $nights,
             'total_price' => $totalPrice,
+            'service_fee' => $serviceFee,
             'platform_fee' => $platformFee,
             'activity_amount' => $activityAmount,
             'pets' => $pets->map(fn (Pet $pet): array => [
@@ -362,13 +361,186 @@ class BookingService
         );
     }
 
-    private function resolveCapacities(Activity $activity, Carbon $checkIn): Collection
-    {
-        $cycle = $this->cycleService->resolveActiveCycle($activity, $checkIn->toDateString());
+    /**
+     * @return array{string, string, string, string, array<string, array{price_per_night: string, number_of_nights: int, subtotal: string}>, array<string, array{quantity: int, unit_price: string, subtotal: string}>}
+     */
+    private function priceBooking(
+        Activity $activity,
+        Collection $pets,
+        Collection $services,
+        Carbon $checkIn,
+        Carbon $checkOut
+    ): array {
+        $cycles = $this->activeCyclesFor($activity);
+        $requestedCounts = $pets->groupBy('animal_type_id')->map->count();
+        $occupancy = $this->overlappingOccupancy($activity, $requestedCounts->keys()->all(), $checkIn, $checkOut);
 
-        return $cycle === null
-            ? collect()
-            : $cycle->settings->keyBy('animal_type_id');
+        $petSubtotals = [];
+        foreach ($pets as $pet) {
+            $petSubtotals[$pet->id] = '0.00';
+        }
+
+        $nights = 0;
+
+        for ($date = $checkIn->copy(); $date->lt($checkOut); $date->addDay()) {
+            $nights++;
+            $dateString = $date->toDateString();
+            $cycle = $this->resolveCycleForDate($cycles, $dateString);
+            $weekday = $this->cycleService->weekDayForDate($dateString);
+
+            if ($cycle === null || $this->cycleClosedOn($cycle, $weekday)) {
+                throw ValidationException::withMessages([
+                    'check_in_date' => ['The activity is not available for the selected dates.'],
+                ]);
+            }
+
+            $settingsByType = $cycle->settings->keyBy('animal_type_id');
+
+            foreach ($requestedCounts as $animalTypeId => $requestedCount) {
+                $setting = $settingsByType->get($animalTypeId);
+
+                if (! $setting instanceof ActivityCycleSetting) {
+                    throw ValidationException::withMessages([
+                        'pet_ids' => ['The activity does not accept this animal type.'],
+                    ]);
+                }
+
+                $occupied = $this->occupiedOn($occupancy, (string) $animalTypeId, $dateString);
+
+                if (($occupied + $requestedCount) > $setting->max_capacity) {
+                    throw ValidationException::withMessages([
+                        'pet_ids' => ['The activity does not have enough capacity for the selected dates.'],
+                    ]);
+                }
+            }
+
+            foreach ($pets as $pet) {
+                $setting = $settingsByType->get($pet->animal_type_id);
+                $price = $setting instanceof ActivityCycleSetting
+                    ? $this->settingPriceForWeekday($setting, $weekday)
+                    : null;
+
+                if ($price === null) {
+                    throw ValidationException::withMessages([
+                        'check_in_date' => ['The activity is not available for the selected dates.'],
+                    ]);
+                }
+
+                $petSubtotals[$pet->id] = bcadd($petSubtotals[$pet->id], $price, 2);
+            }
+        }
+
+        $petPivots = [];
+        $basePrice = '0.00';
+
+        foreach ($pets as $pet) {
+            $subtotal = $petSubtotals[$pet->id];
+            $basePrice = bcadd($basePrice, $subtotal, 2);
+
+            $petPivots[$pet->id] = [
+                'price_per_night' => $nights > 0 ? bcdiv($subtotal, (string) $nights, 2) : '0.00',
+                'number_of_nights' => $nights,
+                'subtotal' => $subtotal,
+            ];
+        }
+
+        $servicePivots = [];
+
+        foreach ($services as $service) {
+            $unitPrice = (string) $service->price;
+            $basePrice = bcadd($basePrice, $unitPrice, 2);
+
+            $servicePivots[$service->id] = [
+                'quantity' => 1,
+                'unit_price' => $unitPrice,
+                'subtotal' => $unitPrice,
+            ];
+        }
+
+        $serviceFeeRate = (string) config('booking.user_service_fee_rate', '0.08');
+        $hostCommissionRate = (string) config('booking.host_commission_rate', '0.06');
+
+        $serviceFee = bcmul($basePrice, $serviceFeeRate, 2);
+        $platformFee = bcmul($basePrice, $hostCommissionRate, 2);
+        $totalPrice = bcadd($basePrice, $serviceFee, 2);
+        $activityAmount = bcsub($basePrice, $platformFee, 2);
+
+        return [$totalPrice, $serviceFee, $platformFee, $activityAmount, $petPivots, $servicePivots];
+    }
+
+    /**
+     * @return Collection<int, ActivityCycle>
+     */
+    private function activeCyclesFor(Activity $activity): Collection
+    {
+        return ActivityCycle::with(['settings.prices', 'closedWeekDays'])
+            ->where('activity_id', $activity->id)
+            ->where('is_active', true)
+            ->orderByDesc('priority')
+            ->get();
+    }
+
+    /**
+     * @param  Collection<int, ActivityCycle>  $cycles
+     */
+    private function resolveCycleForDate(Collection $cycles, string $date): ?ActivityCycle
+    {
+        return $cycles->first(
+            fn (ActivityCycle $cycle): bool => ($cycle->start_date === null || $cycle->start_date->toDateString() <= $date)
+                && ($cycle->end_date === null || $cycle->end_date->toDateString() >= $date)
+        );
+    }
+
+    private function cycleClosedOn(ActivityCycle $cycle, WeekDayEnum $weekday): bool
+    {
+        $mask = (int) ($cycle->closedWeekDays->pluck('sum_weekdays')->first() ?? 0);
+
+        return WeekDayEnum::contains($mask, $weekday);
+    }
+
+    private function settingPriceForWeekday(ActivityCycleSetting $setting, WeekDayEnum $weekday): ?string
+    {
+        $price = $setting->prices->first(
+            fn (ActivityCycleSettingPrice $price): bool => $price->weekday === $weekday->value
+        );
+
+        return $price === null ? null : (string) $price->price;
+    }
+
+    /**
+     * @param  array<int, mixed>  $animalTypeIds
+     * @return Collection<int, \stdClass>
+     */
+    private function overlappingOccupancy(Activity $activity, array $animalTypeIds, Carbon $checkIn, Carbon $checkOut): Collection
+    {
+        if ($animalTypeIds === []) {
+            return collect();
+        }
+
+        return DB::table('booking_pets')
+            ->join('pets', 'booking_pets.pet_id', '=', 'pets.id')
+            ->join('bookings', 'bookings.id', '=', 'booking_pets.booking_id')
+            ->where('bookings.activity_id', $activity->id)
+            ->whereIn('bookings.status', [BookingStatusEnum::CONFIRMED->value, BookingStatusEnum::IN_PROGRESS->value])
+            ->where('bookings.check_in_date', '<', $checkOut->toDateString())
+            ->where('bookings.check_out_date', '>', $checkIn->toDateString())
+            ->whereIn('pets.animal_type_id', $animalTypeIds)
+            ->get(['pets.animal_type_id', 'bookings.check_in_date', 'bookings.check_out_date']);
+    }
+
+    /**
+     * @param  Collection<int, \stdClass>  $occupancy
+     */
+    private function occupiedOn(Collection $occupancy, string $animalTypeId, string $date): int
+    {
+        return $occupancy->filter(function (\stdClass $row) use ($animalTypeId, $date): bool {
+            $rowCheckIn = substr((string) $row->check_in_date, 0, 10);
+            $rowCheckOut = substr((string) $row->check_out_date, 0, 10);
+
+            return (string) $row->animal_type_id === $animalTypeId
+                && $rowCheckIn <= $date
+                && $rowCheckOut > $date;
+        })->count();
     }
 
     private function assertHostCanAcceptBookings(Activity $activity): void
@@ -392,88 +564,6 @@ class BookingService
                 'check_in_date' => ['The activity is not available for the selected dates.'],
             ]);
         }
-    }
-
-    private function validateCapacity(
-        Activity $activity,
-        Collection $pets,
-        Collection $capacities,
-        Carbon $checkIn,
-        Carbon $checkOut
-    ): void {
-        $animalTypeCounts = $pets->groupBy('animal_type_id')->map->count();
-
-        $occupiedByType = Pet::select('pets.animal_type_id')
-            ->selectRaw('COUNT(*) as occupied_count')
-            ->join('booking_pets', 'booking_pets.pet_id', '=', 'pets.id')
-            ->join('bookings', 'bookings.id', '=', 'booking_pets.booking_id')
-            ->where('bookings.activity_id', $activity->id)
-            ->whereIn('bookings.status', [BookingStatusEnum::CONFIRMED->value, BookingStatusEnum::IN_PROGRESS->value])
-            ->where('bookings.check_in_date', '<', $checkOut->toDateString())
-            ->where('bookings.check_out_date', '>', $checkIn->toDateString())
-            ->whereIn('pets.animal_type_id', $animalTypeCounts->keys())
-            ->groupBy('pets.animal_type_id')
-            ->pluck('occupied_count', 'animal_type_id');
-
-        foreach ($animalTypeCounts as $animalTypeId => $requestedCount) {
-            if (! $capacities->has($animalTypeId)) {
-                throw ValidationException::withMessages([
-                    'pet_ids' => ['The activity does not accept this animal type.'],
-                ]);
-            }
-
-            $occupied = (int) ($occupiedByType[$animalTypeId] ?? 0);
-            $maxCapacity = $capacities->get($animalTypeId)->max_capacity;
-
-            if (($occupied + $requestedCount) > $maxCapacity) {
-                throw ValidationException::withMessages([
-                    'pet_ids' => ['The activity does not have enough capacity for the selected dates.'],
-                ]);
-            }
-        }
-    }
-
-    /**
-     * @return array{string, string, string, array<string, array{price_per_night: string, number_of_nights: int, subtotal: string}>, array<string, array{quantity: int, unit_price: string, subtotal: string}>}
-     */
-    private function calculatePrice(
-        Collection $pets,
-        Collection $services,
-        Collection $capacities,
-        int $nights
-    ): array {
-        $petPivots = [];
-        $totalPrice = '0.00';
-
-        foreach ($pets as $pet) {
-            $pricePerNight = (string) $capacities->get($pet->animal_type_id)->price;
-            $subtotal = bcmul($pricePerNight, (string) $nights, 2);
-            $totalPrice = bcadd($totalPrice, $subtotal, 2);
-
-            $petPivots[$pet->id] = [
-                'price_per_night' => $pricePerNight,
-                'number_of_nights' => $nights,
-                'subtotal' => $subtotal,
-            ];
-        }
-
-        $servicePivots = [];
-
-        foreach ($services as $service) {
-            $unitPrice = (string) $service->price;
-            $totalPrice = bcadd($totalPrice, $unitPrice, 2);
-
-            $servicePivots[$service->id] = [
-                'quantity' => 1,
-                'unit_price' => $unitPrice,
-                'subtotal' => $unitPrice,
-            ];
-        }
-
-        $platformFee = bcmul($totalPrice, '0.10', 2);
-        $activityAmount = bcsub($totalPrice, $platformFee, 2);
-
-        return [$totalPrice, $platformFee, $activityAmount, $petPivots, $servicePivots];
     }
 
     private function sendBookingReferenceIfConversationExists(Booking $booking, User $actor, ?string $message = null): void

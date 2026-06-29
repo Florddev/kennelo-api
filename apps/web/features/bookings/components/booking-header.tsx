@@ -1,19 +1,15 @@
 "use client";
 
 import { ArrowLeft } from "@solar-icons/react";
+import { Button } from "@workspace/ui/components/button";
 
 export function BookingHeader({ title, onBack }: { title: string; onBack: () => void }) {
     return (
-        <header className="sticky top-0 z-10 flex items-center gap-3 border-b bg-background px-4 py-3">
-            <button
-                type="button"
-                onClick={onBack}
-                aria-label="Back"
-                className="flex size-10 items-center justify-center rounded-full hover:bg-muted"
-            >
+        <header className="flex flex-col gap-2 p-3 pb-0">
+            <Button onClick={onBack} variant="flat" size="icon">
                 <ArrowLeft className="size-5" />
-            </button>
-            <h1 className="text-lg font-semibold">{title}</h1>
+            </Button>
+            <h1 className="text-2xl font-semibold px-1">{title}</h1>
         </header>
     );
 }

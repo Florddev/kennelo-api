@@ -17,7 +17,7 @@ class ActivityAvailabilityResource extends JsonResource
             'id' => $this->id,
             'date' => $this->date->toDateString(),
             'status' => $this->status->value,
-            'note' => $this->note,
+            'note' => $this->when($request->user() !== null, $this->note),
         ];
     }
 }

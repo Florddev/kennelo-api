@@ -123,6 +123,17 @@ type HostingNowParams = {
     search_params?: Record<string, string | number | boolean>;
 };
 
+type HostingScanParams = {
+    locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type HostingScanResultParams = {
+    locale?: string | number;
+    microchip: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
 type BecomeHostParams = {
     locale?: string | number;
     search_params?: Record<string, string | number | boolean>;
@@ -130,7 +141,7 @@ type BecomeHostParams = {
 
 type BookingDetailParams = {
     locale?: string | number;
-    id: string | number;
+    id: string;
     search_params?: Record<string, string | number | boolean>;
 };
 
@@ -171,6 +182,11 @@ type NotificationsParams = {
     search_params?: Record<string, string | number | boolean>;
 };
 
+type LivePetParams = {
+    locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
 type NewPetParams = {
     locale?: string | number;
     search_params?: Record<string, string | number | boolean>;
@@ -195,7 +211,7 @@ type PetEditHealthParams = {
 
 type PetEditPageParams = {
     locale?: string | number;
-    id: string | number;
+    id: string;
     search_params?: Record<string, string | number | boolean>;
 };
 
@@ -253,6 +269,11 @@ type MyProfilePreferencesNotificationParams = {
 };
 
 type MyProfileTwoFactorParams = {
+    locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type SettingsScannersParams = {
     locale?: string | number;
     search_params?: Record<string, string | number | boolean>;
 };
@@ -345,6 +366,14 @@ function HostingNow(params?: HostingNowParams): string {
     return buildRoute("/[locale]/hosting/now", params);
 }
 
+function HostingScan(params?: HostingScanParams): string {
+    return buildRoute("/[locale]/hosting/scan", params);
+}
+
+function HostingScanResult(params: HostingScanResultParams): string {
+    return buildRoute("/[locale]/hosting/scan/[microchip]", params);
+}
+
 function BecomeHost(params?: BecomeHostParams): string {
     return buildRoute("/[locale]/become-host", params);
 }
@@ -379,6 +408,10 @@ function Messages(params?: MessagesParams): string {
 
 function Notifications(params?: NotificationsParams): string {
     return buildRoute("/[locale]/notifications", params);
+}
+
+function LivePet(params?: LivePetParams): string {
+    return buildRoute("/[locale]/pets/live", params);
 }
 
 function NewPet(params?: NewPetParams): string {
@@ -445,6 +478,10 @@ function MyProfileTwoFactor(params?: MyProfileTwoFactorParams): string {
     return buildRoute("/[locale]/settings/two-factor", params);
 }
 
+function SettingsScanners(params?: SettingsScannersParams): string {
+    return buildRoute("/[locale]/settings/scanners", params);
+}
+
 export const routes = {
     RootPage,
     ForgotPassword,
@@ -468,6 +505,8 @@ export const routes = {
     ActivityPayment,
     HostingMessages,
     HostingNow,
+    HostingScan,
+    HostingScanResult,
     BecomeHost,
     BookingDetail,
     Explore,
@@ -477,6 +516,7 @@ export const routes = {
     HostDetail,
     Messages,
     Notifications,
+    LivePet,
     NewPet,
     MyPets,
     PetEditGeneral,
@@ -493,6 +533,7 @@ export const routes = {
     MyProfileEmailPreferences,
     MyProfilePreferencesNotification,
     MyProfileTwoFactor,
+    SettingsScanners,
 } as const;
 
 export type RouteName = keyof typeof routes;

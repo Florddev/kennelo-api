@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 /**
  * @property Carbon|null $start_date
  * @property Carbon|null $end_date
+ * @property string|null $color
  * @property-read Activity $activity
  * @property-read Collection<int, ActivityCycleSetting> $settings
  * @property-read Collection<int, ActivityCycleClosedWeekDay> $closedWeekDays
@@ -31,6 +32,7 @@ class ActivityCycle extends Model
         'end_date',
         'priority',
         'is_active',
+        'color',
     ];
 
     protected function casts(): array

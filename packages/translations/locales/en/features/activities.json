@@ -191,6 +191,50 @@
             "friday": "Fri",
             "saturday": "Sat",
             "sunday": "Sun"
+        },
+        "matrix": {
+            "species": "Species",
+            "capacity": "Capacity",
+            "empty": "No animal type configured yet.",
+            "addSpecies": "Add an animal type",
+            "wholeCycle": "Whole cycle",
+            "baseSummary": "base {price}€ · {count} pl.",
+            "currency": "€"
+        },
+        "defaultSettings": {
+            "title": "Default settings",
+            "description": "Base capacity and per-day pricing applied when no cycle overrides a date."
+        },
+        "calendar": {
+            "title": "Pricing calendar"
+        },
+        "timeline": {
+            "title": "Cycles",
+            "addCycle": "Add a cycle",
+            "empty": "No cycles yet. Add a cycle to override the default settings over a period.",
+            "cycleLabel": "Priority {priority}"
+        },
+        "dialog": {
+            "editTitle": "Edit cycle",
+            "createTitle": "New cycle",
+            "startDate": "Start date",
+            "endDate": "End date",
+            "color": "Color",
+            "noColor": "No color"
+        },
+        "weekdaysLong": {
+            "monday": "Monday",
+            "tuesday": "Tuesday",
+            "wednesday": "Wednesday",
+            "thursday": "Thursday",
+            "friday": "Friday",
+            "saturday": "Saturday",
+            "sunday": "Sunday"
+        },
+        "autosave": {
+            "saving": "Saving…",
+            "saved": "Saved",
+            "error": "Save failed"
         }
     },
     "availabilities": {

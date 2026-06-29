@@ -1,6 +1,13 @@
 {
     "title": "Animaux",
     "description": "Gérez vos animaux de compagnie",
+    "live": {
+        "title": "Diffusion en direct",
+        "description": "Affichage d'animal en temps réel",
+        "waiting": "En attente d'une diffusion...",
+        "waitingDescription": "Dès qu'un animal est diffusé, il apparaît ici automatiquement.",
+        "received": "Animal reçu"
+    },
     "addPet": "Ajouter un animal",
     "noPets": "Aucun animal",
     "noPetsDescription": "Ajoutez votre premier animal pour commencer à gérer son profil",
@@ -59,6 +66,10 @@
     "fields": {
         "name": "Nom",
         "breed": "Race",
+        "breedPlaceholder": "Choisir une race",
+        "breedOther": "Autre",
+        "breedCustom": "Nom de la race",
+        "breedCustomPlaceholder": "Saisir la race",
         "birthDate": "Date de naissance",
         "age": "Âge",
         "ageYears": "Années",

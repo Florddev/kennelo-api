@@ -6,6 +6,7 @@ import type { UpdatePetInput } from "../../validators/update-pet.schema";
 export async function updatePet(id: string, input: UpdatePetInput): Promise<PetModel> {
     const response = await api.put<PetDto>(`/pets/${id}`, {
         animal_type_id: input.animalTypeId,
+        animal_breed_id: input.animalBreedId,
         name: input.name,
         breed: input.breed,
         birth_date: input.birthDate,

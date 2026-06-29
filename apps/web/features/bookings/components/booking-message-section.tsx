@@ -26,7 +26,7 @@ export function BookingMessageSection({ value, onChange }: BookingMessageSection
                 placeholder={t("features.bookings.checkout.messagePlaceholder")}
                 rows={5}
                 maxLength={1000}
-                className="resize-none rounded-2xl"
+                className="resize-none rounded-2xl bg-card placeholder:text-sm"
             />
         </section>
     );

@@ -34,7 +34,9 @@
         "today": "Aujourd'hui",
         "calendar": "Calendrier",
         "activity": "Activité",
-        "messages": "Messages"
+        "messages": "Messages",
+        "scan": "Scan"
     },
-    "overview": "Aperçu"
+    "overview": "Aperçu",
+    "scanners": "Mes scanners"
 }

@@ -1,0 +1,43 @@
+{
+    "title": "إعداد الماسح",
+    "description": "قم بإعداد ماسح KenoTag",
+    "connect": {
+        "connected": "الماسح متصل",
+        "connecting": "جارٍ الاتصال...",
+        "disconnected": "الماسح غير متصل",
+        "scanBtn": "البحث عن الماسح",
+        "scanning": "جارٍ البحث...",
+        "disconnectBtn": "قطع الاتصال",
+        "noDevices": "تأكد من أن الماسح في وضع Bluetooth...",
+        "errors": {
+            "BLUETOOTH_DISABLED": "يرجى تفعيل البلوتوث لتوصيل الماسح.",
+            "SCAN_ERROR": "خطأ أثناء مسح BLE.",
+            "CONNECT_FAILED": "فشل الاتصال."
+        }
+    },
+    "wifi": {
+        "available": "الشبكات المتاحة",
+        "scan": "مسح",
+        "scanning": "جارٍ المسح...",
+        "noNetworks": "ابدأ مسحاً لرؤية الشبكات المتاحة",
+        "saved": "الشبكات المحفوظة",
+        "refresh": "تحديث",
+        "loading": "جارٍ التحميل...",
+        "noSaved": "لا توجد شبكات محفوظة",
+        "priority": "أولوية",
+        "delete": "حذف",
+        "addTitle": "إضافة شبكة WiFi",
+        "ssidLabel": "اسم الشبكة (SSID)",
+        "ssidPlaceholder": "شبكتي",
+        "passwordLabel": "كلمة المرور",
+        "passwordPlaceholder": "كلمة المرور",
+        "showPassword": "إظهار",
+        "hidePassword": "إخفاء",
+        "priorityLabel": "الأولوية (1 = الأعلى)",
+        "unknownError": "خطأ غير معروف",
+        "sendError": "خطأ في الإرسال",
+        "cancel": "إلغاء",
+        "save": "حفظ",
+        "saving": "جارٍ الحفظ..."
+    }
+}

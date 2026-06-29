@@ -1,6 +1,13 @@
 {
     "title": "Animals",
     "description": "Manage your pets",
+    "live": {
+        "title": "Live Pet Broadcast",
+        "description": "Real-time pet display",
+        "waiting": "Waiting for a broadcast...",
+        "waitingDescription": "As soon as a pet is broadcast, it will appear here automatically.",
+        "received": "Pet received"
+    },
     "addPet": "Add a pet",
     "noPets": "No pets yet",
     "noPetsDescription": "Add your first pet to start managing their profile",
@@ -59,6 +66,10 @@
     "fields": {
         "name": "Name",
         "breed": "Breed",
+        "breedPlaceholder": "Select a breed",
+        "breedOther": "Other",
+        "breedCustom": "Breed name",
+        "breedCustomPlaceholder": "Enter the breed",
         "birthDate": "Date of birth",
         "age": "Age",
         "ageYears": "Years",

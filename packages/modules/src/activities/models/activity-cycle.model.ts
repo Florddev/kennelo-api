@@ -10,6 +10,7 @@ export class ActivityCycleModel {
         public readonly endDate: string | null,
         public readonly priority: number,
         public readonly isActive: boolean,
+        public readonly color: string | null,
         public readonly settings: ActivityCycleSettingModel[],
         public readonly closedWeekDays: ActivityCycleClosedWeekDayModel[],
         public readonly createdAt: string,
@@ -24,6 +25,7 @@ export class ActivityCycleModel {
             dto.end_date,
             dto.priority,
             dto.is_active,
+            dto.color,
             dto.settings ? dto.settings.map(ActivityCycleSettingModel.from) : [],
             dto.closed_week_days
                 ? dto.closed_week_days.map(ActivityCycleClosedWeekDayModel.from)

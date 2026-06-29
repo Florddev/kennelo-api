@@ -9,6 +9,7 @@ use App\Enums\WeekDayEnum;
 use App\Models\Activity;
 use App\Models\ActivityCycle;
 use App\Models\ActivityCycleSetting;
+use App\Models\ActivityCycleSettingPrice;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -17,7 +18,7 @@ class ActivityCycleService
 {
     public function list(Activity $activity): Collection
     {
-        return ActivityCycle::with(['settings.animalType', 'closedWeekDays'])
+        return ActivityCycle::with(['settings.animalType', 'settings.prices', 'closedWeekDays'])
             ->where('activity_id', $activity->id)
             ->orderByDesc('priority')
             ->get();
@@ -26,23 +27,74 @@ class ActivityCycleService
     public function createCycle(Activity $activity, array $data): ActivityCycle
     {
         return DB::transaction(function () use ($activity, $data): ActivityCycle {
+            $startDate = $data['start_date'] ?? null;
+            $endDate = $data['end_date'] ?? null;
+
+            $priority = array_key_exists('priority', $data)
+                ? (int) $data['priority']
+                : $this->nextPriorityForRange($activity, $startDate, $endDate);
+
             $cycle = ActivityCycle::create([
                 'activity_id' => $activity->id,
-                'start_date' => $data['start_date'] ?? null,
-                'end_date' => $data['end_date'] ?? null,
-                'priority' => $data['priority'] ?? 0,
+                'start_date' => $startDate,
+                'end_date' => $endDate,
+                'priority' => $priority,
                 'is_active' => $data['is_active'] ?? true,
+                'color' => $data['color'] ?? null,
             ]);
 
-            return $cycle->load(['settings.animalType', 'closedWeekDays']);
+            return $cycle->load(['settings.animalType', 'settings.prices', 'closedWeekDays']);
         });
+    }
+
+    public function reorder(Activity $activity, array $orderedIds): Collection
+    {
+        DB::transaction(function () use ($activity, $orderedIds): void {
+            $total = count($orderedIds);
+
+            foreach (array_values($orderedIds) as $index => $cycleId) {
+                ActivityCycle::where('activity_id', $activity->id)
+                    ->where('id', $cycleId)
+                    ->update(['priority' => $total - $index]);
+            }
+        });
+
+        return $this->list($activity);
+    }
+
+    private function nextPriorityForRange(Activity $activity, ?string $startDate, ?string $endDate): int
+    {
+        if ($startDate === null && $endDate === null) {
+            return 0;
+        }
+
+        $priorities = ActivityCycle::where('activity_id', $activity->id)
+            ->where(fn ($query) => $query->whereNotNull('start_date')->orWhereNotNull('end_date'))
+            ->get()
+            ->filter(fn (ActivityCycle $cycle): bool => $this->rangesOverlap(
+                $startDate,
+                $endDate,
+                $cycle->start_date?->toDateString(),
+                $cycle->end_date?->toDateString(),
+            ))
+            ->pluck('priority');
+
+        return $priorities->isEmpty() ? 1 : ((int) $priorities->max() + 1);
+    }
+
+    private function rangesOverlap(?string $aStart, ?string $aEnd, ?string $bStart, ?string $bEnd): bool
+    {
+        $startsBeforeOtherEnds = $aStart === null || $bEnd === null || $aStart <= $bEnd;
+        $endsAfterOtherStarts = $aEnd === null || $bStart === null || $aEnd >= $bStart;
+
+        return $startsBeforeOtherEnds && $endsAfterOtherStarts;
     }
 
     public function updateCycle(ActivityCycle $cycle, array $data): ActivityCycle
     {
         $cycle->update($data);
 
-        return $cycle->fresh(['settings.animalType', 'closedWeekDays']);
+        return $cycle->fresh(['settings.animalType', 'settings.prices', 'closedWeekDays']);
     }
 
     public function deleteCycle(ActivityCycle $cycle): void
@@ -56,16 +108,23 @@ class ActivityCycleService
             $cycle->settings()->delete();
 
             foreach ($settings as $setting) {
-                ActivityCycleSetting::create([
+                $prices = $setting['prices'] ?? [];
+
+                $created = ActivityCycleSetting::create([
                     'activity_cycle_id' => $cycle->id,
                     'animal_type_id' => $setting['animal_type_id'],
                     'max_capacity' => $setting['max_capacity'],
-                    'price' => $setting['price'],
-                    'sum_weekdays' => $setting['sum_weekdays'] ?? WeekDayEnum::ALL,
                 ]);
+
+                foreach ($prices as $price) {
+                    $created->prices()->create([
+                        'weekday' => (int) $price['weekday'],
+                        'price' => $price['price'],
+                    ]);
+                }
             }
 
-            return $cycle->fresh(['settings.animalType', 'closedWeekDays']);
+            return $cycle->fresh(['settings.animalType', 'settings.prices', 'closedWeekDays']);
         });
     }
 
@@ -76,12 +135,12 @@ class ActivityCycleService
             $cycle->closedWeekDays()->create(['sum_weekdays' => $sumWeekdays]);
         });
 
-        return $cycle->fresh(['settings.animalType', 'closedWeekDays']);
+        return $cycle->fresh(['settings.animalType', 'settings.prices', 'closedWeekDays']);
     }
 
     public function resolveActiveCycle(Activity $activity, string $date): ?ActivityCycle
     {
-        return ActivityCycle::with(['settings.animalType', 'closedWeekDays'])
+        return ActivityCycle::with(['settings.animalType', 'settings.prices', 'closedWeekDays'])
             ->where('activity_id', $activity->id)
             ->where('is_active', true)
             ->where(fn ($query) => $query->whereNull('start_date')->orWhere('start_date', '<=', $date))
@@ -100,11 +159,7 @@ class ActivityCycleService
             return collect();
         }
 
-        $weekDay = $this->weekDayForDate($date);
-
-        $settings = $cycle->settings
-            ->filter(fn (ActivityCycleSetting $setting): bool => WeekDayEnum::contains($setting->sum_weekdays, $weekDay))
-            ->values();
+        $settings = $cycle->settings->values();
 
         $occupancy = DB::table('booking_pets')
             ->join('pets', 'booking_pets.pet_id', '=', 'pets.id')
@@ -122,7 +177,101 @@ class ActivityCycleService
         });
     }
 
-    private function weekDayForDate(string $date): WeekDayEnum
+    public function priceCalendar(Activity $activity, string $from, string $to): array
+    {
+        $start = Carbon::parse($from)->startOfDay();
+        $end = Carbon::parse($to)->startOfDay();
+
+        if ($start->diffInDays($end) > 370) {
+            $end = $start->copy()->addDays(370);
+        }
+
+        $cycles = ActivityCycle::with(['settings.prices', 'closedWeekDays'])
+            ->where('activity_id', $activity->id)
+            ->where('is_active', true)
+            ->orderByDesc('priority')
+            ->get();
+
+        $prices = [];
+
+        for ($date = $start->copy(); $date->lte($end); $date->addDay()) {
+            $prices[$date->toDateString()] = $this->lowestPriceForDate($cycles, $date);
+        }
+
+        return $prices;
+    }
+
+    public function publicList(Activity $activity): Collection
+    {
+        return ActivityCycle::with(['settings.animalType', 'settings.prices', 'closedWeekDays'])
+            ->where('activity_id', $activity->id)
+            ->where('is_active', true)
+            ->orderByDesc('priority')
+            ->get();
+    }
+
+    public function animalTypePriceRanges(Activity $activity): Collection
+    {
+        $settings = ActivityCycle::with(['settings.animalType', 'settings.prices'])
+            ->where('activity_id', $activity->id)
+            ->where('is_active', true)
+            ->get()
+            ->flatMap(fn (ActivityCycle $cycle): Collection => $cycle->settings);
+
+        return $settings
+            ->groupBy('animal_type_id')
+            ->map(function (Collection $group): array {
+                $prices = $group->flatMap(
+                    fn (ActivityCycleSetting $setting): Collection => $setting->prices->map(
+                        fn (ActivityCycleSettingPrice $price): float => (float) $price->price,
+                    ),
+                );
+
+                return [
+                    'animal_type' => $group->first()->animalType,
+                    'min_price' => $prices->isEmpty() ? null : (float) $prices->min(),
+                    'max_price' => $prices->isEmpty() ? null : (float) $prices->max(),
+                ];
+            })
+            ->values();
+    }
+
+    private function lowestPriceForDate(Collection $cycles, Carbon $date): ?float
+    {
+        $cycle = $cycles->first(function (ActivityCycle $cycle) use ($date): bool {
+            $startsBefore = $cycle->start_date === null || Carbon::parse($cycle->start_date)->lte($date);
+            $endsAfter = $cycle->end_date === null || Carbon::parse($cycle->end_date)->gte($date);
+
+            return $startsBefore && $endsAfter;
+        });
+
+        if ($cycle === null) {
+            return null;
+        }
+
+        $weekDay = $this->weekDayForDate($date->toDateString());
+
+        $isClosed = $cycle->closedWeekDays->contains(
+            fn ($closedWeekDay): bool => WeekDayEnum::contains((int) $closedWeekDay->sum_weekdays, $weekDay),
+        );
+
+        if ($isClosed) {
+            return null;
+        }
+
+        $prices = $cycle->settings
+            ->flatMap(fn (ActivityCycleSetting $setting): Collection => $setting->prices)
+            ->filter(fn (ActivityCycleSettingPrice $price): bool => $price->weekday === $weekDay->value)
+            ->map(fn (ActivityCycleSettingPrice $price): float => (float) $price->price);
+
+        if ($prices->isEmpty()) {
+            return null;
+        }
+
+        return (float) $prices->min();
+    }
+
+    public function weekDayForDate(string $date): WeekDayEnum
     {
         return match (Carbon::parse($date)->dayOfWeekIso) {
             1 => WeekDayEnum::MONDAY,

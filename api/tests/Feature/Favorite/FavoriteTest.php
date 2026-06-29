@@ -148,7 +148,7 @@ it('unauthenticated user cannot remove a favorite', function () {
 
 it('exposes is_favorited true on an activity the user favorited', function () {
     $user = User::factory()->create();
-    $activity = Activity::factory()->create();
+    $activity = Activity::factory()->create(['is_active' => true]);
     $user->favoriteActivities()->attach($activity->id);
 
     $this->withHeaders(asUser($user))
@@ -159,7 +159,7 @@ it('exposes is_favorited true on an activity the user favorited', function () {
 
 it('exposes is_favorited false on an activity the user did not favorite', function () {
     $user = User::factory()->create();
-    $activity = Activity::factory()->create();
+    $activity = Activity::factory()->create(['is_active' => true]);
 
     $this->withHeaders(asUser($user))
         ->getJson("/api/activities/{$activity->id}")

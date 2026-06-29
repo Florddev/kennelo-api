@@ -1,0 +1,7 @@
+[
+    { "breed": "standard_ferret", "label": { "en": "Standard Ferret", "fr": "Furet standard", "ar": "نمس قياسي" } },
+    { "breed": "angora_ferret", "label": { "en": "Angora Ferret", "fr": "Furet angora", "ar": "نمس أنغورا" } },
+    { "breed": "albino_ferret", "label": { "en": "Albino Ferret", "fr": "Furet Albinos", "ar": "نمس ألبينو" } },
+    { "breed": "sable_ferret", "label": { "en": "Sable Ferret", "fr": "Furet Putoisé (Sable)", "ar": "نمس سمور" } },
+    { "breed": "silver_ferret", "label": { "en": "Silver Ferret", "fr": "Furet Argenté", "ar": "نمس فضي" } }
+]

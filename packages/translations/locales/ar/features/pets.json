@@ -1,6 +1,13 @@
 {
     "title": "الحيوانات",
     "description": "إدارة حيواناتك الأليفة",
+    "live": {
+        "title": "البث المباشر للحيوان",
+        "description": "عرض الحيوان في الوقت الفعلي",
+        "waiting": "في انتظار البث...",
+        "waitingDescription": "بمجرد بث حيوان، سيظهر هنا تلقائيًا.",
+        "received": "تم استقبال الحيوان"
+    },
     "addPet": "إضافة حيوان",
     "noPets": "لا توجد حيوانات بعد",
     "noPetsDescription": "أضف حيوانك الأول لبدء إدارة ملفه الشخصي",
@@ -59,6 +66,10 @@
     "fields": {
         "name": "الاسم",
         "breed": "السلالة",
+        "breedPlaceholder": "اختر سلالة",
+        "breedOther": "أخرى",
+        "breedCustom": "اسم السلالة",
+        "breedCustomPlaceholder": "أدخل السلالة",
         "birthDate": "تاريخ الميلاد",
         "age": "العمر",
         "ageYears": "سنوات",

@@ -15,6 +15,7 @@ export async function updateCycle(
     if (input.endDate !== undefined) body.end_date = input.endDate || null;
     if (input.priority !== undefined) body.priority = input.priority;
     if (input.isActive !== undefined) body.is_active = input.isActive;
+    if (input.color !== undefined) body.color = input.color || null;
 
     const response = await api.put<ActivityCycleDto>(
         `/activities/${activityId}/cycles/${cycleId}`,

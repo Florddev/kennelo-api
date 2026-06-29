@@ -6,6 +6,7 @@ namespace App\Http\Resources;
 
 use App\Models\Activity;
 use App\Models\ActivityCycleSetting;
+use App\Models\ActivityCycleSettingPrice;
 use App\Services\MediaService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -23,8 +24,12 @@ class ActivityResource extends JsonResource
             }
         }
 
-        $minPrice = $settings->isNotEmpty()
-            ? (float) $settings->min('price')
+        $prices = $settings
+            ->flatMap(fn (ActivityCycleSetting $setting): iterable => $setting->prices)
+            ->map(fn (ActivityCycleSettingPrice $price): float => (float) $price->price);
+
+        $minPrice = $prices->isNotEmpty()
+            ? (float) $prices->min()
             : null;
 
         $animalTypes = $settings->isNotEmpty()

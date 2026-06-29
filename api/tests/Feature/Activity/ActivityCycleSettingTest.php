@@ -22,13 +22,15 @@ function makeCycleSettingFixtures(): array
         'end_date' => null,
     ]);
 
-    ActivityCycleSetting::create([
+    $setting = ActivityCycleSetting::create([
         'activity_cycle_id' => $cycle->id,
         'animal_type_id' => $animalType->id,
         'max_capacity' => 8,
-        'price' => 25.00,
-        'sum_weekdays' => WeekDayEnum::ALL,
     ]);
+
+    foreach (WeekDayEnum::values() as $weekday) {
+        $setting->prices()->create(['weekday' => $weekday, 'price' => 25.00]);
+    }
 
     return [$activity, $animalType];
 }
@@ -42,7 +44,8 @@ it('any authenticated user can read the active cycle settings', function () {
         ->assertOk()
         ->assertJsonCount(1, 'data')
         ->assertJsonPath('data.0.max_capacity', 8)
-        ->assertJsonPath('data.0.available_spots', 8);
+        ->assertJsonPath('data.0.available_spots', 8)
+        ->assertJsonCount(7, 'data.0.prices');
 });
 
 it('cycle settings can be requested for a specific date', function () {
@@ -64,8 +67,20 @@ it('cycle settings reject an invalid date format', function () {
         ->assertUnprocessable();
 });
 
-it('unauthenticated user cannot read cycle settings', function () {
+it('unauthenticated user can read cycle settings without occupancy data', function () {
     [$activity] = makeCycleSettingFixtures();
 
-    $this->getJson("/api/activities/{$activity->id}/cycle-settings")->assertUnauthorized();
+    $this->getJson("/api/activities/{$activity->id}/cycle-settings")
+        ->assertOk()
+        ->assertJsonCount(1, 'data')
+        ->assertJsonMissingPath('data.0.occupied_spots')
+        ->assertJsonMissingPath('data.0.available_spots');
+});
+
+it('unauthenticated user cannot read cycle settings of an inactive activity', function () {
+    [$activity] = makeCycleSettingFixtures();
+    $activity->update(['is_active' => false]);
+
+    $this->getJson("/api/activities/{$activity->id}/cycle-settings")
+        ->assertForbidden();
 });

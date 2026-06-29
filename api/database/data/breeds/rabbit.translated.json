@@ -1,0 +1,23 @@
+[
+    { "breed": "holland_lop", "label": { "en": "Holland Lop", "fr": "Bélier de Hollande", "ar": "هولاند لوب" } },
+    { "breed": "netherland_dwarf", "label": { "en": "Netherland Dwarf", "fr": "Nain de couleur", "ar": "القزم الهولندي" } },
+    { "breed": "mini_rex", "label": { "en": "Mini Rex", "fr": "Mini Rex", "ar": "ميني ريكس" } },
+    { "breed": "lionhead", "label": { "en": "Lionhead", "fr": "Tête de lion", "ar": "رأس الأسد" } },
+    { "breed": "flemish_giant", "label": { "en": "Flemish Giant", "fr": "Géant des Flandres", "ar": "العملاق الفلمنكي" } },
+    { "breed": "dutch", "label": { "en": "Dutch", "fr": "Hollandais", "ar": "هولندي" } },
+    { "breed": "english_angora", "label": { "en": "English Angora", "fr": "Angora anglais", "ar": "أنغورا إنجليزي" } },
+    { "breed": "french_lop", "label": { "en": "French Lop", "fr": "Bélier français", "ar": "لوب فرنسي" } },
+    { "breed": "mini_lop", "label": { "en": "Mini Lop", "fr": "Mini Bélier", "ar": "ميني لوب" } },
+    { "breed": "rex", "label": { "en": "Rex", "fr": "Rex", "ar": "ريكس" } },
+    { "breed": "american_fuzzy_lop", "label": { "en": "American Fuzzy Lop", "fr": "Bélier American Fuzzy", "ar": "لوب أمريكي زغب" } },
+    { "breed": "english_lop", "label": { "en": "English Lop", "fr": "Bélier Anglais", "ar": "لوب إنجليزي" } },
+    { "breed": "jersey_wooly", "label": { "en": "Jersey Wooly", "fr": "Jersey Wooly", "ar": "جيرسي وولي" } },
+    { "breed": "polish", "label": { "en": "Polish", "fr": "Polonais", "ar": "بولندي" } },
+    { "breed": "californian", "label": { "en": "Californian", "fr": "Californien", "ar": "كاليفورني" } },
+    { "breed": "new_zealand", "label": { "en": "New Zealand", "fr": "Néo-Zélandais", "ar": "النيوزيلندي" } },
+    { "breed": "harlequin", "label": { "en": "Harlequin", "fr": "Arlequin", "ar": "هارلكوين" } },
+    { "breed": "himalayan_rabbit", "label": { "en": "Himalayan", "fr": "Himalayen", "ar": "الهيمالايا" } },
+    { "breed": "dwarf_hotot", "label": { "en": "Dwarf Hotot", "fr": "Nain Hotot", "ar": "هوتو القزم" } },
+    { "breed": "continental_giant", "label": { "en": "Continental Giant", "fr": "Géant Continental", "ar": "العملاق القاري" } },
+    { "breed": "mixed_breed", "label": { "en": "Mixed Breed", "fr": "Croisé", "ar": "سلالة مختلطة" } }
+]

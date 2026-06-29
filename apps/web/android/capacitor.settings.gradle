@@ -2,8 +2,14 @@
 include ':capacitor-android'
 project(':capacitor-android').projectDir = new File('../../../node_modules/.pnpm/@capacitor+android@8.1.0_@capacitor+core@8.1.0/node_modules/@capacitor/android/capacitor')
 
+include ':capacitor-community-bluetooth-le'
+project(':capacitor-community-bluetooth-le').projectDir = new File('../../../node_modules/.pnpm/@capacitor-community+blueto_81e4c17fa5a398c73d576cbadb8a92f7/node_modules/@capacitor-community/bluetooth-le/android')
+
 include ':capacitor-device'
 project(':capacitor-device').projectDir = new File('../../../node_modules/.pnpm/@capacitor+device@8.0.1_@capacitor+core@8.1.0/node_modules/@capacitor/device/android')
+
+include ':capacitor-geolocation'
+project(':capacitor-geolocation').projectDir = new File('../../../node_modules/.pnpm/@capacitor+geolocation@8.2.0_@capacitor+core@8.1.0/node_modules/@capacitor/geolocation/android')
 
 include ':capacitor-preferences'
 project(':capacitor-preferences').projectDir = new File('../../../node_modules/.pnpm/@capacitor+preferences@8.0.1_@capacitor+core@8.1.0/node_modules/@capacitor/preferences/android')

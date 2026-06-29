@@ -1,55 +1,40 @@
 "use client";
 
-import { useCallback, useMemo } from "react";
 import { useTranslations } from "next-intl";
-import { Calendar } from "@workspace/ui/components/calendar";
-import type { AvailabilityModel } from "@workspace/modules/activities";
+import type { AvailabilityModel, PriceCalendar } from "@workspace/modules/activities";
 import type { DateRange } from "react-day-picker";
 
-import { isDateDisabledForBooking } from "../lib/availability-helpers";
+import { AvailabilityCalendar } from "./availability-calendar";
 
 type HostDateSectionProps = {
     dateRange: DateRange | undefined;
     onDateRangeChange: (range: DateRange | undefined) => void;
     availabilities: AvailabilityModel[];
+    priceMap: PriceCalendar;
 };
 
 export function HostDateSection({
     dateRange,
     onDateRangeChange,
     availabilities,
+    priceMap,
 }: HostDateSectionProps) {
     const t = useTranslations();
-    const today = useMemo(() => {
-        const date = new Date();
-        date.setHours(0, 0, 0, 0);
-        return date;
-    }, []);
-
-    const disabledMatcher = useCallback(
-        (date: Date) => isDateDisabledForBooking(date, availabilities, today),
-        [availabilities, today],
-    );
 
     return (
-        <section className="flex flex-col gap-3">
+        <section data-slot="host-date-section" className="flex flex-col gap-3">
             <h2 className="text-lg font-semibold text-slate-900">
                 {t("features.host.detail.selectDate")}
             </h2>
             <p className="text-sm text-foreground">
                 {t("features.host.detail.selectDateDescription")}
             </p>
-            <div className="rounded-2xl border">
-                <Calendar
-                    mode="range"
-                    selected={dateRange}
-                    onSelect={onDateRangeChange}
-                    disabled={disabledMatcher}
-                    excludeDisabled
-                    numberOfMonths={1}
-                    className="w-full"
-                />
-            </div>
+            <AvailabilityCalendar
+                dateRange={dateRange}
+                onDateRangeChange={onDateRangeChange}
+                availabilities={availabilities}
+                priceMap={priceMap}
+            />
             {dateRange && (
                 <button
                     type="button"

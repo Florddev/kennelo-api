@@ -6,26 +6,21 @@ namespace Database\Seeders;
 
 use App\Models\AnimalType;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\File;
 
 class AnimalTypeSeeder extends Seeder
 {
     public function run(): void
     {
-        $animalTypes = [
-            ['code' => 'dog', 'name' => 'Chien', 'category' => 'mammals'],
-            ['code' => 'cat', 'name' => 'Chat', 'category' => 'mammals'],
-            ['code' => 'rabbit', 'name' => 'Lapin', 'category' => 'small_mammals'],
-            ['code' => 'rodent', 'name' => 'Rongeur', 'category' => 'small_mammals'],
-            ['code' => 'ferret', 'name' => 'Furet', 'category' => 'small_mammals'],
-            ['code' => 'bird', 'name' => 'Oiseau', 'category' => 'birds'],
-            ['code' => 'reptile', 'name' => 'Reptile', 'category' => 'reptiles'],
-            ['code' => 'amphibian', 'name' => 'Amphibien', 'category' => 'amphibians'],
-        ];
+        $animalTypes = json_decode(File::get(database_path('data/animal_types.translated.json')), true);
 
         foreach ($animalTypes as $animalType) {
             AnimalType::updateOrCreate(
                 ['code' => $animalType['code']],
-                $animalType
+                [
+                    'name' => $animalType['name'],
+                    'category' => $animalType['category'],
+                ]
             );
         }
     }

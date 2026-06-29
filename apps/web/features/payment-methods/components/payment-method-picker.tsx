@@ -78,7 +78,7 @@ export function PaymentMethodPicker({ value, onChange, className }: PaymentMetho
                                 onClick={() => onChange(pm.id)}
                                 aria-pressed={isSelected}
                                 className={cn(
-                                    "flex items-center gap-3 rounded-2xl border bg-background px-4 py-3 text-start transition",
+                                    "flex items-center gap-3 rounded-2xl border bg-card px-4 py-3 text-start transition",
                                     isSelected
                                         ? "border-primary ring-2 ring-primary/30"
                                         : "border-border hover:border-foreground/40",
