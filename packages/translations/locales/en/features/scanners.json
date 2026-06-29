@@ -1,0 +1,63 @@
+{
+    "title": "My scanners",
+    "description": "Manage your Kennelo scanners",
+    "addBtn": "Add a scanner",
+    "noScanners": "No scanner associated yet",
+    "noScannersHint": "Add a scanner to broadcast pet data in real time",
+    "list": {
+        "scanning": "Searching for nearby scanners…",
+        "bleDisabled": "Bluetooth is disabled. Enable it to detect your nearby scanners.",
+        "nearby": "{count, plural, =1 {1 scanner detected nearby} other {# scanners detected nearby}}"
+    },
+    "card": {
+        "code": "Code",
+        "configure": "Configure",
+        "delete": "Delete",
+        "connected": "Connected",
+        "available": "Available"
+    },
+    "add": {
+        "title": "Add a scanner",
+        "description": "Make sure your scanner is in Bluetooth mode to detect it",
+        "scanBtn": "Scan for devices",
+        "scanning": "Scanning…",
+        "noDevices": "No device found",
+        "connecting": "Connecting…",
+        "identifying": "Identifying scanner…",
+        "namePlaceholder": "e.g. Reception scanner",
+        "nameLabel": "Name (optional)",
+        "saveBtn": "Associate",
+        "saving": "Associating…",
+        "backBtn": "Back",
+        "alreadyAssociated": "This scanner is already associated with an account",
+        "errors": {
+            "BLUETOOTH_DISABLED": "Bluetooth is disabled",
+            "SCAN_ERROR": "Scan failed",
+            "CONNECT_FAILED": "Connection failed",
+            "IDENTIFY_FAILED": "Unable to identify this device"
+        }
+    },
+    "configure": {
+        "title": "Configure",
+        "backBtn": "Back",
+        "disconnectBtn": "Disconnect",
+        "scanBtn": "Scan for devices",
+        "scanning": "Scanning…",
+        "connecting": "Connecting…",
+        "hint": "Connect to your scanner to configure its WiFi networks",
+        "wrongScanner": "This device does not match the selected scanner",
+        "bleModeHint": "Make sure your scanner is in BLE mode (triple-click the button on the device)",
+        "errors": {
+            "BLUETOOTH_DISABLED": "Bluetooth is disabled",
+            "SCAN_ERROR": "Scan failed",
+            "CONNECT_FAILED": "Connection failed",
+            "IDENTIFY_FAILED": "Unable to identify this device"
+        }
+    },
+    "deleteConfirm": {
+        "title": "Remove scanner",
+        "message": "This scanner will be dissociated from your account. It will no longer broadcast your pets' data.",
+        "confirm": "Remove",
+        "cancel": "Cancel"
+    }
+}

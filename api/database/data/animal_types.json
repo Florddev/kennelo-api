@@ -1,0 +1,42 @@
+[
+    {
+        "code": "dog",
+        "category": "mammals",
+        "name": "Dog"
+    },
+    {
+        "code": "cat",
+        "category": "mammals",
+        "name": "Cat"
+    },
+    {
+        "code": "rabbit",
+        "category": "small_mammals",
+        "name": "Rabbit"
+    },
+    {
+        "code": "rodent",
+        "category": "small_mammals",
+        "name": "Rodent"
+    },
+    {
+        "code": "ferret",
+        "category": "small_mammals",
+        "name": "Ferret"
+    },
+    {
+        "code": "bird",
+        "category": "birds",
+        "name": "Bird"
+    },
+    {
+        "code": "reptile",
+        "category": "reptiles",
+        "name": "Reptile"
+    },
+    {
+        "code": "amphibian",
+        "category": "amphibians",
+        "name": "Amphibian"
+    }
+]

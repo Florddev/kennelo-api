@@ -5,6 +5,7 @@
 export * from "./actions/commands/create-activity-conversation";
 export * from "./actions/commands/create-booking-conversation";
 export * from "./actions/commands/mark-conversation-messages-read";
+export * from "./actions/commands/open-host-booking-conversation";
 export * from "./actions/commands/send-message";
 export * from "./actions/queries/get-activity-conversations";
 export * from "./actions/queries/get-conversation";

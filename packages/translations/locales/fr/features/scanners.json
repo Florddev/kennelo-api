@@ -1,0 +1,63 @@
+{
+    "title": "Mes scanners",
+    "description": "Gérez vos scanners Kennelo",
+    "addBtn": "Ajouter un scanner",
+    "noScanners": "Aucun scanner associé",
+    "noScannersHint": "Ajoutez un scanner pour diffuser les données de vos animaux en temps réel",
+    "list": {
+        "scanning": "Recherche des scanners à proximité…",
+        "bleDisabled": "Le Bluetooth est désactivé. Activez-le pour détecter vos scanners.",
+        "nearby": "{count, plural, =1 {1 scanner détecté à proximité} other {# scanners détectés à proximité}}"
+    },
+    "card": {
+        "code": "Code",
+        "configure": "Configurer",
+        "delete": "Supprimer",
+        "connected": "Connecté",
+        "available": "Disponible"
+    },
+    "add": {
+        "title": "Ajouter un scanner",
+        "description": "Assurez-vous que votre scanner est en mode Bluetooth pour le détecter",
+        "scanBtn": "Rechercher des appareils",
+        "scanning": "Recherche…",
+        "noDevices": "Aucun appareil trouvé",
+        "connecting": "Connexion…",
+        "identifying": "Identification du scanner…",
+        "namePlaceholder": "Ex : Scanner réception",
+        "nameLabel": "Nom (optionnel)",
+        "saveBtn": "Associer",
+        "saving": "Association…",
+        "backBtn": "Retour",
+        "alreadyAssociated": "Ce scanner est déjà associé à un compte",
+        "errors": {
+            "BLUETOOTH_DISABLED": "Le Bluetooth est désactivé",
+            "SCAN_ERROR": "La recherche a échoué",
+            "CONNECT_FAILED": "La connexion a échoué",
+            "IDENTIFY_FAILED": "Impossible d'identifier cet appareil"
+        }
+    },
+    "configure": {
+        "title": "Configurer",
+        "backBtn": "Retour",
+        "disconnectBtn": "Déconnecter",
+        "scanBtn": "Rechercher des appareils",
+        "scanning": "Recherche…",
+        "connecting": "Connexion…",
+        "hint": "Connectez-vous à votre scanner pour configurer ses réseaux WiFi",
+        "wrongScanner": "Cet appareil ne correspond pas au scanner sélectionné",
+        "bleModeHint": "Assurez-vous que le scanner est en mode BLE (triple-clic sur le bouton de l'appareil)",
+        "errors": {
+            "BLUETOOTH_DISABLED": "Le Bluetooth est désactivé",
+            "SCAN_ERROR": "La recherche a échoué",
+            "CONNECT_FAILED": "La connexion a échoué",
+            "IDENTIFY_FAILED": "Impossible d'identifier cet appareil"
+        }
+    },
+    "deleteConfirm": {
+        "title": "Retirer le scanner",
+        "message": "Ce scanner sera dissocié de votre compte. Il ne diffusera plus les données de vos animaux.",
+        "confirm": "Retirer",
+        "cancel": "Annuler"
+    }
+}

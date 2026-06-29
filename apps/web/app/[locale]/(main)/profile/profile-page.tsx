@@ -13,7 +13,7 @@ import {
 import { Button } from "@workspace/ui/components/button";
 import { Card, CardContent } from "@workspace/ui/components/card";
 import { cn } from "@workspace/ui/lib/utils";
-import { useAuth } from "@/features/auth";
+import { useAuth, EmailVerificationAlert } from "@/features/auth";
 import { UserAvatar } from "@/features/auth/components/user-avatar";
 import PageLayout from "@/components/layouts/page-layout";
 import { useNavigation } from "@/hooks/use-navigation";
@@ -68,6 +68,10 @@ export default function ProfilePage() {
                 }
             >
                 <div className="flex flex-col gap-4">
+                    <EmailVerificationAlert
+                        title={t("features.auth.verifyAccount.title")}
+                        description={t("features.auth.verifyAccount.description")}
+                    />
                     {/* <div className="flex border border-border rounded-sm px-6 items-center justify-around gap-8">
                         <div className="flex flex-col items-center gap-3 pt-2">
                             <UserAvatar user={user} className="size-20 text-2xl" />

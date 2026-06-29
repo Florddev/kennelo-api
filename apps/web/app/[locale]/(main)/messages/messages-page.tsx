@@ -226,8 +226,11 @@ function MessagePageContent() {
 }
 
 export default function MessagesPage() {
+    const searchParams = useSearchParams();
+    const initialConversationId = searchParams.get("conversation");
+
     return (
-        <ConversationsProvider>
+        <ConversationsProvider initialConversationId={initialConversationId}>
             <MessagePageContent />
         </ConversationsProvider>
     );

@@ -69,6 +69,49 @@ it('returns 404 for unknown activity', function () {
         ->assertNotFound();
 });
 
+it('third party cannot view an activity whose manager email is unverified', function () {
+    $manager = User::factory()->unverified()->create();
+    $activity = Activity::factory()->create(['manager_id' => $manager->id]);
+    $visitor = User::factory()->create();
+
+    $this->withHeaders(asUser($visitor))
+        ->getJson("/api/activities/{$activity->id}")
+        ->assertNotFound();
+});
+
+it('owner can view their own activity even if their email is unverified', function () {
+    $manager = User::factory()->unverified()->create();
+    $activity = Activity::factory()->create(['manager_id' => $manager->id]);
+
+    $this->withHeaders(asUser($manager))
+        ->getJson("/api/activities/{$activity->id}")
+        ->assertOk()
+        ->assertJsonPath('data.id', $activity->id);
+});
+
+it('collaborator can view an activity whose manager email is unverified', function () {
+    $manager = User::factory()->unverified()->create();
+    $activity = Activity::factory()->create(['manager_id' => $manager->id]);
+    $collaborator = User::factory()->create();
+    attachCollaborator($activity, $collaborator);
+
+    $this->withHeaders(asUser($collaborator))
+        ->getJson("/api/activities/{$activity->id}")
+        ->assertOk()
+        ->assertJsonPath('data.id', $activity->id);
+});
+
+it('admin can view an activity whose manager email is unverified', function () {
+    $manager = User::factory()->unverified()->create();
+    $activity = Activity::factory()->create(['manager_id' => $manager->id]);
+    $admin = User::factory()->create();
+    $admin->assignRole('admin');
+
+    $this->withHeaders(asUser($admin))
+        ->getJson("/api/activities/{$activity->id}")
+        ->assertOk();
+});
+
 // ─── store ────────────────────────────────────────────────────────────────────
 
 it('manager can create an activity', function () {

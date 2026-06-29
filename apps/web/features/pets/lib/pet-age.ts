@@ -9,3 +9,13 @@ export function getAge(birthDate: string): { years: number; months: number } {
     }
     return { years, months };
 }
+
+export function formatAgeDisplay(
+    birthDate: string | null | undefined,
+    formatYears: (count: number) => string,
+    formatMonths: (count: number) => string,
+): string | null {
+    if (!birthDate) return null;
+    const { years, months } = getAge(birthDate);
+    return years >= 1 ? formatYears(years) : formatMonths(months);
+}

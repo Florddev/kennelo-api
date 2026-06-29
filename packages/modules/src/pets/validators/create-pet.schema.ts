@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export const createPetSchema = z.object({
     animalTypeId: z.string().min(1),
+    animalBreedId: z.string().nullable().optional(),
     name: z.string().min(1).max(255),
     breed: z.string().max(255).nullable().optional(),
     birthDate: z.string().nullable().optional(),

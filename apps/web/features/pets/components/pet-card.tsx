@@ -66,7 +66,7 @@ export function PetCard({ pet }: PetCardProps) {
                     <h1 className="text-2xl font-semibold">{pet.name}</h1>
                 </div>
                 <div className="flex flex-col">
-                    <span className="text-sm text-muted-foreground">{pet.breed}</span>
+                    <span className="text-sm text-muted-foreground">{pet.getBreedLabel()}</span>
                     <span className="text-sm text-muted-foreground">
                         {`${sexLabel}${ageLabel}, ${weightLabel}`}
                     </span>

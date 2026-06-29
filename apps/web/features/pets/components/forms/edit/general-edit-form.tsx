@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMessages, useTranslations } from "next-intl";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -13,7 +13,6 @@ import {
     GallerySend,
     InfoCircle,
     InfoSquare,
-    Library,
     Men,
     Paw,
     SoundwaveSquare,
@@ -34,6 +33,7 @@ import {
 } from "@workspace/modules/pets";
 import { InlineController, type InlineOption } from "@/components/forms/inline-controller";
 import { ImagePickerDialog } from "@/components/forms/image-picker-dialog";
+import { BreedSelectField } from "@/features/pets/components/forms/breed-select-field";
 import { useAsyncState } from "@/hooks/use-async-state";
 import { isIllustratedType } from "@/features/pets/lib/pet-illustrations";
 import { readNestedMessage } from "@/features/pets/utils/attribute-form-utils";
@@ -82,6 +82,7 @@ export function GeneralEditForm({ pet }: { pet: PetModel }): React.ReactElement 
         defaultValues: {
             name: pet.name,
             animalTypeId: pet.animalTypeId,
+            animalBreedId: pet.animalBreedId ?? null,
             breed: pet.breed ?? "",
             sex: pet.sex ?? "",
             birthDate: pet.birthDate ?? null,
@@ -91,10 +92,13 @@ export function GeneralEditForm({ pet }: { pet: PetModel }): React.ReactElement 
         },
     });
 
+    const watchedAnimalTypeId = useWatch({ control: form.control, name: "animalTypeId" });
+
     useEffect(() => {
         form.reset({
             name: pet.name,
             animalTypeId: pet.animalTypeId,
+            animalBreedId: pet.animalBreedId ?? null,
             breed: pet.breed ?? "",
             sex: pet.sex ?? "",
             birthDate: pet.birthDate ?? null,
@@ -106,6 +110,7 @@ export function GeneralEditForm({ pet }: { pet: PetModel }): React.ReactElement 
         form,
         pet.name,
         pet.animalTypeId,
+        pet.animalBreedId,
         pet.breed,
         pet.sex,
         pet.birthDate,
@@ -134,6 +139,7 @@ export function GeneralEditForm({ pet }: { pet: PetModel }): React.ReactElement 
                 updatePet(pet.id, {
                     name: data.name,
                     animalTypeId: data.animalTypeId || undefined,
+                    animalBreedId: data.animalBreedId ?? null,
                     breed: data.breed || null,
                     sex: (data.sex as "male" | "female" | "unknown") || null,
                     birthDate: data.birthDate,
@@ -206,12 +212,9 @@ export function GeneralEditForm({ pet }: { pet: PetModel }): React.ReactElement 
                     options={animalTypeOptions}
                     isLoading={isLoading}
                 />
-                <InlineController
-                    name="breed"
+                <BreedSelectField
                     control={form.control}
-                    type="text"
-                    label={t("features.pets.fields.breed")}
-                    Icon={Library}
+                    animalTypeId={watchedAnimalTypeId}
                     isLoading={isLoading}
                 />
             </div>

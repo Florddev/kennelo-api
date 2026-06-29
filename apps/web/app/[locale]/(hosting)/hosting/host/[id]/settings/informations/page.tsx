@@ -1,5 +1,3 @@
-"use client";
-
 import { ActivityPageHeader } from "@/features/activities/components/activity-page-header";
 
 export default function ActivitySettingsInformations() {

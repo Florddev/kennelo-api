@@ -35,6 +35,7 @@ class User extends Authenticatable implements HasMedia, JWTSubject, MustVerifyEm
         'first_name',
         'last_name',
         'email',
+        'google_id',
         'phone',
         'is_id_verified',
         'status',
@@ -118,6 +119,11 @@ class User extends Authenticatable implements HasMedia, JWTSubject, MustVerifyEm
     {
         return $this->belongsToMany(Activity::class, 'favorites', 'user_id', 'activity_id')
             ->withPivot('created_at');
+    }
+
+    public function scanners(): HasMany
+    {
+        return $this->hasMany(Scanner::class);
     }
 
     public function conversations(): HasMany

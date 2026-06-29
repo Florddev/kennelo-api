@@ -56,7 +56,8 @@ class ExploreService
             ->withIsFavorited($user)
             ->active()
             ->whereHas('manager', function ($q) {
-                $q->where('stripe_charges_enabled', true);
+                $q->where('stripe_charges_enabled', true)
+                    ->whereNotNull('email_verified_at');
             });
     }
 

@@ -78,6 +78,7 @@ function normalizeNullableString(value?: string | null): string | null {
 export function buildCreatePetPayload(values: CreatePetInput): CreatePetInput {
     return {
         animalTypeId: values.animalTypeId,
+        animalBreedId: values.animalBreedId ?? null,
         name: values.name,
         breed: normalizeNullableString(values.breed),
         birthDate: normalizeNullableString(values.birthDate),

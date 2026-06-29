@@ -7,11 +7,13 @@ import { Button } from "@workspace/ui/components/button";
 import { useLocale, useTranslations } from "next-intl";
 import { useAsyncState } from "@/hooks/use-async-state";
 import { InputController } from "@/components/forms/input-controller";
+import { useAuth } from "@/features/auth/hooks/use-auth";
 import { Letter, LockKeyholeMinimalistic } from "@solar-icons/react";
 
 export function RegisterForm({ onSuccess }: { onSuccess?: () => void }) {
     const locale = useLocale();
     const { isLoading, execute } = useAsyncState();
+    const { refreshUser } = useAuth();
     const t = useTranslations();
 
     const { handleSubmit, control, setError } = useForm<RegisterUserInput>({
@@ -30,7 +32,10 @@ export function RegisterForm({ onSuccess }: { onSuccess?: () => void }) {
     const onSubmit = async (data: RegisterUserInput) => {
         await execute(() => registerUser(data), {
             setFieldError: setError,
-            onSuccess,
+            onSuccess: async () => {
+                await refreshUser();
+                onSuccess?.();
+            },
         });
     };
 

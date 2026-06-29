@@ -3,20 +3,13 @@ import { useTranslations } from "next-intl";
 import { X } from "lucide-react";
 import { type CreatePetInput } from "@workspace/modules/pets";
 import { Control } from "react-hook-form";
-import {
-    DocumentMedicine,
-    Gallery,
-    GallerySend,
-    Library,
-    Men,
-    TextSquare,
-    Women,
-} from "@solar-icons/react";
+import { DocumentMedicine, Gallery, GallerySend, Men, TextSquare, Women } from "@solar-icons/react";
 
 import { Field, FieldLabel } from "@workspace/ui/components/field";
 import { WizardStepShell } from "@/components/forms/stepper/wizard-step-shell";
 import { InlineController } from "@/components/forms/inline-controller";
 import { ImagePickerDialog } from "@/components/forms/image-picker-dialog";
+import { BreedSelectField } from "@/features/pets/components/forms/breed-select-field";
 
 function FilePreview({ file, alt }: { file: File; alt: string }) {
     const url = useMemo(() => URL.createObjectURL(file), [file]);
@@ -30,11 +23,13 @@ export function IdentityStep({
     isLoading,
     avatarFile,
     onAvatarChange,
+    animalTypeId,
 }: {
     control: Control<CreatePetInput>;
     isLoading: boolean;
     avatarFile: File | null;
     onAvatarChange: (file: File | null) => void;
+    animalTypeId: string | null | undefined;
 }) {
     const t = useTranslations();
 
@@ -117,13 +112,9 @@ export function IdentityStep({
                 className="shadow-xs border-border/80"
             />
 
-            <InlineController
-                name="breed"
+            <BreedSelectField
                 control={control}
-                type="text"
-                label={t("features.pets.fields.breed")}
-                Icon={Library}
-                // placeholder={t("features.pets.create.placeholders.breed")}
+                animalTypeId={animalTypeId}
                 isLoading={isLoading}
                 className="w-full shadow-xs border-border/80"
             />

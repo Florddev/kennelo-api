@@ -46,9 +46,32 @@ class ActivityService
 
     public function findById(string $id, ?User $user = null): Activity
     {
-        return Activity::with(['address', 'manager', 'collaborators'])
-            ->withIsFavorited($user)
-            ->findOrFail($id);
+        $query = Activity::with(['address', 'manager', 'collaborators'])
+            ->withIsFavorited($user);
+
+        if (! $this->canViewUnverifiedManager($id, $user)) {
+            $query->whereManagerVerified();
+        }
+
+        return $query->findOrFail($id);
+    }
+
+    private function canViewUnverifiedManager(string $id, ?User $user): bool
+    {
+        if (! $user) {
+            return false;
+        }
+
+        if ($user->hasRole('admin')) {
+            return true;
+        }
+
+        return Activity::where('id', $id)
+            ->where(function ($query) use ($user): void {
+                $query->where('manager_id', $user->id)
+                    ->orWhereHas('collaborators', fn ($q) => $q->where('users.id', $user->id));
+            })
+            ->exists();
     }
 
     public function create(User $user, array $data): Activity

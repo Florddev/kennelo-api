@@ -13,6 +13,7 @@ class ProductionSeeder extends Seeder
         $this->call([
             RoleSeeder::class,
             AnimalTypeSeeder::class,
+            AnimalBreedSeeder::class,
             AttributeSeeder::class,
             ReviewCriteriaSeeder::class,
         ]);
