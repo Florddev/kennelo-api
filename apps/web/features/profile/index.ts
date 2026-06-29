@@ -3,6 +3,7 @@
  */
 
 export * from "./components/delete-account-dialog";
+export * from "./components/two-factor-section";
 export * from "./components/forms/change-email-form";
 export * from "./components/forms/change-password-form";
 export * from "./components/forms/update-profile-form";

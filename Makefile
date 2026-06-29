@@ -1,4 +1,4 @@
-.PHONY: help main update start down infra infra-down larastan
+.PHONY: help main update update-deps start down infra infra-down larastan
 
 help: ## Show this message
 	@echo "Available commands:"
@@ -7,10 +7,14 @@ help: ## Show this message
 main: ## Checkout main branch && git pull
 	git checkout main && git pull
 
-update: ## Update/install dependencies Back/Front
-	if [ -f api/composer.lock ]; then cd api && composer update; else cd api && composer install; fi
+update: ## Install deps Back/Front
+	cd api && composer install
 	cd api && php artisan storage:link
 	pnpm install
+
+update-deps: ## Bump deps + update locks
+	cd api && composer update
+	pnpm update
 
 infra: ## Start dev services (postgres, redis, minio) via Docker
 	docker compose -f docker-compose.dev.yml up -d

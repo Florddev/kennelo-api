@@ -3,6 +3,9 @@ export type AuthResponseDto = {
     refresh_token: string;
     token_type: string;
     expires_in: number;
+    two_factor?: boolean;
+    challenge_token?: string;
+    remember_token?: string;
     user: {
         id: string;
         first_name: string;

@@ -268,6 +268,11 @@ type MyProfilePreferencesNotificationParams = {
     search_params?: Record<string, string | number | boolean>;
 };
 
+type MyProfileTwoFactorParams = {
+    locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
 type SettingsScannersParams = {
     locale?: string | number;
     search_params?: Record<string, string | number | boolean>;
@@ -469,6 +474,10 @@ function MyProfilePreferencesNotification(params?: MyProfilePreferencesNotificat
     return buildRoute("/[locale]/settings/preferences-notification", params);
 }
 
+function MyProfileTwoFactor(params?: MyProfileTwoFactorParams): string {
+    return buildRoute("/[locale]/settings/two-factor", params);
+}
+
 function SettingsScanners(params?: SettingsScannersParams): string {
     return buildRoute("/[locale]/settings/scanners", params);
 }
@@ -523,6 +532,7 @@ export const routes = {
     PaymentMethodsPage,
     MyProfileEmailPreferences,
     MyProfilePreferencesNotification,
+    MyProfileTwoFactor,
     SettingsScanners,
 } as const;
 

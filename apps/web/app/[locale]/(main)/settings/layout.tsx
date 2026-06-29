@@ -8,6 +8,7 @@ import {
     Bell,
     LetterUnread,
     Password,
+    ShieldCheck,
     UserCircle,
     Card as CardIcon,
     Scanner,
@@ -39,6 +40,12 @@ export default function ProfileSettingsLayout({ children }: { children: React.Re
             icon: Password,
             label: t("ui.navigation.changePassword"),
             href: routes.MyProfileChangePassword(),
+            comingSoon: false,
+        },
+        {
+            icon: ShieldCheck,
+            label: t("ui.navigation.twoFactor"),
+            href: routes.MyProfileTwoFactor(),
             comingSoon: false,
         },
         {

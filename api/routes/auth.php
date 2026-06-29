@@ -23,6 +23,10 @@ Route::post('/login/google', [GoogleAuthController::class, 'store'])
     ->middleware('guest')
     ->name('login.google');
 
+Route::post('/login/two-factor-challenge', [AuthenticatedSessionController::class, 'twoFactorChallenge'])
+    ->middleware('throttle:6,1')
+    ->name('login.two-factor');
+
 Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])
     ->middleware(['guest', 'throttle:6,1'])
     ->name('password.email');

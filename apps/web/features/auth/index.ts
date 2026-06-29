@@ -9,4 +9,5 @@ export * from "./components/forms/forgot-password-form";
 export * from "./components/forms/login-form";
 export * from "./components/forms/register-form";
 export * from "./components/forms/reset-password-form";
+export * from "./components/forms/two-factor-challenge-form";
 export * from "./hooks/use-auth";
