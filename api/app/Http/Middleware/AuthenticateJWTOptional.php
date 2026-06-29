@@ -63,10 +63,6 @@ class AuthenticateJWTOptional
             return $matches[1];
         }
 
-        if ($request->has('token')) {
-            return $request->query('token');
-        }
-
         return null;
     }
 }
