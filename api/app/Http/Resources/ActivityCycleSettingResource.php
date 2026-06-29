@@ -32,8 +32,8 @@ class ActivityCycleSettingResource extends JsonResource
                 ])
                 ->values()
                 ->all(),
-            'occupied_spots' => $occupiedSpots,
-            'available_spots' => $this->max_capacity - $occupiedSpots,
+            'occupied_spots' => $this->when($request->user() !== null, $occupiedSpots),
+            'available_spots' => $this->when($request->user() !== null, $this->max_capacity - $occupiedSpots),
         ];
     }
 }

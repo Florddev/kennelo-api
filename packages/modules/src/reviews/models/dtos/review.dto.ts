@@ -8,7 +8,7 @@ export type ReviewDto = {
     booking_id: string;
     reviewer_id: string;
     reviewer_type: ReviewerType;
-    overall_rating: number;
+    overall_rating: string | number;
     comment: string | null;
     private_feedback?: string | null;
     would_recommend: boolean;

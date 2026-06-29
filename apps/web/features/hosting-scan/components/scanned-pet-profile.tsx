@@ -36,10 +36,10 @@ export function ScannedPetProfile({
                     <h1 className="text-3xl font-bold tracking-tight">{pet.name}</h1>
                     <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
                         {pet.animalType && <span>{pet.animalType.name}</span>}
-                        {pet.breed && (
+                        {pet.getBreedLabel() && (
                             <>
                                 {pet.animalType && <span>·</span>}
-                                <span>{pet.breed}</span>
+                                <span>{pet.getBreedLabel()}</span>
                             </>
                         )}
                     </div>

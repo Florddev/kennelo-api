@@ -6,6 +6,8 @@ namespace App\Http\Controllers\Activity;
 
 use App\Enums\ApiStatusEnum;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Activity\ListCycleSettingsRequest;
+use App\Http\Requests\Activity\PriceCalendarRequest;
 use App\Http\Requests\Activity\ReorderActivityCyclesRequest;
 use App\Http\Requests\Activity\StoreActivityCycleRequest;
 use App\Http\Requests\Activity\UpdateActivityCycleRequest;
@@ -13,11 +15,11 @@ use App\Http\Requests\Activity\UpsertClosedWeekDaysRequest;
 use App\Http\Requests\Activity\UpsertCycleSettingsRequest;
 use App\Http\Resources\ActivityCycleResource;
 use App\Http\Resources\ActivityCycleSettingResource;
+use App\Http\Resources\AnimalTypeResource;
 use App\Models\Activity;
 use App\Models\ActivityCycle;
 use App\Services\Activity\ActivityCycleService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
 /**
@@ -41,13 +43,11 @@ class ActivityCycleController extends Controller
             ->response();
     }
 
-    public function settingsIndex(Request $request, Activity $activity): JsonResponse
+    public function settingsIndex(ListCycleSettingsRequest $request, Activity $activity): JsonResponse
     {
-        $validated = $request->validate([
-            'date' => ['sometimes', 'date_format:Y-m-d'],
-        ]);
+        $this->authorize('view', $activity);
 
-        $settings = $this->service->getSettingsWithOccupancy($activity, $validated['date'] ?? null);
+        $settings = $this->service->getSettingsWithOccupancy($activity, $request->validated('date'));
 
         return ActivityCycleSettingResource::collection($settings)
             ->additional([
@@ -55,6 +55,50 @@ class ActivityCycleController extends Controller
                 'timestamp' => human_date(Carbon::now()),
             ])
             ->response();
+    }
+
+    public function priceCalendar(PriceCalendarRequest $request, Activity $activity): JsonResponse
+    {
+        $this->authorize('view', $activity);
+
+        $prices = $this->service->priceCalendar($activity, $request->validated('from'), $request->validated('to'));
+
+        return response()->json([
+            'status' => ApiStatusEnum::SUCCESS,
+            'timestamp' => human_date(Carbon::now()),
+            'data' => $prices,
+        ]);
+    }
+
+    public function publicIndex(Activity $activity): JsonResponse
+    {
+        $this->authorize('view', $activity);
+
+        $cycles = $this->service->publicList($activity);
+
+        return ActivityCycleResource::collection($cycles)
+            ->additional([
+                'status' => ApiStatusEnum::SUCCESS,
+                'timestamp' => human_date(Carbon::now()),
+            ])
+            ->response();
+    }
+
+    public function animalTypePrices(Activity $activity): JsonResponse
+    {
+        $this->authorize('view', $activity);
+
+        $ranges = $this->service->animalTypePriceRanges($activity);
+
+        return response()->json([
+            'status' => ApiStatusEnum::SUCCESS,
+            'timestamp' => human_date(Carbon::now()),
+            'data' => $ranges->map(fn (array $range): array => [
+                'animal_type' => new AnimalTypeResource($range['animal_type']),
+                'min_price' => $range['min_price'],
+                'max_price' => $range['max_price'],
+            ]),
+        ]);
     }
 
     public function store(StoreActivityCycleRequest $request, Activity $activity): JsonResponse

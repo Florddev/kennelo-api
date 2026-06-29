@@ -29,6 +29,10 @@ export class ActivityCycleSettingModel {
         return match ? match.price : null;
     }
 
+    weekdaysMask(): number {
+        return this.prices.reduce((mask, price) => mask | price.weekday, 0);
+    }
+
     minPrice(): number {
         if (this.prices.length === 0) {
             return 0;

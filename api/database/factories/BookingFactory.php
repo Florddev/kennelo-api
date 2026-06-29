@@ -19,17 +19,19 @@ class BookingFactory extends Factory
     {
         $checkIn = fake()->dateTimeBetween('+1 day', '+30 days');
         $checkOut = fake()->dateTimeBetween($checkIn, '+60 days');
-        $totalPrice = fake()->randomFloat(2, 50, 500);
-        $platformFee = round($totalPrice * 0.10, 2);
+        $basePrice = fake()->randomFloat(2, 50, 500);
+        $serviceFee = round($basePrice * (float) config('booking.user_service_fee_rate', '0.08'), 2);
+        $platformFee = round($basePrice * (float) config('booking.host_commission_rate', '0.06'), 2);
 
         return [
             'user_id' => User::factory(),
             'activity_id' => Activity::factory(),
             'check_in_date' => $checkIn->format('Y-m-d'),
             'check_out_date' => $checkOut->format('Y-m-d'),
-            'total_price' => $totalPrice,
+            'total_price' => round($basePrice + $serviceFee, 2),
+            'service_fee' => $serviceFee,
             'platform_fee' => $platformFee,
-            'activity_amount' => round($totalPrice - $platformFee, 2),
+            'activity_amount' => round($basePrice - $platformFee, 2),
             'status' => BookingStatusEnum::PENDING,
             'payment_status' => 'pending',
             'special_requests' => fake()->optional(0.4)->sentence(),

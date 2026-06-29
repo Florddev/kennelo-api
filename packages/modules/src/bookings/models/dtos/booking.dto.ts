@@ -11,6 +11,7 @@ export type BookingDto = {
     check_in_date: string;
     check_out_date: string;
     total_price: string;
+    service_fee: string;
     platform_fee: string;
     activity_amount: string;
     status: BookingStatus;

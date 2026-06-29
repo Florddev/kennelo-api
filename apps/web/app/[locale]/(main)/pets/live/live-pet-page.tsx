@@ -73,8 +73,10 @@ function PetBroadcastCard({ pet }: { pet: BroadcastedPet }) {
                 />
                 <div className="flex flex-col gap-1 min-w-0">
                     <h1 className="text-2xl font-bold truncate">{pet.name}</h1>
-                    {pet.breed && (
-                        <span className="text-sm text-muted-foreground truncate">{pet.breed}</span>
+                    {pet.getBreedLabel() && (
+                        <span className="text-sm text-muted-foreground truncate">
+                            {pet.getBreedLabel()}
+                        </span>
                     )}
                     {pet.animalType && (
                         <div className="flex items-center gap-1.5 mt-1">

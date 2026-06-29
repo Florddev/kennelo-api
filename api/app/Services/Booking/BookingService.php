@@ -89,7 +89,7 @@ class BookingService
         [$booking, $totalPrice] = DB::transaction(function () use ($user, $data, $activity, $checkIn, $checkOut, $pets, $services): array {
             $this->validateAvailability($activity, $checkIn, $checkOut);
 
-            [$totalPrice, $platformFee, $activityAmount, $petPivots, $servicePivots] =
+            [$totalPrice, $serviceFee, $platformFee, $activityAmount, $petPivots, $servicePivots] =
                 $this->priceBooking($activity, $pets, $services, $checkIn, $checkOut);
 
             $booking = Booking::create([
@@ -98,6 +98,7 @@ class BookingService
                 'check_in_date' => $data['check_in_date'],
                 'check_out_date' => $data['check_out_date'],
                 'total_price' => $totalPrice,
+                'service_fee' => $serviceFee,
                 'platform_fee' => $platformFee,
                 'activity_amount' => $activityAmount,
                 'status' => BookingStatusEnum::PENDING,
@@ -161,7 +162,7 @@ class BookingService
     }
 
     /**
-     * @return array{check_in_date: string, check_out_date: string, nights: int, total_price: string, platform_fee: string, activity_amount: string, pets: array<int, array<string, mixed>>, services: array<int, array<string, mixed>>}
+     * @return array{check_in_date: string, check_out_date: string, nights: int, total_price: string, service_fee: string, platform_fee: string, activity_amount: string, pets: array<int, array<string, mixed>>, services: array<int, array<string, mixed>>}
      */
     public function quote(array $data): array
     {
@@ -182,7 +183,7 @@ class BookingService
 
         $this->validateAvailability($activity, $checkIn, $checkOut);
 
-        [$totalPrice, $platformFee, $activityAmount, $petPivots, $servicePivots] =
+        [$totalPrice, $serviceFee, $platformFee, $activityAmount, $petPivots, $servicePivots] =
             $this->priceBooking($activity, $pets, $services, $checkIn, $checkOut);
 
         return [
@@ -190,6 +191,7 @@ class BookingService
             'check_out_date' => $checkOut->toDateString(),
             'nights' => $nights,
             'total_price' => $totalPrice,
+            'service_fee' => $serviceFee,
             'platform_fee' => $platformFee,
             'activity_amount' => $activityAmount,
             'pets' => $pets->map(fn (Pet $pet): array => [
@@ -360,7 +362,7 @@ class BookingService
     }
 
     /**
-     * @return array{string, string, string, array<string, array{price_per_night: string, number_of_nights: int, subtotal: string}>, array<string, array{quantity: int, unit_price: string, subtotal: string}>}
+     * @return array{string, string, string, string, array<string, array{price_per_night: string, number_of_nights: int, subtotal: string}>, array<string, array{quantity: int, unit_price: string, subtotal: string}>}
      */
     private function priceBooking(
         Activity $activity,
@@ -429,11 +431,11 @@ class BookingService
         }
 
         $petPivots = [];
-        $totalPrice = '0.00';
+        $basePrice = '0.00';
 
         foreach ($pets as $pet) {
             $subtotal = $petSubtotals[$pet->id];
-            $totalPrice = bcadd($totalPrice, $subtotal, 2);
+            $basePrice = bcadd($basePrice, $subtotal, 2);
 
             $petPivots[$pet->id] = [
                 'price_per_night' => $nights > 0 ? bcdiv($subtotal, (string) $nights, 2) : '0.00',
@@ -446,7 +448,7 @@ class BookingService
 
         foreach ($services as $service) {
             $unitPrice = (string) $service->price;
-            $totalPrice = bcadd($totalPrice, $unitPrice, 2);
+            $basePrice = bcadd($basePrice, $unitPrice, 2);
 
             $servicePivots[$service->id] = [
                 'quantity' => 1,
@@ -455,10 +457,15 @@ class BookingService
             ];
         }
 
-        $platformFee = bcmul($totalPrice, '0.10', 2);
-        $activityAmount = bcsub($totalPrice, $platformFee, 2);
+        $serviceFeeRate = (string) config('booking.user_service_fee_rate', '0.08');
+        $hostCommissionRate = (string) config('booking.host_commission_rate', '0.06');
 
-        return [$totalPrice, $platformFee, $activityAmount, $petPivots, $servicePivots];
+        $serviceFee = bcmul($basePrice, $serviceFeeRate, 2);
+        $platformFee = bcmul($basePrice, $hostCommissionRate, 2);
+        $totalPrice = bcadd($basePrice, $serviceFee, 2);
+        $activityAmount = bcsub($basePrice, $platformFee, 2);
+
+        return [$totalPrice, $serviceFee, $platformFee, $activityAmount, $petPivots, $servicePivots];
     }
 
     /**
