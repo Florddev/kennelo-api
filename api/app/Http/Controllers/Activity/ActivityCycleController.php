@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Activity;
 
 use App\Enums\ApiStatusEnum;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Activity\ListCycleSettingsRequest;
 use App\Http\Requests\Activity\PriceCalendarRequest;
 use App\Http\Requests\Activity\ReorderActivityCyclesRequest;
 use App\Http\Requests\Activity\StoreActivityCycleRequest;
@@ -19,7 +20,6 @@ use App\Models\Activity;
 use App\Models\ActivityCycle;
 use App\Services\Activity\ActivityCycleService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
 /**
@@ -43,15 +43,11 @@ class ActivityCycleController extends Controller
             ->response();
     }
 
-    public function settingsIndex(Request $request, Activity $activity): JsonResponse
+    public function settingsIndex(ListCycleSettingsRequest $request, Activity $activity): JsonResponse
     {
         $this->authorize('view', $activity);
 
-        $validated = $request->validate([
-            'date' => ['sometimes', 'date_format:Y-m-d'],
-        ]);
-
-        $settings = $this->service->getSettingsWithOccupancy($activity, $validated['date'] ?? null);
+        $settings = $this->service->getSettingsWithOccupancy($activity, $request->validated('date'));
 
         return ActivityCycleSettingResource::collection($settings)
             ->additional([
