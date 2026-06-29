@@ -229,8 +229,8 @@ class ActivityCycleService
 
                 return [
                     'animal_type' => $group->first()->animalType,
-                    'min_price' => (float) $prices->min(),
-                    'max_price' => (float) $prices->max(),
+                    'min_price' => $prices->isEmpty() ? null : (float) $prices->min(),
+                    'max_price' => $prices->isEmpty() ? null : (float) $prices->max(),
                 ];
             })
             ->values();
