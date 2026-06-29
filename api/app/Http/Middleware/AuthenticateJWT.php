@@ -60,10 +60,9 @@ class AuthenticateJWT
             $request->setUserResolver(fn () => $user);
 
             $request->attributes->set('jwt_payload', $payload);
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             return response()->json([
                 'message' => 'Unauthenticated.',
-                'error' => $e->getMessage(),
             ], 401);
         }
 
@@ -78,10 +77,6 @@ class AuthenticateJWT
         $header = $request->header('Authorization');
         if ($header && preg_match('/Bearer\s+(.*)$/i', $header, $matches)) {
             return $matches[1];
-        }
-
-        if ($request->has('token')) {
-            return $request->query('token');
         }
 
         return null;

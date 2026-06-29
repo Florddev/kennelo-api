@@ -141,7 +141,6 @@ class AuthenticatedSessionController extends Controller
 
             return response()->json([
                 'message' => 'Token refresh failed',
-                'error' => $e->getMessage(),
             ], 401);
         }
     }

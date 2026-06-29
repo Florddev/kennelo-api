@@ -50,34 +50,6 @@ class JWTService
         }
     }
 
-    public function decodeToken(string $token): object
-    {
-        $parts = explode('.', $token);
-
-        if (count($parts) !== 3) {
-            throw new \Exception('Invalid token format');
-        }
-
-        $decoded = json_decode(base64_decode(strtr($parts[1], '-_', '+/')));
-
-        if (! is_object($decoded)) {
-            throw new \Exception('Invalid token payload');
-        }
-
-        return $decoded;
-    }
-
-    public function getUserIdFromToken(string $token): string|int|null
-    {
-        try {
-            $payload = $this->decodeToken($token);
-
-            return $payload->sub ?? null;
-        } catch (\Throwable) {
-            return null;
-        }
-    }
-
     public function blacklistToken(string $token): void
     {
         if (! config('jwt.blacklist_enabled')) {
@@ -88,23 +60,6 @@ class JWTService
             $this->jwt->setToken($token)->invalidate();
         } catch (\Exception $e) {
             logger()->error('Failed to blacklist token: '.$e->getMessage());
-        }
-    }
-
-    public function isBlacklisted(string $token): bool
-    {
-        if (! config('jwt.blacklist_enabled')) {
-            return false;
-        }
-
-        try {
-            $this->jwt->setToken($token)->getPayload();
-
-            return false;
-        } catch (TokenExpiredException|TokenInvalidException) {
-            return false;
-        } catch (JWTException) {
-            return true;
         }
     }
 
