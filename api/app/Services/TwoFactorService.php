@@ -63,6 +63,8 @@ class TwoFactorService
 
     public function rememberDevice(User $user, int $days = 30): string
     {
+        $user->rememberedDevices()->where('expires_at', '<=', now())->delete();
+
         $token = Str::random(64);
 
         $user->rememberedDevices()->create([
