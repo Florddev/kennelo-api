@@ -26,10 +26,11 @@ export function HostCyclePricingSection({ cycles, isLoading }: HostCyclePricingS
     }
 
     function weekdaysLabel(setting: ActivityCycleSettingModel): string {
-        if (setting.sumWeekdays === ALL_WEEKDAYS) {
+        const mask = setting.weekdaysMask();
+        if (mask === ALL_WEEKDAYS) {
             return t("features.host.detail.cycleAllDays");
         }
-        return weekdayKeysFromMask(setting.sumWeekdays)
+        return weekdayKeysFromMask(mask)
             .map((key) => t(`features.activities.cycles.weekdaysShort.${key}`))
             .join(", ");
     }
@@ -94,7 +95,7 @@ export function HostCyclePricingSection({ cycles, isLoading }: HostCyclePricingS
                                         </div>
                                         <span className="shrink-0 text-sm text-slate-900">
                                             <span className="font-semibold">
-                                                {Math.round(setting.price)} €
+                                                {Math.round(setting.minPrice())} €
                                             </span>
                                             <span className="text-xs text-muted-foreground">
                                                 {t("features.host.detail.perNight")}

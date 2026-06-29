@@ -42,12 +42,9 @@ export function priceForAnimalTypeOnDate(
     if (isClosed) return null;
 
     const prices = cycle.settings
-        .filter(
-            (setting) =>
-                setting.animalType.id === animalTypeId &&
-                weekdayMaskContains(setting.sumWeekdays, dayBit),
-        )
-        .map((setting) => setting.price);
+        .filter((setting) => setting.animalType.id === animalTypeId)
+        .map((setting) => setting.priceForWeekday(dayBit))
+        .filter((price): price is number => price !== null);
     if (prices.length === 0) return null;
 
     return Math.min(...prices);
