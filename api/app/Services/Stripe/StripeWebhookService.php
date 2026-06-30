@@ -33,6 +33,8 @@ class StripeWebhookService
             'payment_intent.succeeded' => $this->onPaymentIntentSucceeded($event),
             'payment_intent.payment_failed' => $this->onPaymentIntentFailed($event),
             'payment_intent.processing' => $this->onPaymentIntentProcessing($event),
+            'payment_intent.amount_capturable_updated' => $this->onPaymentIntentAuthorized($event),
+            'payment_intent.canceled' => $this->onPaymentIntentCanceled($event),
             'account.updated' => $this->onAccountUpdated($event),
             'charge.refunded' => $this->onChargeRefunded($event),
             'transfer.created' => $this->onTransferCreated($event),
@@ -164,6 +166,46 @@ class StripeWebhookService
             ]);
 
             $this->notifyBookingUser($booking, NotificationTypeEnum::PAYMENT_PROCESSING);
+        });
+    }
+
+    private function onPaymentIntentAuthorized(Event $event): void
+    {
+        $paymentIntent = $this->extractPaymentIntent($event);
+        if ($paymentIntent === null) {
+            return;
+        }
+
+        DB::transaction(function () use ($paymentIntent): void {
+            $booking = $this->findBookingForPaymentIntent($paymentIntent);
+            if ($booking === null || $booking->status !== BookingStatusEnum::PENDING) {
+                return;
+            }
+
+            $booking->update([
+                'stripe_payment_intent_id' => $paymentIntent->id,
+                'payment_status' => PaymentStatusEnum::REQUIRES_CAPTURE,
+            ]);
+        });
+    }
+
+    private function onPaymentIntentCanceled(Event $event): void
+    {
+        $paymentIntent = $this->extractPaymentIntent($event);
+        if ($paymentIntent === null) {
+            return;
+        }
+
+        DB::transaction(function () use ($paymentIntent): void {
+            $booking = $this->findBookingForPaymentIntent($paymentIntent);
+            if ($booking === null || $booking->payment_status === PaymentStatusEnum::REFUNDED) {
+                return;
+            }
+
+            $booking->update([
+                'stripe_payment_intent_id' => $paymentIntent->id,
+                'payment_status' => PaymentStatusEnum::CANCELED,
+            ]);
         });
     }
 
