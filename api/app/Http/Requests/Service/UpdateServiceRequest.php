@@ -20,7 +20,7 @@ class UpdateServiceRequest extends FormRequest
             'description' => ['sometimes', 'nullable', 'string'],
             'is_included' => ['sometimes', 'boolean'],
             'price' => ['sometimes', 'numeric', 'min:0'],
-            'animal_type_id' => ['sometimes', 'nullable', 'uuid', 'exists:animal_types,id'],
+            'animal_type_id' => ['sometimes', 'uuid', 'exists:animal_types,id'],
         ];
     }
 }
