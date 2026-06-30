@@ -19,6 +19,7 @@
         "nav": {
             "info": "المعلومات",
             "cycles": "الدورات",
+            "services": "الخدمات",
             "bookings": "الحجوزات",
             "collaborators": "المتعاونون",
             "availabilities": "التوفر",
@@ -161,6 +162,22 @@
         "occupancyByAnimal": "الإشغال حسب نوع الحيوان",
         "occupancyRate": "معدل الإشغال",
         "noCapacities": "لم يتم تكوين أي سعات بعد"
+    },
+    "services": {
+        "title": "الخدمات",
+        "addService": "إضافة خدمة",
+        "empty": "لا توجد خدمات بعد. أضف خدمة إضافية إلى نشاطك.",
+        "createTitle": "إضافة خدمة",
+        "editTitle": "تعديل الخدمة",
+        "name": "الاسم",
+        "animalType": "نوع الحيوان",
+        "selectAnimalType": "اختر نوع الحيوان",
+        "price": "السعر (€)",
+        "description": "الوصف",
+        "included": "مشمول في السعر",
+        "includedBadge": "مشمول",
+        "saved": "تم حفظ الخدمة",
+        "deleted": "تم حذف الخدمة"
     },
     "cycles": {
         "title": "الدورات",

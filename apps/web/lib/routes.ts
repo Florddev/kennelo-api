@@ -113,6 +113,12 @@ type ActivityPaymentParams = {
     search_params?: Record<string, string | number | boolean>;
 };
 
+type ActivityServicesParams = {
+    locale?: string | number;
+    id: string;
+    search_params?: Record<string, string | number | boolean>;
+};
+
 type HostingMessagesParams = {
     locale?: string | number;
     search_params?: Record<string, string | number | boolean>;
@@ -268,12 +274,12 @@ type MyProfilePreferencesNotificationParams = {
     search_params?: Record<string, string | number | boolean>;
 };
 
-type MyProfileTwoFactorParams = {
+type SettingsScannersParams = {
     locale?: string | number;
     search_params?: Record<string, string | number | boolean>;
 };
 
-type SettingsScannersParams = {
+type MyProfileTwoFactorParams = {
     locale?: string | number;
     search_params?: Record<string, string | number | boolean>;
 };
@@ -356,6 +362,10 @@ function ActivitySettings(params: ActivitySettingsParams): string {
 
 function ActivityPayment(params: ActivityPaymentParams): string {
     return buildRoute("/[locale]/hosting/host/[id]/settings/payment", params);
+}
+
+function ActivityServices(params: ActivityServicesParams): string {
+    return buildRoute("/[locale]/hosting/host/[id]/settings/services", params);
 }
 
 function HostingMessages(params?: HostingMessagesParams): string {
@@ -474,12 +484,12 @@ function MyProfilePreferencesNotification(params?: MyProfilePreferencesNotificat
     return buildRoute("/[locale]/settings/preferences-notification", params);
 }
 
-function MyProfileTwoFactor(params?: MyProfileTwoFactorParams): string {
-    return buildRoute("/[locale]/settings/two-factor", params);
-}
-
 function SettingsScanners(params?: SettingsScannersParams): string {
     return buildRoute("/[locale]/settings/scanners", params);
+}
+
+function MyProfileTwoFactor(params?: MyProfileTwoFactorParams): string {
+    return buildRoute("/[locale]/settings/two-factor", params);
 }
 
 export const routes = {
@@ -503,6 +513,7 @@ export const routes = {
     ActivitySettingsInformations,
     ActivitySettings,
     ActivityPayment,
+    ActivityServices,
     HostingMessages,
     HostingNow,
     HostingScan,
@@ -532,8 +543,8 @@ export const routes = {
     PaymentMethodsPage,
     MyProfileEmailPreferences,
     MyProfilePreferencesNotification,
-    MyProfileTwoFactor,
     SettingsScanners,
+    MyProfileTwoFactor,
 } as const;
 
 export type RouteName = keyof typeof routes;
