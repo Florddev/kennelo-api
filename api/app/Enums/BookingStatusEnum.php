@@ -10,5 +10,7 @@ enum BookingStatusEnum: string
     case CONFIRMED = 'confirmed';
     case IN_PROGRESS = 'in_progress';
     case CANCELLED = 'cancelled';
+    case REJECTED = 'rejected';
+    case EXPIRED = 'expired';
     case COMPLETED = 'completed';
 }
