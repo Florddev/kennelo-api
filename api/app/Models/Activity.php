@@ -176,4 +176,9 @@ class Activity extends Model implements HasMedia
     {
         return (bool) ($this->stripe_payouts_enabled || $this->manager?->stripe_payouts_enabled);
     }
+
+    public function resolveOnboardingCompleted(): bool
+    {
+        return (bool) ($this->stripe_onboarding_completed || $this->manager?->stripe_onboarding_completed);
+    }
 }

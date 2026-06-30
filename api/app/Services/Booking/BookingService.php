@@ -604,7 +604,12 @@ class BookingService
 
     private function assertHostCanAcceptBookings(Activity $activity): void
     {
-        if (! $activity->resolveChargesEnabled() || $activity->resolveStripeAccountId() === null) {
+        $ready = $activity->resolveStripeAccountId() !== null
+            && $activity->resolveChargesEnabled()
+            && $activity->resolvePayoutsEnabled()
+            && $activity->resolveOnboardingCompleted();
+
+        if (! $ready) {
             throw ValidationException::withMessages([
                 'activity_id' => ['This host cannot accept bookings yet. Their bank account is not connected.'],
             ]);
