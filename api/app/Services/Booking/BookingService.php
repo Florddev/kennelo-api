@@ -87,6 +87,8 @@ class BookingService
             : collect();
 
         [$booking, $totalPrice] = DB::transaction(function () use ($user, $data, $activity, $checkIn, $checkOut, $pets, $services): array {
+            Activity::whereKey($activity->id)->lockForUpdate()->first();
+
             $this->validateAvailability($activity, $checkIn, $checkOut);
 
             [$totalPrice, $serviceFee, $platformFee, $activityAmount, $petPivots, $servicePivots] =
@@ -132,7 +134,7 @@ class BookingService
             'stripe_payment_intent_id' => $pi->id,
             'stripe_charge_id' => $pi->latest_charge ?? null,
             'stripe_transfer_group' => 'booking_'.$booking->id,
-            'payment_status' => $pi->status === 'succeeded' ? PaymentStatusEnum::SUCCEEDED : PaymentStatusEnum::PENDING,
+            'payment_status' => $this->mapPaymentStatus($pi->status),
         ]);
 
         $booking->setAttribute('client_secret', $pi->client_secret);
@@ -230,6 +232,7 @@ class BookingService
             'payment_method' => $paymentMethodId,
             'confirm' => true,
             'off_session' => false,
+            'capture_method' => 'manual',
             'payment_method_types' => ['card'],
             'transfer_group' => 'booking_'.$booking->id,
             'metadata' => [
@@ -244,6 +247,18 @@ class BookingService
         }
 
         return $this->stripe->paymentIntents->create($payload);
+    }
+
+    private function mapPaymentStatus(string $stripeStatus): PaymentStatusEnum
+    {
+        return match ($stripeStatus) {
+            'succeeded' => PaymentStatusEnum::SUCCEEDED,
+            'requires_capture' => PaymentStatusEnum::REQUIRES_CAPTURE,
+            'requires_action', 'requires_confirmation' => PaymentStatusEnum::REQUIRES_ACTION,
+            'processing' => PaymentStatusEnum::PROCESSING,
+            'canceled' => PaymentStatusEnum::CANCELED,
+            default => PaymentStatusEnum::PENDING,
+        };
     }
 
     public function cancel(Booking $booking): Booking
