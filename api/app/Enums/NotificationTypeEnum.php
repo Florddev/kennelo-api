@@ -10,6 +10,7 @@ enum NotificationTypeEnum: string
     case BOOKING_CONFIRMED = 'booking_confirmed';
     case BOOKING_CANCELLED_BY_CLIENT = 'booking_cancelled_by_client';
     case BOOKING_REJECTED = 'booking_rejected';
+    case BOOKING_EXPIRED = 'booking_expired';
     case BOOKING_COMPLETED = 'booking_completed';
 
     case PAYMENT_SUCCEEDED = 'payment_succeeded';

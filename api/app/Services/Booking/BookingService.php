@@ -324,21 +324,30 @@ class BookingService
         return $booking->fresh();
     }
 
-    public function refundOnReject(Booking $booking): Booking
+    public function releaseAuthorization(Booking $booking): Booking
     {
-        if (! $booking->stripe_charge_id || $booking->payment_status !== PaymentStatusEnum::SUCCEEDED) {
-            return $booking;
+        if ($booking->payment_status === PaymentStatusEnum::SUCCEEDED && $booking->stripe_charge_id) {
+            $refund = $this->stripe->refunds->create([
+                'charge' => $booking->stripe_charge_id,
+                'metadata' => ['booking_id' => $booking->id],
+            ]);
+            $booking->update([
+                'stripe_refund_id' => $refund->id,
+                'refunded_amount' => bcdiv((string) $refund->amount, '100', 2),
+                'refunded_at' => Carbon::now(),
+                'payment_status' => PaymentStatusEnum::REFUNDED,
+            ]);
+
+            return $booking->fresh();
         }
-        $refund = $this->stripe->refunds->create([
-            'charge' => $booking->stripe_charge_id,
-            'metadata' => ['booking_id' => $booking->id],
-        ]);
-        $booking->update([
-            'stripe_refund_id' => $refund->id,
-            'refunded_amount' => bcdiv((string) $refund->amount, '100', 2),
-            'refunded_at' => Carbon::now(),
-            'payment_status' => PaymentStatusEnum::REFUNDED,
-        ]);
+
+        if ($booking->stripe_payment_intent_id !== null) {
+            try {
+                $this->stripe->paymentIntents->cancel($booking->stripe_payment_intent_id);
+                $booking->update(['payment_status' => PaymentStatusEnum::CANCELED]);
+            } catch (InvalidRequestException $e) {
+            }
+        }
 
         return $booking->fresh();
     }
@@ -347,15 +356,49 @@ class BookingService
     {
         $this->assertStatus($booking, [BookingStatusEnum::PENDING], 'reject');
 
-        $this->refundOnReject($booking);
+        $this->releaseAuthorization($booking);
 
-        $booking->update(['status' => BookingStatusEnum::CANCELLED]);
+        $booking->update(['status' => BookingStatusEnum::REJECTED]);
 
         $this->sendBookingReferenceIfConversationExists($booking, $actor, $message);
 
         $this->notifyBookingUser($booking, NotificationTypeEnum::BOOKING_REJECTED);
 
         return $booking->fresh();
+    }
+
+    public function expireStalePending(): int
+    {
+        $threshold = Carbon::now()->subHours((int) config('booking.acceptance_window_hours', 72));
+
+        $bookingIds = Booking::where('status', BookingStatusEnum::PENDING)
+            ->where('created_at', '<=', $threshold)
+            ->pluck('id');
+
+        $count = 0;
+
+        foreach ($bookingIds as $bookingId) {
+            DB::transaction(function () use ($bookingId, &$count): void {
+                $booking = Booking::where('id', $bookingId)
+                    ->where('status', BookingStatusEnum::PENDING)
+                    ->lockForUpdate()
+                    ->first();
+
+                if ($booking === null) {
+                    return;
+                }
+
+                $this->releaseAuthorization($booking);
+
+                $booking->update(['status' => BookingStatusEnum::EXPIRED]);
+
+                $this->notifyBookingUser($booking, NotificationTypeEnum::BOOKING_EXPIRED);
+
+                $count++;
+            });
+        }
+
+        return $count;
     }
 
     private function notifyBookingUser(Booking $booking, NotificationTypeEnum $type): void
