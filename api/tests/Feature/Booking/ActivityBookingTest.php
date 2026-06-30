@@ -47,6 +47,8 @@ it('unauthenticated user cannot list activity bookings', function () {
 // ─── confirm ──────────────────────────────────────────────────────────────────
 
 it('manager can confirm a pending booking', function () {
+    fakeStripe();
+
     $manager = User::factory()->create();
     $activity = Activity::factory()->create(['manager_id' => $manager->id]);
     $booking = Booking::factory()->pending()->create(['activity_id' => $activity->id]);
@@ -55,6 +57,46 @@ it('manager can confirm a pending booking', function () {
         ->putJson("/api/activities/{$activity->id}/bookings/{$booking->id}/confirm")
         ->assertOk()
         ->assertJsonPath('data.status', BookingStatusEnum::CONFIRMED->value);
+});
+
+it('confirming a booking captures the payment', function () {
+    fakeStripe();
+
+    $manager = User::factory()->create();
+    $activity = Activity::factory()->create(['manager_id' => $manager->id]);
+    $booking = Booking::factory()->pending()->create([
+        'activity_id' => $activity->id,
+        'stripe_payment_intent_id' => 'pi_test_capture',
+        'payment_status' => 'requires_capture',
+    ]);
+
+    $this->withHeaders(asUser($manager))
+        ->putJson("/api/activities/{$activity->id}/bookings/{$booking->id}/confirm")
+        ->assertOk();
+
+    $booking->refresh();
+
+    expect($booking->payment_status->value)->toBe('succeeded');
+    expect($booking->paid_at)->not->toBeNull();
+});
+
+it('rejecting a booking releases the authorization', function () {
+    fakeStripe();
+
+    $manager = User::factory()->create();
+    $activity = Activity::factory()->create(['manager_id' => $manager->id]);
+    $booking = Booking::factory()->pending()->create([
+        'activity_id' => $activity->id,
+        'stripe_payment_intent_id' => 'pi_test_release',
+        'payment_status' => 'requires_capture',
+    ]);
+
+    $this->withHeaders(asUser($manager))
+        ->putJson("/api/activities/{$activity->id}/bookings/{$booking->id}/cancel")
+        ->assertOk()
+        ->assertJsonPath('data.status', BookingStatusEnum::REJECTED->value);
+
+    expect($booking->fresh()->payment_status->value)->toBe('canceled');
 });
 
 it('manager cannot confirm an already confirmed booking', function () {
@@ -77,7 +119,7 @@ it('manager can cancel a pending booking', function () {
     $this->withHeaders(asUser($manager))
         ->putJson("/api/activities/{$activity->id}/bookings/{$booking->id}/cancel")
         ->assertOk()
-        ->assertJsonPath('data.status', BookingStatusEnum::CANCELLED->value);
+        ->assertJsonPath('data.status', BookingStatusEnum::REJECTED->value);
 });
 
 // ─── complete ─────────────────────────────────────────────────────────────────
@@ -105,6 +147,7 @@ it('manager cannot complete a pending booking', function () {
 
 it('confirming a booking sends a booking reference message from the activity', function () {
     Event::fake();
+    fakeStripe();
 
     $manager = User::factory()->create();
     $user = User::factory()->create();
