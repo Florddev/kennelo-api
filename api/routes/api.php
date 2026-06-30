@@ -9,6 +9,7 @@ use App\Http\Controllers\Activity\ActivityCycleController;
 use App\Http\Controllers\Activity\ActivityDashboardController;
 use App\Http\Controllers\Activity\ActivityImageController;
 use App\Http\Controllers\Activity\ActivityRoleController;
+use App\Http\Controllers\Activity\ActivityServiceController;
 use App\Http\Controllers\Activity\CollaboratorInvitationController;
 use App\Http\Controllers\Activity\StripeConnectController;
 use App\Http\Controllers\Auth\TwoFactorAuthenticationController;
@@ -102,6 +103,12 @@ Route::middleware(['auth.jwt'])->group(function () {
 
     Route::post('/activities/{activity}/stripe/onboarding-link', [StripeConnectController::class, 'onboardingLink']);
     Route::get('/activities/{activity}/stripe/status', [StripeConnectController::class, 'status']);
+
+    // Services
+    Route::get('/activities/{activity}/services', [ActivityServiceController::class, 'index']);
+    Route::post('/activities/{activity}/services', [ActivityServiceController::class, 'store']);
+    Route::put('/activities/{activity}/services/{service}', [ActivityServiceController::class, 'update']);
+    Route::delete('/activities/{activity}/services/{service}', [ActivityServiceController::class, 'destroy']);
 
     // Bookings (user)
     Route::post('/bookings/quote', [BookingController::class, 'quote']);
