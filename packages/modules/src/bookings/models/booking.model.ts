@@ -90,6 +90,14 @@ export class BookingModel {
         return this.isStatus("cancelled");
     }
 
+    isRejected(): boolean {
+        return this.isStatus("rejected");
+    }
+
+    isExpired(): boolean {
+        return this.isStatus("expired");
+    }
+
     isRefunded(): boolean {
         return this.paymentStatus === "refunded";
     }

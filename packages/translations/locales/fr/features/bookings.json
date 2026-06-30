@@ -44,6 +44,8 @@
             "refunded": "Remboursé",
             "failed": "Échoué",
             "no_payment_required": "Aucun paiement requis",
+            "requires_capture": "Autorisé",
+            "canceled": "Annulé",
             "succeeded": "Finalisé"
         },
         "viewInvoice": "Voir le reçu / Facture",
@@ -118,6 +120,8 @@
         "confirmed": "Confirmée",
         "inProgress": "En cours",
         "cancelled": "Annulée",
+        "rejected": "Refusée",
+        "expired": "Expirée",
         "completed": "Terminée",
         "refunded": "Remboursée"
     },

@@ -44,6 +44,8 @@
             "refunded": "مسترد",
             "failed": "فشل",
             "no_payment_required": "لا يلزم دفع",
+            "requires_capture": "مُصرّح به",
+            "canceled": "ملغى",
             "succeeded": "نجح"
         },
         "viewInvoice": "عرض الإيصال / الفاتورة",
@@ -118,6 +120,8 @@
         "confirmed": "مؤكّد",
         "inProgress": "جارٍ",
         "cancelled": "ملغى",
+        "rejected": "مرفوض",
+        "expired": "منتهي",
         "completed": "مكتمل",
         "refunded": "مسترد"
     },
