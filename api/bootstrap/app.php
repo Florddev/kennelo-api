@@ -7,6 +7,8 @@ use App\Http\Middleware\AuthenticateJWT;
 use App\Http\Middleware\AuthenticateJWTOptional;
 use App\Http\Middleware\EnsureEmailIsVerified;
 use App\Http\Middleware\SetLocale;
+use App\Services\Booking\BookingPayoutService;
+use App\Services\Booking\BookingService;
 use App\Services\Review\ReviewPublicationService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
@@ -34,6 +36,14 @@ return Application::configure(basePath: dirname(__DIR__))
         $schedule->call(fn () => app(ReviewPublicationService::class)->publishMatured())
             ->dailyAt('03:00')
             ->name('reviews:publish-matured');
+
+        $schedule->call(fn () => app(BookingService::class)->expireStalePending())
+            ->hourly()
+            ->name('bookings:expire-stale-pending');
+
+        $schedule->call(fn () => app(BookingPayoutService::class)->releaseDuePayouts())
+            ->hourly()
+            ->name('bookings:release-due-payouts');
     })
     ->withMiddleware(function (Middleware $middleware): void {
 
