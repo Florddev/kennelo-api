@@ -288,22 +288,23 @@ class BookingService
     {
         $this->assertStatus($booking, [BookingStatusEnum::PENDING], 'confirm');
 
-        $booking->update(['status' => BookingStatusEnum::CONFIRMED]);
+        try {
+            $pi = $this->stripe->paymentIntents->capture($booking->stripe_payment_intent_id);
+        } catch (CardException|InvalidRequestException $e) {
+            $booking->update(['payment_status' => PaymentStatusEnum::FAILED]);
+            $this->notifyBookingUser($booking, NotificationTypeEnum::PAYMENT_FAILED);
 
-        $accountId = $booking->activity->resolveStripeAccountId();
-
-        if ($accountId && $booking->stripe_charge_id && (float) $booking->activity_amount > 0) {
-            $amountToTransfer = (int) bcmul((string) $booking->activity_amount, '100', 0);
-            $transfer = $this->stripe->transfers->create([
-                'amount' => $amountToTransfer,
-                'currency' => (string) config('services.stripe.currency', 'eur'),
-                'destination' => $accountId,
-                'source_transaction' => $booking->stripe_charge_id,
-                'transfer_group' => $booking->stripe_transfer_group ?? ('booking_'.$booking->id),
-                'metadata' => ['booking_id' => $booking->id],
+            throw ValidationException::withMessages([
+                'payment' => ['The payment could not be captured: '.$e->getMessage()],
             ]);
-            $booking->update(['stripe_transfer_id' => $transfer->id]);
         }
+
+        $booking->update([
+            'status' => BookingStatusEnum::CONFIRMED,
+            'payment_status' => PaymentStatusEnum::SUCCEEDED,
+            'paid_at' => Carbon::now(),
+            'stripe_charge_id' => $pi->latest_charge ?? $booking->stripe_charge_id,
+        ]);
 
         $this->sendBookingReferenceIfConversationExists($booking, $actor, $message);
 
