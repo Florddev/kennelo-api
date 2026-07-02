@@ -15,6 +15,11 @@ Route::put('/users/{id}/status', [UserController::class, 'updateStatus']);
 Route::put('/users/{id}/roles', [UserController::class, 'assignRoles']);
 Route::delete('/users/{id}/roles/{role}', [UserController::class, 'removeRole']);
 Route::put('/users/{id}/identity-verification', [UserController::class, 'reviewIdentityVerification']);
+Route::post('/users/{id}/ban', [UserController::class, 'ban']);
+Route::delete('/users/{id}/ban', [UserController::class, 'unban']);
+Route::post('/users/{id}/force-password-reset', [UserController::class, 'forcePasswordReset']);
+Route::post('/users/{id}/verify-email', [UserController::class, 'verifyEmail']);
+Route::post('/users/{id}/resend-verification', [UserController::class, 'resendVerification']);
 
 // Review moderation
 Route::get('/review-reports', [ReviewReportController::class, 'index']);

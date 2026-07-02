@@ -52,6 +52,10 @@ class User extends Authenticatable implements HasLocalePreference, HasMedia, JWT
         'stripe_payouts_enabled',
         'stripe_onboarding_completed',
         'stripe_customer_id',
+        'ban_reason',
+        'banned_at',
+        'banned_until',
+        'banned_by',
     ];
 
     protected $hidden = [
@@ -74,7 +78,14 @@ class User extends Authenticatable implements HasLocalePreference, HasMedia, JWT
             'two_factor_secret' => 'encrypted',
             'two_factor_recovery_codes' => 'encrypted:array',
             'two_factor_confirmed_at' => 'datetime',
+            'banned_at' => 'datetime',
+            'banned_until' => 'datetime',
         ];
+    }
+
+    public function isBanned(): bool
+    {
+        return $this->status === UserStatusEnum::BANNED;
     }
 
     public function preferredLocale(): string
@@ -108,6 +119,11 @@ class User extends Authenticatable implements HasLocalePreference, HasMedia, JWT
     public function address(): BelongsTo
     {
         return $this->belongsTo(Address::class);
+    }
+
+    public function bannedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'banned_by');
     }
 
     public function identityVerifications(): HasMany

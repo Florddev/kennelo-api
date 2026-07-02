@@ -64,6 +64,14 @@ function asUser(User $user): array
     return ['Authorization' => 'Bearer '.jwtToken($user)];
 }
 
+function adminUser(): User
+{
+    $admin = User::factory()->create();
+    $admin->assignRole('admin');
+
+    return $admin;
+}
+
 /**
  * @param  array<int, ActivityPermissionEnum|string>  $permissions
  */

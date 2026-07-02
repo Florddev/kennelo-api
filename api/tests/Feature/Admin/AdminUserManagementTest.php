@@ -8,14 +8,6 @@ use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
-function admin(): User
-{
-    $admin = User::factory()->create();
-    $admin->assignRole('admin');
-
-    return $admin;
-}
-
 // ─── Access control ────────────────────────────────────────────────────────────
 
 it('forbids non-admin from listing users', function () {
@@ -36,7 +28,7 @@ it('requires authentication on admin routes', function () {
 it('admin can list users', function () {
     User::factory()->count(3)->create();
 
-    $this->withHeaders(asUser(admin()))
+    $this->withHeaders(asUser(adminUser()))
         ->getJson('/api/admin/users')
         ->assertOk()
         ->assertJsonStructure(['data', 'meta']);
@@ -47,7 +39,7 @@ it('admin can list users', function () {
 it('admin can view any user detail', function () {
     $target = User::factory()->create();
 
-    $this->withHeaders(asUser(admin()))
+    $this->withHeaders(asUser(adminUser()))
         ->getJson("/api/admin/users/{$target->id}")
         ->assertOk()
         ->assertJsonPath('data.id', $target->id);
@@ -58,7 +50,7 @@ it('admin can view any user detail', function () {
 it('admin can update any user profile', function () {
     $target = User::factory()->create();
 
-    $this->withHeaders(asUser(admin()))
+    $this->withHeaders(asUser(adminUser()))
         ->patchJson("/api/admin/users/{$target->id}", ['first_name' => 'Updated'])
         ->assertOk()
         ->assertJsonPath('data.first_name', 'Updated');
@@ -78,7 +70,7 @@ it('forbids non-admin from updating another user', function () {
 it('admin can delete a user', function () {
     $target = User::factory()->create();
 
-    $this->withHeaders(asUser(admin()))
+    $this->withHeaders(asUser(adminUser()))
         ->deleteJson("/api/admin/users/{$target->id}")
         ->assertOk();
 
@@ -99,7 +91,7 @@ it('forbids non-admin from deleting another user', function () {
 it('admin can deactivate a user', function () {
     $target = User::factory()->create();
 
-    $this->withHeaders(asUser(admin()))
+    $this->withHeaders(asUser(adminUser()))
         ->putJson("/api/admin/users/{$target->id}/status", ['status' => UserStatusEnum::INACTIVE->value])
         ->assertOk();
 
@@ -107,7 +99,7 @@ it('admin can deactivate a user', function () {
 });
 
 it('admin cannot deactivate themselves', function () {
-    $admin = admin();
+    $admin = adminUser();
 
     $this->withHeaders(asUser($admin))
         ->putJson("/api/admin/users/{$admin->id}/status", ['status' => UserStatusEnum::INACTIVE->value])
@@ -119,7 +111,7 @@ it('admin cannot deactivate themselves', function () {
 it('admin can assign roles to a user', function () {
     $target = User::factory()->create();
 
-    $this->withHeaders(asUser(admin()))
+    $this->withHeaders(asUser(adminUser()))
         ->putJson("/api/admin/users/{$target->id}/roles", ['roles' => ['user']])
         ->assertOk()
         ->assertJsonPath('data.roles.0', 'user');
@@ -129,7 +121,7 @@ it('admin can remove a role from a user', function () {
     $target = User::factory()->create();
     $target->assignRole('user');
 
-    $this->withHeaders(asUser(admin()))
+    $this->withHeaders(asUser(adminUser()))
         ->deleteJson("/api/admin/users/{$target->id}/roles/user")
         ->assertOk();
 });
@@ -154,7 +146,7 @@ it('admin can approve identity verification', function () {
     $this->withHeaders(asUser($user))
         ->postJson('/api/user/identity-verification', ['document' => $file]);
 
-    $this->withHeaders(asUser(admin()))
+    $this->withHeaders(asUser(adminUser()))
         ->putJson("/api/admin/users/{$user->id}/identity-verification", ['status' => IdentityVerificationStatusEnum::APPROVED->value])
         ->assertOk();
 
@@ -170,7 +162,7 @@ it('admin can reject identity verification', function () {
     $this->withHeaders(asUser($user))
         ->postJson('/api/user/identity-verification', ['document' => $file]);
 
-    $this->withHeaders(asUser(admin()))
+    $this->withHeaders(asUser(adminUser()))
         ->putJson("/api/admin/users/{$user->id}/identity-verification", ['status' => IdentityVerificationStatusEnum::REJECTED->value])
         ->assertOk();
 
@@ -187,7 +179,7 @@ it('forbids non-admin from reviewing identity verification', function () {
 });
 
 it('returns 404 when reviewing identity verification of unknown user', function () {
-    $this->withHeaders(asUser(admin()))
+    $this->withHeaders(asUser(adminUser()))
         ->putJson('/api/admin/users/00000000-0000-0000-0000-000000000000/identity-verification', ['status' => IdentityVerificationStatusEnum::APPROVED->value])
         ->assertNotFound();
 });

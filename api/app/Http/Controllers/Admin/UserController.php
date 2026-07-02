@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\ApiStatusEnum;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\BanUserRequest;
 use App\Http\Requests\User\AdminUpdateUserRequest;
 use App\Http\Requests\User\AssignRolesRequest;
 use App\Http\Requests\User\ListUsersRequest;
@@ -13,6 +14,7 @@ use App\Http\Requests\User\ReviewIdentityVerificationRequest;
 use App\Http\Requests\User\UpdateUserStatusRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Services\Admin\AdminUserService;
 use App\Services\User\Exceptions\UserHasActiveBookingsException;
 use App\Services\User\UserService;
 use Illuminate\Http\JsonResponse;
@@ -25,7 +27,8 @@ use Illuminate\Support\Str;
 class UserController extends Controller
 {
     public function __construct(
-        private UserService $userService
+        private UserService $userService,
+        private AdminUserService $adminUserService
     ) {}
 
     public function index(ListUsersRequest $request): JsonResponse
@@ -176,6 +179,107 @@ class UserController extends Controller
                 'timestamp' => human_date(Carbon::now()),
             ])
             ->response();
+    }
+
+    public function ban(BanUserRequest $request, string $id): JsonResponse
+    {
+        $target = $this->resolveUser($id);
+
+        if ($target instanceof JsonResponse) {
+            return $target;
+        }
+
+        $this->authorize('ban', $target);
+
+        $user = $this->adminUserService->ban($target, $request->user(), $request->validated());
+
+        return (new UserResource($user))
+            ->additional([
+                'message' => 'User banned successfully',
+                'status' => ApiStatusEnum::SUCCESS,
+                'timestamp' => human_date(Carbon::now()),
+            ])
+            ->response();
+    }
+
+    public function unban(string $id): JsonResponse
+    {
+        $target = $this->resolveUser($id);
+
+        if ($target instanceof JsonResponse) {
+            return $target;
+        }
+
+        $this->authorize('unban', $target);
+
+        $user = $this->adminUserService->unban($target);
+
+        return (new UserResource($user))
+            ->additional([
+                'message' => 'User unbanned successfully',
+                'status' => ApiStatusEnum::SUCCESS,
+                'timestamp' => human_date(Carbon::now()),
+            ])
+            ->response();
+    }
+
+    public function forcePasswordReset(string $id): JsonResponse
+    {
+        $target = $this->resolveUser($id);
+
+        if ($target instanceof JsonResponse) {
+            return $target;
+        }
+
+        $this->authorize('forcePasswordReset', $target);
+
+        $this->adminUserService->forcePasswordReset($target);
+
+        return response()->json([
+            'message' => 'Password reset link sent successfully',
+            'status' => ApiStatusEnum::SUCCESS,
+            'timestamp' => human_date(Carbon::now()),
+        ]);
+    }
+
+    public function verifyEmail(string $id): JsonResponse
+    {
+        $target = $this->resolveUser($id);
+
+        if ($target instanceof JsonResponse) {
+            return $target;
+        }
+
+        $this->authorize('verifyEmail', $target);
+
+        $user = $this->adminUserService->verifyEmail($target);
+
+        return (new UserResource($user))
+            ->additional([
+                'message' => 'Email verified successfully',
+                'status' => ApiStatusEnum::SUCCESS,
+                'timestamp' => human_date(Carbon::now()),
+            ])
+            ->response();
+    }
+
+    public function resendVerification(string $id): JsonResponse
+    {
+        $target = $this->resolveUser($id);
+
+        if ($target instanceof JsonResponse) {
+            return $target;
+        }
+
+        $this->authorize('verifyEmail', $target);
+
+        $this->adminUserService->resendVerification($target);
+
+        return response()->json([
+            'message' => 'Verification email sent successfully',
+            'status' => ApiStatusEnum::SUCCESS,
+            'timestamp' => human_date(Carbon::now()),
+        ]);
     }
 
     private function resolveUser(string $id): User|JsonResponse
