@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Services\Admin;
+namespace App\Services\Admin\User;
 
 use App\Models\User;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
-class UserExportService
+class ExportService
 {
     public function streamCsv(array $filters = []): StreamedResponse
     {

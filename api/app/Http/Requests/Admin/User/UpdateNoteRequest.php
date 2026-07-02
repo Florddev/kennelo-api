@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Requests\Admin;
+namespace App\Http\Requests\Admin\User;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class BanUserRequest extends FormRequest
+class UpdateNoteRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -16,8 +16,7 @@ class BanUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'reason' => ['required', 'string', 'max:500'],
-            'banned_until' => ['nullable', 'date', 'after:now'],
+            'body' => ['required', 'string', 'max:2000'],
         ];
     }
 }

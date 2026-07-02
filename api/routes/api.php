@@ -12,7 +12,7 @@ use App\Http\Controllers\Activity\ActivityRoleController;
 use App\Http\Controllers\Activity\ActivityServiceController;
 use App\Http\Controllers\Activity\CollaboratorInvitationController;
 use App\Http\Controllers\Activity\StripeConnectController;
-use App\Http\Controllers\Admin\UserImpersonationController;
+use App\Http\Controllers\Admin\User\ImpersonationController;
 use App\Http\Controllers\Auth\TwoFactorAuthenticationController;
 use App\Http\Controllers\Booking\ActivityBookingController;
 use App\Http\Controllers\Booking\BookingController;
@@ -193,7 +193,7 @@ Route::middleware(['auth.jwt'])->group(function () {
     Route::post('/hosting/bookings/{booking}/conversation', [HostScanController::class, 'conversation']);
 
     // Impersonation (exit)
-    Route::post('/impersonation/stop', [UserImpersonationController::class, 'stop']);
+    Route::post('/impersonation/stop', [ImpersonationController::class, 'stop']);
 
     // Current user
     Route::get('/user', [UserController::class, 'getCurrentUser']);

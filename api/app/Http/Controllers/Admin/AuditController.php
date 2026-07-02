@@ -15,7 +15,7 @@ use Illuminate\Support\Carbon;
 /**
  * @tags Admin Audit
  */
-class AdminActionController extends Controller
+class AuditController extends Controller
 {
     public function __construct(
         private AdminActionService $actions

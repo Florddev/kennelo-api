@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Requests\Admin;
+namespace App\Http\Requests\Admin\User;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateUserNoteRequest extends FormRequest
+class StoreNoteRequest extends FormRequest
 {
     public function authorize(): bool
     {

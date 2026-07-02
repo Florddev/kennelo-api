@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Admin\User;
 
 use App\Enums\ApiStatusEnum;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\StoreUserNoteRequest;
-use App\Http\Requests\Admin\UpdateUserNoteRequest;
+use App\Http\Requests\Admin\User\StoreNoteRequest;
+use App\Http\Requests\Admin\User\UpdateNoteRequest;
 use App\Http\Resources\UserNoteResource;
 use App\Models\User;
 use App\Models\UserNote;
-use App\Services\Admin\UserNoteService;
+use App\Services\Admin\User\NoteService;
 use App\Services\User\UserService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -21,10 +21,10 @@ use Illuminate\Support\Str;
 /**
  * @tags Admin User Notes
  */
-class UserNoteController extends Controller
+class NoteController extends Controller
 {
     public function __construct(
-        private UserNoteService $notes,
+        private NoteService $notes,
         private UserService $userService
     ) {}
 
@@ -48,7 +48,7 @@ class UserNoteController extends Controller
             ->response();
     }
 
-    public function store(StoreUserNoteRequest $request, string $id): JsonResponse
+    public function store(StoreNoteRequest $request, string $id): JsonResponse
     {
         $target = $this->resolveUser($id);
 
@@ -70,7 +70,7 @@ class UserNoteController extends Controller
             ->setStatusCode(201);
     }
 
-    public function update(UpdateUserNoteRequest $request, string $id, UserNote $note): JsonResponse
+    public function update(UpdateNoteRequest $request, string $id, UserNote $note): JsonResponse
     {
         if ($note->user_id !== $id) {
             return $this->notFound();

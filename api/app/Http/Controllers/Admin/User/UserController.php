@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Admin\User;
 
 use App\Enums\AdminActionTypeEnum;
 use App\Enums\ApiStatusEnum;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\BanUserRequest;
+use App\Http\Requests\Admin\User\BanRequest;
 use App\Http\Requests\User\AdminUpdateUserRequest;
 use App\Http\Requests\User\AssignRolesRequest;
 use App\Http\Requests\User\ListUsersRequest;
@@ -16,7 +16,7 @@ use App\Http\Requests\User\UpdateUserStatusRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Services\Admin\AdminActionService;
-use App\Services\Admin\AdminUserService;
+use App\Services\Admin\User\AdminUserService;
 use App\Services\User\Exceptions\UserHasActiveBookingsException;
 use App\Services\User\UserService;
 use Illuminate\Http\JsonResponse;
@@ -204,7 +204,7 @@ class UserController extends Controller
             ->response();
     }
 
-    public function ban(BanUserRequest $request, string $id): JsonResponse
+    public function ban(BanRequest $request, string $id): JsonResponse
     {
         $target = $this->resolveUser($id);
 

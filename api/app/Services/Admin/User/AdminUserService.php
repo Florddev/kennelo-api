@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Services\Admin;
+namespace App\Services\Admin\User;
 
 use App\Enums\NotificationTypeEnum;
 use App\Enums\UserStatusEnum;

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Admin\User;
 
 use App\Enums\ApiStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
-use App\Services\Admin\ImpersonationService;
+use App\Services\Admin\User\ImpersonationService;
 use App\Services\User\UserService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -17,7 +17,7 @@ use Illuminate\Support\Str;
 /**
  * @tags Admin Impersonation
  */
-class UserImpersonationController extends Controller
+class ImpersonationController extends Controller
 {
     public function __construct(
         private ImpersonationService $impersonation,

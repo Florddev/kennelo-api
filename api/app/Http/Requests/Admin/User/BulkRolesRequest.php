@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Requests\Admin;
+namespace App\Http\Requests\Admin\User;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class BulkUserRolesRequest extends FormRequest
+class BulkRolesRequest extends FormRequest
 {
     public function authorize(): bool
     {

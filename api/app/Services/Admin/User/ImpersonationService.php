@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Services\Admin;
+namespace App\Services\Admin\User;
 
 use App\Enums\AdminActionTypeEnum;
 use App\Models\User;
+use App\Services\Admin\AdminActionService;
 use App\Services\JWTService;
 
 class ImpersonationService

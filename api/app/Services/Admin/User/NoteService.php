@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Services\Admin;
+namespace App\Services\Admin\User;
 
 use App\Enums\PaginationEnum;
 use App\Models\User;
 use App\Models\UserNote;
 use Illuminate\Pagination\LengthAwarePaginator;
 
-class UserNoteService
+class NoteService
 {
     public function paginate(User $user, array $filters = []): LengthAwarePaginator
     {

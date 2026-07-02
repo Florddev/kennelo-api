@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Requests\Admin;
+namespace App\Http\Requests\Admin\User;
 
 use App\Enums\UserStatusEnum;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class BulkUserStatusRequest extends FormRequest
+class BulkStatusRequest extends FormRequest
 {
     public function authorize(): bool
     {

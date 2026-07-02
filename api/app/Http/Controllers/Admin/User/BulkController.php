@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Admin\User;
 
 use App\Enums\AdminActionTypeEnum;
 use App\Enums\ApiStatusEnum;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\BulkUserRolesRequest;
-use App\Http\Requests\Admin\BulkUserStatusRequest;
+use App\Http\Requests\Admin\User\BulkRolesRequest;
+use App\Http\Requests\Admin\User\BulkStatusRequest;
 use App\Http\Requests\User\ListUsersRequest;
 use App\Models\User;
 use App\Services\Admin\AdminActionService;
-use App\Services\Admin\AdminUserService;
-use App\Services\Admin\UserExportService;
+use App\Services\Admin\User\AdminUserService;
+use App\Services\Admin\User\ExportService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -21,15 +21,15 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 /**
  * @tags Admin Users Bulk
  */
-class UserBulkController extends Controller
+class BulkController extends Controller
 {
     public function __construct(
         private AdminUserService $adminUserService,
-        private UserExportService $export,
+        private ExportService $export,
         private AdminActionService $actions
     ) {}
 
-    public function status(BulkUserStatusRequest $request): JsonResponse
+    public function status(BulkStatusRequest $request): JsonResponse
     {
         $this->authorize('bulkManage', User::class);
 
@@ -54,7 +54,7 @@ class UserBulkController extends Controller
         ]);
     }
 
-    public function roles(BulkUserRolesRequest $request): JsonResponse
+    public function roles(BulkRolesRequest $request): JsonResponse
     {
         $this->authorize('bulkManage', User::class);
 
