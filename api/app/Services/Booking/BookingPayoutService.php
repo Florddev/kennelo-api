@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace App\Services\Booking;
 
 use App\Enums\BookingStatusEnum;
+use App\Enums\FinancialOperationTypeEnum;
 use App\Enums\PaymentStatusEnum;
 use App\Enums\PayoutStatusEnum;
 use App\Models\Booking;
 use App\Models\BookingPayout;
+use App\Services\Finance\FinancialJournalService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Stripe\StripeClient;
@@ -16,7 +18,8 @@ use Stripe\StripeClient;
 class BookingPayoutService
 {
     public function __construct(
-        private StripeClient $stripe
+        private StripeClient $stripe,
+        private FinancialJournalService $journal
     ) {}
 
     public function releaseDuePayouts(): int
@@ -72,6 +75,13 @@ class BookingPayoutService
                 ]);
 
                 $booking->update(['stripe_transfer_id' => $transfer->id]);
+
+                $this->journal->record(
+                    FinancialOperationTypeEnum::PAYOUT,
+                    $booking,
+                    (string) $booking->activity_amount,
+                    $transfer->id,
+                );
 
                 $count++;
             });
