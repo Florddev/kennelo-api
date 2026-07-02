@@ -121,11 +121,6 @@ class User extends Authenticatable implements HasLocalePreference, HasMedia, JWT
         return $this->belongsTo(Address::class);
     }
 
-    public function bannedBy(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'banned_by');
-    }
-
     public function identityVerifications(): HasMany
     {
         return $this->hasMany(IdentityVerification::class);

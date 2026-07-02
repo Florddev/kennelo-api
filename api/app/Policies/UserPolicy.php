@@ -76,4 +76,9 @@ class UserPolicy
     {
         return $user->hasRole('admin');
     }
+
+    public function bulkManage(User $user): bool
+    {
+        return $user->hasRole('admin');
+    }
 }

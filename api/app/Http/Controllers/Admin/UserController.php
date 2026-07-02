@@ -37,6 +37,8 @@ class UserController extends Controller
 
     public function index(ListUsersRequest $request): JsonResponse
     {
+        $this->authorize('viewAny', User::class);
+
         $users = $this->userService->getAllPaginated($request->validated());
 
         return UserResource::collection($users)
@@ -55,6 +57,8 @@ class UserController extends Controller
             return $target;
         }
 
+        $this->authorize('view', $target);
+
         return (new UserResource($target))
             ->additional([
                 'status' => ApiStatusEnum::SUCCESS,
@@ -70,6 +74,8 @@ class UserController extends Controller
         if ($target instanceof JsonResponse) {
             return $target;
         }
+
+        $this->authorize('update', $target);
 
         $user = $this->userService->updateProfile($target, $request->validated());
 
@@ -89,6 +95,8 @@ class UserController extends Controller
         if ($target instanceof JsonResponse) {
             return $target;
         }
+
+        $this->authorize('destroy', $target);
 
         try {
             $this->userService->deleteAccount($target);
@@ -138,6 +146,8 @@ class UserController extends Controller
             return $target;
         }
 
+        $this->authorize('assignRoles', $target);
+
         $user = $this->userService->assignRoles($target, $request->validated());
         $this->actions->log($request->user(), $target, AdminActionTypeEnum::ASSIGN_ROLES, $request->validated());
 
@@ -158,6 +168,8 @@ class UserController extends Controller
             return $target;
         }
 
+        $this->authorize('assignRoles', $target);
+
         $user = $this->userService->removeRole($target, $role);
         $this->actions->log($request->user(), $target, AdminActionTypeEnum::REMOVE_ROLE, ['role' => $role]);
 
@@ -177,6 +189,8 @@ class UserController extends Controller
         if ($target instanceof JsonResponse) {
             return $target;
         }
+
+        $this->authorize('reviewIdentityVerification', $target);
 
         $user = $this->userService->reviewIdentityVerification($target, $request->user(), $request->validated());
         $this->actions->log($request->user(), $target, AdminActionTypeEnum::REVIEW_IDENTITY, $request->validated());

@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\BulkUserRolesRequest;
 use App\Http\Requests\Admin\BulkUserStatusRequest;
 use App\Http\Requests\User\ListUsersRequest;
+use App\Models\User;
 use App\Services\Admin\AdminActionService;
 use App\Services\Admin\AdminUserService;
 use App\Services\Admin\UserExportService;
@@ -30,6 +31,8 @@ class UserBulkController extends Controller
 
     public function status(BulkUserStatusRequest $request): JsonResponse
     {
+        $this->authorize('bulkManage', User::class);
+
         $data = $request->validated();
 
         $affected = $this->adminUserService->bulkStatus(
@@ -53,6 +56,8 @@ class UserBulkController extends Controller
 
     public function roles(BulkUserRolesRequest $request): JsonResponse
     {
+        $this->authorize('bulkManage', User::class);
+
         $data = $request->validated();
 
         $affected = $this->adminUserService->bulkRoles(
@@ -77,6 +82,8 @@ class UserBulkController extends Controller
 
     public function export(ListUsersRequest $request): StreamedResponse
     {
+        $this->authorize('bulkManage', User::class);
+
         $this->actions->log($request->user(), null, AdminActionTypeEnum::EXPORT, $request->validated());
 
         return $this->export->streamCsv($request->validated());

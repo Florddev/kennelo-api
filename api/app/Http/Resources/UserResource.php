@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Http\Resources;
 
-use App\Enums\UserStatusEnum;
 use App\Models\User;
 use App\Services\MediaService;
 use Illuminate\Http\Request;
@@ -38,7 +37,7 @@ class UserResource extends JsonResource
                 : 0,
             'has_password' => $isSelf ? $this->password !== null : null,
             'status' => $this->when($isAdmin, fn () => $this->status->value),
-            'is_banned' => $this->when($isAdmin, fn () => $this->status === UserStatusEnum::BANNED),
+            'is_banned' => $this->when($isAdmin, fn () => $this->isBanned()),
             'ban_reason' => $this->when($isAdmin, fn () => $this->ban_reason),
             'banned_at' => $this->when($isAdmin, fn () => $this->banned_at ? human_date($this->banned_at) : null),
             'banned_until' => $this->when($isAdmin, fn () => $this->banned_until ? human_date($this->banned_until) : null),

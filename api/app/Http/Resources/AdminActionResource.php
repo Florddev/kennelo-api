@@ -19,8 +19,18 @@ class AdminActionResource extends JsonResource
             'admin_id' => $this->admin_id,
             'target_user_id' => $this->target_user_id,
             'metadata' => $this->metadata,
-            'admin' => $this->whenLoaded('admin', fn () => $this->admin ? new UserResource($this->admin) : null),
-            'target' => $this->whenLoaded('target', fn () => $this->target ? new UserResource($this->target) : null),
+            'admin' => $this->whenLoaded('admin', fn () => $this->admin ? [
+                'id' => $this->admin->id,
+                'first_name' => $this->admin->first_name,
+                'last_name' => $this->admin->last_name,
+                'email' => $this->admin->email,
+            ] : null),
+            'target' => $this->whenLoaded('target', fn () => $this->target ? [
+                'id' => $this->target->id,
+                'first_name' => $this->target->first_name,
+                'last_name' => $this->target->last_name,
+                'email' => $this->target->email,
+            ] : null),
             'created_at' => human_date($this->created_at),
         ];
     }

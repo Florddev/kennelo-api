@@ -12,6 +12,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 /**
  * @property AdminActionTypeEnum $action
  * @property array<string, mixed>|null $metadata
+ * @property-read User|null $admin
+ * @property-read User|null $target
  */
 class AdminAction extends Model
 {
