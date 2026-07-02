@@ -103,6 +103,11 @@ class Booking extends Model
         return $this->hasOne(BookingThread::class);
     }
 
+    public function payout(): HasOne
+    {
+        return $this->hasOne(BookingPayout::class);
+    }
+
     public function reviews(): HasMany
     {
         return $this->hasMany(Review::class);

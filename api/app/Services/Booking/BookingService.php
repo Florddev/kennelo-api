@@ -87,6 +87,8 @@ class BookingService
             : collect();
 
         [$booking, $totalPrice] = DB::transaction(function () use ($user, $data, $activity, $checkIn, $checkOut, $pets, $services): array {
+            Activity::whereKey($activity->id)->lockForUpdate()->first();
+
             $this->validateAvailability($activity, $checkIn, $checkOut);
 
             [$totalPrice, $serviceFee, $platformFee, $activityAmount, $petPivots, $servicePivots] =
@@ -132,7 +134,7 @@ class BookingService
             'stripe_payment_intent_id' => $pi->id,
             'stripe_charge_id' => $pi->latest_charge ?? null,
             'stripe_transfer_group' => 'booking_'.$booking->id,
-            'payment_status' => $pi->status === 'succeeded' ? PaymentStatusEnum::SUCCEEDED : PaymentStatusEnum::PENDING,
+            'payment_status' => $this->mapPaymentStatus($pi->status),
         ]);
 
         $booking->setAttribute('client_secret', $pi->client_secret);
@@ -230,6 +232,7 @@ class BookingService
             'payment_method' => $paymentMethodId,
             'confirm' => true,
             'off_session' => false,
+            'capture_method' => 'manual',
             'payment_method_types' => ['card'],
             'transfer_group' => 'booking_'.$booking->id,
             'metadata' => [
@@ -244,6 +247,18 @@ class BookingService
         }
 
         return $this->stripe->paymentIntents->create($payload);
+    }
+
+    private function mapPaymentStatus(string $stripeStatus): PaymentStatusEnum
+    {
+        return match ($stripeStatus) {
+            'succeeded' => PaymentStatusEnum::SUCCEEDED,
+            'requires_capture' => PaymentStatusEnum::REQUIRES_CAPTURE,
+            'requires_action', 'requires_confirmation' => PaymentStatusEnum::REQUIRES_ACTION,
+            'processing' => PaymentStatusEnum::PROCESSING,
+            'canceled' => PaymentStatusEnum::CANCELED,
+            default => PaymentStatusEnum::PENDING,
+        };
     }
 
     public function cancel(Booking $booking): Booking
@@ -273,22 +288,23 @@ class BookingService
     {
         $this->assertStatus($booking, [BookingStatusEnum::PENDING], 'confirm');
 
-        $booking->update(['status' => BookingStatusEnum::CONFIRMED]);
+        try {
+            $pi = $this->stripe->paymentIntents->capture($booking->stripe_payment_intent_id);
+        } catch (CardException|InvalidRequestException $e) {
+            $booking->update(['payment_status' => PaymentStatusEnum::FAILED]);
+            $this->notifyBookingUser($booking, NotificationTypeEnum::PAYMENT_FAILED);
 
-        $accountId = $booking->activity->resolveStripeAccountId();
-
-        if ($accountId && $booking->stripe_charge_id && (float) $booking->activity_amount > 0) {
-            $amountToTransfer = (int) bcmul((string) $booking->activity_amount, '100', 0);
-            $transfer = $this->stripe->transfers->create([
-                'amount' => $amountToTransfer,
-                'currency' => (string) config('services.stripe.currency', 'eur'),
-                'destination' => $accountId,
-                'source_transaction' => $booking->stripe_charge_id,
-                'transfer_group' => $booking->stripe_transfer_group ?? ('booking_'.$booking->id),
-                'metadata' => ['booking_id' => $booking->id],
+            throw ValidationException::withMessages([
+                'payment' => ['The payment could not be captured: '.$e->getMessage()],
             ]);
-            $booking->update(['stripe_transfer_id' => $transfer->id]);
         }
+
+        $booking->update([
+            'status' => BookingStatusEnum::CONFIRMED,
+            'payment_status' => PaymentStatusEnum::SUCCEEDED,
+            'paid_at' => Carbon::now(),
+            'stripe_charge_id' => $pi->latest_charge ?? $booking->stripe_charge_id,
+        ]);
 
         $this->sendBookingReferenceIfConversationExists($booking, $actor, $message);
 
@@ -308,21 +324,30 @@ class BookingService
         return $booking->fresh();
     }
 
-    public function refundOnReject(Booking $booking): Booking
+    public function releaseAuthorization(Booking $booking): Booking
     {
-        if (! $booking->stripe_charge_id || $booking->payment_status !== PaymentStatusEnum::SUCCEEDED) {
-            return $booking;
+        if ($booking->payment_status === PaymentStatusEnum::SUCCEEDED && $booking->stripe_charge_id) {
+            $refund = $this->stripe->refunds->create([
+                'charge' => $booking->stripe_charge_id,
+                'metadata' => ['booking_id' => $booking->id],
+            ]);
+            $booking->update([
+                'stripe_refund_id' => $refund->id,
+                'refunded_amount' => bcdiv((string) $refund->amount, '100', 2),
+                'refunded_at' => Carbon::now(),
+                'payment_status' => PaymentStatusEnum::REFUNDED,
+            ]);
+
+            return $booking->fresh();
         }
-        $refund = $this->stripe->refunds->create([
-            'charge' => $booking->stripe_charge_id,
-            'metadata' => ['booking_id' => $booking->id],
-        ]);
-        $booking->update([
-            'stripe_refund_id' => $refund->id,
-            'refunded_amount' => bcdiv((string) $refund->amount, '100', 2),
-            'refunded_at' => Carbon::now(),
-            'payment_status' => PaymentStatusEnum::REFUNDED,
-        ]);
+
+        if ($booking->stripe_payment_intent_id !== null) {
+            try {
+                $this->stripe->paymentIntents->cancel($booking->stripe_payment_intent_id);
+                $booking->update(['payment_status' => PaymentStatusEnum::CANCELED]);
+            } catch (InvalidRequestException $e) {
+            }
+        }
 
         return $booking->fresh();
     }
@@ -331,15 +356,49 @@ class BookingService
     {
         $this->assertStatus($booking, [BookingStatusEnum::PENDING], 'reject');
 
-        $this->refundOnReject($booking);
+        $this->releaseAuthorization($booking);
 
-        $booking->update(['status' => BookingStatusEnum::CANCELLED]);
+        $booking->update(['status' => BookingStatusEnum::REJECTED]);
 
         $this->sendBookingReferenceIfConversationExists($booking, $actor, $message);
 
         $this->notifyBookingUser($booking, NotificationTypeEnum::BOOKING_REJECTED);
 
         return $booking->fresh();
+    }
+
+    public function expireStalePending(): int
+    {
+        $threshold = Carbon::now()->subHours((int) config('booking.acceptance_window_hours', 72));
+
+        $bookingIds = Booking::where('status', BookingStatusEnum::PENDING)
+            ->where('created_at', '<=', $threshold)
+            ->pluck('id');
+
+        $count = 0;
+
+        foreach ($bookingIds as $bookingId) {
+            DB::transaction(function () use ($bookingId, &$count): void {
+                $booking = Booking::where('id', $bookingId)
+                    ->where('status', BookingStatusEnum::PENDING)
+                    ->lockForUpdate()
+                    ->first();
+
+                if ($booking === null) {
+                    return;
+                }
+
+                $this->releaseAuthorization($booking);
+
+                $booking->update(['status' => BookingStatusEnum::EXPIRED]);
+
+                $this->notifyBookingUser($booking, NotificationTypeEnum::BOOKING_EXPIRED);
+
+                $count++;
+            });
+        }
+
+        return $count;
     }
 
     private function notifyBookingUser(Booking $booking, NotificationTypeEnum $type): void
@@ -545,7 +604,12 @@ class BookingService
 
     private function assertHostCanAcceptBookings(Activity $activity): void
     {
-        if (! $activity->resolveChargesEnabled() || $activity->resolveStripeAccountId() === null) {
+        $ready = $activity->resolveStripeAccountId() !== null
+            && $activity->resolveChargesEnabled()
+            && $activity->resolvePayoutsEnabled()
+            && $activity->resolveOnboardingCompleted();
+
+        if (! $ready) {
             throw ValidationException::withMessages([
                 'activity_id' => ['This host cannot accept bookings yet. Their bank account is not connected.'],
             ]);

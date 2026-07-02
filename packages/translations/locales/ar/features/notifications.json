@@ -19,6 +19,10 @@
         "title": "تم رفض الحجز",
         "body": "تم رفض حجزك لـ {activity}"
     },
+    "booking_expired": {
+        "title": "انتهت صلاحية الحجز",
+        "body": "انتهت صلاحية طلبك لـ {activity}"
+    },
     "booking_completed": {
         "title": "انتهت الإقامة",
         "body": "انتهت إقامتك في {activity}"

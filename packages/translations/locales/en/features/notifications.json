@@ -19,6 +19,10 @@
         "title": "Booking declined",
         "body": "Your booking for {activity} was declined"
     },
+    "booking_expired": {
+        "title": "Booking expired",
+        "body": "Your request for {activity} has expired"
+    },
     "booking_completed": {
         "title": "Stay completed",
         "body": "Your stay at {activity} is complete"

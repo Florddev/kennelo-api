@@ -21,6 +21,7 @@ const NOTIFICATION_CONFIG: Partial<Record<NotificationType, NotificationConfig>>
     booking_created: { body: true, href: "booking" },
     booking_confirmed: { body: true, href: "booking" },
     booking_rejected: { body: true, href: "booking" },
+    booking_expired: { body: true, href: "booking" },
     booking_completed: { body: true, href: "booking" },
     booking_cancelled_by_client: { body: true, href: "booking" },
     payment_succeeded: { href: "booking" },

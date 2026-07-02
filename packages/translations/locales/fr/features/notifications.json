@@ -19,6 +19,10 @@
         "title": "Réservation refusée",
         "body": "Votre réservation pour {activity} a été refusée"
     },
+    "booking_expired": {
+        "title": "Réservation expirée",
+        "body": "Votre demande pour {activity} a expiré"
+    },
     "booking_completed": {
         "title": "Séjour terminé",
         "body": "Votre séjour chez {activity} est terminé"

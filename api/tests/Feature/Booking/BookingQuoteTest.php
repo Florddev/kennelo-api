@@ -18,6 +18,8 @@ function makeQuoteFixtures(?callable $priceFor = null, int $closedMask = 0): arr
         'is_active' => true,
         'stripe_account_id' => 'acct_test_'.uniqid(),
         'stripe_charges_enabled' => true,
+        'stripe_payouts_enabled' => true,
+        'stripe_onboarding_completed' => true,
     ]);
     $animalType = AnimalType::create(['code' => 'dog_'.uniqid(), 'name' => 'Chien', 'category' => 'mammals']);
 

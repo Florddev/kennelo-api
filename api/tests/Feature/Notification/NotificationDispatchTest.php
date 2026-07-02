@@ -17,6 +17,8 @@ use App\Services\Favorite\FavoriteService;
 use App\Services\Notification\NotificationRecipientResolver;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Notification as NotificationFacade;
+use Stripe\StripeClient;
+use Tests\Support\FakeStripeClient;
 
 // ─── custom channel ───────────────────────────────────────────────────────────
 
@@ -52,6 +54,7 @@ it('routes the broadcast to the recipient private channel', function () {
 
 it('notifies the client when a booking is confirmed', function () {
     NotificationFacade::fake();
+    app()->instance(StripeClient::class, new FakeStripeClient);
 
     $client = User::factory()->create();
     $manager = User::factory()->create();
@@ -60,6 +63,7 @@ it('notifies the client when a booking is confirmed', function () {
         'user_id' => $client->id,
         'activity_id' => $activity->id,
         'status' => BookingStatusEnum::PENDING,
+        'stripe_payment_intent_id' => 'pi_test_confirm',
     ]);
 
     app(BookingService::class)->confirm($booking, $manager);

@@ -10,7 +10,7 @@ export function BookingStatusBadge({ status }: { status: BookingStatus }) {
 
     if (status === "confirmed") variant = "default";
     if (status === "in_progress") variant = "secondary";
-    if (status === "cancelled") variant = "destructive";
+    if (status === "cancelled" || status === "rejected") variant = "destructive";
 
     return (
         <Badge variant={variant} className="capitalize">

@@ -3,7 +3,15 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { ArrowLeft, Calendar, Card, Paw, UsersGroupTwoRounded, Widget5 } from "@solar-icons/react";
+import {
+    ArrowLeft,
+    Calendar,
+    Card,
+    Paw,
+    Star,
+    UsersGroupTwoRounded,
+    Widget5,
+} from "@solar-icons/react";
 
 import { Button } from "@workspace/ui/components/button";
 import { cn } from "@workspace/ui/lib/utils";
@@ -39,6 +47,12 @@ export default function ActivityLayout({ children }: { children: React.ReactNode
             icon: Paw,
             href: routes.ActivityCycles({ id: params.id }),
             label: t("features.activities.manager.nav.cycles"),
+            default: false,
+        },
+        {
+            icon: Star,
+            href: routes.ActivityServices({ id: params.id }),
+            label: t("features.activities.manager.nav.services"),
             default: false,
         },
         {

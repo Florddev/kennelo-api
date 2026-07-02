@@ -29,6 +29,8 @@ function makeBookingFixtures(): array
         'is_active' => true,
         'stripe_account_id' => 'acct_test_'.uniqid(),
         'stripe_charges_enabled' => true,
+        'stripe_payouts_enabled' => true,
+        'stripe_onboarding_completed' => true,
     ]);
     $animalType = AnimalType::create(['code' => 'dog_'.uniqid(), 'name' => 'Chien', 'category' => 'mammals']);
 
@@ -130,6 +132,32 @@ it('authenticated user can create a booking', function () {
         ->assertCreated()
         ->assertJsonPath('data.status', BookingStatusEnum::PENDING->value)
         ->assertJsonPath('data.activity_id', $activity->id);
+
+    $booking = Booking::where('user_id', $user->id)->first();
+
+    expect($booking->payment_status->value)->toBe('requires_capture');
+    expect($booking->stripe_charge_id)->toBeNull();
+});
+
+it('booking creation is blocked when host payouts are not enabled', function () {
+    Event::fake();
+    fakeStripe();
+
+    $user = User::factory()->create();
+    [$manager, $activity, $animalType] = makeBookingFixtures();
+    $activity->update(['stripe_payouts_enabled' => false]);
+    $pet = Pet::create(['user_id' => $user->id, 'animal_type_id' => $animalType->id, 'name' => 'Rex']);
+
+    $this->withHeaders(asUser($user))
+        ->postJson('/api/bookings', [
+            'activity_id' => $activity->id,
+            'check_in_date' => now()->addDays(10)->format('Y-m-d'),
+            'check_out_date' => now()->addDays(13)->format('Y-m-d'),
+            'pet_ids' => [$pet->id],
+            'payment_method_id' => 'pm_card_visa',
+        ])
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors(['activity_id']);
 });
 
 it('booking creation fails if a day is closed', function () {

@@ -97,6 +97,14 @@ const STATUS_COLOR_MAP: Record<BookingStatus, StatusColor> = {
         badge: "bg-rose-500/15 text-rose-700 dark:text-rose-300 border-rose-500/40",
         dot: "bg-rose-500",
     },
+    rejected: {
+        badge: "bg-rose-500/15 text-rose-700 dark:text-rose-300 border-rose-500/40",
+        dot: "bg-rose-500",
+    },
+    expired: {
+        badge: "bg-zinc-500/15 text-zinc-700 dark:text-zinc-300 border-zinc-500/40",
+        dot: "bg-zinc-500",
+    },
 };
 
 export function statusColor(status: BookingStatus): StatusColor {
@@ -109,6 +117,8 @@ export const SELECTABLE_STATUSES: BookingStatus[] = [
     "in_progress",
     "completed",
     "cancelled",
+    "rejected",
+    "expired",
 ];
 
 export const DEFAULT_ACTIVE_STATUSES: BookingStatus[] = [

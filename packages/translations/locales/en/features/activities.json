@@ -19,6 +19,7 @@
         "nav": {
             "info": "Information",
             "cycles": "Cycles",
+            "services": "Services",
             "bookings": "Bookings",
             "collaborators": "Collaborators",
             "availabilities": "Availabilities",
@@ -161,6 +162,22 @@
         "occupancyByAnimal": "Occupancy by animal type",
         "occupancyRate": "Occupancy rate",
         "noCapacities": "No capacities configured yet"
+    },
+    "services": {
+        "title": "Services",
+        "addService": "Add a service",
+        "empty": "No service yet. Add an extra service to your activity.",
+        "createTitle": "Add a service",
+        "editTitle": "Edit service",
+        "name": "Name",
+        "animalType": "Animal type",
+        "selectAnimalType": "Select an animal type",
+        "price": "Price (€)",
+        "description": "Description",
+        "included": "Included in the price",
+        "includedBadge": "Included",
+        "saved": "Service saved",
+        "deleted": "Service deleted"
     },
     "cycles": {
         "title": "Cycles",

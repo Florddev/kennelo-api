@@ -82,4 +82,11 @@ class ActivityPolicy
             || $user->id === $activity->manager_id
             || $activity->collaboratorHasPermission($user, ActivityPermissionEnum::MANAGE_CYCLES);
     }
+
+    public function manageServices(User $user, Activity $activity): bool
+    {
+        return $user->hasRole('admin')
+            || $user->id === $activity->manager_id
+            || $activity->collaboratorHasPermission($user, ActivityPermissionEnum::MANAGE_CYCLES);
+    }
 }
