@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Enums\UserStatusEnum;
 use App\Services\MediaService;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Translation\HasLocalePreference;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -29,7 +30,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property array<int, string>|null $two_factor_recovery_codes
  * @property Carbon|null $two_factor_confirmed_at
  */
-class User extends Authenticatable implements HasMedia, JWTSubject, MustVerifyEmail
+class User extends Authenticatable implements HasLocalePreference, HasMedia, JWTSubject, MustVerifyEmail
 {
     use HasFactory, HasRoles, HasUuids, InteractsWithMedia, Notifiable, SoftDeletes;
 
@@ -74,6 +75,11 @@ class User extends Authenticatable implements HasMedia, JWTSubject, MustVerifyEm
             'two_factor_recovery_codes' => 'encrypted:array',
             'two_factor_confirmed_at' => 'datetime',
         ];
+    }
+
+    public function preferredLocale(): string
+    {
+        return $this->locale ?? (string) config('app.locale');
     }
 
     public function registerMediaCollections(): void
