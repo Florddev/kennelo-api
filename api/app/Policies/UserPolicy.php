@@ -64,4 +64,11 @@ class UserPolicy
     {
         return $user->hasRole('admin');
     }
+
+    public function impersonate(User $user, User $model): bool
+    {
+        return $user->hasRole('admin')
+            && $user->id !== $model->id
+            && ! $model->hasRole('admin');
+    }
 }

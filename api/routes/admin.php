@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Admin\AdminActionController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\UserImpersonationController;
 use App\Http\Controllers\Review\Admin\ReviewReportController;
 use Illuminate\Support\Facades\Route;
 
@@ -20,6 +22,10 @@ Route::delete('/users/{id}/ban', [UserController::class, 'unban']);
 Route::post('/users/{id}/force-password-reset', [UserController::class, 'forcePasswordReset']);
 Route::post('/users/{id}/verify-email', [UserController::class, 'verifyEmail']);
 Route::post('/users/{id}/resend-verification', [UserController::class, 'resendVerification']);
+Route::post('/users/{id}/impersonate', [UserImpersonationController::class, 'start']);
+
+// Audit
+Route::get('/audit-actions', [AdminActionController::class, 'index']);
 
 // Review moderation
 Route::get('/review-reports', [ReviewReportController::class, 'index']);

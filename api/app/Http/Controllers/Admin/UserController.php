@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\AdminActionTypeEnum;
 use App\Enums\ApiStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\BanUserRequest;
@@ -14,10 +15,12 @@ use App\Http\Requests\User\ReviewIdentityVerificationRequest;
 use App\Http\Requests\User\UpdateUserStatusRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Services\Admin\AdminActionService;
 use App\Services\Admin\AdminUserService;
 use App\Services\User\Exceptions\UserHasActiveBookingsException;
 use App\Services\User\UserService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
@@ -28,7 +31,8 @@ class UserController extends Controller
 {
     public function __construct(
         private UserService $userService,
-        private AdminUserService $adminUserService
+        private AdminUserService $adminUserService,
+        private AdminActionService $actions
     ) {}
 
     public function index(ListUsersRequest $request): JsonResponse
@@ -78,7 +82,7 @@ class UserController extends Controller
             ->response();
     }
 
-    public function destroy(string $id): JsonResponse
+    public function destroy(Request $request, string $id): JsonResponse
     {
         $target = $this->resolveUser($id);
 
@@ -88,6 +92,7 @@ class UserController extends Controller
 
         try {
             $this->userService->deleteAccount($target);
+            $this->actions->log($request->user(), $target, AdminActionTypeEnum::DELETE);
 
             return response()->json([
                 'message' => 'User deleted successfully',
@@ -114,6 +119,7 @@ class UserController extends Controller
         $this->authorize('updateStatus', $target);
 
         $user = $this->userService->updateStatus($target, $request->validated());
+        $this->actions->log($request->user(), $target, AdminActionTypeEnum::UPDATE_STATUS, $request->validated());
 
         return (new UserResource($user))
             ->additional([
@@ -133,6 +139,7 @@ class UserController extends Controller
         }
 
         $user = $this->userService->assignRoles($target, $request->validated());
+        $this->actions->log($request->user(), $target, AdminActionTypeEnum::ASSIGN_ROLES, $request->validated());
 
         return (new UserResource($user))
             ->additional([
@@ -143,7 +150,7 @@ class UserController extends Controller
             ->response();
     }
 
-    public function removeRole(string $id, string $role): JsonResponse
+    public function removeRole(Request $request, string $id, string $role): JsonResponse
     {
         $target = $this->resolveUser($id);
 
@@ -152,6 +159,7 @@ class UserController extends Controller
         }
 
         $user = $this->userService->removeRole($target, $role);
+        $this->actions->log($request->user(), $target, AdminActionTypeEnum::REMOVE_ROLE, ['role' => $role]);
 
         return (new UserResource($user))
             ->additional([
@@ -171,6 +179,7 @@ class UserController extends Controller
         }
 
         $user = $this->userService->reviewIdentityVerification($target, $request->user(), $request->validated());
+        $this->actions->log($request->user(), $target, AdminActionTypeEnum::REVIEW_IDENTITY, $request->validated());
 
         return (new UserResource($user))
             ->additional([
@@ -192,6 +201,7 @@ class UserController extends Controller
         $this->authorize('ban', $target);
 
         $user = $this->adminUserService->ban($target, $request->user(), $request->validated());
+        $this->actions->log($request->user(), $target, AdminActionTypeEnum::BAN, $request->validated());
 
         return (new UserResource($user))
             ->additional([
@@ -202,7 +212,7 @@ class UserController extends Controller
             ->response();
     }
 
-    public function unban(string $id): JsonResponse
+    public function unban(Request $request, string $id): JsonResponse
     {
         $target = $this->resolveUser($id);
 
@@ -213,6 +223,7 @@ class UserController extends Controller
         $this->authorize('unban', $target);
 
         $user = $this->adminUserService->unban($target);
+        $this->actions->log($request->user(), $target, AdminActionTypeEnum::UNBAN);
 
         return (new UserResource($user))
             ->additional([
@@ -223,7 +234,7 @@ class UserController extends Controller
             ->response();
     }
 
-    public function forcePasswordReset(string $id): JsonResponse
+    public function forcePasswordReset(Request $request, string $id): JsonResponse
     {
         $target = $this->resolveUser($id);
 
@@ -234,6 +245,7 @@ class UserController extends Controller
         $this->authorize('forcePasswordReset', $target);
 
         $this->adminUserService->forcePasswordReset($target);
+        $this->actions->log($request->user(), $target, AdminActionTypeEnum::FORCE_PASSWORD_RESET);
 
         return response()->json([
             'message' => 'Password reset link sent successfully',
@@ -242,7 +254,7 @@ class UserController extends Controller
         ]);
     }
 
-    public function verifyEmail(string $id): JsonResponse
+    public function verifyEmail(Request $request, string $id): JsonResponse
     {
         $target = $this->resolveUser($id);
 
@@ -253,6 +265,7 @@ class UserController extends Controller
         $this->authorize('verifyEmail', $target);
 
         $user = $this->adminUserService->verifyEmail($target);
+        $this->actions->log($request->user(), $target, AdminActionTypeEnum::VERIFY_EMAIL);
 
         return (new UserResource($user))
             ->additional([
@@ -263,7 +276,7 @@ class UserController extends Controller
             ->response();
     }
 
-    public function resendVerification(string $id): JsonResponse
+    public function resendVerification(Request $request, string $id): JsonResponse
     {
         $target = $this->resolveUser($id);
 
@@ -274,6 +287,7 @@ class UserController extends Controller
         $this->authorize('verifyEmail', $target);
 
         $this->adminUserService->resendVerification($target);
+        $this->actions->log($request->user(), $target, AdminActionTypeEnum::RESEND_VERIFICATION);
 
         return response()->json([
             'message' => 'Verification email sent successfully',
