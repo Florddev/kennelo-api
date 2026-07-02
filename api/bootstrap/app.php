@@ -44,6 +44,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $schedule->call(fn () => app(BookingPayoutService::class)->releaseDuePayouts())
             ->hourly()
             ->name('bookings:release-due-payouts');
+
+        $schedule->call(fn () => app(BookingService::class)->remindPendingBookings())
+            ->hourly()
+            ->name('bookings:remind-pending');
     })
     ->withMiddleware(function (Middleware $middleware): void {
 

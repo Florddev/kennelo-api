@@ -45,6 +45,7 @@ class Booking extends Model
         'stripe_payment_intent_id',
         'payment_status',
         'paid_at',
+        'reminded_at',
         'refunded_at',
         'stripe_charge_id',
         'stripe_transfer_group',
@@ -65,6 +66,7 @@ class Booking extends Model
             'status' => BookingStatusEnum::class,
             'payment_status' => PaymentStatusEnum::class,
             'paid_at' => 'datetime',
+            'reminded_at' => 'datetime',
             'refunded_at' => 'datetime',
             'refunded_amount' => 'decimal:2',
         ];

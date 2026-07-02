@@ -11,6 +11,8 @@ use App\Enums\FinancialOperationTypeEnum;
 use App\Enums\NotificationTypeEnum;
 use App\Enums\PaymentStatusEnum;
 use App\Enums\WeekDayEnum;
+use App\Jobs\ExpireBookingJob;
+use App\Jobs\SendBookingReminderJob;
 use App\Models\Activity;
 use App\Models\ActivityCycle;
 use App\Models\ActivityCycleSetting;
@@ -424,34 +426,86 @@ class BookingService
             ->where('created_at', '<=', $threshold)
             ->pluck('id');
 
-        $count = 0;
-
         foreach ($bookingIds as $bookingId) {
-            DB::transaction(function () use ($bookingId, &$count): void {
-                $booking = Booking::where('id', $bookingId)
-                    ->where('status', BookingStatusEnum::PENDING)
-                    ->lockForUpdate()
-                    ->first();
-
-                if ($booking === null) {
-                    return;
-                }
-
-                $this->releaseAuthorization($booking);
-
-                $booking->update(['status' => BookingStatusEnum::EXPIRED]);
-
-                $this->journal->record(FinancialOperationTypeEnum::STATUS_CHANGE, $booking, null, null, [
-                    'status' => BookingStatusEnum::EXPIRED->value,
-                ]);
-
-                $this->notifyBookingUser($booking, NotificationTypeEnum::BOOKING_EXPIRED);
-
-                $count++;
-            });
+            ExpireBookingJob::dispatch((string) $bookingId);
         }
 
-        return $count;
+        return $bookingIds->count();
+    }
+
+    public function expireBooking(string $bookingId): void
+    {
+        DB::transaction(function () use ($bookingId): void {
+            $booking = Booking::where('id', $bookingId)
+                ->where('status', BookingStatusEnum::PENDING)
+                ->lockForUpdate()
+                ->first();
+
+            if ($booking === null) {
+                return;
+            }
+
+            $this->releaseAuthorization($booking);
+
+            $booking->update(['status' => BookingStatusEnum::EXPIRED]);
+
+            $this->journal->record(FinancialOperationTypeEnum::STATUS_CHANGE, $booking, null, null, [
+                'status' => BookingStatusEnum::EXPIRED->value,
+            ]);
+
+            $this->notifyBookingUser($booking, NotificationTypeEnum::BOOKING_EXPIRED);
+        });
+    }
+
+    public function remindPendingBookings(): int
+    {
+        $reminderAt = Carbon::now()->subHours((int) config('booking.reminder_after_hours', 36));
+        $windowStart = Carbon::now()->subHours((int) config('booking.acceptance_window_hours', 72));
+
+        $bookingIds = Booking::where('status', BookingStatusEnum::PENDING)
+            ->whereNull('reminded_at')
+            ->where('created_at', '<=', $reminderAt)
+            ->where('created_at', '>', $windowStart)
+            ->pluck('id');
+
+        foreach ($bookingIds as $bookingId) {
+            SendBookingReminderJob::dispatch((string) $bookingId);
+        }
+
+        return $bookingIds->count();
+    }
+
+    public function remindBooking(string $bookingId): void
+    {
+        DB::transaction(function () use ($bookingId): void {
+            $booking = Booking::where('id', $bookingId)
+                ->where('status', BookingStatusEnum::PENDING)
+                ->whereNull('reminded_at')
+                ->lockForUpdate()
+                ->first();
+
+            if ($booking === null) {
+                return;
+            }
+
+            $booking->update(['reminded_at' => Carbon::now()]);
+
+            $booking->loadMissing('activity');
+
+            if ($booking->activity === null) {
+                return;
+            }
+
+            $this->notifications->notify(
+                $this->recipients->forActivity($booking->activity, ActivityPermissionEnum::MANAGE_BOOKINGS),
+                NotificationTypeEnum::BOOKING_REMINDER,
+                [
+                    'booking_id' => $booking->id,
+                    'activity_id' => $booking->activity_id,
+                    'activity_name' => $booking->activity->name,
+                ],
+            );
+        });
     }
 
     private function notifyBookingUser(Booking $booking, NotificationTypeEnum $type): void
