@@ -20,6 +20,12 @@
         "freeCancellation": "إلغاء مجاني قبل تاريخ الوصول",
         "cancelBooking": "إلغاء هذا الحجز",
         "modifyBooking": "تعديل هذا الحجز",
+        "clientCancelDialog": {
+            "title": "إلغاء الحجز؟",
+            "description": "هذا الإجراء نهائي. سيتم تحرير تفويض الدفع الخاص بك.",
+            "confirm": "إلغاء الحجز",
+            "success": "تم إلغاء الحجز"
+        },
         "messageHost": "مراسلة المضيف",
         "locationSection": "الموقع",
         "copyAddress": "نسخ العنوان",
@@ -35,7 +41,22 @@
         "totalPaid": "إجمالي المدفوع",
         "serviceFee": "رسوم الخدمة",
         "activityPrice": "سعر النشاط",
+        "platformFee": "عمولة Kennelo",
+        "netPayout": "المبلغ المحوَّل",
         "paidOn": "تم الدفع في",
+        "operations": {
+            "title": "السجل المالي",
+            "empty": "لا توجد عمليات بعد.",
+            "types": {
+                "authorize": "تفويض",
+                "capture": "تحصيل",
+                "capture_failed": "فشل التحصيل",
+                "release": "تحرير",
+                "refund": "استرداد",
+                "payout": "تحويل",
+                "status_change": "تغيير الحالة"
+            }
+        },
         "paymentStatus": "حالة الدفع",
         "paymentStatuses": {
             "paid": "مدفوع",

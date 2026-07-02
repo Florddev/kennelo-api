@@ -20,6 +20,12 @@
         "freeCancellation": "Annulation gratuite avant l'arrivée",
         "cancelBooking": "Annuler cette réservation",
         "modifyBooking": "Modifier cette réservation",
+        "clientCancelDialog": {
+            "title": "Annuler la réservation ?",
+            "description": "Cette action est définitive. Votre autorisation de paiement sera libérée.",
+            "confirm": "Annuler la réservation",
+            "success": "Réservation annulée"
+        },
         "messageHost": "Contacter l'hôte",
         "locationSection": "Localisation",
         "copyAddress": "Copier l'adresse",
@@ -35,7 +41,22 @@
         "totalPaid": "Total payé",
         "serviceFee": "Frais de service",
         "activityPrice": "Prix de l'activité",
+        "platformFee": "Commission Kennelo",
+        "netPayout": "Montant reversé",
         "paidOn": "Payé le",
+        "operations": {
+            "title": "Historique financier",
+            "empty": "Aucune opération pour le moment.",
+            "types": {
+                "authorize": "Autorisation",
+                "capture": "Capture",
+                "capture_failed": "Échec de capture",
+                "release": "Libération",
+                "refund": "Remboursement",
+                "payout": "Versement",
+                "status_change": "Changement de statut"
+            }
+        },
         "paymentStatus": "Statut du paiement",
         "paymentStatuses": {
             "paid": "Payé",

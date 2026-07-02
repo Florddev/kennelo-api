@@ -20,6 +20,12 @@
         "freeCancellation": "Free cancellation before check-in",
         "cancelBooking": "Cancel this booking",
         "modifyBooking": "Modify this booking",
+        "clientCancelDialog": {
+            "title": "Cancel the booking?",
+            "description": "This action is final. Your payment authorization will be released.",
+            "confirm": "Cancel the booking",
+            "success": "Booking cancelled"
+        },
         "messageHost": "Message the host",
         "locationSection": "Location",
         "copyAddress": "Copy address",
@@ -35,7 +41,22 @@
         "totalPaid": "Total paid",
         "serviceFee": "Service fee",
         "activityPrice": "Activity price",
+        "platformFee": "Kennelo commission",
+        "netPayout": "Net payout",
         "paidOn": "Paid on",
+        "operations": {
+            "title": "Financial history",
+            "empty": "No operation yet.",
+            "types": {
+                "authorize": "Authorization",
+                "capture": "Capture",
+                "capture_failed": "Capture failed",
+                "release": "Release",
+                "refund": "Refund",
+                "payout": "Payout",
+                "status_change": "Status change"
+            }
+        },
         "paymentStatus": "Payment status",
         "paymentStatuses": {
             "paid": "Paid",

@@ -1,18 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useTranslations, useLocale } from "next-intl";
-import {
-    Star,
-    Card as CardIcon,
-    CloseCircle,
-    PenNewSquare,
-    ChatRound,
-    Wallet,
-} from "@solar-icons/react";
-
-import { Badge } from "@workspace/ui/components/badge";
-import { Separator } from "@workspace/ui/components/separator";
+import { useTranslations } from "next-intl";
+import { Star, Card as CardIcon, CloseCircle, PenNewSquare, ChatRound } from "@solar-icons/react";
 
 import type { BookingModel } from "@workspace/modules/bookings";
 import type { PetModel } from "@workspace/modules/pets";
@@ -24,7 +14,10 @@ import { PetTypeIllustration } from "@/features/pets/components/pet-type-illustr
 import { UserAvatar } from "@/features/auth/components/user-avatar";
 import { useNavigation } from "@/hooks/use-navigation";
 import { useOpenConversation } from "@/features/conversations/hooks/use-open-conversation";
+import { useClientCancelDialog } from "../hooks/use-client-cancel-dialog";
 import { BookingDetailHostActions } from "./booking-detail-host-actions";
+import { BookingDetailPrice } from "./booking-detail-price";
+import { BookingOperationsTimeline } from "./booking-operations-timeline";
 
 function GuestInfo({ user }: { user: UserModel | null }) {
     const t = useTranslations();
@@ -55,18 +48,11 @@ export function BookingDetailTabDetails({
     isHost?: boolean;
 }) {
     const t = useTranslations();
-    const locale = useLocale();
     const { routes } = useNavigation();
     const { openWithBooking, isPending: isContactPending } = useOpenConversation();
+    const clientCancel = useClientCancelDialog(booking);
 
     const canModifyOrCancel = booking.isPending() || booking.isConfirmed();
-
-    const formatDate = (dateStr: string) =>
-        new Date(dateStr).toLocaleDateString(locale, {
-            day: "2-digit",
-            month: "long",
-            year: "numeric",
-        });
 
     return (
         <div className="flex flex-col gap-6 p-4 pb-10">
@@ -144,57 +130,7 @@ export function BookingDetailTabDetails({
                 </div>
             )}
 
-            <div className="flex flex-col gap-2">
-                <h2 className="text-xl font-semibold">
-                    {t("features.bookings.detail.priceBreakdown")}
-                </h2>
-                <div className="bg-muted/50 rounded-2xl p-4 flex flex-col gap-2">
-                    <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">
-                            {t("features.bookings.detail.activityPrice")}
-                        </span>
-                        <span className="text-sm">{booking.activityAmount} €</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">
-                            {t("features.bookings.detail.serviceFee")}
-                        </span>
-                        <span className="text-sm">{booking.platformFee} €</span>
-                    </div>
-                    <Separator className="opacity-30" />
-                    <div className="flex items-center justify-between">
-                        <span className="text-sm font-semibold">
-                            {t("features.bookings.detail.totalPaid")}
-                        </span>
-                        <span className="text-sm font-semibold">{booking.totalPrice} €</span>
-                    </div>
-                    {booking.paymentStatus && (
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                                <Wallet className="size-4 text-muted-foreground" />
-                                <span className="text-sm text-muted-foreground">
-                                    {t("features.bookings.detail.paymentStatus")}
-                                </span>
-                            </div>
-                            <Badge variant="outline">
-                                {t(
-                                    `features.bookings.detail.paymentStatuses.${booking.paymentStatus}`,
-                                )}
-                            </Badge>
-                        </div>
-                    )}
-                    {booking.paidAt && (
-                        <div className="flex items-center justify-between">
-                            <span className="text-sm text-muted-foreground">
-                                {t("features.bookings.detail.paidOn")}
-                            </span>
-                            <span className="text-sm text-muted-foreground">
-                                {formatDate(booking.paidAt)}
-                            </span>
-                        </div>
-                    )}
-                </div>
-            </div>
+            <BookingDetailPrice booking={booking} isHost={isHost} />
 
             {booking.specialRequests && (
                 <div className="flex flex-col gap-2">
@@ -203,6 +139,10 @@ export function BookingDetailTabDetails({
                     </h2>
                     <p className="text-sm text-muted-foreground">{booking.specialRequests}</p>
                 </div>
+            )}
+
+            {isHost && (
+                <BookingOperationsTimeline activityId={booking.activityId} bookingId={booking.id} />
             )}
 
             <div className="flex flex-col">
@@ -234,11 +174,15 @@ export function BookingDetailTabDetails({
                         <NavRow
                             icon={CloseCircle}
                             label={t("features.bookings.detail.cancelBooking")}
-                            comingSoon
+                            destructive
+                            disabled={clientCancel.isLoading}
+                            onClick={clientCancel.open}
                         />
                     </>
                 )}
             </div>
+
+            {clientCancel.dialog}
         </div>
     );
 }
