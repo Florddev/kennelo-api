@@ -20,6 +20,7 @@ use App\Http\Controllers\Conversation\ConversationController;
 use App\Http\Controllers\Conversation\MessageController;
 use App\Http\Controllers\Explore\ExploreController;
 use App\Http\Controllers\Favorite\FavoriteController;
+use App\Http\Controllers\Finance\FinancialOperationController;
 use App\Http\Controllers\Hosting\HostScanController;
 use App\Http\Controllers\Notification\NotificationController;
 use App\Http\Controllers\PaymentMethod\PaymentMethodController;
@@ -120,6 +121,7 @@ Route::middleware(['auth.jwt'])->group(function () {
     Route::put('/activities/{activity}/bookings/{booking}/confirm', [ActivityBookingController::class, 'confirm']);
     Route::put('/activities/{activity}/bookings/{booking}/cancel', [ActivityBookingController::class, 'cancel']);
     Route::put('/activities/{activity}/bookings/{booking}/complete', [ActivityBookingController::class, 'complete']);
+    Route::get('/activities/{activity}/bookings/{booking}/operations', [FinancialOperationController::class, 'index']);
 
     // Pets
     Route::get('/pets/by-microchip/{microchipNumber}', [PetByMicrochipController::class, 'show']);

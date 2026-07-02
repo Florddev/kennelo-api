@@ -7,9 +7,12 @@ namespace App\Services\Booking;
 use App\Enums\ActivityPermissionEnum;
 use App\Enums\AvailabilityStatusEnum;
 use App\Enums\BookingStatusEnum;
+use App\Enums\FinancialOperationTypeEnum;
 use App\Enums\NotificationTypeEnum;
 use App\Enums\PaymentStatusEnum;
 use App\Enums\WeekDayEnum;
+use App\Jobs\ExpireBookingJob;
+use App\Jobs\SendBookingReminderJob;
 use App\Models\Activity;
 use App\Models\ActivityCycle;
 use App\Models\ActivityCycleSetting;
@@ -22,6 +25,7 @@ use App\Models\Service;
 use App\Models\User;
 use App\Services\Activity\ActivityCycleService;
 use App\Services\Conversation\ConversationService;
+use App\Services\Finance\FinancialJournalService;
 use App\Services\Notification\NotificationRecipientResolver;
 use App\Services\Notification\NotificationService;
 use App\Services\Stripe\StripeCustomerService;
@@ -43,7 +47,8 @@ class BookingService
         private StripeCustomerService $customerService,
         private ActivityCycleService $cycleService,
         private NotificationService $notifications,
-        private NotificationRecipientResolver $recipients
+        private NotificationRecipientResolver $recipients,
+        private FinancialJournalService $journal
     ) {}
 
     public function getUserBookings(User $user, array $filters = []): LengthAwarePaginator
@@ -136,6 +141,13 @@ class BookingService
             'stripe_transfer_group' => 'booking_'.$booking->id,
             'payment_status' => $this->mapPaymentStatus($pi->status),
         ]);
+
+        $this->journal->record(
+            FinancialOperationTypeEnum::AUTHORIZE,
+            $booking,
+            (string) $totalPrice,
+            $pi->id,
+        );
 
         $booking->setAttribute('client_secret', $pi->client_secret);
 
@@ -267,6 +279,10 @@ class BookingService
 
         $booking->update(['status' => BookingStatusEnum::CANCELLED]);
 
+        $this->journal->record(FinancialOperationTypeEnum::STATUS_CHANGE, $booking, null, null, [
+            'status' => BookingStatusEnum::CANCELLED->value,
+        ]);
+
         $booking->loadMissing('activity');
 
         if ($booking->activity !== null) {
@@ -292,6 +308,13 @@ class BookingService
             $pi = $this->stripe->paymentIntents->capture($booking->stripe_payment_intent_id);
         } catch (CardException|InvalidRequestException $e) {
             $booking->update(['payment_status' => PaymentStatusEnum::FAILED]);
+            $this->journal->record(
+                FinancialOperationTypeEnum::CAPTURE_FAILED,
+                $booking,
+                (string) $booking->total_price,
+                $booking->stripe_payment_intent_id,
+                ['error' => $e->getMessage()],
+            );
             $this->notifyBookingUser($booking, NotificationTypeEnum::PAYMENT_FAILED);
 
             throw ValidationException::withMessages([
@@ -306,6 +329,13 @@ class BookingService
             'stripe_charge_id' => $pi->latest_charge ?? $booking->stripe_charge_id,
         ]);
 
+        $this->journal->record(
+            FinancialOperationTypeEnum::CAPTURE,
+            $booking,
+            (string) $booking->total_price,
+            $pi->latest_charge ?? $booking->stripe_charge_id,
+        );
+
         $this->sendBookingReferenceIfConversationExists($booking, $actor, $message);
 
         $this->notifyBookingUser($booking, NotificationTypeEnum::BOOKING_CONFIRMED);
@@ -318,6 +348,10 @@ class BookingService
         $this->assertStatus($booking, [BookingStatusEnum::CONFIRMED, BookingStatusEnum::IN_PROGRESS], 'complete');
 
         $booking->update(['status' => BookingStatusEnum::COMPLETED]);
+
+        $this->journal->record(FinancialOperationTypeEnum::STATUS_CHANGE, $booking, null, null, [
+            'status' => BookingStatusEnum::COMPLETED->value,
+        ]);
 
         $this->notifyBookingUser($booking, NotificationTypeEnum::BOOKING_COMPLETED);
 
@@ -338,6 +372,13 @@ class BookingService
                 'payment_status' => PaymentStatusEnum::REFUNDED,
             ]);
 
+            $this->journal->record(
+                FinancialOperationTypeEnum::REFUND,
+                $booking,
+                bcdiv((string) $refund->amount, '100', 2),
+                $refund->id,
+            );
+
             return $booking->fresh();
         }
 
@@ -345,6 +386,12 @@ class BookingService
             try {
                 $this->stripe->paymentIntents->cancel($booking->stripe_payment_intent_id);
                 $booking->update(['payment_status' => PaymentStatusEnum::CANCELED]);
+                $this->journal->record(
+                    FinancialOperationTypeEnum::RELEASE,
+                    $booking,
+                    null,
+                    $booking->stripe_payment_intent_id,
+                );
             } catch (InvalidRequestException $e) {
             }
         }
@@ -359,6 +406,10 @@ class BookingService
         $this->releaseAuthorization($booking);
 
         $booking->update(['status' => BookingStatusEnum::REJECTED]);
+
+        $this->journal->record(FinancialOperationTypeEnum::STATUS_CHANGE, $booking, null, null, [
+            'status' => BookingStatusEnum::REJECTED->value,
+        ]);
 
         $this->sendBookingReferenceIfConversationExists($booking, $actor, $message);
 
@@ -375,30 +426,86 @@ class BookingService
             ->where('created_at', '<=', $threshold)
             ->pluck('id');
 
-        $count = 0;
-
         foreach ($bookingIds as $bookingId) {
-            DB::transaction(function () use ($bookingId, &$count): void {
-                $booking = Booking::where('id', $bookingId)
-                    ->where('status', BookingStatusEnum::PENDING)
-                    ->lockForUpdate()
-                    ->first();
-
-                if ($booking === null) {
-                    return;
-                }
-
-                $this->releaseAuthorization($booking);
-
-                $booking->update(['status' => BookingStatusEnum::EXPIRED]);
-
-                $this->notifyBookingUser($booking, NotificationTypeEnum::BOOKING_EXPIRED);
-
-                $count++;
-            });
+            ExpireBookingJob::dispatch((string) $bookingId);
         }
 
-        return $count;
+        return $bookingIds->count();
+    }
+
+    public function expireBooking(string $bookingId): void
+    {
+        DB::transaction(function () use ($bookingId): void {
+            $booking = Booking::where('id', $bookingId)
+                ->where('status', BookingStatusEnum::PENDING)
+                ->lockForUpdate()
+                ->first();
+
+            if ($booking === null) {
+                return;
+            }
+
+            $this->releaseAuthorization($booking);
+
+            $booking->update(['status' => BookingStatusEnum::EXPIRED]);
+
+            $this->journal->record(FinancialOperationTypeEnum::STATUS_CHANGE, $booking, null, null, [
+                'status' => BookingStatusEnum::EXPIRED->value,
+            ]);
+
+            $this->notifyBookingUser($booking, NotificationTypeEnum::BOOKING_EXPIRED);
+        });
+    }
+
+    public function remindPendingBookings(): int
+    {
+        $reminderAt = Carbon::now()->subHours((int) config('booking.reminder_after_hours', 36));
+        $windowStart = Carbon::now()->subHours((int) config('booking.acceptance_window_hours', 72));
+
+        $bookingIds = Booking::where('status', BookingStatusEnum::PENDING)
+            ->whereNull('reminded_at')
+            ->where('created_at', '<=', $reminderAt)
+            ->where('created_at', '>', $windowStart)
+            ->pluck('id');
+
+        foreach ($bookingIds as $bookingId) {
+            SendBookingReminderJob::dispatch((string) $bookingId);
+        }
+
+        return $bookingIds->count();
+    }
+
+    public function remindBooking(string $bookingId): void
+    {
+        DB::transaction(function () use ($bookingId): void {
+            $booking = Booking::where('id', $bookingId)
+                ->where('status', BookingStatusEnum::PENDING)
+                ->whereNull('reminded_at')
+                ->lockForUpdate()
+                ->first();
+
+            if ($booking === null) {
+                return;
+            }
+
+            $booking->update(['reminded_at' => Carbon::now()]);
+
+            $booking->loadMissing('activity');
+
+            if ($booking->activity === null) {
+                return;
+            }
+
+            $this->notifications->notify(
+                $this->recipients->forActivity($booking->activity, ActivityPermissionEnum::MANAGE_BOOKINGS),
+                NotificationTypeEnum::BOOKING_REMINDER,
+                [
+                    'booking_id' => $booking->id,
+                    'activity_id' => $booking->activity_id,
+                    'activity_name' => $booking->activity->name,
+                ],
+            );
+        });
     }
 
     private function notifyBookingUser(Booking $booking, NotificationTypeEnum $type): void

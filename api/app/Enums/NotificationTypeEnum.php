@@ -11,12 +11,14 @@ enum NotificationTypeEnum: string
     case BOOKING_CANCELLED_BY_CLIENT = 'booking_cancelled_by_client';
     case BOOKING_REJECTED = 'booking_rejected';
     case BOOKING_EXPIRED = 'booking_expired';
+    case BOOKING_REMINDER = 'booking_reminder';
     case BOOKING_COMPLETED = 'booking_completed';
 
     case PAYMENT_SUCCEEDED = 'payment_succeeded';
     case PAYMENT_FAILED = 'payment_failed';
     case PAYMENT_PROCESSING = 'payment_processing';
     case PAYMENT_REFUNDED = 'payment_refunded';
+    case PAYOUT_SENT = 'payout_sent';
     case STRIPE_ACCOUNT_ACTIVATED = 'stripe_account_activated';
 
     case NEW_MESSAGE = 'new_message';
@@ -59,6 +61,21 @@ enum NotificationTypeEnum: string
             self::PET_CREATED,
             self::PET_UPDATED,
             self::PET_DELETED,
+        ], true);
+    }
+
+    public function sendsEmail(): bool
+    {
+        return in_array($this, [
+            self::BOOKING_CREATED,
+            self::BOOKING_CONFIRMED,
+            self::BOOKING_REJECTED,
+            self::BOOKING_EXPIRED,
+            self::BOOKING_REMINDER,
+            self::PAYMENT_SUCCEEDED,
+            self::PAYMENT_FAILED,
+            self::PAYMENT_REFUNDED,
+            self::PAYOUT_SENT,
         ], true);
     }
 }

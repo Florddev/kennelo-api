@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Stripe;
 
 use App\Http\Controllers\Controller;
+use App\Models\StripeEvent;
 use App\Services\Stripe\StripeWebhookService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Stripe\Exception\SignatureVerificationException;
 use Stripe\Webhook;
@@ -39,7 +41,18 @@ class StripeWebhookController extends Controller
             return response()->json(['message' => 'Invalid signature.'], 400);
         }
 
+        $record = StripeEvent::firstOrCreate(
+            ['id' => $event->id],
+            ['type' => $event->type],
+        );
+
+        if (! $record->wasRecentlyCreated) {
+            return response()->json(['received' => true]);
+        }
+
         $this->webhookService->handleEvent($event);
+
+        $record->update(['processed_at' => Carbon::now()]);
 
         return response()->json(['received' => true]);
     }

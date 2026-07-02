@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace App\Services\Stripe;
 
 use App\Enums\BookingStatusEnum;
+use App\Enums\FinancialOperationTypeEnum;
 use App\Enums\NotificationTypeEnum;
 use App\Enums\PaymentStatusEnum;
 use App\Models\Activity;
 use App\Models\Booking;
 use App\Models\User;
+use App\Services\Finance\FinancialJournalService;
 use App\Services\Notification\NotificationService;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
@@ -24,7 +26,8 @@ use Stripe\Transfer;
 class StripeWebhookService
 {
     public function __construct(
-        private NotificationService $notifications
+        private NotificationService $notifications,
+        private FinancialJournalService $journal
     ) {}
 
     public function handleEvent(Event $event): void
@@ -121,6 +124,14 @@ class StripeWebhookService
 
             $booking->update($updates);
 
+            $this->journal->record(
+                FinancialOperationTypeEnum::CAPTURE,
+                $booking,
+                (string) $booking->total_price,
+                $paymentIntent->latest_charge ?? $paymentIntent->id,
+                ['source' => 'webhook'],
+            );
+
             $this->notifyBookingUser($booking, NotificationTypeEnum::PAYMENT_SUCCEEDED);
         });
     }
@@ -206,6 +217,14 @@ class StripeWebhookService
                 'stripe_payment_intent_id' => $paymentIntent->id,
                 'payment_status' => PaymentStatusEnum::CANCELED,
             ]);
+
+            $this->journal->record(
+                FinancialOperationTypeEnum::RELEASE,
+                $booking,
+                null,
+                $paymentIntent->id,
+                ['source' => 'webhook'],
+            );
         });
     }
 
@@ -239,6 +258,14 @@ class StripeWebhookService
                 'payment_status' => PaymentStatusEnum::REFUNDED,
             ]);
 
+            $this->journal->record(
+                FinancialOperationTypeEnum::REFUND,
+                $booking,
+                bcdiv((string) $amountRefunded, '100', 2),
+                $refundId,
+                ['source' => 'webhook'],
+            );
+
             $this->notifyBookingUser($booking, NotificationTypeEnum::PAYMENT_REFUNDED);
         });
     }
@@ -268,6 +295,14 @@ class StripeWebhookService
             $booking->update([
                 'stripe_transfer_id' => $transfer->id,
             ]);
+
+            $this->journal->record(
+                FinancialOperationTypeEnum::PAYOUT,
+                $booking,
+                (string) $booking->activity_amount,
+                $transfer->id,
+                ['source' => 'webhook'],
+            );
         });
     }
 
