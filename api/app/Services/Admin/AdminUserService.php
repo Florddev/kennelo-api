@@ -74,4 +74,32 @@ class AdminUserService
             $user->sendEmailVerificationNotification();
         }
     }
+
+    public function bulkStatus(array $ids, int $status, string $excludeId): int
+    {
+        return User::withInactive()
+            ->whereIn('id', $ids)
+            ->where('id', '!=', $excludeId)
+            ->whereDoesntHave('roles', fn ($q) => $q->where('name', 'admin'))
+            ->update(['status' => $status]);
+    }
+
+    public function bulkRoles(array $ids, string $action, array $roles): int
+    {
+        $users = User::withInactive()->whereIn('id', $ids)->get();
+
+        foreach ($users as $user) {
+            if ($action === 'assign') {
+                $user->assignRole($roles);
+
+                continue;
+            }
+
+            foreach ($roles as $role) {
+                $user->removeRole($role);
+            }
+        }
+
+        return $users->count();
+    }
 }

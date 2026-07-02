@@ -71,4 +71,9 @@ class UserPolicy
             && $user->id !== $model->id
             && ! $model->hasRole('admin');
     }
+
+    public function manageNotes(User $user, User $model): bool
+    {
+        return $user->hasRole('admin');
+    }
 }
