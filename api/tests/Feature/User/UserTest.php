@@ -222,7 +222,7 @@ it('returns null when no identity verification submitted', function () {
 });
 
 it('submits identity verification document', function () {
-    Storage::fake('private');
+    Storage::fake('local');
 
     $user = User::factory()->create();
     $file = UploadedFile::fake()->create('document.pdf', 100, 'application/pdf');
@@ -231,10 +231,12 @@ it('submits identity verification document', function () {
         ->postJson('/api/user/identity-verification', ['document' => $file])
         ->assertCreated()
         ->assertJsonPath('data.status', 'pending');
+
+    expect(Storage::disk('local')->allFiles('identity-verifications'))->toHaveCount(1);
 });
 
 it('returns latest verification status', function () {
-    Storage::fake('private');
+    Storage::fake('local');
 
     $user = User::factory()->create();
     $file = UploadedFile::fake()->create('document.pdf', 100, 'application/pdf');
