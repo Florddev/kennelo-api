@@ -61,12 +61,14 @@ class HostScanController extends Controller
         $currentBooking = $this->hostScanService->currentBookingForPet($user, $pet);
         $pastBookings = $this->hostScanService->pastBookingsForPet($user, $pet);
 
+        $hasCareRelationship = $currentBooking !== null || $pastBookings->isNotEmpty();
+
         return response()->json([
             'status' => ApiStatusEnum::SUCCESS,
             'timestamp' => human_date(now()),
             'found' => true,
             'pet' => new PetResource($pet),
-            'owner' => $this->hostScanService->ownerPayload($pet),
+            'owner' => $hasCareRelationship ? $this->hostScanService->ownerPayload($pet) : null,
             'current_booking' => $currentBooking === null ? null : new BookingResource($currentBooking),
             'past_bookings' => BookingResource::collection($pastBookings),
         ]);
