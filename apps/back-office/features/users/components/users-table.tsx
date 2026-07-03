@@ -44,7 +44,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
-import { UserRowActions } from "@/features/users/components/user-row-actions"
+import { UserRow } from "@/features/users/components/user-row"
 
 const STATUS_BADGE: Record<
   UserStatusLabel,
@@ -151,12 +151,10 @@ export function UsersTable({
       {
         id: "actions",
         header: "",
-        cell: ({ row }) => (
-          <UserRowActions user={row.original} onRefresh={onRefresh} />
-        ),
+        cell: () => null,
       },
     ],
-    [onRefresh]
+    []
   )
 
   const table = useReactTable({
@@ -204,15 +202,11 @@ export function UsersTable({
       )
     }
 
-    return table.getRowModel().rows.map((row) => (
-      <TableRow key={row.id}>
-        {row.getVisibleCells().map((cell) => (
-          <TableCell key={cell.id}>
-            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-          </TableCell>
-        ))}
-      </TableRow>
-    ))
+    return table
+      .getRowModel()
+      .rows.map((row) => (
+        <UserRow key={row.id} row={row} onRefresh={onRefresh} />
+      ))
   }
 
   return (
