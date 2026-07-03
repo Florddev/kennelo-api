@@ -8,6 +8,14 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property string $file_name
+ * @property string $file_path
+ * @property string|null $file_type
+ * @property int|null $file_size
+ * @property string|null $mime_type
+ * @property-read Message $message
+ */
 class MessageFile extends Model
 {
     use HasUuids;

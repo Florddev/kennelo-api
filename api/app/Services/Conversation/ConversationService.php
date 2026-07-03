@@ -117,7 +117,7 @@ class ConversationService
     {
         $perPage = $filters['per_page'] ?? 30;
 
-        return Message::with(['sender', 'files', 'booking.activity'])
+        return Message::with(['sender', 'files.message', 'booking.activity'])
             ->where('conversation_id', $conversation->id)
             ->when(isset($filters['booking_id']), fn ($q) => $q->where('booking_id', $filters['booking_id']))
             ->orderByDesc('created_at')
@@ -159,7 +159,7 @@ class ConversationService
 
             $conversation->update(['last_message_at' => now()]);
 
-            $message->load(['sender', 'files']);
+            $message->load(['sender', 'files.message']);
             if ($message->booking_id) {
                 $message->load('booking.activity');
             }
