@@ -23,6 +23,10 @@
         "title": "انتهت صلاحية الحجز",
         "body": "انتهت صلاحية طلبك لـ {activity}"
     },
+    "booking_reminder": {
+        "title": "طلب بانتظار ردّك",
+        "body": "طلب حجز لـ {activity} بانتظار ردّك"
+    },
     "booking_completed": {
         "title": "انتهت الإقامة",
         "body": "انتهت إقامتك في {activity}"
@@ -42,6 +46,10 @@
     },
     "payment_refunded": {
         "title": "تم رد المبلغ"
+    },
+    "payout_sent": {
+        "title": "تم إرسال الدفعة",
+        "body": "تم إرسال دفعة لـ {activity}"
     },
     "stripe_account_activated": {
         "title": "حساب الدفع الخاص بك مفعّل"

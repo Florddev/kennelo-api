@@ -23,6 +23,10 @@
         "title": "Réservation expirée",
         "body": "Votre demande pour {activity} a expiré"
     },
+    "booking_reminder": {
+        "title": "Demande en attente de réponse",
+        "body": "Une demande de réservation pour {activity} attend votre réponse"
+    },
     "booking_completed": {
         "title": "Séjour terminé",
         "body": "Votre séjour chez {activity} est terminé"
@@ -42,6 +46,10 @@
     },
     "payment_refunded": {
         "title": "Paiement remboursé"
+    },
+    "payout_sent": {
+        "title": "Versement envoyé",
+        "body": "Un versement a été envoyé pour {activity}"
     },
     "stripe_account_activated": {
         "title": "Votre compte de paiement est actif"

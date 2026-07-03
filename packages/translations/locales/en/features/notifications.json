@@ -23,6 +23,10 @@
         "title": "Booking expired",
         "body": "Your request for {activity} has expired"
     },
+    "booking_reminder": {
+        "title": "A request is waiting for your answer",
+        "body": "A booking request for {activity} is waiting for your answer"
+    },
     "booking_completed": {
         "title": "Stay completed",
         "body": "Your stay at {activity} is complete"
@@ -42,6 +46,10 @@
     },
     "payment_refunded": {
         "title": "Payment refunded"
+    },
+    "payout_sent": {
+        "title": "Payout sent",
+        "body": "A payout was sent for {activity}"
     },
     "stripe_account_activated": {
         "title": "Your payout account is active"
