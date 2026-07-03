@@ -133,6 +133,7 @@ class AuthenticatedSessionController extends Controller
 
             return response()->json([
                 'access_token' => $result['access_token'],
+                'refresh_token' => $result['refresh_token'],
                 'token_type' => 'Bearer',
                 'expires_in' => config('jwt.ttl') * 60,
             ]);

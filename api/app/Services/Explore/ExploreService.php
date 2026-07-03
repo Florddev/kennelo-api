@@ -353,11 +353,11 @@ class ExploreService
 
     private function applyGeoJoin(Builder $query, float $lat, float $lng, array $input): void
     {
+        [$distanceSql, $distanceBindings] = $this->haversineExpression($lat, $lng, 'addr_search.latitude', 'addr_search.longitude');
+
         $query
             ->join('addresses as addr_search', 'addr_search.id', '=', 'activities.address_id')
-            ->addSelect(DB::raw(
-                $this->haversineExpression($lat, $lng, 'addr_search.latitude', 'addr_search.longitude').' AS distance'
-            ))
+            ->selectRaw($distanceSql.' AS distance', $distanceBindings)
             ->whereNotNull('addr_search.latitude')
             ->whereNotNull('addr_search.longitude');
 

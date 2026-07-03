@@ -14,15 +14,20 @@ trait HasHaversine
         return in_array(DB::connection()->getDriverName(), ['mysql', 'pgsql', 'mariadb'], true);
     }
 
-    private function haversineExpression(float $lat, float $lng, string $latCol, string $lngCol): string
+    /**
+     * @return array{0: string, 1: array<int, float>}
+     */
+    private function haversineExpression(float $lat, float $lng, string $latCol, string $lngCol): array
     {
-        return "(6371 * acos(cos(radians({$lat})) * cos(radians({$latCol})) * cos(radians({$lngCol}) - radians({$lng})) + sin(radians({$lat})) * sin(radians({$latCol}))))";
+        $sql = "(6371 * acos(cos(radians(?)) * cos(radians({$latCol})) * cos(radians({$lngCol}) - radians(?)) + sin(radians(?)) * sin(radians({$latCol}))))";
+
+        return [$sql, [$lat, $lng, $lat]];
     }
 
     private function applyDistanceSelect(Builder $query, float $lat, float $lng, string $latCol, string $lngCol): void
     {
-        $query->addSelect(DB::raw(
-            $this->haversineExpression($lat, $lng, $latCol, $lngCol).' AS distance'
-        ));
+        [$sql, $bindings] = $this->haversineExpression($lat, $lng, $latCol, $lngCol);
+
+        $query->selectRaw($sql.' AS distance', $bindings);
     }
 }
