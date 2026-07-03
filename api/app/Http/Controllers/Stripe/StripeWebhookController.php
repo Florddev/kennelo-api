@@ -46,7 +46,7 @@ class StripeWebhookController extends Controller
             ['type' => $event->type],
         );
 
-        if (! $record->wasRecentlyCreated) {
+        if ($record->processed_at !== null) {
             return response()->json(['received' => true]);
         }
 
