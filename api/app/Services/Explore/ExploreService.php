@@ -45,6 +45,13 @@ class ExploreService
     private function baseQuery(?User $user = null): Builder
     {
         return Activity::select('activities.*')
+            ->addSelect(DB::raw(
+                '(SELECT MIN(p.price)
+                    FROM activities_cycles_settings_prices p
+                    JOIN activities_cycles_settings s ON s.id = p.activity_cycle_setting_id
+                    JOIN activities_cycles c ON c.id = s.activity_cycle_id
+                    WHERE c.activity_id = activities.id) AS min_price'
+            ))
             ->with(['address', 'cycles.settings.animalType', 'cycles.settings.prices'])
             ->withAvg(
                 ['reviews as avg_rating' => fn (Builder $q) => $q->where('is_published', true)],
@@ -272,8 +279,8 @@ class ExploreService
                 if ($dateFrom && $dateTo) {
                     $q->whereRaw(
                         'activities_cycles_settings.max_capacity - (
-                            SELECT COALESCE(COUNT(bp.id), 0)
-                            FROM booking_pet bp
+                            SELECT COALESCE(COUNT(*), 0)
+                            FROM booking_pets bp
                             JOIN bookings bk ON bk.id = bp.booking_id
                             JOIN pets p ON p.id = bp.pet_id
                             JOIN animal_types at ON at.id = p.animal_type_id
