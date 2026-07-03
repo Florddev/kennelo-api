@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 use Spatie\Permission\Models\Role;
 
 class ExploreSeeder extends Seeder
@@ -176,9 +177,17 @@ class ExploreSeeder extends Seeder
 
             $price = random_int($min * 100, $max * 100) / 100;
 
-            foreach (WeekDayEnum::values() as $weekday) {
-                $setting->prices()->create(['weekday' => $weekday, 'price' => $price]);
-            }
+            $now = Carbon::now();
+            $priceRows = array_map(fn (int $weekday): array => [
+                'id' => (string) Str::uuid(),
+                'activity_cycle_setting_id' => $setting->id,
+                'weekday' => $weekday,
+                'price' => $price,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ], WeekDayEnum::values());
+
+            $setting->prices()->insert($priceRows);
         }
     }
 
