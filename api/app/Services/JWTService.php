@@ -80,6 +80,23 @@ class JWTService
         return ['access_token' => $this->generateAccessToken($user)];
     }
 
+    public function generateImpersonationToken(User $target, User $impersonator): string
+    {
+        $this->jwt->factory()->setTTL((int) config('jwt.impersonation_ttl', 15));
+
+        $token = $this->jwt->claims([
+            'type' => 'access',
+            'email' => $target->email,
+            'roles' => $target->roles->pluck('name')->toArray(),
+            'locale' => $target->locale ?? config('app.locale', 'en'),
+            'impersonator_id' => $impersonator->id,
+        ])->fromUser($target);
+
+        $this->jwt->factory()->setTTL((int) config('jwt.ttl'));
+
+        return $token;
+    }
+
     public function generateChallengeToken(User $user): string
     {
         $this->jwt->factory()->setTTL((int) config('jwt.two_factor_challenge_ttl', 5));

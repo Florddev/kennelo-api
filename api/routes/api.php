@@ -12,6 +12,7 @@ use App\Http\Controllers\Activity\ActivityRoleController;
 use App\Http\Controllers\Activity\ActivityServiceController;
 use App\Http\Controllers\Activity\CollaboratorInvitationController;
 use App\Http\Controllers\Activity\StripeConnectController;
+use App\Http\Controllers\Admin\User\ImpersonationController;
 use App\Http\Controllers\Auth\TwoFactorAuthenticationController;
 use App\Http\Controllers\Booking\ActivityBookingController;
 use App\Http\Controllers\Booking\BookingController;
@@ -33,7 +34,6 @@ use App\Http\Controllers\Pet\PetController;
 use App\Http\Controllers\Pet\PetImageController;
 use App\Http\Controllers\Pet\PetReviewController;
 use App\Http\Controllers\Review\ActivityReviewController;
-use App\Http\Controllers\Review\Admin\ReviewReportController as AdminReviewReportController;
 use App\Http\Controllers\Review\BookingReviewController;
 use App\Http\Controllers\Review\MyReviewController;
 use App\Http\Controllers\Review\ReviewController;
@@ -68,6 +68,10 @@ Route::middleware('auth.jwt.optional')->group(function () {
     Route::get('/activities/{activity}/reviews', [ActivityReviewController::class, 'index']);
 });
 Route::post('/webhooks/stripe', [StripeWebhookController::class, 'handle']);
+
+Route::middleware(['auth.jwt', 'role:admin'])
+    ->prefix('admin')
+    ->group(base_path('routes/admin.php'));
 
 Route::middleware(['auth.jwt'])->group(function () {
     // Activities
@@ -147,13 +151,8 @@ Route::middleware(['auth.jwt'])->group(function () {
     Route::put('/notifications/{notification}/read', [NotificationController::class, 'markAsRead']);
     Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy']);
 
-    // Users (admin)
-    Route::apiResource('users', UserController::class)->only(['index', 'show', 'update']);
-    Route::put('/users/{id}/status', [UserController::class, 'updateStatus']);
-    Route::put('/users/{id}/roles', [UserController::class, 'assignRoles']);
-    Route::delete('/users/{id}/roles/{role}', [UserController::class, 'removeRole']);
-    Route::put('/users/{id}/identity-verification', [UserController::class, 'reviewIdentityVerification']);
-    Route::delete('/users/{id}', [UserController::class, 'adminDestroy']);
+    // Users (public profile)
+    Route::get('/users/{id}', [UserController::class, 'show']);
 
     // Conversations (user)
     Route::get('/conversations', [ConversationController::class, 'index']);
@@ -180,12 +179,6 @@ Route::middleware(['auth.jwt'])->group(function () {
     Route::get('/user/reviews/given', [MyReviewController::class, 'given']);
     Route::get('/user/reviews/received', [MyReviewController::class, 'received']);
 
-    // Admin — review moderation
-    Route::middleware('role:admin')->group(function () {
-        Route::get('/admin/review-reports', [AdminReviewReportController::class, 'index']);
-        Route::put('/admin/review-reports/{report}', [AdminReviewReportController::class, 'update']);
-    });
-
     // Scanners
     Route::get('/user/scanners', [ScannerController::class, 'index']);
     Route::post('/user/scanners', [ScannerController::class, 'store']);
@@ -198,6 +191,9 @@ Route::middleware(['auth.jwt'])->group(function () {
     Route::get('/hosting/in-care-pets', [HostScanController::class, 'inCare']);
     Route::put('/hosting/pets/{pet}/microchip', [HostScanController::class, 'assignMicrochip']);
     Route::post('/hosting/bookings/{booking}/conversation', [HostScanController::class, 'conversation']);
+
+    // Impersonation (exit)
+    Route::post('/impersonation/stop', [ImpersonationController::class, 'stop']);
 
     // Current user
     Route::get('/user', [UserController::class, 'getCurrentUser']);

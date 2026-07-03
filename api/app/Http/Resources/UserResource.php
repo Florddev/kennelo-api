@@ -15,6 +15,7 @@ class UserResource extends JsonResource
     public function toArray(Request $request): array
     {
         $isSelf = $request->user()?->id === $this->id;
+        $isAdmin = auth()->user()?->hasRole('admin');
 
         return [
             'id' => $this->id,
@@ -35,10 +36,11 @@ class UserResource extends JsonResource
                 ? count($this->two_factor_recovery_codes ?? [])
                 : 0,
             'has_password' => $isSelf ? $this->password !== null : null,
-            'status' => $this->when(
-                auth()->user()?->hasRole('admin'),
-                fn () => $this->status->value
-            ),
+            'status' => $this->when($isAdmin, fn () => $this->status->value),
+            'is_banned' => $this->when($isAdmin, fn () => $this->isBanned()),
+            'ban_reason' => $this->when($isAdmin, fn () => $this->ban_reason),
+            'banned_at' => $this->when($isAdmin, fn () => $this->banned_at ? human_date($this->banned_at) : null),
+            'banned_until' => $this->when($isAdmin, fn () => $this->banned_until ? human_date($this->banned_until) : null),
             'roles' => $this->whenLoaded('roles', fn () => $this->getRoleNames()),
             'address' => $this->whenLoaded('address', fn () => new AddressResource($this->address)),
             'stripe_account_id' => $isSelf ? $this->stripe_account_id : null,

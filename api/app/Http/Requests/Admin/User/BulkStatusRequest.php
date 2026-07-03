@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Requests\User;
+namespace App\Http\Requests\Admin\User;
 
 use App\Enums\UserStatusEnum;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class UpdateUserStatusRequest extends FormRequest
+class BulkStatusRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -18,6 +18,8 @@ class UpdateUserStatusRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'user_ids' => ['required', 'array', 'min:1'],
+            'user_ids.*' => ['uuid', 'exists:users,id'],
             'status' => ['required', Rule::in([UserStatusEnum::ACTIVE->value, UserStatusEnum::INACTIVE->value])],
         ];
     }

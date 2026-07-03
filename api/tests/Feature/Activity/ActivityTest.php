@@ -53,7 +53,7 @@ it('pending collaborator does not see the activity in their activities list', fu
 
 it('any authenticated user can view an activity', function () {
     $user = User::factory()->create();
-    $activity = Activity::factory()->create();
+    $activity = Activity::factory()->create(['is_active' => true]);
 
     $this->withHeaders(asUser($user))
         ->getJson("/api/activities/{$activity->id}")

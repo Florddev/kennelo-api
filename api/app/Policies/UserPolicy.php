@@ -42,4 +42,43 @@ class UserPolicy
     {
         return $user->hasRole('admin');
     }
+
+    public function ban(User $user, User $model): bool
+    {
+        return $user->hasRole('admin')
+            && $user->id !== $model->id
+            && ! $model->hasRole('admin');
+    }
+
+    public function unban(User $user, User $model): bool
+    {
+        return $user->hasRole('admin');
+    }
+
+    public function forcePasswordReset(User $user, User $model): bool
+    {
+        return $user->hasRole('admin');
+    }
+
+    public function verifyEmail(User $user, User $model): bool
+    {
+        return $user->hasRole('admin');
+    }
+
+    public function impersonate(User $user, User $model): bool
+    {
+        return $user->hasRole('admin')
+            && $user->id !== $model->id
+            && ! $model->hasRole('admin');
+    }
+
+    public function manageNotes(User $user, User $model): bool
+    {
+        return $user->hasRole('admin');
+    }
+
+    public function bulkManage(User $user): bool
+    {
+        return $user->hasRole('admin');
+    }
 }

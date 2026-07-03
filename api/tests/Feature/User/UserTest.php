@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-use App\Enums\IdentityVerificationStatusEnum;
-use App\Enums\UserStatusEnum;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -250,50 +248,7 @@ it('returns latest verification status', function () {
         ->assertJsonPath('data.status', 'pending');
 });
 
-// ─── Admin: update user ────────────────────────────────────────────────────────
-
-it('admin can update any user profile', function () {
-    $admin = User::factory()->create();
-    $admin->assignRole('admin');
-    $target = User::factory()->create();
-
-    $this->withHeaders(asUser($admin))
-        ->patchJson("/api/users/{$target->id}", ['first_name' => 'Updated'])
-        ->assertOk()
-        ->assertJsonPath('data.first_name', 'Updated');
-});
-
-it('non-admin cannot update another user', function () {
-    $user = User::factory()->create();
-    $other = User::factory()->create();
-
-    $this->withHeaders(asUser($user))
-        ->patchJson("/api/users/{$other->id}", ['first_name' => 'Hacked'])
-        ->assertForbidden();
-});
-
-// ─── Admin: destroy ──────────────────────────────────────────────────────────
-
-it('admin can delete a user', function () {
-    $admin = User::factory()->create();
-    $admin->assignRole('admin');
-    $target = User::factory()->create();
-
-    $this->withHeaders(asUser($admin))
-        ->deleteJson("/api/users/{$target->id}")
-        ->assertOk();
-
-    expect(User::withTrashed()->find($target->id)->deleted_at)->not->toBeNull();
-});
-
-it('non-admin cannot delete another user', function () {
-    $user = User::factory()->create();
-    $other = User::factory()->create();
-
-    $this->withHeaders(asUser($user))
-        ->deleteJson("/api/users/{$other->id}")
-        ->assertForbidden();
-});
+// ─── Account deletion (self) ──────────────────────────────────────────────────
 
 it('user can delete their own account', function () {
     $user = User::factory()->create();
@@ -303,118 +258,4 @@ it('user can delete their own account', function () {
         ->assertOk();
 
     expect(User::withTrashed()->find($user->id)->deleted_at)->not->toBeNull();
-});
-
-// ─── Admin: status ────────────────────────────────────────────────────────────
-
-it('admin can deactivate a user', function () {
-    $admin = User::factory()->create();
-    $admin->assignRole('admin');
-    $target = User::factory()->create();
-
-    $this->withHeaders(asUser($admin))
-        ->putJson("/api/users/{$target->id}/status", ['status' => UserStatusEnum::INACTIVE->value])
-        ->assertOk();
-
-    expect(User::withInactive()->find($target->id)->status)->toBe(UserStatusEnum::INACTIVE);
-});
-
-it('admin cannot deactivate themselves', function () {
-    $admin = User::factory()->create();
-    $admin->assignRole('admin');
-
-    $this->withHeaders(asUser($admin))
-        ->putJson("/api/users/{$admin->id}/status", ['status' => UserStatusEnum::INACTIVE->value])
-        ->assertForbidden();
-});
-
-// ─── Admin: roles ─────────────────────────────────────────────────────────────
-
-it('admin can assign roles to a user', function () {
-    $admin = User::factory()->create();
-    $admin->assignRole('admin');
-    $target = User::factory()->create();
-
-    $this->withHeaders(asUser($admin))
-        ->putJson("/api/users/{$target->id}/roles", ['roles' => ['user']])
-        ->assertOk()
-        ->assertJsonPath('data.roles.0', 'user');
-});
-
-it('admin can remove a role from a user', function () {
-    $admin = User::factory()->create();
-    $admin->assignRole('admin');
-    $target = User::factory()->create();
-    $target->assignRole('user');
-
-    $this->withHeaders(asUser($admin))
-        ->deleteJson("/api/users/{$target->id}/roles/user")
-        ->assertOk();
-});
-
-it('non-admin cannot manage roles', function () {
-    $user = User::factory()->create();
-    $other = User::factory()->create();
-
-    $this->withHeaders(asUser($user))
-        ->putJson("/api/users/{$other->id}/roles", ['roles' => ['admin']])
-        ->assertForbidden();
-});
-
-// ─── Admin: review identity verification ─────────────────────────────────────
-
-it('admin can approve identity verification', function () {
-    Storage::fake('private');
-
-    $user = User::factory()->create();
-    $file = UploadedFile::fake()->create('document.pdf', 100, 'application/pdf');
-
-    $this->withHeaders(asUser($user))
-        ->postJson('/api/user/identity-verification', ['document' => $file]);
-
-    $admin = User::factory()->create();
-    $admin->assignRole('admin');
-
-    $this->withHeaders(asUser($admin))
-        ->putJson("/api/users/{$user->id}/identity-verification", ['status' => IdentityVerificationStatusEnum::APPROVED->value])
-        ->assertOk();
-
-    expect($user->fresh()->is_id_verified)->toBeTrue();
-});
-
-it('admin can reject identity verification', function () {
-    Storage::fake('private');
-
-    $user = User::factory()->create();
-    $file = UploadedFile::fake()->create('document.pdf', 100, 'application/pdf');
-
-    $this->withHeaders(asUser($user))
-        ->postJson('/api/user/identity-verification', ['document' => $file]);
-
-    $admin = User::factory()->create();
-    $admin->assignRole('admin');
-
-    $this->withHeaders(asUser($admin))
-        ->putJson("/api/users/{$user->id}/identity-verification", ['status' => IdentityVerificationStatusEnum::REJECTED->value])
-        ->assertOk();
-
-    expect($user->fresh()->is_id_verified)->toBeFalse();
-});
-
-it('non-admin cannot review identity verification', function () {
-    $user = User::factory()->create();
-    $other = User::factory()->create();
-
-    $this->withHeaders(asUser($user))
-        ->putJson("/api/users/{$other->id}/identity-verification", ['status' => IdentityVerificationStatusEnum::APPROVED->value])
-        ->assertForbidden();
-});
-
-it('returns 404 when reviewing identity verification of unknown user', function () {
-    $admin = User::factory()->create();
-    $admin->assignRole('admin');
-
-    $this->withHeaders(asUser($admin))
-        ->putJson('/api/users/00000000-0000-0000-0000-000000000000/identity-verification', ['status' => IdentityVerificationStatusEnum::APPROVED->value])
-        ->assertNotFound();
 });
