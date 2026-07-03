@@ -13,6 +13,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 
@@ -23,6 +24,8 @@ class ExploreService
     public const int PER_PAGE = 10;
 
     private const int MIN_SECTION_RESULTS = 3;
+
+    private const int SECTIONS_CACHE_TTL = 300;
 
     /** @return list<string> */
     private function sectionIds(): array
@@ -52,7 +55,7 @@ class ExploreService
                     JOIN activities_cycles c ON c.id = s.activity_cycle_id
                     WHERE c.activity_id = activities.id) AS min_price'
             ))
-            ->with(['address', 'cycles.settings.animalType', 'cycles.settings.prices'])
+            ->with(['address', 'manager', 'media', 'cycles.settings.animalType', 'cycles.settings.prices'])
             ->withAvg(
                 ['reviews as avg_rating' => fn (Builder $q) => $q->where('is_published', true)],
                 'overall_rating'
@@ -73,10 +76,24 @@ class ExploreService
      */
     public function getSections(?float $lat, ?float $lng, ?User $user = null): array
     {
+        $sections = Cache::remember(
+            $this->sectionsCacheKey($lat, $lng),
+            self::SECTIONS_CACHE_TTL,
+            fn (): array => $this->computeSections($lat, $lng),
+        );
+
+        return $this->applyFavorites($sections, $user);
+    }
+
+    /**
+     * @return list<array{id: string, has_more: bool, activities: Collection}>
+     */
+    private function computeSections(?float $lat, ?float $lng): array
+    {
         $sections = [];
 
         foreach ($this->sectionIds() as $sectionId) {
-            $activities = $this->applySection($sectionId, $this->baseQuery($user), $lat, $lng)
+            $activities = $this->applySection($sectionId, $this->baseQuery(), $lat, $lng)
                 ->limit(self::PER_PAGE + 1)
                 ->get();
 
@@ -91,6 +108,38 @@ class ExploreService
                 'has_more' => $hasMore,
                 'activities' => $activities->take(self::PER_PAGE),
             ];
+        }
+
+        return $sections;
+    }
+
+    private function sectionsCacheKey(?float $lat, ?float $lng): string
+    {
+        $roundedLat = $lat === null ? 'null' : (string) round($lat, 2);
+        $roundedLng = $lng === null ? 'null' : (string) round($lng, 2);
+        $dayKey = Carbon::now()->toDateString();
+
+        return "explore:sections:{$roundedLat}:{$roundedLng}:{$dayKey}";
+    }
+
+    /**
+     * @param  list<array{id: string, has_more: bool, activities: Collection}>  $sections
+     * @return list<array{id: string, has_more: bool, activities: Collection}>
+     */
+    private function applyFavorites(array $sections, ?User $user): array
+    {
+        if ($user === null) {
+            return $sections;
+        }
+
+        $favoritedIds = DB::table('favorites')
+            ->where('user_id', $user->id)
+            ->pluck('activity_id');
+
+        foreach ($sections as $section) {
+            foreach ($section['activities'] as $activity) {
+                $activity->setAttribute('is_favorited', $favoritedIds->contains($activity->getKey()));
+            }
         }
 
         return $sections;

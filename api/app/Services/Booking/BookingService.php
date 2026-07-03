@@ -56,7 +56,7 @@ class BookingService
     {
         $perPage = $filters['per_page'] ?? 15;
 
-        return Booking::with(['activity', 'pets', 'services'])
+        return Booking::with(['activity.media', 'activity.manager', 'pets', 'services'])
             ->where('user_id', $user->id)
             ->when(isset($filters['status']), fn ($q) => $q->where('status', $filters['status']))
             ->latest()
