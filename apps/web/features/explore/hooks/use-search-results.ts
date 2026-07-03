@@ -26,6 +26,8 @@ export function useSearchResults({
     const [error, setError] = useState<string | null>(null);
     const [retryKey, setRetryKey] = useState(0);
 
+    const animalCountsKey = JSON.stringify(animalCounts ?? {});
+
     useEffect(() => {
         let cancelled = false;
         const loadingTimer = setTimeout(() => {
@@ -48,7 +50,7 @@ export function useSearchResults({
             clearTimeout(loadingTimer);
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [location, coords?.lat, coords?.lng, radius, dateFrom, dateTo, animalCounts, retryKey]);
+    }, [location, coords?.lat, coords?.lng, radius, dateFrom, dateTo, animalCountsKey, retryKey]);
 
     return { activities, isLoading, error, retry: () => setRetryKey((k) => k + 1) };
 }

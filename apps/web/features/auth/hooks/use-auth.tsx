@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { UserModel } from "@workspace/modules/users";
-import { getCurrentUser, logoutUser, authService } from "@workspace/modules/users";
+import { getCurrentUser, logoutUser, authService, refreshToken } from "@workspace/modules/users";
 import { getActivities, ActivityModel } from "@workspace/modules/activities";
 import { api } from "@workspace/common";
 import { useRouter } from "next/navigation";
@@ -24,6 +24,30 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
+let refreshPromise: Promise<string | null> | null = null;
+
+async function getFreshAccessToken(): Promise<string | null> {
+    const token = await authService.getAccessToken();
+
+    if (token && !(await authService.isAccessTokenExpired())) {
+        return token;
+    }
+
+    if (!(await authService.getRefreshToken())) {
+        return token;
+    }
+
+    if (!refreshPromise) {
+        refreshPromise = refreshToken()
+            .catch(() => null)
+            .finally(() => {
+                refreshPromise = null;
+            });
+    }
+
+    return refreshPromise;
+}
+
 export function AuthProvider({
     children,
     initialIsAuthenticated = false,
@@ -40,7 +64,7 @@ export function AuthProvider({
 
     useState(() => {
         authService.configure(getAppStorage());
-        api.setTokenGetter(() => authService.getAccessToken());
+        api.setTokenGetter(() => getFreshAccessToken());
     });
 
     const loadUser = async (): Promise<UserModel | null> => {
@@ -64,10 +88,13 @@ export function AuthProvider({
             return currentUser;
         } catch (error) {
             logger.error("Failed to load user:", error);
-            setIsAuthenticated(false);
-            setUser(null);
-            setActivities([]);
-            await authService.clearTokens();
+            const status = (error as { status?: number })?.status;
+            if (status === 401) {
+                setIsAuthenticated(false);
+                setUser(null);
+                setActivities([]);
+                await authService.clearTokens();
+            }
             return null;
         } finally {
             setIsLoading(false);

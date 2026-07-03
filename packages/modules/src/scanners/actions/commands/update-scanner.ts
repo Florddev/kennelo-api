@@ -6,5 +6,9 @@ import { ScannerModel } from "../../models/scanner.model";
 export async function updateScanner(id: string, name: string | null): Promise<ScannerModel> {
     const response = await api.put<ScannerDto>(`/user/scanners/${id}`, { name });
 
-    return ScannerModel.from(response.data!);
+    if (!response.data) {
+        throw new Error("Failed to update scanner");
+    }
+
+    return ScannerModel.from(response.data);
 }

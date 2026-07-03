@@ -24,8 +24,9 @@ export async function refreshToken(): Promise<string> {
     }
 
     const newAccessToken = response.data.access_token;
+    const newRefreshToken = response.data.refresh_token ?? refreshToken;
 
-    await authService.setTokens(newAccessToken, refreshToken);
+    await authService.setTokens(newAccessToken, newRefreshToken);
 
     return newAccessToken;
 }
