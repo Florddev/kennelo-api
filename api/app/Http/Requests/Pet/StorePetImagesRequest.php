@@ -39,6 +39,7 @@ class StorePetImagesRequest extends FormRequest
                 'required',
                 'image',
                 'mimetypes:image/jpeg,image/jpg,image/png,image/gif,image/webp',
+                'max:8192',
             ],
         ];
     }

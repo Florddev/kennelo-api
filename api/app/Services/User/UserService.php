@@ -175,7 +175,7 @@ class UserService
 
     public function submitIdentityVerification(User $user, UploadedFile $document): IdentityVerification
     {
-        $path = $document->store('identity-verifications', 'private');
+        $path = $document->store('identity-verifications', 'local');
 
         $verification = IdentityVerification::create([
             'user_id' => $user->id,

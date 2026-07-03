@@ -22,7 +22,6 @@ use App\Services\Notification\NotificationService;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 
 class ConversationService
 {
@@ -147,11 +146,11 @@ class ConversationService
 
             foreach ($data['files'] ?? [] as $uploadedFile) {
                 /** @var UploadedFile $uploadedFile */
-                $path = $uploadedFile->store('conversations', 'public');
+                $path = $uploadedFile->store('conversations', 'local');
                 MessageFile::create([
                     'message_id' => $message->id,
                     'file_name' => $uploadedFile->getClientOriginalName(),
-                    'file_path' => Storage::disk('public')->url($path),
+                    'file_path' => $path,
                     'file_type' => $uploadedFile->extension(),
                     'file_size' => $uploadedFile->getSize(),
                     'mime_type' => $uploadedFile->getMimeType() ?? $uploadedFile->getClientMimeType(),

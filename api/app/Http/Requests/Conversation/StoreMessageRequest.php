@@ -29,6 +29,8 @@ class StoreMessageRequest extends FormRequest
             'booking_id' => ['sometimes', 'nullable', 'uuid', 'exists:bookings,id'],
             'files' => ['sometimes', 'nullable', 'array', 'max:10'],
             'files.*' => [
+                'file',
+                'max:10240',
                 'mimetypes:image/jpeg,image/jpg,image/png,image/gif,image/webp,application/pdf,text/plain,application/zip,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             ],
         ];
