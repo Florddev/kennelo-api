@@ -73,7 +73,7 @@ return new class extends Migration
         });
 
         Schema::table('subscriptions', function (Blueprint $table): void {
-            $table->index('establishment_id', 'subscriptions_establishment_id_index');
+            $table->index('activity_id', 'subscriptions_activity_id_index');
             $table->index('subscription_plan_id', 'subscriptions_plan_id_index');
         });
 
@@ -155,7 +155,7 @@ return new class extends Migration
         });
 
         Schema::table('subscriptions', function (Blueprint $table): void {
-            $table->dropIndex('subscriptions_establishment_id_index');
+            $table->dropIndex('subscriptions_activity_id_index');
             $table->dropIndex('subscriptions_plan_id_index');
         });
 
