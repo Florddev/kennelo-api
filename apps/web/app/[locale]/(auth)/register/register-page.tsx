@@ -5,17 +5,15 @@ import { RegisterForm, GoogleSignInButton } from "@/features/auth";
 import { useNavigation } from "@/hooks/use-navigation";
 import { useTranslations } from "next-intl";
 import { FieldDescription, FieldGroup } from "@workspace/ui/components/field";
+import { safeRedirectPath } from "@/lib/safe-redirect";
 
 export default function RegisterPage() {
     const { routes, router, params } = useNavigation<{ redirect_url?: string }>();
     const t = useTranslations();
 
     const handleSuccess = () => {
-        if (params.redirect_url) {
-            router.push(params.redirect_url as string);
-            return;
-        }
-        router.push(routes.Home());
+        const target = safeRedirectPath(params.redirect_url);
+        router.push(target ?? routes.Home());
     };
 
     return (

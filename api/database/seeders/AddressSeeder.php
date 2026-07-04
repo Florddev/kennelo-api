@@ -6,6 +6,7 @@ namespace Database\Seeders;
 
 use App\Models\Address;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class AddressSeeder extends Seeder
 {
@@ -64,11 +65,13 @@ class AddressSeeder extends Seeder
             ],
         ];
 
-        foreach ($addresses as $addressData) {
-            Address::firstOrCreate(
-                ['line1' => $addressData['line1'], 'postal_code' => $addressData['postal_code']],
-                $addressData
-            );
-        }
+        DB::transaction(function () use ($addresses): void {
+            foreach ($addresses as $addressData) {
+                Address::firstOrCreate(
+                    ['line1' => $addressData['line1'], 'postal_code' => $addressData['postal_code']],
+                    $addressData
+                );
+            }
+        });
     }
 }

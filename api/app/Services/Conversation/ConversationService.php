@@ -21,11 +21,13 @@ use App\Services\Notification\NotificationRecipientResolver;
 use App\Services\Notification\NotificationService;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 
 class ConversationService
 {
+    private const int UNREAD_COUNT_CACHE_TTL = 30;
+
     public function __construct(
         private NotificationService $notifications,
         private NotificationRecipientResolver $recipients
@@ -35,7 +37,7 @@ class ConversationService
     {
         $perPage = $filters['per_page'] ?? 15;
 
-        return Conversation::with(['user', 'activity.manager', 'latestMessage.sender', 'bookingThreads.booking'])
+        return Conversation::with(['user.media', 'activity.media', 'activity.manager.media', 'latestMessage.sender.media', 'bookingThreads.booking'])
             ->withCount(['messages as unread_count' => function ($query) use ($user): void {
                 $query->where('sender_id', '!=', $user->id)
                     ->whereDoesntHave('reads', function ($q) use ($user): void {
@@ -51,7 +53,7 @@ class ConversationService
     {
         $perPage = $filters['per_page'] ?? 15;
 
-        return Conversation::with(['user', 'latestMessage.sender', 'bookingThreads.booking'])
+        return Conversation::with(['user.media', 'latestMessage.sender.media', 'bookingThreads.booking'])
             ->withCount(['messages as unread_count' => function ($query) use ($user): void {
                 $query->where('sender_id', '!=', $user->id)
                     ->whereDoesntHave('reads', function ($q) use ($user): void {
@@ -87,7 +89,7 @@ class ConversationService
             ]);
         }
 
-        return $conversation->load(['activity', 'user', 'bookingThreads.booking']);
+        return $conversation->load(['activity.media', 'activity.manager.media', 'user.media', 'bookingThreads.booking']);
     }
 
     public function getOrCreateForActivity(User $user, Activity $activity): Conversation
@@ -102,7 +104,7 @@ class ConversationService
             ]
         );
 
-        return $conversation->load(['activity', 'user', 'bookingThreads.booking']);
+        return $conversation->load(['activity.media', 'activity.manager.media', 'user.media', 'bookingThreads.booking']);
     }
 
     public function sendBookingReference(Conversation $conversation, User $actor, Booking $booking, ?string $message = null): void
@@ -118,7 +120,7 @@ class ConversationService
     {
         $perPage = $filters['per_page'] ?? 30;
 
-        return Message::with(['sender', 'files', 'booking.activity'])
+        return Message::with(['sender.media', 'files.message', 'booking.activity'])
             ->where('conversation_id', $conversation->id)
             ->when(isset($filters['booking_id']), fn ($q) => $q->where('booking_id', $filters['booking_id']))
             ->orderByDesc('created_at')
@@ -127,7 +129,7 @@ class ConversationService
 
     public function sendMessage(User $user, Conversation $conversation, array $data): Message
     {
-        return DB::transaction(function () use ($user, $conversation, $data): Message {
+        $message = DB::transaction(function () use ($user, $conversation, $data): Message {
             $senderType = (string) $conversation->user_id === (string) $user->id
                 ? SenderTypeEnum::USER
                 : SenderTypeEnum::ACTIVITY;
@@ -147,11 +149,11 @@ class ConversationService
 
             foreach ($data['files'] ?? [] as $uploadedFile) {
                 /** @var UploadedFile $uploadedFile */
-                $path = $uploadedFile->store('conversations', 'public');
+                $path = $uploadedFile->store('conversations', 'local');
                 MessageFile::create([
                     'message_id' => $message->id,
                     'file_name' => $uploadedFile->getClientOriginalName(),
-                    'file_path' => Storage::disk('public')->url($path),
+                    'file_path' => $path,
                     'file_type' => $uploadedFile->extension(),
                     'file_size' => $uploadedFile->getSize(),
                     'mime_type' => $uploadedFile->getMimeType() ?? $uploadedFile->getClientMimeType(),
@@ -160,7 +162,7 @@ class ConversationService
 
             $conversation->update(['last_message_at' => now()]);
 
-            $message->load(['sender', 'files']);
+            $message->load(['sender', 'files.message']);
             if ($message->booking_id) {
                 $message->load('booking.activity');
             }
@@ -183,6 +185,10 @@ class ConversationService
 
             return $message;
         });
+
+        $this->forgetUnreadCounts($conversation);
+
+        return $message;
     }
 
     public function markAsRead(User $user, Conversation $conversation): int
@@ -208,6 +214,8 @@ class ConversationService
 
         $count = count($inserts);
 
+        Cache::forget($this->unreadCountCacheKey((string) $user->id));
+
         event(new MessagesRead($conversation, $user, $count));
 
         return $count;
@@ -215,16 +223,40 @@ class ConversationService
 
     public function getUnreadCount(User $user): int
     {
-        $managedActivityIds = $user->managedActivities()->pluck('id');
+        return Cache::remember(
+            $this->unreadCountCacheKey((string) $user->id),
+            self::UNREAD_COUNT_CACHE_TTL,
+            function () use ($user): int {
+                $managedActivityIds = $user->managedActivities()->pluck('id');
 
-        return Message::whereHas('conversation', function ($q) use ($user, $managedActivityIds): void {
-            $q->where('user_id', $user->id)
-                ->orWhereIn('activity_id', $managedActivityIds);
-        })
-            ->where('sender_id', '!=', $user->id)
-            ->whereDoesntHave('reads', function ($q) use ($user): void {
-                $q->where('user_id', $user->id);
-            })
-            ->count();
+                return Message::whereHas('conversation', function ($q) use ($user, $managedActivityIds): void {
+                    $q->where('user_id', $user->id)
+                        ->orWhereIn('activity_id', $managedActivityIds);
+                })
+                    ->where('sender_id', '!=', $user->id)
+                    ->whereDoesntHave('reads', function ($q) use ($user): void {
+                        $q->where('user_id', $user->id);
+                    })
+                    ->count();
+            }
+        );
+    }
+
+    private function unreadCountCacheKey(string $userId): string
+    {
+        return "conversations:unread_count:{$userId}";
+    }
+
+    private function forgetUnreadCounts(Conversation $conversation): void
+    {
+        $conversation->loadMissing('activity');
+
+        Cache::forget($this->unreadCountCacheKey((string) $conversation->user_id));
+
+        $managerId = $conversation->activity?->manager_id;
+
+        if ($managerId !== null) {
+            Cache::forget($this->unreadCountCacheKey((string) $managerId));
+        }
     }
 }

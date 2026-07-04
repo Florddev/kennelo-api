@@ -41,48 +41,55 @@ class EchoClient {
             enabledTransports: ["ws", "wss"],
             authorizer: (channel: { name: string }) => ({
                 authorize: (socketId: string, callback: ChannelAuthorizationCallback) => {
-                    this._getToken().then((token) => {
-                        fetch(authEndpoint, {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json",
-                                ...(token ? { Authorization: `Bearer ${token}` } : {}),
-                            },
-                            body: JSON.stringify({
-                                socket_id: socketId,
-                                channel_name: channel.name,
-                            }),
-                        })
-                            .then(async (res) => {
-                                const data = (await res.json().catch(() => null)) as unknown;
-                                if (!res.ok) {
-                                    throw new Error(
-                                        `Broadcast auth failed with status ${res.status}`,
-                                    );
-                                }
-                                if (
-                                    !data ||
-                                    typeof data !== "object" ||
-                                    typeof (data as { auth?: unknown }).auth !== "string"
-                                ) {
-                                    throw new Error("Broadcast auth response is invalid");
-                                }
-                                callback(
-                                    null,
-                                    data as {
-                                        auth: string;
-                                        channel_data?: string;
-                                        shared_secret?: string;
-                                    },
-                                );
+                    this._getToken()
+                        .then((token) => {
+                            fetch(authEndpoint, {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                                },
+                                body: JSON.stringify({
+                                    socket_id: socketId,
+                                    channel_name: channel.name,
+                                }),
                             })
-                            .catch((error: unknown) =>
-                                callback(
-                                    error instanceof Error ? error : new Error(String(error)),
-                                    null,
-                                ),
-                            );
-                    });
+                                .then(async (res) => {
+                                    const data = (await res.json().catch(() => null)) as unknown;
+                                    if (!res.ok) {
+                                        throw new Error(
+                                            `Broadcast auth failed with status ${res.status}`,
+                                        );
+                                    }
+                                    if (
+                                        !data ||
+                                        typeof data !== "object" ||
+                                        typeof (data as { auth?: unknown }).auth !== "string"
+                                    ) {
+                                        throw new Error("Broadcast auth response is invalid");
+                                    }
+                                    callback(
+                                        null,
+                                        data as {
+                                            auth: string;
+                                            channel_data?: string;
+                                            shared_secret?: string;
+                                        },
+                                    );
+                                })
+                                .catch((error: unknown) =>
+                                    callback(
+                                        error instanceof Error ? error : new Error(String(error)),
+                                        null,
+                                    ),
+                                );
+                        })
+                        .catch((error: unknown) =>
+                            callback(
+                                error instanceof Error ? error : new Error(String(error)),
+                                null,
+                            ),
+                        );
                 },
             }),
         });

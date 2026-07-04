@@ -13,6 +13,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 
@@ -23,6 +24,8 @@ class ExploreService
     public const int PER_PAGE = 10;
 
     private const int MIN_SECTION_RESULTS = 3;
+
+    private const int SECTIONS_CACHE_TTL = 300;
 
     /** @return list<string> */
     private function sectionIds(): array
@@ -45,7 +48,14 @@ class ExploreService
     private function baseQuery(?User $user = null): Builder
     {
         return Activity::select('activities.*')
-            ->with(['address', 'cycles.settings.animalType', 'cycles.settings.prices'])
+            ->addSelect(DB::raw(
+                '(SELECT MIN(p.price)
+                    FROM activities_cycles_settings_prices p
+                    JOIN activities_cycles_settings s ON s.id = p.activity_cycle_setting_id
+                    JOIN activities_cycles c ON c.id = s.activity_cycle_id
+                    WHERE c.activity_id = activities.id) AS min_price'
+            ))
+            ->with(['address', 'manager', 'media', 'cycles.settings.animalType', 'cycles.settings.prices'])
             ->withAvg(
                 ['reviews as avg_rating' => fn (Builder $q) => $q->where('is_published', true)],
                 'overall_rating'
@@ -66,10 +76,24 @@ class ExploreService
      */
     public function getSections(?float $lat, ?float $lng, ?User $user = null): array
     {
+        $sections = Cache::remember(
+            $this->sectionsCacheKey($lat, $lng),
+            self::SECTIONS_CACHE_TTL,
+            fn (): array => $this->computeSections($lat, $lng),
+        );
+
+        return $this->applyFavorites($sections, $user);
+    }
+
+    /**
+     * @return list<array{id: string, has_more: bool, activities: Collection}>
+     */
+    private function computeSections(?float $lat, ?float $lng): array
+    {
         $sections = [];
 
         foreach ($this->sectionIds() as $sectionId) {
-            $activities = $this->applySection($sectionId, $this->baseQuery($user), $lat, $lng)
+            $activities = $this->applySection($sectionId, $this->baseQuery(), $lat, $lng)
                 ->limit(self::PER_PAGE + 1)
                 ->get();
 
@@ -84,6 +108,38 @@ class ExploreService
                 'has_more' => $hasMore,
                 'activities' => $activities->take(self::PER_PAGE),
             ];
+        }
+
+        return $sections;
+    }
+
+    private function sectionsCacheKey(?float $lat, ?float $lng): string
+    {
+        $roundedLat = $lat === null ? 'null' : (string) round($lat, 2);
+        $roundedLng = $lng === null ? 'null' : (string) round($lng, 2);
+        $dayKey = Carbon::now()->toDateString();
+
+        return "explore:sections:{$roundedLat}:{$roundedLng}:{$dayKey}";
+    }
+
+    /**
+     * @param  list<array{id: string, has_more: bool, activities: Collection}>  $sections
+     * @return list<array{id: string, has_more: bool, activities: Collection}>
+     */
+    private function applyFavorites(array $sections, ?User $user): array
+    {
+        if ($user === null) {
+            return $sections;
+        }
+
+        $favoritedIds = DB::table('favorites')
+            ->where('user_id', $user->id)
+            ->pluck('activity_id');
+
+        foreach ($sections as $section) {
+            foreach ($section['activities'] as $activity) {
+                $activity->setAttribute('is_favorited', $favoritedIds->contains($activity->getKey()));
+            }
         }
 
         return $sections;
@@ -253,7 +309,10 @@ class ExploreService
 
     private function applyAnimalCountsFilter(Builder $query, array $input): void
     {
-        $codes = AnimalType::pluck('code')->all();
+        $codes = Cache::rememberForever(
+            'reference:animal_type_codes',
+            fn () => AnimalType::pluck('code')->all()
+        );
         $excluded = [BookingStatusEnum::CANCELLED->value, BookingStatusEnum::COMPLETED->value];
         $dateFrom = $input['date_from'] ?? null;
         $dateTo = $input['date_to'] ?? null;
@@ -272,8 +331,8 @@ class ExploreService
                 if ($dateFrom && $dateTo) {
                     $q->whereRaw(
                         'activities_cycles_settings.max_capacity - (
-                            SELECT COALESCE(COUNT(bp.id), 0)
-                            FROM booking_pet bp
+                            SELECT COALESCE(COUNT(*), 0)
+                            FROM booking_pets bp
                             JOIN bookings bk ON bk.id = bp.booking_id
                             JOIN pets p ON p.id = bp.pet_id
                             JOIN animal_types at ON at.id = p.animal_type_id
@@ -346,18 +405,22 @@ class ExploreService
 
     private function applyGeoJoin(Builder $query, float $lat, float $lng, array $input): void
     {
+        [$distanceSql, $distanceBindings] = $this->haversineExpression($lat, $lng, 'addr_search.latitude', 'addr_search.longitude');
+
         $query
             ->join('addresses as addr_search', 'addr_search.id', '=', 'activities.address_id')
-            ->addSelect(DB::raw(
-                $this->haversineExpression($lat, $lng, 'addr_search.latitude', 'addr_search.longitude').' AS distance'
-            ))
+            ->selectRaw($distanceSql.' AS distance', $distanceBindings)
             ->whereNotNull('addr_search.latitude')
             ->whereNotNull('addr_search.longitude');
 
         if (isset($input['radius'])) {
+            $radius = (float) $input['radius'];
+
+            $this->applyBoundingBox($query, $lat, $lng, $radius, 'addr_search.latitude', 'addr_search.longitude');
+
             $query->whereRaw(
                 '(6371 * acos(LEAST(1.0, cos(radians(?)) * cos(radians(addr_search.latitude)) * cos(radians(addr_search.longitude) - radians(?)) + sin(radians(?)) * sin(radians(addr_search.latitude))))) <= ?',
-                [$lat, $lng, $lat, (float) $input['radius']]
+                [$lat, $lng, $lat, $radius]
             );
         }
     }

@@ -5,7 +5,7 @@ const config: CapacitorConfig = {
     appName: "Kennelo",
     webDir: "out",
     server: {
-        androidScheme: "http",
+        androidScheme: "https",
     },
 };
 

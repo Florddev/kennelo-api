@@ -145,14 +145,17 @@ export function useAsyncState() {
             setIsLoading(true);
             setError(undefined);
 
-            if (options && options?.displayError === undefined) options.displayError = false;
+            const displayError = options?.displayError ?? options === undefined;
+            const effectiveOptions: AsyncStateOptions<T> | undefined = options
+                ? { ...options, displayError }
+                : options;
 
             try {
                 const result = await callback();
-                handleAsyncSuccess(result, options);
+                handleAsyncSuccess(result, effectiveOptions);
                 return result;
             } catch (err) {
-                handleError(err, options, setError);
+                handleError(err, effectiveOptions, setError);
                 return undefined;
             } finally {
                 setIsLoading(false);

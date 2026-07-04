@@ -76,9 +76,28 @@ test('users can refresh their access token', function () {
     $response->assertOk()
         ->assertJsonStructure([
             'access_token',
+            'refresh_token',
             'token_type',
             'expires_in',
         ]);
+});
+
+test('refreshing rotates and invalidates the old refresh token', function () {
+    config(['jwt.blacklist_enabled' => true]);
+
+    $user = User::factory()->create();
+    $user->load('roles');
+    $refreshToken = app(JWTService::class)->generateRefreshToken($user);
+
+    $first = $this->post('/api/refresh', ['refresh_token' => $refreshToken]);
+    $first->assertOk();
+
+    $newRefreshToken = $first->json('refresh_token');
+    expect($newRefreshToken)->not->toBeNull();
+    expect($newRefreshToken)->not->toBe($refreshToken);
+
+    $this->post('/api/refresh', ['refresh_token' => $refreshToken])
+        ->assertUnauthorized();
 });
 
 test('token refresh fails without refresh token', function () {

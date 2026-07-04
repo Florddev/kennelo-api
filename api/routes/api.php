@@ -18,6 +18,7 @@ use App\Http\Controllers\Booking\ActivityBookingController;
 use App\Http\Controllers\Booking\BookingController;
 use App\Http\Controllers\Conversation\ActivityConversationController;
 use App\Http\Controllers\Conversation\ConversationController;
+use App\Http\Controllers\Conversation\MessageAttachmentController;
 use App\Http\Controllers\Conversation\MessageController;
 use App\Http\Controllers\Explore\ExploreController;
 use App\Http\Controllers\Favorite\FavoriteController;
@@ -44,12 +45,9 @@ use App\Http\Controllers\Review\UserReviewController;
 use App\Http\Controllers\Scanner\ScannerController;
 use App\Http\Controllers\Scanner\ScannerScanController;
 use App\Http\Controllers\Stripe\StripeWebhookController;
-use App\Http\Controllers\TestController;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\User\UserStripeController;
 use Illuminate\Support\Facades\Route;
-
-Route::get('/test', [TestController::class, 'index']);
 
 Route::get('/animal-types', [AnimalTypeController::class, 'index']);
 Route::middleware('auth.jwt.optional')->group(function () {
@@ -168,6 +166,9 @@ Route::middleware(['auth.jwt'])->group(function () {
     Route::get('/conversations/{conversation}/messages', [MessageController::class, 'index']);
     Route::post('/conversations/{conversation}/messages', [MessageController::class, 'store']);
     Route::put('/conversations/{conversation}/messages/read', [MessageController::class, 'markAsRead']);
+    Route::get('/conversations/{conversation}/attachments/{messageFile}', [MessageAttachmentController::class, 'show'])
+        ->middleware('signed')
+        ->name('conversations.attachments.show');
 
     // Reviews
     Route::get('/review-criteria', [ReviewCriteriaController::class, 'index']);

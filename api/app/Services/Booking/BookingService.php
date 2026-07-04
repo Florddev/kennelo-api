@@ -33,6 +33,7 @@ use Carbon\Carbon;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Stripe\Exception\CardException;
 use Stripe\Exception\InvalidRequestException;
@@ -55,7 +56,7 @@ class BookingService
     {
         $perPage = $filters['per_page'] ?? 15;
 
-        return Booking::with(['activity', 'pets', 'services'])
+        return Booking::with(['activity.media', 'activity.manager', 'pets', 'services'])
             ->where('user_id', $user->id)
             ->when(isset($filters['status']), fn ($q) => $q->where('status', $filters['status']))
             ->latest()
@@ -130,6 +131,11 @@ class BookingService
         try {
             $pi = $this->createConfirmedPaymentIntent($booking, $totalPrice, $user, $paymentMethodId, $savePaymentMethod);
         } catch (CardException|InvalidRequestException $e) {
+            $booking->update([
+                'status' => BookingStatusEnum::CANCELLED,
+                'payment_status' => PaymentStatusEnum::FAILED,
+            ]);
+
             throw ValidationException::withMessages([
                 'payment_method_id' => ['The payment could not be processed: '.$e->getMessage()],
             ]);
@@ -275,66 +281,80 @@ class BookingService
 
     public function cancel(Booking $booking): Booking
     {
-        $this->assertStatus($booking, [BookingStatusEnum::PENDING, BookingStatusEnum::CONFIRMED], 'cancel');
+        return DB::transaction(function () use ($booking): Booking {
+            $booking = Booking::whereKey($booking->id)->lockForUpdate()->firstOrFail();
 
-        $booking->update(['status' => BookingStatusEnum::CANCELLED]);
+            $this->assertStatus($booking, [BookingStatusEnum::PENDING, BookingStatusEnum::CONFIRMED], 'cancel');
 
-        $this->journal->record(FinancialOperationTypeEnum::STATUS_CHANGE, $booking, null, null, [
-            'status' => BookingStatusEnum::CANCELLED->value,
-        ]);
+            $this->releaseAuthorization($booking);
 
-        $booking->loadMissing('activity');
+            $booking->update(['status' => BookingStatusEnum::CANCELLED]);
 
-        if ($booking->activity !== null) {
-            $this->notifications->notify(
-                $this->recipients->forActivity($booking->activity, ActivityPermissionEnum::MANAGE_BOOKINGS),
-                NotificationTypeEnum::BOOKING_CANCELLED_BY_CLIENT,
-                [
-                    'booking_id' => $booking->id,
-                    'activity_id' => $booking->activity_id,
-                    'user_id' => $booking->user_id,
-                ],
-            );
-        }
+            $this->journal->record(FinancialOperationTypeEnum::STATUS_CHANGE, $booking, null, null, [
+                'status' => BookingStatusEnum::CANCELLED->value,
+            ]);
 
-        return $booking->fresh();
+            $booking->loadMissing('activity');
+
+            if ($booking->activity !== null) {
+                $this->notifications->notify(
+                    $this->recipients->forActivity($booking->activity, ActivityPermissionEnum::MANAGE_BOOKINGS),
+                    NotificationTypeEnum::BOOKING_CANCELLED_BY_CLIENT,
+                    [
+                        'booking_id' => $booking->id,
+                        'activity_id' => $booking->activity_id,
+                        'user_id' => $booking->user_id,
+                    ],
+                );
+            }
+
+            return $booking->fresh();
+        });
     }
 
     public function confirm(Booking $booking, User $actor, ?string $message = null): Booking
     {
-        $this->assertStatus($booking, [BookingStatusEnum::PENDING], 'confirm');
+        $booking = DB::transaction(function () use ($booking): Booking {
+            $booking = Booking::whereKey($booking->id)->lockForUpdate()->firstOrFail();
 
-        try {
-            $pi = $this->stripe->paymentIntents->capture($booking->stripe_payment_intent_id);
-        } catch (CardException|InvalidRequestException $e) {
-            $booking->update(['payment_status' => PaymentStatusEnum::FAILED]);
+            $this->assertStatus($booking, [BookingStatusEnum::PENDING], 'confirm');
+
+            $this->assertCapacityForConfirm($booking);
+
+            try {
+                $pi = $this->stripe->paymentIntents->capture($booking->stripe_payment_intent_id);
+            } catch (CardException|InvalidRequestException $e) {
+                $booking->update(['payment_status' => PaymentStatusEnum::FAILED]);
+                $this->journal->record(
+                    FinancialOperationTypeEnum::CAPTURE_FAILED,
+                    $booking,
+                    (string) $booking->total_price,
+                    $booking->stripe_payment_intent_id,
+                    ['error' => $e->getMessage()],
+                );
+                $this->notifyBookingUser($booking, NotificationTypeEnum::PAYMENT_FAILED);
+
+                throw ValidationException::withMessages([
+                    'payment' => ['The payment could not be captured: '.$e->getMessage()],
+                ]);
+            }
+
+            $booking->update([
+                'status' => BookingStatusEnum::CONFIRMED,
+                'payment_status' => PaymentStatusEnum::SUCCEEDED,
+                'paid_at' => Carbon::now(),
+                'stripe_charge_id' => $pi->latest_charge ?? $booking->stripe_charge_id,
+            ]);
+
             $this->journal->record(
-                FinancialOperationTypeEnum::CAPTURE_FAILED,
+                FinancialOperationTypeEnum::CAPTURE,
                 $booking,
                 (string) $booking->total_price,
-                $booking->stripe_payment_intent_id,
-                ['error' => $e->getMessage()],
+                $pi->latest_charge ?? $booking->stripe_charge_id,
             );
-            $this->notifyBookingUser($booking, NotificationTypeEnum::PAYMENT_FAILED);
 
-            throw ValidationException::withMessages([
-                'payment' => ['The payment could not be captured: '.$e->getMessage()],
-            ]);
-        }
-
-        $booking->update([
-            'status' => BookingStatusEnum::CONFIRMED,
-            'payment_status' => PaymentStatusEnum::SUCCEEDED,
-            'paid_at' => Carbon::now(),
-            'stripe_charge_id' => $pi->latest_charge ?? $booking->stripe_charge_id,
-        ]);
-
-        $this->journal->record(
-            FinancialOperationTypeEnum::CAPTURE,
-            $booking,
-            (string) $booking->total_price,
-            $pi->latest_charge ?? $booking->stripe_charge_id,
-        );
+            return $booking;
+        });
 
         $this->sendBookingReferenceIfConversationExists($booking, $actor, $message);
 
@@ -393,6 +413,11 @@ class BookingService
                     $booking->stripe_payment_intent_id,
                 );
             } catch (InvalidRequestException $e) {
+                Log::warning('Failed to release Stripe authorization for booking.', [
+                    'booking_id' => $booking->id,
+                    'payment_intent_id' => $booking->stripe_payment_intent_id,
+                    'error' => $e->getMessage(),
+                ]);
             }
         }
 
@@ -401,15 +426,21 @@ class BookingService
 
     public function rejectByActivity(Booking $booking, User $actor, ?string $message = null): Booking
     {
-        $this->assertStatus($booking, [BookingStatusEnum::PENDING], 'reject');
+        $booking = DB::transaction(function () use ($booking): Booking {
+            $booking = Booking::whereKey($booking->id)->lockForUpdate()->firstOrFail();
 
-        $this->releaseAuthorization($booking);
+            $this->assertStatus($booking, [BookingStatusEnum::PENDING], 'reject');
 
-        $booking->update(['status' => BookingStatusEnum::REJECTED]);
+            $this->releaseAuthorization($booking);
 
-        $this->journal->record(FinancialOperationTypeEnum::STATUS_CHANGE, $booking, null, null, [
-            'status' => BookingStatusEnum::REJECTED->value,
-        ]);
+            $booking->update(['status' => BookingStatusEnum::REJECTED]);
+
+            $this->journal->record(FinancialOperationTypeEnum::STATUS_CHANGE, $booking, null, null, [
+                'status' => BookingStatusEnum::REJECTED->value,
+            ]);
+
+            return $booking;
+        });
 
         $this->sendBookingReferenceIfConversationExists($booking, $actor, $message);
 
@@ -752,6 +783,51 @@ class BookingService
             throw ValidationException::withMessages([
                 'status' => ["Cannot {$action} a booking with status {$booking->status->value}."],
             ]);
+        }
+    }
+
+    private function assertCapacityForConfirm(Booking $booking): void
+    {
+        $booking->loadMissing(['activity', 'pets']);
+
+        $activity = $booking->activity;
+
+        if ($activity === null) {
+            return;
+        }
+
+        $checkIn = Carbon::parse($booking->check_in_date->toDateString());
+        $checkOut = Carbon::parse($booking->check_out_date->toDateString());
+
+        $requestedCounts = $booking->pets->groupBy('animal_type_id')->map->count();
+        $occupancy = $this->overlappingOccupancy($activity, $requestedCounts->keys()->all(), $checkIn, $checkOut);
+        $cycles = $this->activeCyclesFor($activity);
+
+        for ($date = $checkIn->copy(); $date->lt($checkOut); $date->addDay()) {
+            $dateString = $date->toDateString();
+            $cycle = $this->resolveCycleForDate($cycles, $dateString);
+
+            if ($cycle === null) {
+                continue;
+            }
+
+            $settingsByType = $cycle->settings->keyBy('animal_type_id');
+
+            foreach ($requestedCounts as $animalTypeId => $requestedCount) {
+                $setting = $settingsByType->get($animalTypeId);
+
+                if (! $setting instanceof ActivityCycleSetting) {
+                    continue;
+                }
+
+                $occupied = $this->occupiedOn($occupancy, (string) $animalTypeId, $dateString);
+
+                if (($occupied + $requestedCount) > $setting->max_capacity) {
+                    throw ValidationException::withMessages([
+                        'status' => ['The activity no longer has enough capacity to confirm this booking.'],
+                    ]);
+                }
+            }
         }
     }
 }

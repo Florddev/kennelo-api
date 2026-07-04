@@ -100,8 +100,8 @@ function useOptimizedPetImageUpload() {
                         uploadedImages.push(...images);
                         completedChunks += 1;
                     } catch (error) {
-                        const remaining = chunks.length - completedChunks - 1;
-                        if (remaining === 0) {
+                        const isLastChunk = i === chunks.length - 1;
+                        if (isLastChunk && uploadedImages.length === 0) {
                             throw error;
                         }
                     }

@@ -138,7 +138,7 @@ it('forbids non-admin from managing roles', function () {
 // ─── Identity verification review ───────────────────────────────────────────────
 
 it('admin can approve identity verification', function () {
-    Storage::fake('private');
+    Storage::fake('local');
 
     $user = User::factory()->create();
     $file = UploadedFile::fake()->create('document.pdf', 100, 'application/pdf');
@@ -154,7 +154,7 @@ it('admin can approve identity verification', function () {
 });
 
 it('admin can reject identity verification', function () {
-    Storage::fake('private');
+    Storage::fake('local');
 
     $user = User::factory()->create();
     $file = UploadedFile::fake()->create('document.pdf', 100, 'application/pdf');

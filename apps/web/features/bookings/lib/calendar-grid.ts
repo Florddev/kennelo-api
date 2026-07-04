@@ -160,11 +160,6 @@ export function bookingsForDay(date: Date, bookings: BookingModel[]): BookingMod
     });
 }
 
-export function weekdayOrder(weekStartsOn: 0 | 1): number[] {
-    if (weekStartsOn === 1) return [1, 2, 3, 4, 5, 6, 0];
-    return [0, 1, 2, 3, 4, 5, 6];
-}
-
 export function shiftMonth(date: Date, delta: number): Date {
     const next = new Date(date);
     next.setDate(1);

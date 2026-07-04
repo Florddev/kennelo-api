@@ -10,5 +10,9 @@ export async function addScanner(input: AddScannerInput): Promise<ScannerModel> 
         name: input.name ?? null,
     });
 
-    return ScannerModel.from(response.data!);
+    if (!response.data) {
+        throw new Error("Failed to add scanner");
+    }
+
+    return ScannerModel.from(response.data);
 }

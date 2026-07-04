@@ -167,7 +167,7 @@ class ActivityCycleService
             ->where('bookings.activity_id', $activity->id)
             ->whereIn('bookings.status', [BookingStatusEnum::CONFIRMED->value, BookingStatusEnum::IN_PROGRESS->value])
             ->where('bookings.check_in_date', '<=', $date)
-            ->where('bookings.check_out_date', '>=', $date)
+            ->where('bookings.check_out_date', '>', $date)
             ->groupBy('pets.animal_type_id')
             ->selectRaw('pets.animal_type_id, COUNT(*) as count')
             ->pluck('count', 'pets.animal_type_id');

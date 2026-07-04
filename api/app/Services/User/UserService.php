@@ -34,7 +34,7 @@ class UserService
     {
         $perPage = $filters['per_page'] ?? PaginationEnum::DEFAULT_PAGINATION->value();
 
-        return User::withInactive()->with(['managedActivities', 'collaboratedActivities'])
+        return User::withInactive()->with(['media', 'roles'])
             ->when(isset($filters['search']), function ($q) use ($filters) {
                 $q->where(function ($q) use ($filters) {
                     $q->where('first_name', 'like', "%{$filters['search']}%")
@@ -102,10 +102,10 @@ class UserService
         }
 
         DB::transaction(function () use ($user, $data) {
-            $user->update([
+            $user->forceFill([
                 'email' => $data['email'],
                 'email_verified_at' => null,
-            ]);
+            ])->save();
         });
 
         $user->sendEmailVerificationNotification();
@@ -175,7 +175,7 @@ class UserService
 
     public function submitIdentityVerification(User $user, UploadedFile $document): IdentityVerification
     {
-        $path = $document->store('identity-verifications', 'private');
+        $path = $document->store('identity-verifications', 'local');
 
         $verification = IdentityVerification::create([
             'user_id' => $user->id,

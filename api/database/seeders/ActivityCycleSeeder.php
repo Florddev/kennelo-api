@@ -10,6 +10,9 @@ use App\Models\ActivityCycle;
 use App\Models\ActivityCycleSetting;
 use App\Models\AnimalType;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class ActivityCycleSeeder extends Seeder
 {
@@ -33,32 +36,42 @@ class ActivityCycleSeeder extends Seeder
             throw new \RuntimeException('No animal types found. Run AnimalTypeSeeder first.');
         }
 
-        $activities->each(function (Activity $activity) use ($animalTypes) {
-            $cycle = ActivityCycle::firstOrCreate(
-                ['activity_id' => $activity->id, 'priority' => 0],
-                ['start_date' => null, 'end_date' => null, 'is_active' => true],
-            );
-
-            $chosenTypes = $animalTypes->shuffle()->take(random_int(1, $animalTypes->count()));
-
-            $chosenTypes->each(function ($animalType) use ($cycle) {
-                $setting = ActivityCycleSetting::firstOrCreate(
-                    [
-                        'activity_cycle_id' => $cycle->id,
-                        'animal_type_id' => $animalType->id,
-                    ],
-                    [
-                        'max_capacity' => self::MAX_CAPACITY,
-                    ]
+        DB::transaction(function () use ($activities, $animalTypes): void {
+            $activities->each(function (Activity $activity) use ($animalTypes) {
+                $cycle = ActivityCycle::firstOrCreate(
+                    ['activity_id' => $activity->id, 'priority' => 0],
+                    ['start_date' => null, 'end_date' => null, 'is_active' => true],
                 );
 
-                if ($setting->prices()->doesntExist()) {
-                    $price = $this->price[$animalType->code] ?? 25.00;
+                $chosenTypes = $animalTypes->shuffle()->take(random_int(1, $animalTypes->count()));
 
-                    foreach (WeekDayEnum::values() as $weekday) {
-                        $setting->prices()->create(['weekday' => $weekday, 'price' => $price]);
+                $chosenTypes->each(function ($animalType) use ($cycle) {
+                    $setting = ActivityCycleSetting::firstOrCreate(
+                        [
+                            'activity_cycle_id' => $cycle->id,
+                            'animal_type_id' => $animalType->id,
+                        ],
+                        [
+                            'max_capacity' => self::MAX_CAPACITY,
+                        ]
+                    );
+
+                    if ($setting->prices()->doesntExist()) {
+                        $price = $this->price[$animalType->code] ?? 25.00;
+
+                        $now = Carbon::now();
+                        $priceRows = array_map(fn (int $weekday): array => [
+                            'id' => (string) Str::uuid(),
+                            'activity_cycle_setting_id' => $setting->id,
+                            'weekday' => $weekday,
+                            'price' => $price,
+                            'created_at' => $now,
+                            'updated_at' => $now,
+                        ], WeekDayEnum::values());
+
+                        $setting->prices()->insert($priceRows);
                     }
-                }
+                });
             });
         });
     }

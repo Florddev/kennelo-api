@@ -41,10 +41,14 @@ class ApiClient {
         const text = await resp.text();
 
         if (text) {
-            const parsed = JSON.parse(text);
-            data = (
-                parsed && typeof parsed === "object" && "data" in parsed ? parsed.data : parsed
-            ) as T;
+            try {
+                const parsed = JSON.parse(text);
+                data = (
+                    parsed && typeof parsed === "object" && "data" in parsed ? parsed.data : parsed
+                ) as T;
+            } catch {
+                data = null;
+            }
         }
 
         if (status >= 400) {

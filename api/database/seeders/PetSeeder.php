@@ -22,6 +22,8 @@ class PetSeeder extends Seeder
 
     private array $attributeCache = [];
 
+    private array $optionCache = [];
+
     public function run(): void
     {
         $this->loadDependencies();
@@ -328,9 +330,13 @@ class PetSeeder extends Seeder
             return;
         }
 
-        $optionId = AttributeOption::where('attribute_definition_id', $attributeId)
-            ->where('value', $optionValue)
-            ->value('id');
+        $optionCacheKey = $attributeId.':'.$optionValue;
+        if (! array_key_exists($optionCacheKey, $this->optionCache)) {
+            $this->optionCache[$optionCacheKey] = AttributeOption::where('attribute_definition_id', $attributeId)
+                ->where('value', $optionValue)
+                ->value('id');
+        }
+        $optionId = $this->optionCache[$optionCacheKey];
 
         if ($optionId) {
             PetAttribute::firstOrCreate(

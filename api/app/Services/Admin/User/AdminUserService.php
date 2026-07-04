@@ -86,7 +86,7 @@ class AdminUserService
 
     public function bulkRoles(array $ids, string $action, array $roles): int
     {
-        $users = User::withInactive()->whereIn('id', $ids)->get();
+        $users = User::withInactive()->with('roles')->whereIn('id', $ids)->get();
 
         foreach ($users as $user) {
             if ($action === 'assign') {

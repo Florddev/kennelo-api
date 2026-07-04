@@ -13,6 +13,7 @@ use App\Models\Review;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class PetReviewSeeder extends Seeder
@@ -34,22 +35,24 @@ class PetReviewSeeder extends Seeder
             throw new \RuntimeException('Pets not found. Run PetSeeder first.');
         }
 
+        $hostPassword = Hash::make('password');
+
         $hosts = [
             'lucy' => User::firstOrCreate(
                 ['email' => 'lucy.moreau@kennelo.host'],
-                ['first_name' => 'Lucy', 'last_name' => 'Moreau', 'password' => Hash::make('password'), 'email_verified_at' => now(), 'is_id_verified' => false],
+                ['first_name' => 'Lucy', 'last_name' => 'Moreau', 'password' => $hostPassword, 'email_verified_at' => now(), 'is_id_verified' => false],
             ),
             'thomas' => User::firstOrCreate(
                 ['email' => 'thomas.blanc@kennelo.host'],
-                ['first_name' => 'Thomas', 'last_name' => 'Blanc', 'password' => Hash::make('password'), 'email_verified_at' => now(), 'is_id_verified' => false],
+                ['first_name' => 'Thomas', 'last_name' => 'Blanc', 'password' => $hostPassword, 'email_verified_at' => now(), 'is_id_verified' => false],
             ),
             'sofia' => User::firstOrCreate(
                 ['email' => 'sofia.chen@kennelo.host'],
-                ['first_name' => 'Sofia', 'last_name' => 'Chen', 'password' => Hash::make('password'), 'email_verified_at' => now(), 'is_id_verified' => false],
+                ['first_name' => 'Sofia', 'last_name' => 'Chen', 'password' => $hostPassword, 'email_verified_at' => now(), 'is_id_verified' => false],
             ),
             'marc' => User::firstOrCreate(
                 ['email' => 'marc.petit@kennelo.host'],
-                ['first_name' => 'Marc', 'last_name' => 'Petit', 'password' => Hash::make('password'), 'email_verified_at' => now(), 'is_id_verified' => false],
+                ['first_name' => 'Marc', 'last_name' => 'Petit', 'password' => $hostPassword, 'email_verified_at' => now(), 'is_id_verified' => false],
             ),
         ];
 
@@ -64,41 +67,43 @@ class PetReviewSeeder extends Seeder
             ['pet' => 'Caramel', 'host' => 'marc', 'rating' => 5.0, 'comment' => 'Caramel est un lapin doux et calme, un vrai bonheur à garder. Très propre dans sa cage et adore les caresses. On recommande à 100% !', 'days_ago' => 40, 'nights' => 3],
         ];
 
-        foreach ($reviews as $data) {
-            if (! $pets->has($data['pet'])) {
-                continue;
+        DB::transaction(function () use ($reviews, $pets, $hosts, $petOwner, $activity): void {
+            foreach ($reviews as $data) {
+                if (! $pets->has($data['pet'])) {
+                    continue;
+                }
+
+                $petId = $pets->get($data['pet']);
+                $host = $hosts[$data['host']];
+                $daysAgo = $data['days_ago'];
+                $nights = $data['nights'];
+
+                $booking = Booking::create([
+                    'user_id' => $petOwner->id,
+                    'activity_id' => $activity->id,
+                    'check_in_date' => Carbon::now()->subDays($daysAgo + $nights)->format('Y-m-d'),
+                    'check_out_date' => Carbon::now()->subDays($daysAgo)->format('Y-m-d'),
+                    'total_price' => $nights * 30.00,
+                    'status' => BookingStatusEnum::COMPLETED,
+                ]);
+
+                $booking->pets()->attach($petId, [
+                    'price_per_night' => 30.00,
+                    'number_of_nights' => $nights,
+                    'subtotal' => $nights * 30.00,
+                ]);
+
+                Review::create([
+                    'booking_id' => $booking->id,
+                    'reviewer_id' => $host->id,
+                    'reviewer_type' => ReviewerTypeEnum::ACTIVITY,
+                    'overall_rating' => $data['rating'],
+                    'comment' => $data['comment'],
+                    'would_recommend' => true,
+                    'is_published' => true,
+                    'published_at' => Carbon::now()->subDays($daysAgo - 1),
+                ]);
             }
-
-            $petId = $pets->get($data['pet']);
-            $host = $hosts[$data['host']];
-            $daysAgo = $data['days_ago'];
-            $nights = $data['nights'];
-
-            $booking = Booking::create([
-                'user_id' => $petOwner->id,
-                'activity_id' => $activity->id,
-                'check_in_date' => Carbon::now()->subDays($daysAgo + $nights)->format('Y-m-d'),
-                'check_out_date' => Carbon::now()->subDays($daysAgo)->format('Y-m-d'),
-                'total_price' => $nights * 30.00,
-                'status' => BookingStatusEnum::COMPLETED,
-            ]);
-
-            $booking->pets()->attach($petId, [
-                'price_per_night' => 30.00,
-                'number_of_nights' => $nights,
-                'subtotal' => $nights * 30.00,
-            ]);
-
-            Review::create([
-                'booking_id' => $booking->id,
-                'reviewer_id' => $host->id,
-                'reviewer_type' => ReviewerTypeEnum::ACTIVITY,
-                'overall_rating' => $data['rating'],
-                'comment' => $data['comment'],
-                'would_recommend' => true,
-                'is_published' => true,
-                'published_at' => Carbon::now()->subDays($daysAgo - 1),
-            ]);
-        }
+        });
     }
 }

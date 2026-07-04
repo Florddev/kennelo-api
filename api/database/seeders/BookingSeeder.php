@@ -72,24 +72,26 @@ class BookingSeeder extends Seeder
             throw new \RuntimeException('Missing dog animal type. Run AnimalTypeSeeder first.');
         }
 
-        foreach ($activities as $activity) {
-            $walkService = Service::firstOrCreate(
-                [
-                    'activity_id' => $activity->id,
-                    'animal_type_id' => $dogTypeId,
-                    'name' => 'Promenade quotidienne',
-                ],
-                [
-                    'description' => 'Promenade d\'une heure dans le parc',
-                    'is_included' => false,
-                    'price' => self::WALK_PRICE,
-                ]
-            );
+        DB::transaction(function () use ($activities, $dogTypeId, $userId, $pets): void {
+            foreach ($activities as $activity) {
+                $walkService = Service::firstOrCreate(
+                    [
+                        'activity_id' => $activity->id,
+                        'animal_type_id' => $dogTypeId,
+                        'name' => 'Promenade quotidienne',
+                    ],
+                    [
+                        'description' => 'Promenade d\'une heure dans le parc',
+                        'is_included' => false,
+                        'price' => self::WALK_PRICE,
+                    ]
+                );
 
-            foreach ($this->templates as $template) {
-                $this->createBooking($userId, $activity->id, $walkService->id, $pets, $template);
+                foreach ($this->templates as $template) {
+                    $this->createBooking($userId, $activity->id, $walkService->id, $pets, $template);
+                }
             }
-        }
+        });
     }
 
     private function createBooking(string $userId, string $activityId, string $walkServiceId, array $pets, array $template): void
@@ -144,17 +146,15 @@ class BookingSeeder extends Seeder
             'updated_at' => $updatedAt,
         ]);
 
-        foreach ($bookingPetsRows as $row) {
-            DB::table('booking_pets')->insert([
-                'booking_id' => $bookingId,
-                'pet_id' => $row['pet_id'],
-                'price_per_night' => $row['price_per_night'],
-                'number_of_nights' => $row['number_of_nights'],
-                'subtotal' => $row['subtotal'],
-                'created_at' => $createdAt,
-                'updated_at' => $createdAt,
-            ]);
-        }
+        DB::table('booking_pets')->insert(array_map(fn (array $row): array => [
+            'booking_id' => $bookingId,
+            'pet_id' => $row['pet_id'],
+            'price_per_night' => $row['price_per_night'],
+            'number_of_nights' => $row['number_of_nights'],
+            'subtotal' => $row['subtotal'],
+            'created_at' => $createdAt,
+            'updated_at' => $createdAt,
+        ], $bookingPetsRows));
 
         if ($hasDog) {
             DB::table('booking_services')->insert([

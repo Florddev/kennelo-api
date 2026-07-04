@@ -17,7 +17,7 @@ class ActivityService
     {
         $perPage = $filters['per_page'] ?? PaginationEnum::DEFAULT_PAGINATION->value();
 
-        return Activity::with(['address', 'manager', 'collaborators'])
+        return Activity::with(['address', 'media', 'manager.media', 'collaborators.media'])
             ->active()
             ->whereHas('manager', function ($q) {
                 $q->where('stripe_charges_enabled', true);
@@ -32,7 +32,7 @@ class ActivityService
     {
         $perPage = $filters['per_page'] ?? PaginationEnum::DEFAULT_PAGINATION->value();
 
-        return Activity::with(['address', 'manager', 'collaborators'])
+        return Activity::with(['address', 'media', 'manager.media', 'collaborators.media'])
             ->withIsFavorited($user)
             ->where(function ($query) use ($user): void {
                 $query->where('manager_id', $user->id)
@@ -46,7 +46,7 @@ class ActivityService
 
     public function findById(string $id, ?User $user = null): Activity
     {
-        $query = Activity::with(['address', 'manager', 'collaborators'])
+        $query = Activity::with(['address', 'media', 'manager.media', 'collaborators.media'])
             ->withIsFavorited($user);
 
         if (! $this->canViewUnverifiedManager($id, $user)) {

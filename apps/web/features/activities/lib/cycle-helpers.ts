@@ -159,12 +159,3 @@ export function matrixForCycleDialog(
         rows: base.rows.map((row) => cycleRows.get(row.animalTypeId) ?? row),
     };
 }
-
-export function cyclesOverlap(a: ActivityCycleModel, b: ActivityCycleModel): boolean {
-    const aStartsBeforeBEnds =
-        a.startDate === null || b.endDate === null || a.startDate <= b.endDate;
-    const aEndsAfterBStarts =
-        a.endDate === null || b.startDate === null || a.endDate >= b.startDate;
-
-    return aStartsBeforeBEnds && aEndsAfterBStarts;
-}

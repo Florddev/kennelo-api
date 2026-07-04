@@ -3,11 +3,8 @@
  */
 
 export * from "./components/attribute-inline";
-export * from "./components/pet-attribute-card";
-export * from "./components/pet-badges-strip";
 export * from "./components/pet-card";
 export * from "./components/pet-detail-skeleton";
-export * from "./components/pet-gallery";
 export * from "./components/pet-image-empty-state";
 export * from "./components/pet-profile-info";
 export * from "./components/pet-profile-reviews";

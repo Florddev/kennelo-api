@@ -16,13 +16,14 @@ class UserResource extends JsonResource
     {
         $isSelf = $request->user()?->id === $this->id;
         $isAdmin = auth()->user()?->hasRole('admin');
+        $canViewContact = $isSelf || $isAdmin;
 
         return [
             'id' => $this->id,
             'first_name' => $this->first_name,
             'last_name' => $this->last_name,
-            'email' => $this->email,
-            'phone' => $this->phone,
+            'email' => $this->when($canViewContact, fn () => $this->email),
+            'phone' => $this->when($canViewContact, fn () => $this->phone),
             'locale' => $this->locale,
             'avatar_url' => $this->getFirstMediaUrl(MediaService::COLLECTION_AVATAR, MediaService::CONVERSION_AVATAR_WEBP)
                 ?: $this->getFirstMediaUrl(MediaService::COLLECTION_AVATAR)

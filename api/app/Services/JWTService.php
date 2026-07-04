@@ -77,7 +77,12 @@ class JWTService
             throw new \Exception('User not found');
         }
 
-        return ['access_token' => $this->generateAccessToken($user)];
+        $this->blacklistToken($refreshToken);
+
+        return [
+            'access_token' => $this->generateAccessToken($user),
+            'refresh_token' => $this->generateRefreshToken($user),
+        ];
     }
 
     public function generateImpersonationToken(User $target, User $impersonator): string

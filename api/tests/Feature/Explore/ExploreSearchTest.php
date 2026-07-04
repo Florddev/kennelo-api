@@ -2,10 +2,29 @@
 
 declare(strict_types=1);
 
+use App\Models\AnimalType;
+
 use function Pest\Laravel\getJson;
 
 it('accepts a search request with no parameters', function () {
     getJson('/api/explore/search')
+        ->assertOk()
+        ->assertJsonPath('status', 'success');
+});
+
+it('accepts a search combining a date range and an animal count', function () {
+    AnimalType::create(['code' => 'dog', 'name' => 'Chien', 'category' => 'mammals']);
+
+    getJson('/api/explore/search?'.http_build_query([
+        'date_from' => now()->addDays(5)->format('Y-m-d'),
+        'date_to' => now()->addDays(8)->format('Y-m-d'),
+        'dog' => 1,
+    ]))->assertOk()
+        ->assertJsonPath('status', 'success');
+});
+
+it('accepts a search sorted by price', function () {
+    getJson('/api/explore/search?sort=price')
         ->assertOk()
         ->assertJsonPath('status', 'success');
 });

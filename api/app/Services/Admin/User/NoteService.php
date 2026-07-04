@@ -15,7 +15,7 @@ class NoteService
     {
         $perPage = $filters['per_page'] ?? PaginationEnum::DEFAULT_PAGINATION->value();
 
-        return UserNote::with('author')
+        return UserNote::with('author.media')
             ->where('user_id', $user->id)
             ->latest()
             ->paginate($perPage);
