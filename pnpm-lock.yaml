@@ -87,9 +87,6 @@ importers:
       '@dnd-kit/utilities':
         specifier: ^3.2.2
         version: 3.2.2(react@19.2.4)
-      '@formatjs/intl-localematcher':
-        specifier: ^0.8.1
-        version: 0.8.1
       '@hookform/resolvers':
         specifier: ^5.2.2
         version: 5.2.2(react-hook-form@7.71.2(react@19.2.4))
@@ -99,9 +96,6 @@ importers:
       '@solar-icons/react':
         specifier: ^1.1.0
         version: 1.1.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      '@stepperize/react':
-        specifier: ^6.1.0
-        version: 6.1.0(react@19.2.4)(typescript@5.9.3)
       '@stripe/connect-js':
         specifier: ^3.4.5
         version: 3.4.5
@@ -348,9 +342,6 @@ importers:
       cmdk:
         specifier: ^1.1.1
         version: 1.1.1(@types/react-dom@19.2.3(@types/react@19.2.13))(@types/react@19.2.13)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      date-fns:
-        specifier: ^4.1.0
-        version: 4.1.0
       embla-carousel-react:
         specifier: ^8.6.0
         version: 8.6.0(react@19.2.4)
@@ -402,9 +393,6 @@ importers:
       vaul:
         specifier: ^1.1.2
         version: 1.1.2(@types/react-dom@19.2.3(@types/react@19.2.13))(@types/react@19.2.13)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      zod:
-        specifier: ^3.25.76
-        version: 3.25.76
     devDependencies:
       '@tailwindcss/postcss':
         specifier: ^4.1.18
@@ -1993,16 +1981,6 @@ packages:
 
   '@standard-schema/utils@0.3.0':
     resolution: {integrity: sha512-e7Mew686owMaPJVNNLs55PUvgz371nKgwsc4vxE49zsODpJEnxgxRo2y/OKrqueavXgZNMDVj3DdHFlaSAeU8g==}
-
-  '@stepperize/core@2.1.0':
-    resolution: {integrity: sha512-edzIlkAUDrqan3G7XhY32PvciyQoJtyX3Fz8G1LBgSHIg2rMTBsZk8oz39NxT7XFxqibRXf2rvsH81iwg+Dd6w==}
-    peerDependencies:
-      typescript: '>=5.0.2'
-
-  '@stepperize/react@6.1.0':
-    resolution: {integrity: sha512-ywTt0OQDoBKcdzeBK9V1hTsMAQ+zAoIF/au9fcATspdGWfYr/z+mDGZm2cA2rzMJF79J+fUbjZPb+7Js4PtKBA==}
-    peerDependencies:
-      react: ^17.0.0 || ^18.0.0 || ^19.0.0
 
   '@stripe/connect-js@3.4.5':
     resolution: {integrity: sha512-2GZYc1pO2gYtq5rooZei483oSqeNROTD4XwnKXK8GXILvrLVJjMUCLDXi8Rmu8ojL5DWMnEOtXdnZxs8xxZecQ==}
@@ -7263,17 +7241,6 @@ snapshots:
   '@standard-schema/spec@1.1.0': {}
 
   '@standard-schema/utils@0.3.0': {}
-
-  '@stepperize/core@2.1.0(typescript@5.9.3)':
-    dependencies:
-      typescript: 5.9.3
-
-  '@stepperize/react@6.1.0(react@19.2.4)(typescript@5.9.3)':
-    dependencies:
-      '@stepperize/core': 2.1.0(typescript@5.9.3)
-      react: 19.2.4
-    transitivePeerDependencies:
-      - typescript
 
   '@stripe/connect-js@3.4.5': {}
 

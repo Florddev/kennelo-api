@@ -45,12 +45,9 @@ use App\Http\Controllers\Review\UserReviewController;
 use App\Http\Controllers\Scanner\ScannerController;
 use App\Http\Controllers\Scanner\ScannerScanController;
 use App\Http\Controllers\Stripe\StripeWebhookController;
-use App\Http\Controllers\TestController;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\User\UserStripeController;
 use Illuminate\Support\Facades\Route;
-
-Route::get('/test', [TestController::class, 'index']);
 
 Route::get('/animal-types', [AnimalTypeController::class, 'index']);
 Route::middleware('auth.jwt.optional')->group(function () {

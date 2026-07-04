@@ -11,7 +11,6 @@ export * from "./components/host-date-section";
 export * from "./components/host-detail-content";
 export * from "./components/host-detail-skeleton";
 export * from "./components/host-header-section";
-export * from "./components/host-hero-section";
 export * from "./components/host-location-section";
 export * from "./components/host-manager-section";
 export * from "./components/host-not-found";
