@@ -77,7 +77,7 @@ export function LoginForm({
                 labelAction={
                     <Link
                         href={routes.ForgotPassword()}
-                        className="text-sm font-medium text-primary hover:underline"
+                        className="text-sm font-medium text-muted-foreground hover:underline"
                     >
                         {t("features.auth.forgotPassword.link")}
                     </Link>
