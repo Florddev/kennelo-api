@@ -67,7 +67,7 @@ class ReviewReportService
         $perPage = $filters['per_page'] ?? PaginationEnum::DEFAULT_PAGINATION->value();
 
         return ReviewReport::query()
-            ->with(['reporter', 'review.reviewer', 'review.booking'])
+            ->with(['reporter.media', 'review.reviewer.media', 'review.booking.activity'])
             ->when(isset($filters['status']), fn ($q) => $q->where('status', $filters['status']))
             ->latest()
             ->paginate($perPage);

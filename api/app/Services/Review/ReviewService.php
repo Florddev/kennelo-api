@@ -95,7 +95,7 @@ class ReviewService
             );
         }
 
-        return $review->fresh(['criteriaScores', 'reviewer']);
+        return $review->fresh(['criteriaScores', 'reviewer.media', 'booking.activity']);
     }
 
     private function resolveReviewRecipient(Booking $booking, ReviewerTypeEnum $reviewerType): ?User
@@ -113,21 +113,46 @@ class ReviewService
 
     public function show(Review $review): Review
     {
-        return $review->load(['reviewer', 'criteriaScores.definition', 'response.responder', 'booking']);
+        return $review->load(['reviewer.media', 'criteriaScores.definition', 'response.responder.media', 'booking.activity']);
     }
 
-    public function forActivity(Activity $activity, array $filters = []): LengthAwarePaginator
+    public function forActivity(Activity $activity, ?User $viewer, array $filters = []): LengthAwarePaginator
     {
         $perPage = $filters['per_page'] ?? PaginationEnum::DEFAULT_PAGINATION->value();
 
-        return Review::query()
-            ->with(['reviewer', 'booking.activity', 'criteriaScores.definition', 'response.responder'])
+        $reviews = Review::query()
+            ->with(['reviewer.media', 'booking.activity', 'criteriaScores.definition', 'response.responder.media'])
             ->whereHas('booking', fn ($q) => $q->where('activity_id', $activity->id))
             ->where('reviewer_type', ReviewerTypeEnum::USER->value)
             ->where('is_published', true)
             ->when(isset($filters['min_rating']), fn ($q) => $q->where('overall_rating', '>=', $filters['min_rating']))
             ->latest('published_at')
             ->paginate($perPage);
+
+        $canSeePrivateFeedback = $this->canViewerSeeActivityPrivateFeedback($activity, $viewer);
+
+        $reviews->getCollection()->each(function (Review $review) use ($canSeePrivateFeedback): void {
+            $review->setAttribute('viewer_can_see_private_feedback', $canSeePrivateFeedback);
+        });
+
+        return $reviews;
+    }
+
+    private function canViewerSeeActivityPrivateFeedback(Activity $activity, ?User $viewer): bool
+    {
+        if ($viewer === null) {
+            return false;
+        }
+
+        if ($viewer->hasRole('admin')) {
+            return true;
+        }
+
+        if ((string) $activity->manager_id === (string) $viewer->id) {
+            return true;
+        }
+
+        return $activity->collaboratorHasPermission($viewer, ActivityPermissionEnum::MANAGE_BOOKINGS);
     }
 
     public function forUser(User $user, array $filters = []): LengthAwarePaginator
@@ -135,7 +160,7 @@ class ReviewService
         $perPage = $filters['per_page'] ?? PaginationEnum::DEFAULT_PAGINATION->value();
 
         return Review::query()
-            ->with(['reviewer', 'booking.activity', 'criteriaScores.definition', 'response.responder'])
+            ->with(['reviewer.media', 'booking.activity', 'criteriaScores.definition', 'response.responder.media'])
             ->whereHas('booking', fn ($q) => $q->where('user_id', $user->id))
             ->where('reviewer_type', ReviewerTypeEnum::ACTIVITY->value)
             ->where('is_published', true)
@@ -160,7 +185,7 @@ class ReviewService
         $perPage = $filters['per_page'] ?? PaginationEnum::DEFAULT_PAGINATION->value();
 
         return Review::query()
-            ->with(['reviewer', 'booking.activity', 'criteriaScores.definition', 'response'])
+            ->with(['reviewer.media', 'booking.activity', 'criteriaScores.definition', 'response'])
             ->whereHas('booking', fn ($q) => $q->where('user_id', $actor->id))
             ->where('reviewer_type', ReviewerTypeEnum::ACTIVITY->value)
             ->latest()
@@ -172,7 +197,7 @@ class ReviewService
         $perPage = $filters['per_page'] ?? PaginationEnum::DEFAULT_PAGINATION->value();
 
         return Review::query()
-            ->with(['reviewer', 'criteriaScores.definition', 'response.responder'])
+            ->with(['reviewer.media', 'booking.activity', 'criteriaScores.definition', 'response.responder.media'])
             ->whereHas('booking', fn ($q) => $q->whereHas('pets', fn ($pq) => $pq->where('pets.id', $pet->id)))
             ->where('reviewer_type', ReviewerTypeEnum::ACTIVITY->value)
             ->where('is_published', true)

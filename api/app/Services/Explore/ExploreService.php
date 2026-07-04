@@ -309,7 +309,10 @@ class ExploreService
 
     private function applyAnimalCountsFilter(Builder $query, array $input): void
     {
-        $codes = AnimalType::pluck('code')->all();
+        $codes = Cache::rememberForever(
+            'reference:animal_type_codes',
+            fn () => AnimalType::pluck('code')->all()
+        );
         $excluded = [BookingStatusEnum::CANCELLED->value, BookingStatusEnum::COMPLETED->value];
         $dateFrom = $input['date_from'] ?? null;
         $dateTo = $input['date_to'] ?? null;
@@ -411,9 +414,13 @@ class ExploreService
             ->whereNotNull('addr_search.longitude');
 
         if (isset($input['radius'])) {
+            $radius = (float) $input['radius'];
+
+            $this->applyBoundingBox($query, $lat, $lng, $radius, 'addr_search.latitude', 'addr_search.longitude');
+
             $query->whereRaw(
                 '(6371 * acos(LEAST(1.0, cos(radians(?)) * cos(radians(addr_search.latitude)) * cos(radians(addr_search.longitude) - radians(?)) + sin(radians(?)) * sin(radians(addr_search.latitude))))) <= ?',
-                [$lat, $lng, $lat, (float) $input['radius']]
+                [$lat, $lng, $lat, $radius]
             );
         }
     }

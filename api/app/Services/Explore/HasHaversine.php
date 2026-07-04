@@ -9,9 +9,34 @@ use Illuminate\Support\Facades\DB;
 
 trait HasHaversine
 {
+    private const float KM_PER_DEGREE_LATITUDE = 111.045;
+
     private function supportsGeo(): bool
     {
         return in_array(DB::connection()->getDriverName(), ['mysql', 'pgsql', 'mariadb'], true);
+    }
+
+    private function applyBoundingBox(Builder $query, float $lat, float $lng, float $radiusKm, string $latCol, string $lngCol): void
+    {
+        $latDelta = $radiusKm / self::KM_PER_DEGREE_LATITUDE;
+
+        $query->whereBetween($latCol, [$lat - $latDelta, $lat + $latDelta]);
+
+        $cosLat = cos(deg2rad($lat));
+
+        if ($cosLat < 0.00001) {
+            return;
+        }
+
+        $lngDelta = $radiusKm / (self::KM_PER_DEGREE_LATITUDE * $cosLat);
+        $minLng = $lng - $lngDelta;
+        $maxLng = $lng + $lngDelta;
+
+        if ($minLng < -180.0 || $maxLng > 180.0) {
+            return;
+        }
+
+        $query->whereBetween($lngCol, [$minLng, $maxLng]);
     }
 
     /**

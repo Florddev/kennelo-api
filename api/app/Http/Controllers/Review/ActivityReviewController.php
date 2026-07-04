@@ -20,7 +20,7 @@ class ActivityReviewController extends Controller
 
     public function index(ListReviewsRequest $request, Activity $activity): JsonResponse
     {
-        $reviews = $this->reviewService->forActivity($activity, $request->validated());
+        $reviews = $this->reviewService->forActivity($activity, $request->user(), $request->validated());
         $aggregates = $this->reviewService->aggregatesForActivity($activity);
 
         return ReviewResource::collection($reviews)

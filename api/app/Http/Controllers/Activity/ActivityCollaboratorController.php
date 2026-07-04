@@ -30,7 +30,7 @@ class ActivityCollaboratorController extends Controller
     {
         $this->authorize('manageCollaborators', $activity);
 
-        $links = $activity->collaboratorLinks()->with(['user', 'role.permissions'])->get();
+        $links = $activity->collaboratorLinks()->with(['user.media', 'role.permissions'])->get();
 
         return ActivityCollaboratorResource::collection($links)
             ->additional([

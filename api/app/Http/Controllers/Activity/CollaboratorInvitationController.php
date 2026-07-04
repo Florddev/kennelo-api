@@ -28,7 +28,7 @@ class CollaboratorInvitationController extends Controller
     {
         $links = $request->user()->collaboratorLinks()
             ->where('status', CollaboratorStatusEnum::PENDING->value)
-            ->with(['activity', 'role.permissions'])
+            ->with(['activity.media', 'activity.manager.media', 'role.permissions'])
             ->get();
 
         return ActivityCollaboratorResource::collection($links)

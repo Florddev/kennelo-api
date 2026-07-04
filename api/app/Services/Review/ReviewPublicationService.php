@@ -22,27 +22,26 @@ class ReviewPublicationService
     public function publishMatured(): int
     {
         $threshold = now()->subDays(self::PUBLICATION_DELAY_DAYS);
+        $published = 0;
 
-        $matured = Review::query()
+        Review::query()
             ->with('reviewer')
             ->where('is_published', false)
             ->where('created_at', '<=', $threshold)
-            ->get();
+            ->chunkById(100, function (Collection $reviews) use (&$published): void {
+                Review::whereIn('id', $reviews->modelKeys())
+                    ->where('is_published', false)
+                    ->update([
+                        'is_published' => true,
+                        'published_at' => now(),
+                    ]);
 
-        if ($matured->isEmpty()) {
-            return 0;
-        }
+                $this->notifyPublished($reviews);
 
-        Review::whereIn('id', $matured->pluck('id')->all())
-            ->where('is_published', false)
-            ->update([
-                'is_published' => true,
-                'published_at' => now(),
-            ]);
+                $published += $reviews->count();
+            });
 
-        $this->notifyPublished($matured);
-
-        return $matured->count();
+        return $published;
     }
 
     public function maybePublishCounterpart(Booking $booking): void

@@ -1,0 +1,16 @@
+export type AdminActionType =
+    | "ban"
+    | "unban"
+    | "force_password_reset"
+    | "verify_email"
+    | "resend_verification"
+    | "update_status"
+    | "assign_roles"
+    | "remove_role"
+    | "review_identity"
+    | "delete"
+    | "impersonate_start"
+    | "impersonate_stop"
+    | "bulk_status"
+    | "bulk_roles"
+    | "export";

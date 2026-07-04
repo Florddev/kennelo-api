@@ -46,8 +46,16 @@ class ReviewResource extends JsonResource
             return false;
         }
 
+        if ($this->resource->hasAttribute('viewer_can_see_private_feedback')) {
+            return (bool) $this->resource->getAttribute('viewer_can_see_private_feedback');
+        }
+
         if ($authUser->hasRole('admin')) {
             return true;
+        }
+
+        if (! $this->resource->relationLoaded('booking')) {
+            return false;
         }
 
         $booking = $this->resource->booking;
@@ -57,6 +65,10 @@ class ReviewResource extends JsonResource
         }
 
         if ($this->reviewer_type === ReviewerTypeEnum::USER) {
+            if (! $booking->relationLoaded('activity')) {
+                return false;
+            }
+
             $activity = $booking->activity;
 
             if ($activity === null) {

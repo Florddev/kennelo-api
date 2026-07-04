@@ -55,12 +55,23 @@ class ActivityAvailabilityService
 
     public function bulk(Activity $activity, array $data): Collection
     {
-        return collect($data['dates'])->map(function (string $date) use ($activity, $data): ActivityAvailability {
-            return ActivityAvailability::updateOrCreate(
-                ['activity_id' => $activity->id, 'date' => $date],
-                ['status' => $data['status'], 'note' => $data['note'] ?? null],
-            );
-        });
+        $now = now()->toDateTimeString();
+
+        $rows = collect($data['dates'])->map(fn (string $date): array => [
+            'activity_id' => $activity->id,
+            'date' => $date,
+            'status' => $data['status'],
+            'note' => $data['note'] ?? null,
+            'created_at' => $now,
+            'updated_at' => $now,
+        ])->all();
+
+        ActivityAvailability::upsert($rows, ['activity_id', 'date'], ['status', 'note', 'updated_at']);
+
+        return ActivityAvailability::where('activity_id', $activity->id)
+            ->whereIn('date', $data['dates'])
+            ->orderBy('date')
+            ->get();
     }
 
     public function getRange(Activity $activity, string $startDate, string $endDate): Collection
