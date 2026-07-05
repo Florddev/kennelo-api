@@ -190,14 +190,28 @@ class ExploreService
 
         $this->applySort($query, $input['sort'] ?? 'rating', $geoAvailable);
 
+        if ($page === 1) {
+            $totalResults = (clone $query)->count();
+            $this->recordSearch($input, $lat, $lng, $totalResults, $user?->id);
+        }
+
         $offset = ($page - 1) * self::PER_PAGE;
         $activities = $query->offset($offset)->limit(self::PER_PAGE + 1)->get();
 
+        $results = $activities->take(self::PER_PAGE);
+
         return [
-            'activities' => $activities->take(self::PER_PAGE),
+            'activities' => $results,
             'has_more' => $activities->count() > self::PER_PAGE,
             'page' => $page,
         ];
+    }
+
+    private function recordSearch(array $input, ?float $lat, ?float $lng, int $resultsCount, ?string $userId): void
+    {
+        dispatch(function () use ($input, $lat, $lng, $resultsCount, $userId): void {
+            app(SearchLogService::class)->record($input, $lat, $lng, $resultsCount, $userId);
+        })->afterResponse();
     }
 
     private function nearbySection(Builder $query, ?float $lat, ?float $lng): Builder
