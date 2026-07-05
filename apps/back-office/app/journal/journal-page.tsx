@@ -4,10 +4,10 @@ import type { CSSProperties } from "react"
 
 import { AppSidebar } from "@/components/layout/app-sidebar"
 import { SiteHeader } from "@/components/layout/site-header"
-import { KpiSection } from "@/features/dashboard/components/kpi-section"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
+import { RecentActivity } from "@/features/audit/components/recent-activity"
 
-export function DashboardPage() {
+export function JournalPage() {
   return (
     <SidebarProvider
       style={
@@ -19,11 +19,11 @@ export function DashboardPage() {
     >
       <AppSidebar variant="inset" />
       <SidebarInset className="ml-0!">
-        <SiteHeader title="Tableau de bord" />
+        <SiteHeader title="Journal d'activité" />
         <div className="flex flex-1 flex-col">
           <div className="@container/main flex flex-1 flex-col gap-2">
-            <div className="flex flex-col gap-6 py-4 md:py-6">
-              <KpiSection />
+            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+              <RecentActivity />
             </div>
           </div>
         </div>
