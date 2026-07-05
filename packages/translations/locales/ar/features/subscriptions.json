@@ -1,0 +1,56 @@
+{
+    "title": "الاشتراك",
+    "description": "أدر خطتك، وقلّل عمولتك، وافتح ميزات متقدمة.",
+    "noActivity": "أنشئ نشاطًا أولًا للاشتراك في خطة.",
+    "choosePlan": "اختر خطة",
+    "currentPlan": "الخطة الحالية",
+    "currentSubscription": "اشتراكك",
+    "plan": "الخطة",
+    "renewsOn": "يتجدد في",
+    "endsOn": "ينتهي في",
+    "cancelPending": "يبقى اشتراكك نشطًا حتى نهاية الفترة الحالية، ثم يتحول إلى الخطة المجانية.",
+    "subscribe": "اشترك",
+    "subscribing": "جارٍ إعادة التوجيه…",
+    "status": {
+        "free": "مجاني",
+        "active": "نشط",
+        "trialing": "تجريبي",
+        "pastDue": "متأخر السداد",
+        "unpaid": "غير مدفوع",
+        "canceled": "ملغى"
+    },
+    "plans": {
+        "free": "مجاني",
+        "starter": "ستارتر",
+        "pro": "برو"
+    },
+    "price": {
+        "free": "مجاني",
+        "perMonth": "{value} €/شهر"
+    },
+    "features": {
+        "unlimited": "غير محدود",
+        "commission": "عمولة {value}%",
+        "activities": "{value} أنشطة",
+        "cycles": "{value} دورات تسعير لكل نشاط",
+        "photos": "{value} صور لكل نشاط"
+    },
+    "invoices": {
+        "title": "الفواتير",
+        "empty": "لا توجد فواتير بعد.",
+        "view": "عرض"
+    },
+    "cancelDialog": {
+        "trigger": "إلغاء الاشتراك",
+        "title": "إلغاء اشتراكك؟",
+        "description": "يبقى اشتراكك نشطًا حتى نهاية الفترة الحالية. لا يتم رد أي مبلغ عن الشهر الحالي.",
+        "keep": "الإبقاء على الاشتراك",
+        "confirm": "إلغاء الاشتراك",
+        "canceling": "جارٍ الإلغاء…",
+        "success": "تم إلغاء الاشتراك"
+    },
+    "checkout": {
+        "success": "جارٍ تفعيل اشتراكك.",
+        "canceled": "تم إلغاء الدفع."
+    }
+}

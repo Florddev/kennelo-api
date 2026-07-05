@@ -1,0 +1,56 @@
+{
+    "title": "Abonnement",
+    "description": "Gérez votre offre, réduisez votre commission et débloquez des fonctionnalités avancées.",
+    "noActivity": "Créez d'abord une activité pour souscrire à une offre.",
+    "choosePlan": "Choisir une offre",
+    "currentPlan": "Offre actuelle",
+    "currentSubscription": "Votre abonnement",
+    "plan": "Offre",
+    "renewsOn": "Renouvellement le",
+    "endsOn": "Fin le",
+    "cancelPending": "Votre abonnement reste actif jusqu'à la fin de la période en cours, puis bascule en offre gratuite.",
+    "subscribe": "Souscrire",
+    "subscribing": "Redirection…",
+    "status": {
+        "free": "Gratuit",
+        "active": "Actif",
+        "trialing": "Essai",
+        "pastDue": "En impayé",
+        "unpaid": "Impayé",
+        "canceled": "Résilié"
+    },
+    "plans": {
+        "free": "Gratuit",
+        "starter": "Starter",
+        "pro": "Pro"
+    },
+    "price": {
+        "free": "Gratuit",
+        "perMonth": "{value} €/mois"
+    },
+    "features": {
+        "unlimited": "Illimité",
+        "commission": "{value} % de commission",
+        "activities": "{value} activités",
+        "cycles": "{value} cycles tarifaires par activité",
+        "photos": "{value} photos par activité"
+    },
+    "invoices": {
+        "title": "Factures",
+        "empty": "Aucune facture pour le moment.",
+        "view": "Voir"
+    },
+    "cancelDialog": {
+        "trigger": "Résilier l'abonnement",
+        "title": "Résilier votre abonnement ?",
+        "description": "Votre abonnement reste actif jusqu'à la fin de la période en cours. Aucun remboursement n'est effectué pour le mois en cours.",
+        "keep": "Conserver l'abonnement",
+        "confirm": "Résilier l'abonnement",
+        "canceling": "Résiliation…",
+        "success": "Abonnement résilié"
+    },
+    "checkout": {
+        "success": "Votre abonnement est en cours d'activation.",
+        "canceled": "Paiement annulé."
+    }
+}

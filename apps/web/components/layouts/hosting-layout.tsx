@@ -2,7 +2,14 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
-import { Buildings, Calendar, ChatRoundLine, Magnifer, SunFog } from "@solar-icons/react";
+import {
+    Buildings,
+    Calendar,
+    ChatRoundLine,
+    CrownLine,
+    Magnifer,
+    SunFog,
+} from "@solar-icons/react";
 
 import { cn } from "@workspace/ui/lib/utils";
 import { isActivePath } from "@workspace/common";
@@ -57,6 +64,12 @@ export default function HostingLayout({ children, className }: HostingLayoutProp
             label: t("ui.navigation.hosting.messages"),
             icon: ChatRoundLine,
             active: isActive(routes.HostingMessages()),
+        },
+        {
+            href: routes.HostingSubscription(),
+            label: t("ui.navigation.hosting.subscription"),
+            icon: CrownLine,
+            active: isActive(routes.HostingSubscription()),
         },
     ];
 

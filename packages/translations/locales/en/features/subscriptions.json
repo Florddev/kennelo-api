@@ -1,0 +1,56 @@
+{
+    "title": "Subscription",
+    "description": "Manage your plan, reduce your commission and unlock advanced features.",
+    "noActivity": "Create an activity first to subscribe to a plan.",
+    "choosePlan": "Choose a plan",
+    "currentPlan": "Current plan",
+    "currentSubscription": "Your subscription",
+    "plan": "Plan",
+    "renewsOn": "Renews on",
+    "endsOn": "Ends on",
+    "cancelPending": "Your subscription will remain active until the end of the current period, then switch to the free plan.",
+    "subscribe": "Subscribe",
+    "subscribing": "Redirecting…",
+    "status": {
+        "free": "Free",
+        "active": "Active",
+        "trialing": "Trial",
+        "pastDue": "Past due",
+        "unpaid": "Unpaid",
+        "canceled": "Canceled"
+    },
+    "plans": {
+        "free": "Free",
+        "starter": "Starter",
+        "pro": "Pro"
+    },
+    "price": {
+        "free": "Free",
+        "perMonth": "€{value}/month"
+    },
+    "features": {
+        "unlimited": "Unlimited",
+        "commission": "{value}% commission",
+        "activities": "{value} activities",
+        "cycles": "{value} pricing cycles per activity",
+        "photos": "{value} photos per activity"
+    },
+    "invoices": {
+        "title": "Invoices",
+        "empty": "No invoices yet.",
+        "view": "View"
+    },
+    "cancelDialog": {
+        "trigger": "Cancel subscription",
+        "title": "Cancel your subscription?",
+        "description": "Your subscription stays active until the end of the current period. No refund is issued for the current month.",
+        "keep": "Keep subscription",
+        "confirm": "Cancel subscription",
+        "canceling": "Canceling…",
+        "success": "Subscription canceled"
+    },
+    "checkout": {
+        "success": "Your subscription is being activated.",
+        "canceled": "Checkout canceled."
+    }
+}

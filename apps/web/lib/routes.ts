@@ -140,6 +140,11 @@ type HostingScanResultParams = {
     search_params?: Record<string, string | number | boolean>;
 };
 
+type HostingSubscriptionParams = {
+    locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
 type BecomeHostParams = {
     locale?: string | number;
     search_params?: Record<string, string | number | boolean>;
@@ -384,6 +389,10 @@ function HostingScanResult(params: HostingScanResultParams): string {
     return buildRoute("/[locale]/hosting/scan/[microchip]", params);
 }
 
+function HostingSubscription(params?: HostingSubscriptionParams): string {
+    return buildRoute("/[locale]/hosting/subscription", params);
+}
+
 function BecomeHost(params?: BecomeHostParams): string {
     return buildRoute("/[locale]/become-host", params);
 }
@@ -518,6 +527,7 @@ export const routes = {
     HostingNow,
     HostingScan,
     HostingScanResult,
+    HostingSubscription,
     BecomeHost,
     BookingDetail,
     Explore,

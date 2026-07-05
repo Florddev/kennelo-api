@@ -35,7 +35,8 @@
         "calendar": "Calendrier",
         "activity": "Activité",
         "messages": "Messages",
-        "scan": "Scan"
+        "scan": "Scan",
+        "subscription": "Abonnement"
     },
     "overview": "Aperçu",
     "scanners": "Mes scanners"
