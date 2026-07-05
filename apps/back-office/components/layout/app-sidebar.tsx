@@ -20,6 +20,7 @@ import {
   Analytics01Icon,
   Building06Icon,
   CommandIcon,
+  ContactBookIcon,
   Location01Icon,
   MapsIcon,
   Notebook01Icon,
@@ -42,6 +43,11 @@ const navMain = [
     title: "Prospection",
     url: "/prospection",
     icon: <HugeiconsIcon icon={Location01Icon} strokeWidth={2} />,
+  },
+  {
+    title: "CRM",
+    url: "/crm",
+    icon: <HugeiconsIcon icon={ContactBookIcon} strokeWidth={2} />,
   },
   {
     title: "Carte",

@@ -75,6 +75,9 @@ Route::match(['put', 'patch'], '/activities/{activity}', [ActivityController::cl
 Route::post('/activities/{activity}/approve', [ActivityController::class, 'approve']);
 Route::post('/activities/{activity}/reject', [ActivityController::class, 'reject']);
 Route::post('/activities/{activity}/verify-company', [ActivityController::class, 'verifyCompany']);
+Route::post('/activities/{activity}/google/search', [ActivityController::class, 'searchGoogle']);
+Route::post('/activities/{activity}/google', [ActivityController::class, 'linkGoogle']);
+Route::delete('/activities/{activity}/google', [ActivityController::class, 'unlinkGoogle']);
 
 // Search logs
 Route::get('/search-logs', [SearchLogController::class, 'index']);

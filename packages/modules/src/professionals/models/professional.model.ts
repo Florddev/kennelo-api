@@ -28,6 +28,11 @@ export class ProfessionalModel {
         public readonly manager: ProfessionalManager | null,
         public readonly city: string | null,
         public readonly department: string | null,
+        public readonly googlePlaceId: string | null,
+        public readonly googleRating: number | null,
+        public readonly googleReviewsCount: number | null,
+        public readonly googleMapsUrl: string | null,
+        public readonly isGoogleLinked: boolean,
         public readonly createdAt: string,
     ) {}
 
@@ -58,6 +63,11 @@ export class ProfessionalModel {
                 : null,
             dto.address?.city ?? null,
             dto.address?.department ?? null,
+            dto.google_place_id ?? null,
+            dto.google_rating ?? null,
+            dto.google_reviews_count ?? null,
+            dto.google_maps_url ?? null,
+            dto.is_google_linked ?? false,
             dto.created_at,
         );
     }

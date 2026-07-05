@@ -7,12 +7,14 @@ namespace App\Http\Controllers\Admin\Activity;
 use App\Enums\AdminActionTypeEnum;
 use App\Enums\ApiStatusEnum;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\Activity\LinkActivityGoogleRequest;
 use App\Http\Requests\Admin\Activity\ListActivitiesRequest;
 use App\Http\Requests\Admin\Activity\RejectActivityRequest;
 use App\Http\Requests\Admin\Activity\UpdateActivityRequest;
 use App\Http\Resources\AdminActivityResource;
 use App\Models\Activity;
 use App\Services\Admin\Activity\ActivityAdminService;
+use App\Services\Admin\Activity\ActivityGoogleService;
 use App\Services\Admin\AdminActionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
@@ -24,6 +26,7 @@ class ActivityController extends Controller
 {
     public function __construct(
         private ActivityAdminService $activities,
+        private ActivityGoogleService $google,
         private AdminActionService $actions,
     ) {}
 
@@ -95,6 +98,41 @@ class ActivityController extends Controller
         $activity = $this->activities->verifyCompany($activity);
 
         return $this->respond($activity, 'Company verification completed');
+    }
+
+    public function searchGoogle(Activity $activity): JsonResponse
+    {
+        $this->authorize('moderate', Activity::class);
+
+        $candidate = $this->google->searchGoogle($activity);
+
+        return response()->json([
+            'data' => $candidate,
+            'status' => ApiStatusEnum::SUCCESS,
+            'timestamp' => human_date(Carbon::now()),
+        ]);
+    }
+
+    public function linkGoogle(LinkActivityGoogleRequest $request, Activity $activity): JsonResponse
+    {
+        $this->authorize('moderate', Activity::class);
+
+        $activity = $this->google->linkGoogle($activity, $request->validated());
+        $this->actions->log($request->user(), null, AdminActionTypeEnum::UPDATE_ACTIVITY, [
+            'activity_id' => $activity->id,
+            'google_place_id' => $activity->google_place_id,
+        ]);
+
+        return $this->respond($activity, 'Activity linked to Google successfully');
+    }
+
+    public function unlinkGoogle(Activity $activity): JsonResponse
+    {
+        $this->authorize('moderate', Activity::class);
+
+        $activity = $this->google->unlinkGoogle($activity);
+
+        return $this->respond($activity, 'Activity unlinked from Google successfully');
     }
 
     private function respond(Activity $activity, ?string $message = null): JsonResponse

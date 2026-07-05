@@ -3,9 +3,13 @@
  */
 
 export * from "./actions/commands/approve-professional";
+export * from "./actions/commands/link-activity-google";
 export * from "./actions/commands/reject-professional";
+export * from "./actions/commands/unlink-activity-google";
 export * from "./actions/commands/verify-professional-company";
 export * from "./actions/queries/get-professionals";
+export * from "./actions/queries/search-activity-google";
+export * from "./models/google-candidate.type";
 export * from "./models/professional.model";
 export * from "./models/dtos/professional.dto";
 export * from "./types/activity-status.type";

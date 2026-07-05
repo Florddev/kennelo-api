@@ -30,6 +30,12 @@ export type ProfessionalDto = {
     phone: string | null;
     email: string | null;
     website: string | null;
+    google_place_id: string | null;
+    google_rating: number | null;
+    google_reviews_count: number | null;
+    google_maps_url: string | null;
+    is_google_linked: boolean;
+    google_synced_at: string | null;
     company_verified_at: string | null;
     company_verification_data: Record<string, unknown> | null;
     rejection_reason: string | null;
