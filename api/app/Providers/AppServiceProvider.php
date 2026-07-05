@@ -9,6 +9,7 @@ use App\Models\Booking;
 use App\Models\Conversation;
 use App\Models\Notification;
 use App\Models\Pet;
+use App\Models\Prospect;
 use App\Models\Review;
 use App\Models\ReviewReport;
 use App\Models\Scanner;
@@ -18,10 +19,13 @@ use App\Policies\BookingPolicy;
 use App\Policies\ConversationPolicy;
 use App\Policies\NotificationPolicy;
 use App\Policies\PetPolicy;
+use App\Policies\ProspectPolicy;
 use App\Policies\ReviewPolicy;
 use App\Policies\ReviewReportPolicy;
 use App\Policies\ScannerPolicy;
 use App\Policies\UserPolicy;
+use App\Services\Prospect\ApifyDiscoveryService;
+use App\Services\Prospect\Contracts\PlaceDiscoveryService;
 use Dedoc\Scramble\Scramble;
 use Dedoc\Scramble\Support\Generator\OpenApi;
 use Dedoc\Scramble\Support\Generator\SecurityScheme;
@@ -42,6 +46,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(StripeClient::class, function (): StripeClient {
             return new StripeClient((string) config('services.stripe.secret'));
         });
+
+        $this->app->bind(PlaceDiscoveryService::class, ApifyDiscoveryService::class);
     }
 
     public function boot(): void
@@ -57,6 +63,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(ReviewReport::class, ReviewReportPolicy::class);
         Gate::policy(Notification::class, NotificationPolicy::class);
         Gate::policy(Scanner::class, ScannerPolicy::class);
+        Gate::policy(Prospect::class, ProspectPolicy::class);
 
         Route::bind('media', fn (string $value) => Media::where('uuid', $value)->firstOrFail());
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\ActivityPermissionEnum;
+use App\Enums\ActivityStatusEnum;
 use App\Enums\ActivityTypeEnum;
 use App\Enums\CollaboratorStatusEnum;
 use App\Enums\ReviewerTypeEnum;
@@ -24,7 +25,11 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 /**
+ * @property ActivityStatusEnum $status
+ * @property ActivityTypeEnum|null $type
+ * @property array<string, mixed>|null $company_verification_data
  * @property-read User|null $manager
+ * @property-read User|null $reviewedBy
  * @property-read Address|null $address
  * @property-read Collection<int, ActivityCycle> $cycles
  */
@@ -35,14 +40,27 @@ class Activity extends Model implements HasMedia
     protected $fillable = [
         'name',
         'siret',
+        'siren',
+        'ape_code',
         'type',
         'description',
         'phone',
         'email',
         'website',
+        'google_place_id',
+        'google_rating',
+        'google_reviews_count',
+        'google_maps_url',
+        'google_synced_at',
         'address_id',
         'timezone',
         'is_active',
+        'status',
+        'company_verified_at',
+        'company_verification_data',
+        'rejection_reason',
+        'reviewed_by',
+        'reviewed_at',
         'manager_id',
         'stripe_account_id',
         'stripe_onboarding_completed',
@@ -55,6 +73,13 @@ class Activity extends Model implements HasMedia
         return [
             'is_active' => 'boolean',
             'type' => ActivityTypeEnum::class,
+            'status' => ActivityStatusEnum::class,
+            'company_verified_at' => 'datetime',
+            'company_verification_data' => 'array',
+            'reviewed_at' => 'datetime',
+            'google_rating' => 'float',
+            'google_reviews_count' => 'integer',
+            'google_synced_at' => 'datetime',
             'stripe_onboarding_completed' => 'boolean',
             'stripe_charges_enabled' => 'boolean',
             'stripe_payouts_enabled' => 'boolean',
@@ -94,6 +119,11 @@ class Activity extends Model implements HasMedia
     public function manager(): BelongsTo
     {
         return $this->belongsTo(User::class, 'manager_id');
+    }
+
+    public function reviewedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'reviewed_by');
     }
 
     public function collaborators(): BelongsToMany

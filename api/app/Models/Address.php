@@ -20,6 +20,7 @@ class Address extends Model
         'postal_code',
         'city',
         'region',
+        'department',
         'country',
         'latitude',
         'longitude',

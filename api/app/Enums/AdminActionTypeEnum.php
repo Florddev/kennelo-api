@@ -21,6 +21,9 @@ enum AdminActionTypeEnum: string
     case BULK_STATUS = 'bulk_status';
     case BULK_ROLES = 'bulk_roles';
     case EXPORT = 'export';
+    case APPROVE_ACTIVITY = 'approve_activity';
+    case REJECT_ACTIVITY = 'reject_activity';
+    case UPDATE_ACTIVITY = 'update_activity';
 
     public static function values(): array
     {

@@ -3,6 +3,8 @@ import { DM_Sans, Figtree, Inter } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/providers/theme-provider"
 import { AuthProvider } from "@/features/auth/hooks/use-auth"
+import { NotificationsProvider } from "@/features/notifications/hooks/use-notifications"
+import { ImportProgressProvider } from "@/features/prospects/hooks/use-import-progress"
 import { Toaster } from "@/components/ui/sonner"
 import { cn } from "@/lib/utils"
 
@@ -30,7 +32,11 @@ export default function RootLayout({
     >
       <body>
         <ThemeProvider>
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider>
+            <NotificationsProvider>
+              <ImportProgressProvider>{children}</ImportProgressProvider>
+            </NotificationsProvider>
+          </AuthProvider>
           <Toaster />
         </ThemeProvider>
       </body>

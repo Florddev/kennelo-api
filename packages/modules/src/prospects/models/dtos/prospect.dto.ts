@@ -1,0 +1,33 @@
+import type { ProspectStatusValue } from "../../types/prospect-status.type";
+
+export type ProspectDto = {
+    id: string;
+    name: string;
+    address: string | null;
+    city: string | null;
+    postal_code: string | null;
+    department: string | null;
+    region: string | null;
+    country: string;
+    latitude: number | null;
+    longitude: number | null;
+    phone: string | null;
+    website: string | null;
+    google_rating: number | null;
+    google_reviews_count: number | null;
+    google_place_id: string | null;
+    category: string | null;
+    animal_types: string[] | null;
+    services: string[] | null;
+    siret: string | null;
+    siren: string | null;
+    ape_code: string | null;
+    status: ProspectStatusValue;
+    source: string;
+    is_registered: boolean;
+    assigned_to: string | null;
+    kennelo_activity_id: string | null;
+    reconciled_at: string | null;
+    created_at: string;
+    updated_at: string;
+};

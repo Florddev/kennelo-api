@@ -60,4 +60,14 @@ return [
         'source_locale' => env('DEEPL_SOURCE_LOCALE', 'en'),
     ],
 
+    'apify' => [
+        'token' => env('APIFY_TOKEN'),
+        'actor' => env('APIFY_ACTOR', 'compass/crawler-google-places'),
+        'base_url' => env('APIFY_BASE_URL', 'https://api.apify.com/v2'),
+    ],
+
+    'recherche_entreprises' => [
+        'url' => env('RECHERCHE_ENTREPRISES_URL', 'https://recherche-entreprises.api.gouv.fr'),
+    ],
+
 ];
