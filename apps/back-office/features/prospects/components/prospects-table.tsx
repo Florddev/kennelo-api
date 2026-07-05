@@ -69,6 +69,15 @@ const STATUS_ITEMS = PROSPECT_STATUS_OPTIONS.map((option) => ({
 
 const PAGE_SIZES = [10, 20, 30, 40, 50]
 
+const COLUMN_CLASSES: Record<string, string> = {
+  contact: "w-[170px]",
+  rating: "w-[150px]",
+  status: "w-[150px]",
+  registered: "w-[120px]",
+  createdAt: "w-[140px]",
+  actions: "w-[56px]",
+}
+
 type ProspectsTableProps = {
   prospects: ProspectModel[]
   loading: boolean
@@ -101,17 +110,28 @@ export function ProspectsTable({
         header: "Établissement",
         cell: ({ row }) => {
           const prospect = row.original
+          const location =
+            prospect.address ||
+            [prospect.postalCode, prospect.city].filter(Boolean).join(" ") ||
+            "—"
           return (
-            <div className="grid gap-0.5 leading-tight">
-              <span className="font-medium">{prospect.name}</span>
-              <span className="text-xs text-muted-foreground">
-                {[prospect.address, prospect.postalCode, prospect.city]
-                  .filter(Boolean)
-                  .join(", ") || "—"}
-              </span>
+            <div className="leading-tight">
+              <div className="truncate font-medium" title={prospect.name}>
+                {prospect.name}
+              </div>
+              <div
+                className="truncate text-xs text-muted-foreground"
+                title={location}
+              >
+                {location}
+              </div>
               {prospect.category ? (
-                <Badge variant="secondary" size="sm" className="mt-1 w-fit">
-                  {prospect.category}
+                <Badge
+                  variant="secondary"
+                  size="sm"
+                  className="mt-1 max-w-full"
+                >
+                  <span className="min-w-0 truncate">{prospect.category}</span>
                 </Badge>
               ) : null}
             </div>
@@ -172,7 +192,7 @@ export function ProspectsTable({
               <HugeiconsIcon
                 icon={StarIcon}
                 strokeWidth={2}
-                className="size-3.5 text-amber-500"
+                className="size-3.5 fill-amber-500 text-amber-500"
               />
               {prospect.googleRating.toFixed(1)}
               <span className="text-xs text-muted-foreground">
@@ -340,12 +360,16 @@ export function ProspectsTable({
 
       <Frame className="animate-in duration-500 fade-in-0">
         <div className="overflow-hidden rounded-xl border bg-background">
-          <Table>
+          <Table className="table-fixed">
             <TableHeader className="sticky top-0 z-10 bg-muted">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => (
-                    <TableHead key={header.id} colSpan={header.colSpan}>
+                    <TableHead
+                      key={header.id}
+                      colSpan={header.colSpan}
+                      className={COLUMN_CLASSES[header.column.id]}
+                    >
                       {header.isPlaceholder
                         ? null
                         : flexRender(
