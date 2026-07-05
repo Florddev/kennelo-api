@@ -87,6 +87,9 @@ importers:
       '@workspace/modules':
         specifier: workspace:*
         version: link:../../packages/modules
+      '@workspace/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -108,6 +111,9 @@ importers:
       lucide-react:
         specifier: ^1.22.0
         version: 1.23.0(react@19.2.4)
+      maplibre-gl:
+        specifier: ^5.24.0
+        version: 5.24.0
       next:
         specifier: 16.2.6
         version: 16.2.6(@babel/core@8.0.1)(@playwright/test@1.58.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)

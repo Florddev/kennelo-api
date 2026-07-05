@@ -22,11 +22,12 @@ infra: ## Start dev services (postgres, redis, minio) via Docker
 infra-down: ## Stop dev services (postgres, redis, minio)
 	docker compose -f docker-compose.dev.yml down
 
-start: infra ## Start API and Web
+start: ## Start API, Web and Back-office
 	cd api && PHP_CLI_SERVER_WORKERS=8 php -d upload_max_filesize=50M -d post_max_size=55M artisan serve --host=0.0.0.0 --port=8000 &
 	cd api && php artisan queue:work --queue=default --tries=1 --memory=1024 --timeout=180 &
 	cd api && php artisan reverb:start --host=0.0.0.0 --port=8080 &
-	pnpm dev &
+	pnpm --filter web dev &
+	pnpm --filter base-nextjs dev &
 
 down: ## Stop API and Web (serve, queue, reverb, turbo, next)
 	-pkill -f "artisan serve"
@@ -36,8 +37,7 @@ down: ## Stop API and Web (serve, queue, reverb, turbo, next)
 	-pkill -f "next dev"
 	-pkill -f "generate-routes-watch"
 	-pkill -f "scripts/watch.mjs"
-	-for p in 8000 8080 3000; do lsof -ti :$$p | xargs kill -9 2>/dev/null || true; done
-	-docker compose -f docker-compose.dev.yml down
+	-for p in 8000 8080 3000 3001; do lsof -ti :$$p | xargs kill -9 2>/dev/null || true; done
 
 larastan: ## Run larastan
 	cd api && ./vendor/bin/phpstan analyse --memory-limit=2G
@@ -51,5 +51,4 @@ setup:
 	make update
 
 refresh: ## Refresh DB and seed
-	make update
 	cd api && php artisan migrate:fresh --seed
