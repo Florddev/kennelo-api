@@ -7,6 +7,7 @@ use App\Http\Middleware\AuthenticateJWT;
 use App\Http\Middleware\AuthenticateJWTOptional;
 use App\Http\Middleware\EnsureEmailIsVerified;
 use App\Http\Middleware\SetLocale;
+use App\Http\Middleware\TrackLastSeen;
 use App\Services\Booking\BookingPayoutService;
 use App\Services\Booking\BookingService;
 use App\Services\Review\ReviewPublicationService;
@@ -54,6 +55,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->api([
             HandleCors::class,
             SetLocale::class,
+            TrackLastSeen::class,
         ]);
 
         $middleware->alias([

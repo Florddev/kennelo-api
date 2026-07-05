@@ -43,6 +43,7 @@ class User extends Authenticatable implements HasLocalePreference, HasMedia, JWT
         'google_id',
         'phone',
         'is_id_verified',
+        'last_seen_at',
         'status',
         'password',
         'locale',
@@ -69,6 +70,7 @@ class User extends Authenticatable implements HasLocalePreference, HasMedia, JWT
     {
         return [
             'email_verified_at' => 'datetime',
+            'last_seen_at' => 'datetime',
             'is_id_verified' => 'boolean',
             'status' => UserStatusEnum::class,
             'password' => self::PASSWORD_CAST,
