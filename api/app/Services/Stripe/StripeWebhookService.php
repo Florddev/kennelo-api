@@ -13,6 +13,7 @@ use App\Models\Booking;
 use App\Models\User;
 use App\Services\Finance\FinancialJournalService;
 use App\Services\Notification\NotificationService;
+use App\Services\Subscription\SubscriptionWebhookService;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Facades\DB;
@@ -27,7 +28,8 @@ class StripeWebhookService
 {
     public function __construct(
         private NotificationService $notifications,
-        private FinancialJournalService $journal
+        private FinancialJournalService $journal,
+        private SubscriptionWebhookService $subscriptions,
     ) {}
 
     public function handleEvent(Event $event): void
@@ -42,6 +44,11 @@ class StripeWebhookService
             'charge.refunded' => $this->onChargeRefunded($event),
             'transfer.created' => $this->onTransferCreated($event),
             'transfer.failed' => $this->onTransferFailed($event),
+            'customer.subscription.created',
+            'customer.subscription.updated',
+            'customer.subscription.deleted',
+            'invoice.paid',
+            'invoice.payment_failed' => $this->subscriptions->handle($event),
             default => null,
         };
     }

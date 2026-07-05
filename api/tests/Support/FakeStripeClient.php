@@ -4,14 +4,25 @@ declare(strict_types=1);
 
 namespace Tests\Support;
 
+use Stripe\Checkout\Session;
+use Stripe\Collection;
 use Stripe\Customer;
 use Stripe\PaymentIntent;
+use Stripe\Price;
+use Stripe\Product;
 use Stripe\Refund;
+use Stripe\SearchResult;
+use Stripe\Service\Checkout\SessionService;
 use Stripe\Service\CustomerService;
+use Stripe\Service\InvoiceService;
 use Stripe\Service\PaymentIntentService;
+use Stripe\Service\PriceService;
+use Stripe\Service\ProductService;
 use Stripe\Service\RefundService;
+use Stripe\Service\SubscriptionService;
 use Stripe\Service\TransferService;
 use Stripe\StripeClient;
+use Stripe\Subscription;
 use Stripe\Transfer;
 
 class FakeStripeClient extends StripeClient
@@ -26,6 +37,16 @@ class FakeStripeClient extends StripeClient
     private TransferService $transferService;
 
     private RefundService $refundService;
+
+    private SubscriptionService $subscriptionService;
+
+    private InvoiceService $invoiceService;
+
+    private ProductService $productService;
+
+    private PriceService $priceService;
+
+    private object $checkoutService;
 
     public function __construct()
     {
@@ -118,6 +139,107 @@ class FakeStripeClient extends StripeClient
                 return Refund::constructFrom(['id' => 're_test_'.uniqid(), 'amount' => 1000]);
             }
         };
+
+        $this->subscriptionService = new class($this, $client) extends SubscriptionService
+        {
+            public function __construct($parent, private FakeStripeClient $recorder)
+            {
+                parent::__construct($parent);
+            }
+
+            public function update($id, $params = null, $opts = null): Subscription
+            {
+                $this->recorder->record('subscriptions.update', ['id' => $id, 'params' => $params]);
+
+                return Subscription::constructFrom([
+                    'id' => $id,
+                    'status' => 'active',
+                    'cancel_at_period_end' => true,
+                ]);
+            }
+        };
+
+        $this->invoiceService = new class($this, $client) extends InvoiceService
+        {
+            public function __construct($parent, private FakeStripeClient $recorder)
+            {
+                parent::__construct($parent);
+            }
+
+            public function all($params = null, $opts = null): Collection
+            {
+                $this->recorder->record('invoices.all', $params);
+
+                return Collection::constructFrom(['data' => []]);
+            }
+        };
+
+        $this->productService = new class($this, $client) extends ProductService
+        {
+            public function __construct($parent, private FakeStripeClient $recorder)
+            {
+                parent::__construct($parent);
+            }
+
+            public function search($params = null, $opts = null): SearchResult
+            {
+                $this->recorder->record('products.search', $params);
+
+                return SearchResult::constructFrom(['data' => []]);
+            }
+
+            public function create($params = null, $opts = null): Product
+            {
+                $this->recorder->record('products.create', $params);
+
+                return Product::constructFrom(['id' => 'prod_test_'.uniqid()]);
+            }
+        };
+
+        $this->priceService = new class($this, $client) extends PriceService
+        {
+            public function __construct($parent, private FakeStripeClient $recorder)
+            {
+                parent::__construct($parent);
+            }
+
+            public function search($params = null, $opts = null): SearchResult
+            {
+                $this->recorder->record('prices.search', $params);
+
+                return SearchResult::constructFrom(['data' => []]);
+            }
+
+            public function create($params = null, $opts = null): Price
+            {
+                $this->recorder->record('prices.create', $params);
+
+                return Price::constructFrom(['id' => 'price_test_'.uniqid()]);
+            }
+        };
+
+        $sessionService = new class($this, $client) extends SessionService
+        {
+            public function __construct($parent, private FakeStripeClient $recorder)
+            {
+                parent::__construct($parent);
+            }
+
+            public function create($params = null, $opts = null): Session
+            {
+                $this->recorder->record('checkout.sessions.create', $params);
+
+                return Session::constructFrom([
+                    'id' => 'cs_test_'.uniqid(),
+                    'url' => 'https://checkout.stripe.test/session/'.uniqid(),
+                ]);
+            }
+        };
+
+        $this->checkoutService = new class($sessionService)
+        {
+            public function __construct(public SessionService $sessions) {}
+        };
     }
 
     public function record(string $method, mixed $params): void
@@ -143,6 +265,11 @@ class FakeStripeClient extends StripeClient
             'paymentIntents' => $this->paymentIntentService,
             'transfers' => $this->transferService,
             'refunds' => $this->refundService,
+            'subscriptions' => $this->subscriptionService,
+            'invoices' => $this->invoiceService,
+            'products' => $this->productService,
+            'prices' => $this->priceService,
+            'checkout' => $this->checkoutService,
             default => parent::__get($name),
         };
     }

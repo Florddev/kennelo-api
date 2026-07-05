@@ -655,7 +655,7 @@ class BookingService
         }
 
         $serviceFeeRate = (string) config('booking.user_service_fee_rate', '0.08');
-        $hostCommissionRate = (string) config('booking.host_commission_rate', '0.06');
+        $hostCommissionRate = $activity->effectivePlan()->commissionRate();
 
         $serviceFee = bcmul($basePrice, $serviceFeeRate, 2);
         $platformFee = bcmul($basePrice, $hostCommissionRate, 2);

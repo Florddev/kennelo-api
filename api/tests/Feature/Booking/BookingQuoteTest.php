@@ -67,8 +67,8 @@ it('returns a price quote for the selected dates and pets', function () {
         ->assertJsonPath('data.nights', 3)
         ->assertJsonPath('data.total_price', '97.20')
         ->assertJsonPath('data.service_fee', '7.20')
-        ->assertJsonPath('data.platform_fee', '5.40')
-        ->assertJsonPath('data.activity_amount', '84.60')
+        ->assertJsonPath('data.platform_fee', '7.20')
+        ->assertJsonPath('data.activity_amount', '82.80')
         ->assertJsonPath('data.pets.0.price_per_night', '30.00')
         ->assertJsonPath('data.pets.0.subtotal', '90.00');
 });

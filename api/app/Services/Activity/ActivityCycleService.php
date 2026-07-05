@@ -10,12 +10,17 @@ use App\Models\Activity;
 use App\Models\ActivityCycle;
 use App\Models\ActivityCycleSetting;
 use App\Models\ActivityCycleSettingPrice;
+use App\Services\Subscription\PlanLimitService;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class ActivityCycleService
 {
+    public function __construct(
+        private readonly PlanLimitService $planLimits
+    ) {}
+
     public function list(Activity $activity): Collection
     {
         return ActivityCycle::with(['settings.animalType', 'settings.prices', 'closedWeekDays'])
@@ -26,6 +31,8 @@ class ActivityCycleService
 
     public function createCycle(Activity $activity, array $data): ActivityCycle
     {
+        $this->planLimits->assertCanCreateCycle($activity);
+
         return DB::transaction(function () use ($activity, $data): ActivityCycle {
             $startDate = $data['start_date'] ?? null;
             $endDate = $data['end_date'] ?? null;

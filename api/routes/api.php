@@ -45,6 +45,7 @@ use App\Http\Controllers\Review\UserReviewController;
 use App\Http\Controllers\Scanner\ScannerController;
 use App\Http\Controllers\Scanner\ScannerScanController;
 use App\Http\Controllers\Stripe\StripeWebhookController;
+use App\Http\Controllers\Subscription\SubscriptionController;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\User\UserStripeController;
 use Illuminate\Support\Facades\Route;
@@ -106,6 +107,13 @@ Route::middleware(['auth.jwt'])->group(function () {
 
     Route::post('/activities/{activity}/stripe/onboarding-link', [StripeConnectController::class, 'onboardingLink']);
     Route::get('/activities/{activity}/stripe/status', [StripeConnectController::class, 'status']);
+
+    // Subscriptions
+    Route::get('/plans', [SubscriptionController::class, 'plans']);
+    Route::get('/activities/{activity}/subscription', [SubscriptionController::class, 'show']);
+    Route::post('/activities/{activity}/subscription/checkout', [SubscriptionController::class, 'checkout']);
+    Route::get('/activities/{activity}/subscription/invoices', [SubscriptionController::class, 'invoices']);
+    Route::delete('/activities/{activity}/subscription', [SubscriptionController::class, 'cancel']);
 
     // Services
     Route::get('/activities/{activity}/services', [ActivityServiceController::class, 'index']);
