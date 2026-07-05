@@ -44,17 +44,17 @@ const navSections = [
     items: [
       {
         title: "Prospection",
-        url: "/prospection",
+        url: "/dashboard/prospection",
         icon: <HugeiconsIcon icon={Location01Icon} strokeWidth={2} />,
       },
       {
         title: "Carte",
-        url: "/carte",
+        url: "/dashboard/carte",
         icon: <HugeiconsIcon icon={MapsIcon} strokeWidth={2} />,
       },
       {
         title: "CRM",
-        url: "/crm",
+        url: "/dashboard/crm",
         icon: <HugeiconsIcon icon={ContactBookIcon} strokeWidth={2} />,
       },
     ],
@@ -64,17 +64,17 @@ const navSections = [
     items: [
       {
         title: "Professionnels",
-        url: "/professionnels",
+        url: "/dashboard/professionnels",
         icon: <HugeiconsIcon icon={Building06Icon} strokeWidth={2} />,
       },
       {
         title: "Utilisateurs",
-        url: "/utilisateurs",
+        url: "/dashboard/utilisateurs",
         icon: <HugeiconsIcon icon={UserGroupIcon} strokeWidth={2} />,
       },
       {
         title: "Recherches",
-        url: "/recherches",
+        url: "/dashboard/recherches",
         icon: <HugeiconsIcon icon={SearchList01Icon} strokeWidth={2} />,
       },
     ],
@@ -84,7 +84,7 @@ const navSections = [
     items: [
       {
         title: "Journal",
-        url: "/journal",
+        url: "/dashboard/journal",
         icon: <HugeiconsIcon icon={Notebook01Icon} strokeWidth={2} />,
       },
     ],
