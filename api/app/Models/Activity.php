@@ -20,7 +20,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -34,7 +33,6 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read User|null $reviewedBy
  * @property-read Address|null $address
  * @property-read Collection<int, ActivityCycle> $cycles
- * @property-read Subscription|null $subscription
  */
 class Activity extends Model implements HasMedia
 {
@@ -195,28 +193,9 @@ class Activity extends Model implements HasMedia
             ->exists();
     }
 
-    /**
-     * @return HasOne<Subscription, $this>
-     */
-    public function subscription(): HasOne
-    {
-        return $this->hasOne(Subscription::class)->latestOfMany();
-    }
-
     public function effectivePlan(): PlanEnum
     {
-        /** @var Subscription|null $subscription */
-        $subscription = $this->relationLoaded('subscription')
-            ? $this->getRelation('subscription')
-            : $this->subscription()->with('plan')->first();
-
-        if ($subscription === null || ! $subscription->isEffective()) {
-            return PlanEnum::FREE;
-        }
-
-        $slug = $subscription->plan instanceof SubscriptionPlan ? $subscription->plan->slug : '';
-
-        return PlanEnum::tryFrom($slug) ?? PlanEnum::FREE;
+        return $this->manager?->effectivePlan() ?? PlanEnum::FREE;
     }
 
     public function planLimit(string $key): ?int

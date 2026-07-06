@@ -13,23 +13,7 @@ class PlanLimitService
 {
     public function userPlan(User $user): PlanEnum
     {
-        $activities = Activity::where('manager_id', $user->id)
-            ->with('subscription.plan')
-            ->get();
-
-        $best = PlanEnum::FREE;
-        $bestRank = $this->rank($best);
-
-        foreach ($activities as $activity) {
-            $rank = $this->rank($activity->effectivePlan());
-
-            if ($rank > $bestRank) {
-                $best = $activity->effectivePlan();
-                $bestRank = $rank;
-            }
-        }
-
-        return $best;
+        return $user->effectivePlan();
     }
 
     public function assertCanCreateActivity(User $user): void
@@ -69,14 +53,5 @@ class PlanLimitService
     public function maxPhotos(Activity $activity): ?int
     {
         return $activity->effectivePlan()->limit('max_photos');
-    }
-
-    private function rank(PlanEnum $plan): int
-    {
-        return match ($plan) {
-            PlanEnum::FREE => 0,
-            PlanEnum::STARTER => 1,
-            PlanEnum::PRO => 2,
-        };
     }
 }

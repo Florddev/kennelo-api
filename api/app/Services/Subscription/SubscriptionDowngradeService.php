@@ -8,6 +8,7 @@ use App\Enums\NotificationTypeEnum;
 use App\Enums\PlanEnum;
 use App\Models\Activity;
 use App\Models\ActivityCycle;
+use App\Models\User;
 use App\Services\Notification\NotificationService;
 use Illuminate\Support\Facades\DB;
 
@@ -17,25 +18,27 @@ class SubscriptionDowngradeService
         private readonly NotificationService $notifications
     ) {}
 
-    public function apply(Activity $activity): void
+    public function applyForUser(User $user): void
     {
-        $plan = $activity->effectivePlan();
+        $plan = $user->effectivePlan();
 
         if ($plan !== PlanEnum::FREE) {
             return;
         }
 
-        DB::transaction(function () use ($activity, $plan): void {
-            $this->softDisableSurplusCycles($activity, $plan);
+        DB::transaction(function () use ($user, $plan): void {
+            $activities = Activity::where('manager_id', $user->id)->get();
+
+            foreach ($activities as $activity) {
+                $this->softDisableSurplusCycles($activity, $plan);
+            }
         });
 
-        if ($activity->manager !== null) {
-            $this->notifications->notify(
-                $activity->manager,
-                NotificationTypeEnum::SUBSCRIPTION_DOWNGRADED,
-                ['activity_id' => $activity->id],
-            );
-        }
+        $this->notifications->notify(
+            $user,
+            NotificationTypeEnum::SUBSCRIPTION_DOWNGRADED,
+            ['user_id' => $user->id],
+        );
     }
 
     private function softDisableSurplusCycles(Activity $activity, PlanEnum $plan): void

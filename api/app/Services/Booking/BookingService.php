@@ -80,7 +80,7 @@ class BookingService
     {
         $activity = Activity::findOrFail($data['activity_id']);
 
-        $activity->loadMissing('manager');
+        $activity->loadMissing('manager.subscription.plan');
 
         $this->assertHostCanAcceptBookings($activity);
 
@@ -188,7 +188,7 @@ class BookingService
     {
         $activity = Activity::findOrFail($data['activity_id']);
 
-        $activity->loadMissing('manager');
+        $activity->loadMissing('manager.subscription.plan');
 
         $this->assertHostCanAcceptBookings($activity);
 

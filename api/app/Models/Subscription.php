@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property SubscriptionStatusEnum $status
- * @property-read Activity|null $activity
+ * @property-read User|null $user
  * @property-read SubscriptionPlan|null $plan
  */
 class Subscription extends Model
@@ -20,7 +20,7 @@ class Subscription extends Model
     use HasUuids;
 
     protected $fillable = [
-        'activity_id',
+        'user_id',
         'subscription_plan_id',
         'stripe_subscription_id',
         'stripe_customer_id',
@@ -44,9 +44,9 @@ class Subscription extends Model
         ];
     }
 
-    public function activity(): BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(Activity::class);
+        return $this->belongsTo(User::class);
     }
 
     public function plan(): BelongsTo
