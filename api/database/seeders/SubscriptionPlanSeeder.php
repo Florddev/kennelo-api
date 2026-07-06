@@ -19,8 +19,8 @@ class SubscriptionPlanSeeder extends Seeder
                 ['slug' => $plan->value],
                 [
                     'name' => $config['name'] ?? ucfirst($plan->value),
-                    'stripe_product_id' => $config['stripe_product_id'] ?? null,
-                    'stripe_price_id' => $config['stripe_price_id'] ?? null,
+                    'stripe_product_id' => $this->nullIfEmpty($config['stripe_product_id'] ?? null),
+                    'stripe_price_id' => $this->nullIfEmpty($config['stripe_price_id'] ?? null),
                     'description' => $config['description'] ?? null,
                     'price_monthly' => $config['price_monthly'] ?? '0.00',
                     'price_yearly' => $config['price_yearly'] ?? null,
@@ -32,5 +32,10 @@ class SubscriptionPlanSeeder extends Seeder
                 ]
             );
         }
+    }
+
+    private function nullIfEmpty(?string $value): ?string
+    {
+        return $value === null || $value === '' ? null : $value;
     }
 }
