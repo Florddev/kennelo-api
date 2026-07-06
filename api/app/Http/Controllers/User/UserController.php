@@ -66,7 +66,7 @@ class UserController extends Controller
     public function getCurrentUser(Request $request): JsonResponse
     {
         $user = $request->user();
-        $user->load(['roles', 'address']);
+        $user->load(['roles', 'address', 'subscription.plan']);
 
         return (new UserResource($user))
             ->additional([

@@ -49,6 +49,7 @@ class UserResource extends JsonResource
             'stripe_charges_enabled' => $isSelf ? (bool) $this->stripe_charges_enabled : false,
             'stripe_payouts_enabled' => $isSelf ? (bool) $this->stripe_payouts_enabled : false,
             'stripe_onboarding_completed' => $isSelf ? (bool) $this->stripe_onboarding_completed : false,
+            'plan' => $isSelf ? $this->effectivePlan()->value : null,
             'created_at' => human_date($this->created_at),
             'updated_at' => human_date($this->updated_at),
         ];

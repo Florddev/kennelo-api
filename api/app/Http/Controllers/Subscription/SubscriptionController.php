@@ -10,11 +10,10 @@ use App\Http\Requests\Subscription\StoreSubscriptionCheckoutRequest;
 use App\Http\Resources\SubscriptionInvoiceResource;
 use App\Http\Resources\SubscriptionPlanResource;
 use App\Http\Resources\SubscriptionResource;
-use App\Models\Activity;
-use App\Models\Subscription;
 use App\Models\SubscriptionPlan;
 use App\Services\Subscription\SubscriptionService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class SubscriptionController extends Controller
 {
@@ -36,15 +35,13 @@ class SubscriptionController extends Controller
             ->response();
     }
 
-    public function show(Activity $activity): JsonResponse
+    public function show(Request $request): JsonResponse
     {
-        $this->authorize('manageForActivity', [Subscription::class, $activity]);
-
-        $subscription = $activity->subscription()->with('plan')->first();
+        $subscription = $request->user()->subscription()->with('plan')->first();
 
         $data = $subscription === null
             ? ['plan' => 'free', 'status' => null, 'is_effective' => false]
-            : (new SubscriptionResource($subscription->loadMissing('plan')))->resolve();
+            : (new SubscriptionResource($subscription))->resolve();
 
         return response()->json([
             'data' => $data,
@@ -53,13 +50,11 @@ class SubscriptionController extends Controller
         ]);
     }
 
-    public function checkout(StoreSubscriptionCheckoutRequest $request, Activity $activity): JsonResponse
+    public function checkout(StoreSubscriptionCheckoutRequest $request): JsonResponse
     {
-        $this->authorize('manageForActivity', [Subscription::class, $activity]);
-
         $plan = SubscriptionPlan::where('slug', $request->validated('plan_slug'))->firstOrFail();
 
-        $checkoutUrl = $this->subscriptionService->startCheckout($request->user(), $activity, $plan);
+        $checkoutUrl = $this->subscriptionService->startCheckout($request->user(), $plan);
 
         return response()->json([
             'data' => ['checkout_url' => $checkoutUrl],
@@ -68,11 +63,9 @@ class SubscriptionController extends Controller
         ]);
     }
 
-    public function invoices(Activity $activity): JsonResponse
+    public function invoices(Request $request): JsonResponse
     {
-        $this->authorize('manageForActivity', [Subscription::class, $activity]);
-
-        $invoices = $this->subscriptionService->listInvoices($activity);
+        $invoices = $this->subscriptionService->listInvoices($request->user());
 
         return SubscriptionInvoiceResource::collection($invoices)
             ->additional([
@@ -82,11 +75,9 @@ class SubscriptionController extends Controller
             ->response();
     }
 
-    public function cancel(Activity $activity): JsonResponse
+    public function cancel(Request $request): JsonResponse
     {
-        $this->authorize('manageForActivity', [Subscription::class, $activity]);
-
-        $subscription = $activity->subscription()->firstOrFail();
+        $subscription = $request->user()->subscription()->firstOrFail();
 
         $subscription = $this->subscriptionService->cancel($subscription);
 

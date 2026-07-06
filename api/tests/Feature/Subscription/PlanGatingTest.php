@@ -19,10 +19,10 @@ beforeEach(function () {
     (new SubscriptionPlanSeeder)->run();
 });
 
-function subscribeActivity(Activity $activity, PlanEnum $plan): void
+function subscribeUser(User $user, PlanEnum $plan): Subscription
 {
-    Subscription::create([
-        'activity_id' => $activity->id,
+    return Subscription::create([
+        'user_id' => $user->id,
         'subscription_plan_id' => SubscriptionPlan::where('slug', $plan->value)->firstOrFail()->id,
         'stripe_subscription_id' => 'sub_'.uniqid(),
         'stripe_customer_id' => 'cus_'.uniqid(),
@@ -30,23 +30,25 @@ function subscribeActivity(Activity $activity, PlanEnum $plan): void
     ]);
 }
 
-it('applies the free commission rate when the activity has no subscription', function () {
+it('applies the free commission rate when the manager has no subscription', function () {
     $activity = Activity::factory()->create();
 
     expect($activity->effectivePlan()->commissionRate())->toBe('0.08');
 });
 
-it('applies the pro commission rate when the activity has an active pro subscription', function () {
-    $activity = Activity::factory()->create();
-    subscribeActivity($activity, PlanEnum::PRO);
+it('applies the pro commission rate when the manager has an active pro subscription', function () {
+    $manager = User::factory()->create();
+    $activity = Activity::factory()->create(['manager_id' => $manager->id]);
+    subscribeUser($manager, PlanEnum::PRO);
 
     expect($activity->fresh()->effectivePlan()->commissionRate())->toBe('0.00');
 });
 
 it('reverts to the free rate when the subscription is not effective', function () {
-    $activity = Activity::factory()->create();
-    subscribeActivity($activity, PlanEnum::PRO);
-    $activity->subscription()->update(['status' => SubscriptionStatusEnum::CANCELED]);
+    $manager = User::factory()->create();
+    $activity = Activity::factory()->create(['manager_id' => $manager->id]);
+    subscribeUser($manager, PlanEnum::PRO);
+    $manager->subscription()->update(['status' => SubscriptionStatusEnum::CANCELED]);
 
     expect($activity->fresh()->effectivePlan()->commissionRate())->toBe('0.08');
 });
@@ -60,8 +62,8 @@ it('blocks creating a second activity on the free plan', function () {
 
 it('allows unlimited activities on the pro plan', function () {
     $manager = User::factory()->create();
-    $first = Activity::factory()->create(['manager_id' => $manager->id]);
-    subscribeActivity($first, PlanEnum::PRO);
+    Activity::factory()->create(['manager_id' => $manager->id]);
+    subscribeUser($manager, PlanEnum::PRO);
 
     $second = app(ActivityService::class)->create($manager, ['name' => 'Second']);
 
@@ -83,11 +85,12 @@ it('blocks creating more cycles than the free plan allows', function () {
 })->throws(ValidationException::class);
 
 it('exposes the max photos limit per plan', function () {
-    $activity = Activity::factory()->create();
+    $manager = User::factory()->create();
+    $activity = Activity::factory()->create(['manager_id' => $manager->id]);
 
     expect(app(PlanLimitService::class)->maxPhotos($activity))->toBe(5);
 
-    subscribeActivity($activity, PlanEnum::PRO);
+    subscribeUser($manager, PlanEnum::PRO);
 
     expect(app(PlanLimitService::class)->maxPhotos($activity->fresh()))->toBe(-1);
 });

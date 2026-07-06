@@ -53,12 +53,12 @@ class SubscriptionWebhookService
                 ->lockForUpdate()
                 ->first();
 
-            $activityId = $object->metadata->activity_id ?? null;
+            $userId = $object->metadata->user_id ?? null;
             $planSlug = $object->metadata->plan_slug ?? null;
 
             if ($subscription === null) {
-                if ($activityId === null) {
-                    Log::warning('Stripe webhook: subscription event without activity metadata', [
+                if ($userId === null) {
+                    Log::warning('Stripe webhook: subscription event without user metadata', [
                         'stripe_subscription_id' => $object->id,
                     ]);
 
@@ -66,7 +66,7 @@ class SubscriptionWebhookService
                 }
 
                 $subscription = new Subscription([
-                    'activity_id' => $activityId,
+                    'user_id' => $userId,
                     'stripe_subscription_id' => $object->id,
                 ]);
             }
@@ -94,22 +94,21 @@ class SubscriptionWebhookService
             $isEffective = $subscription->isEffective();
 
             if ($wasEffective && ! $isEffective) {
-                $subscription->loadMissing('activity.manager');
+                $subscription->loadMissing('user');
 
-                if ($subscription->activity !== null) {
-                    $this->downgrade->apply($subscription->activity);
+                if ($subscription->user !== null) {
+                    $this->downgrade->applyForUser($subscription->user);
                 }
             }
 
             if (! $wasEffective && $isEffective) {
-                $subscription->loadMissing('activity.manager');
-                $manager = $subscription->activity?->manager;
+                $subscription->loadMissing('user');
 
-                if ($manager !== null) {
+                if ($subscription->user !== null) {
                     $this->notifications->notify(
-                        $manager,
+                        $subscription->user,
                         NotificationTypeEnum::SUBSCRIPTION_ACTIVATED,
-                        ['activity_id' => $subscription->activity_id],
+                        ['user_id' => $subscription->user_id],
                     );
                 }
             }
@@ -200,14 +199,13 @@ class SubscriptionWebhookService
                 ]
             );
 
-            $subscription->loadMissing('activity.manager');
-            $manager = $subscription->activity?->manager;
+            $subscription->loadMissing('user');
 
-            if ($manager !== null) {
+            if ($subscription->user !== null) {
                 $this->notifications->notify(
-                    $manager,
+                    $subscription->user,
                     NotificationTypeEnum::SUBSCRIPTION_PAYMENT_FAILED,
-                    ['activity_id' => $subscription->activity_id],
+                    ['user_id' => $subscription->user_id],
                 );
             }
         });

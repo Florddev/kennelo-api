@@ -110,10 +110,10 @@ Route::middleware(['auth.jwt'])->group(function () {
 
     // Subscriptions
     Route::get('/plans', [SubscriptionController::class, 'plans']);
-    Route::get('/activities/{activity}/subscription', [SubscriptionController::class, 'show']);
-    Route::post('/activities/{activity}/subscription/checkout', [SubscriptionController::class, 'checkout']);
-    Route::get('/activities/{activity}/subscription/invoices', [SubscriptionController::class, 'invoices']);
-    Route::delete('/activities/{activity}/subscription', [SubscriptionController::class, 'cancel']);
+    Route::get('/me/subscription', [SubscriptionController::class, 'show']);
+    Route::post('/me/subscription/checkout', [SubscriptionController::class, 'checkout']);
+    Route::get('/me/subscription/invoices', [SubscriptionController::class, 'invoices']);
+    Route::delete('/me/subscription', [SubscriptionController::class, 'cancel']);
 
     // Services
     Route::get('/activities/{activity}/services', [ActivityServiceController::class, 'index']);

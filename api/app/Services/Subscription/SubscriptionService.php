@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Services\Subscription;
 
-use App\Models\Activity;
 use App\Models\Subscription;
 use App\Models\SubscriptionPlan;
 use App\Models\User;
@@ -20,9 +19,9 @@ class SubscriptionService
         private readonly StripeCustomerService $customers,
     ) {}
 
-    public function startCheckout(User $manager, Activity $activity, SubscriptionPlan $plan): string
+    public function startCheckout(User $manager, SubscriptionPlan $plan): string
     {
-        $this->assertNoActiveSubscription($activity);
+        $this->assertNoActiveSubscription($manager);
 
         if (empty($plan->stripe_price_id)) {
             throw ValidationException::withMessages([
@@ -32,10 +31,9 @@ class SubscriptionService
 
         $customerId = $this->customers->getOrCreateCustomer($manager);
         $frontendUrl = rtrim((string) config('app.frontend_url'), '/');
-        $returnUrl = $frontendUrl."/hosting/subscription?activity={$activity->id}";
+        $returnUrl = $frontendUrl.'/hosting/subscription';
 
         $metadata = [
-            'activity_id' => $activity->id,
             'user_id' => $manager->id,
             'plan_slug' => $plan->slug,
         ];
@@ -51,8 +49,8 @@ class SubscriptionService
                 'metadata' => $metadata,
             ],
             'metadata' => $metadata,
-            'success_url' => $returnUrl.'&checkout=success&session_id={CHECKOUT_SESSION_ID}',
-            'cancel_url' => $returnUrl.'&checkout=cancel',
+            'success_url' => $returnUrl.'?checkout=success&session_id={CHECKOUT_SESSION_ID}',
+            'cancel_url' => $returnUrl.'?checkout=cancel',
         ]);
 
         return (string) $session->url;
@@ -81,9 +79,9 @@ class SubscriptionService
     /**
      * @return array<int, Invoice>
      */
-    public function listInvoices(Activity $activity): array
+    public function listInvoices(User $manager): array
     {
-        $subscription = $activity->subscription()->first();
+        $subscription = $manager->subscription()->first();
 
         if ($subscription === null || empty($subscription->stripe_customer_id)) {
             return [];
@@ -98,13 +96,13 @@ class SubscriptionService
         return $invoices->data;
     }
 
-    private function assertNoActiveSubscription(Activity $activity): void
+    private function assertNoActiveSubscription(User $manager): void
     {
-        $existing = $activity->subscription()->first();
+        $existing = $manager->subscription()->first();
 
         if ($existing !== null && $existing->isEffective()) {
             throw ValidationException::withMessages([
-                'subscription' => ['This activity already has an active subscription.'],
+                'subscription' => ['You already have an active subscription.'],
             ]);
         }
     }

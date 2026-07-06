@@ -6,6 +6,7 @@ use App\Enums\FinancialOperationTypeEnum;
 use App\Enums\PlanEnum;
 use App\Enums\SubscriptionStatusEnum;
 use App\Models\Activity;
+use App\Models\ActivityCycle;
 use App\Models\FinancialOperation;
 use App\Models\Subscription;
 use App\Models\SubscriptionPayment;
@@ -30,31 +31,44 @@ function fakeSubscriptionStripe(): FakeStripeClient
     return $fake;
 }
 
-function makeHostActivity(): array
-{
-    $manager = User::factory()->create();
-    $activity = Activity::factory()->create([
-        'manager_id' => $manager->id,
-        'is_active' => true,
-    ]);
-
-    return [$manager, $activity];
-}
-
 function proPlan(): SubscriptionPlan
 {
     return SubscriptionPlan::where('slug', PlanEnum::PRO->value)->firstOrFail();
 }
 
-function dispatchWebhook(array $type, array $object): void
+function dispatchWebhook(string $type, array $object): void
 {
     $event = Event::constructFrom([
         'id' => 'evt_'.uniqid(),
-        'type' => $type['type'],
+        'type' => $type,
         'data' => ['object' => $object],
     ]);
 
     app(StripeWebhookService::class)->handleEvent($event);
+}
+
+function subscriptionObject(User $user, string $status): array
+{
+    return [
+        'object' => 'subscription',
+        'id' => 'sub_test_'.$user->id,
+        'status' => $status,
+        'customer' => 'cus_test_'.$user->id,
+        'cancel_at_period_end' => false,
+        'current_period_start' => now()->subDay()->timestamp,
+        'current_period_end' => now()->addMonth()->timestamp,
+        'trial_end' => null,
+        'canceled_at' => null,
+        'metadata' => [
+            'user_id' => $user->id,
+            'plan_slug' => 'pro',
+        ],
+        'items' => [
+            'data' => [[
+                'price' => ['id' => 'price_pro_test'],
+            ]],
+        ],
+    ];
 }
 
 beforeEach(function () {
@@ -62,7 +76,7 @@ beforeEach(function () {
 });
 
 it('lists the available plans', function () {
-    [$manager] = makeHostActivity();
+    $manager = User::factory()->create();
 
     $this->withHeaders(asUser($manager))
         ->getJson('/api/plans')
@@ -70,22 +84,22 @@ it('lists the available plans', function () {
         ->assertJsonCount(3, 'data');
 });
 
-it('returns the free plan when an activity has no subscription', function () {
-    [$manager, $activity] = makeHostActivity();
+it('returns the free plan when the user has no subscription', function () {
+    $manager = User::factory()->create();
 
     $this->withHeaders(asUser($manager))
-        ->getJson("/api/activities/{$activity->id}/subscription")
+        ->getJson('/api/me/subscription')
         ->assertOk()
         ->assertJsonPath('data.plan', 'free');
 });
 
 it('starts a checkout session and returns the url', function () {
     $fake = fakeSubscriptionStripe();
-    [$manager, $activity] = makeHostActivity();
+    $manager = User::factory()->create();
     proPlan()->update(['stripe_price_id' => 'price_pro_test']);
 
     $this->withHeaders(asUser($manager))
-        ->postJson("/api/activities/{$activity->id}/subscription/checkout", ['plan_slug' => 'pro'])
+        ->postJson('/api/me/subscription/checkout', ['plan_slug' => 'pro'])
         ->assertOk()
         ->assertJsonStructure(['data' => ['checkout_url']]);
 
@@ -94,11 +108,11 @@ it('starts a checkout session and returns the url', function () {
 
 it('prevents double subscription when one is already active', function () {
     fakeSubscriptionStripe();
-    [$manager, $activity] = makeHostActivity();
+    $manager = User::factory()->create();
     proPlan()->update(['stripe_price_id' => 'price_pro_test']);
 
     Subscription::create([
-        'activity_id' => $activity->id,
+        'user_id' => $manager->id,
         'subscription_plan_id' => proPlan()->id,
         'stripe_subscription_id' => 'sub_existing',
         'stripe_customer_id' => 'cus_existing',
@@ -106,53 +120,59 @@ it('prevents double subscription when one is already active', function () {
     ]);
 
     $this->withHeaders(asUser($manager))
-        ->postJson("/api/activities/{$activity->id}/subscription/checkout", ['plan_slug' => 'pro'])
+        ->postJson('/api/me/subscription/checkout', ['plan_slug' => 'pro'])
         ->assertStatus(422);
 });
 
-it('forbids a non-manager from starting a checkout', function () {
-    fakeSubscriptionStripe();
-    [, $activity] = makeHostActivity();
-    proPlan()->update(['stripe_price_id' => 'price_pro_test']);
-    $stranger = User::factory()->create();
+it('only exposes the current user subscription', function () {
+    $manager = User::factory()->create();
+    $other = User::factory()->create();
 
-    $this->withHeaders(asUser($stranger))
-        ->postJson("/api/activities/{$activity->id}/subscription/checkout", ['plan_slug' => 'pro'])
-        ->assertForbidden();
+    Subscription::create([
+        'user_id' => $other->id,
+        'subscription_plan_id' => proPlan()->id,
+        'stripe_subscription_id' => 'sub_other',
+        'stripe_customer_id' => 'cus_other',
+        'status' => SubscriptionStatusEnum::ACTIVE,
+    ]);
+
+    $this->withHeaders(asUser($manager))
+        ->getJson('/api/me/subscription')
+        ->assertOk()
+        ->assertJsonPath('data.plan', 'free');
 });
 
 it('activates a subscription from the created webhook', function () {
-    [, $activity] = makeHostActivity();
+    $manager = User::factory()->create();
+    $activity = Activity::factory()->create(['manager_id' => $manager->id]);
 
-    dispatchWebhook(
-        ['type' => 'customer.subscription.created'],
-        subscriptionObject($activity, 'active'),
-    );
+    dispatchWebhook('customer.subscription.created', subscriptionObject($manager, 'active'));
 
-    $subscription = Subscription::where('activity_id', $activity->id)->first();
+    $subscription = Subscription::where('user_id', $manager->id)->first();
 
     expect($subscription)->not->toBeNull()
         ->and($subscription->status)->toBe(SubscriptionStatusEnum::ACTIVE)
+        ->and($manager->fresh()->effectivePlan())->toBe(PlanEnum::PRO)
         ->and($activity->fresh()->effectivePlan())->toBe(PlanEnum::PRO);
 });
 
 it('is idempotent when the same subscription event is processed twice', function () {
-    [, $activity] = makeHostActivity();
+    $manager = User::factory()->create();
 
-    dispatchWebhook(['type' => 'customer.subscription.created'], subscriptionObject($activity, 'active'));
-    dispatchWebhook(['type' => 'customer.subscription.updated'], subscriptionObject($activity, 'active'));
+    dispatchWebhook('customer.subscription.created', subscriptionObject($manager, 'active'));
+    dispatchWebhook('customer.subscription.updated', subscriptionObject($manager, 'active'));
 
-    expect(Subscription::where('activity_id', $activity->id)->count())->toBe(1);
+    expect(Subscription::where('user_id', $manager->id)->count())->toBe(1);
 });
 
 it('records a subscription payment on invoice.paid', function () {
-    [, $activity] = makeHostActivity();
-    dispatchWebhook(['type' => 'customer.subscription.created'], subscriptionObject($activity, 'active'));
+    $manager = User::factory()->create();
+    dispatchWebhook('customer.subscription.created', subscriptionObject($manager, 'active'));
 
-    dispatchWebhook(['type' => 'invoice.paid'], [
+    dispatchWebhook('invoice.paid', [
         'object' => 'invoice',
         'id' => 'in_test_1',
-        'subscription' => 'sub_test_'.$activity->id,
+        'subscription' => 'sub_test_'.$manager->id,
         'amount_paid' => 5900,
         'currency' => 'eur',
         'payment_intent' => 'pi_sub_1',
@@ -163,23 +183,48 @@ it('records a subscription payment on invoice.paid', function () {
         ->and(FinancialOperation::where('type', FinancialOperationTypeEnum::SUBSCRIPTION_PAYMENT)->exists())->toBeTrue();
 });
 
-it('degrades to free and applies downgrade on subscription deletion', function () {
-    [, $activity] = makeHostActivity();
-    dispatchWebhook(['type' => 'customer.subscription.created'], subscriptionObject($activity, 'active'));
+it('degrades to free on subscription deletion', function () {
+    $manager = User::factory()->create();
+    dispatchWebhook('customer.subscription.created', subscriptionObject($manager, 'active'));
 
-    expect($activity->fresh()->effectivePlan())->toBe(PlanEnum::PRO);
+    expect($manager->fresh()->effectivePlan())->toBe(PlanEnum::PRO);
 
-    dispatchWebhook(['type' => 'customer.subscription.deleted'], subscriptionObject($activity, 'canceled'));
+    dispatchWebhook('customer.subscription.deleted', subscriptionObject($manager, 'canceled'));
 
-    expect($activity->fresh()->effectivePlan())->toBe(PlanEnum::FREE);
+    expect($manager->fresh()->effectivePlan())->toBe(PlanEnum::FREE);
+});
+
+it('soft-disables surplus cycles across all activities on downgrade', function () {
+    config(['plans.downgrade.soft_disable.cycles' => true]);
+
+    $manager = User::factory()->create();
+    dispatchWebhook('customer.subscription.created', subscriptionObject($manager, 'active'));
+
+    $activities = Activity::factory()->count(2)->create(['manager_id' => $manager->id]);
+
+    foreach ($activities as $activity) {
+        for ($i = 0; $i < 5; $i++) {
+            ActivityCycle::create([
+                'activity_id' => $activity->id,
+                'is_active' => true,
+                'priority' => $i,
+            ]);
+        }
+    }
+
+    dispatchWebhook('customer.subscription.deleted', subscriptionObject($manager, 'canceled'));
+
+    foreach ($activities as $activity) {
+        expect(ActivityCycle::where('activity_id', $activity->id)->where('is_active', true)->count())->toBe(3);
+    }
 });
 
 it('cancels a subscription at period end', function () {
     $fake = fakeSubscriptionStripe();
-    [$manager, $activity] = makeHostActivity();
+    $manager = User::factory()->create();
 
     Subscription::create([
-        'activity_id' => $activity->id,
+        'user_id' => $manager->id,
         'subscription_plan_id' => proPlan()->id,
         'stripe_subscription_id' => 'sub_cancel',
         'stripe_customer_id' => 'cus_cancel',
@@ -188,33 +233,9 @@ it('cancels a subscription at period end', function () {
     ]);
 
     $this->withHeaders(asUser($manager))
-        ->deleteJson("/api/activities/{$activity->id}/subscription")
+        ->deleteJson('/api/me/subscription')
         ->assertOk();
 
     expect($fake->called('subscriptions.update'))->toBeTrue()
-        ->and(Subscription::where('activity_id', $activity->id)->first()->canceled_at)->not->toBeNull();
+        ->and(Subscription::where('user_id', $manager->id)->first()->canceled_at)->not->toBeNull();
 });
-
-function subscriptionObject(Activity $activity, string $status): array
-{
-    return [
-        'object' => 'subscription',
-        'id' => 'sub_test_'.$activity->id,
-        'status' => $status,
-        'customer' => 'cus_test_'.$activity->id,
-        'cancel_at_period_end' => false,
-        'current_period_start' => now()->subDay()->timestamp,
-        'current_period_end' => now()->addMonth()->timestamp,
-        'trial_end' => null,
-        'canceled_at' => null,
-        'metadata' => [
-            'activity_id' => $activity->id,
-            'plan_slug' => 'pro',
-        ],
-        'items' => [
-            'data' => [[
-                'price' => ['id' => 'price_pro_test'],
-            ]],
-        ],
-    ];
-}
