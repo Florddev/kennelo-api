@@ -26,6 +26,7 @@ export class UserModel {
         public readonly stripeChargesEnabled: boolean,
         public readonly stripePayoutsEnabled: boolean,
         public readonly stripeOnboardingCompleted: boolean,
+        public readonly plan: "free" | "starter" | "pro" | null,
     ) {}
 
     static from(dto: UserDto): UserModel {
@@ -52,6 +53,7 @@ export class UserModel {
             dto.stripe_charges_enabled ?? false,
             dto.stripe_payouts_enabled ?? false,
             dto.stripe_onboarding_completed ?? false,
+            dto.plan ?? null,
         );
     }
 

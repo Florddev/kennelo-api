@@ -4,9 +4,9 @@
 
 export * from "./actions/commands/cancel-subscription";
 export * from "./actions/commands/start-subscription-checkout";
-export * from "./actions/queries/get-activity-subscription";
 export * from "./actions/queries/get-plans";
 export * from "./actions/queries/get-subscription-invoices";
+export * from "./actions/queries/get-subscription";
 export * from "./models/subscription-invoice.model";
 export * from "./models/subscription-plan.model";
 export * from "./models/subscription.model";

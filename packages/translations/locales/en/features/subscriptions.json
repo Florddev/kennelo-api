@@ -1,7 +1,6 @@
 {
     "title": "Subscription",
     "description": "Manage your plan, reduce your commission and unlock advanced features.",
-    "noActivity": "Create an activity first to subscribe to a plan.",
     "choosePlan": "Choose a plan",
     "currentPlan": "Current plan",
     "currentSubscription": "Your subscription",

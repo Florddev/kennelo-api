@@ -18,17 +18,16 @@ import { Button } from "@workspace/ui/components/button";
 import { useAsyncState } from "@/hooks/use-async-state";
 
 type CancelSubscriptionDialogProps = {
-    activityId: string;
     onSuccess?: () => void;
 };
 
-export function CancelSubscriptionDialog({ activityId, onSuccess }: CancelSubscriptionDialogProps) {
+export function CancelSubscriptionDialog({ onSuccess }: CancelSubscriptionDialogProps) {
     const t = useTranslations("features.subscriptions");
     const { execute, isLoading } = useAsyncState();
     const [isOpen, setIsOpen] = useState(false);
 
     const submit = () =>
-        execute(() => cancelSubscription(activityId), {
+        execute(() => cancelSubscription(), {
             displayError: true,
             onSuccess: () => {
                 toast.success(t("cancelDialog.success"));

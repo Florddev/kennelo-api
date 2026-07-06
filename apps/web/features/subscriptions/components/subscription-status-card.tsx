@@ -9,16 +9,11 @@ import { CancelSubscriptionDialog } from "./cancel-subscription-dialog";
 import { SubscriptionStatusBadge } from "./subscription-status-badge";
 
 type SubscriptionStatusCardProps = {
-    activityId: string;
     subscription: SubscriptionModel;
     onChanged?: () => void;
 };
 
-export function SubscriptionStatusCard({
-    activityId,
-    subscription,
-    onChanged,
-}: SubscriptionStatusCardProps) {
+export function SubscriptionStatusCard({ subscription, onChanged }: SubscriptionStatusCardProps) {
     const t = useTranslations("features.subscriptions");
     const planName = subscription.planDetails?.name ?? t(`plans.${subscription.plan}`);
 
@@ -52,7 +47,7 @@ export function SubscriptionStatusCard({
                 {subscription.isEffective &&
                     !subscription.isFree() &&
                     !subscription.isCanceling() && (
-                        <CancelSubscriptionDialog activityId={activityId} onSuccess={onChanged} />
+                        <CancelSubscriptionDialog onSuccess={onChanged} />
                     )}
             </CardContent>
         </Card>

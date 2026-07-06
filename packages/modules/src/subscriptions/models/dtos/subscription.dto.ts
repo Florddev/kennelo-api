@@ -4,7 +4,7 @@ import type { SubscriptionPlanDto } from "./subscription-plan.dto";
 
 export type SubscriptionDto = {
     id?: string | null;
-    activity_id?: string | null;
+    user_id?: string | null;
     plan: Plan;
     status: SubscriptionStatus | null;
     is_effective: boolean;

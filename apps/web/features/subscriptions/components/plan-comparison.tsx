@@ -18,12 +18,11 @@ import { useAsyncState } from "@/hooks/use-async-state";
 import { PlanFeaturesList } from "./plan-features-list";
 
 type PlanComparisonProps = {
-    activityId: string;
     plans: SubscriptionPlanModel[];
     subscription: SubscriptionModel | null;
 };
 
-export function PlanComparison({ activityId, plans, subscription }: PlanComparisonProps) {
+export function PlanComparison({ plans, subscription }: PlanComparisonProps) {
     const t = useTranslations("features.subscriptions");
     const { execute, isLoading } = useAsyncState();
     const [pendingPlan, setPendingPlan] = useState<Plan | null>(null);
@@ -33,7 +32,7 @@ export function PlanComparison({ activityId, plans, subscription }: PlanComparis
     const subscribe = (plan: Plan) => {
         setPendingPlan(plan);
 
-        execute(() => startSubscriptionCheckout(activityId, plan), {
+        execute(() => startSubscriptionCheckout(plan), {
             displayError: true,
             onSuccess: (url) => {
                 window.location.href = url;

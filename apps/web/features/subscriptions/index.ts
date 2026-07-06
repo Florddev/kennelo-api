@@ -9,4 +9,4 @@ export * from "./components/plan-features-list";
 export * from "./components/subscription-manager";
 export * from "./components/subscription-status-badge";
 export * from "./components/subscription-status-card";
-export * from "./hooks/use-activity-subscription";
+export * from "./hooks/use-subscription";

@@ -6,7 +6,7 @@ import { SubscriptionPlanModel } from "./subscription-plan.model";
 export class SubscriptionModel {
     private constructor(
         public readonly id: string | null,
-        public readonly activityId: string | null,
+        public readonly userId: string | null,
         public readonly plan: Plan,
         public readonly status: SubscriptionStatus | null,
         public readonly isEffective: boolean,
@@ -22,7 +22,7 @@ export class SubscriptionModel {
     static from(dto: SubscriptionDto): SubscriptionModel {
         return new SubscriptionModel(
             dto.id ?? null,
-            dto.activity_id ?? null,
+            dto.user_id ?? null,
             dto.plan,
             dto.status ?? null,
             dto.is_effective,
