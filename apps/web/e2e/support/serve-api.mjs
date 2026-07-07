@@ -21,7 +21,12 @@ function buildFreshDb() {
     execFileSync("php", ["artisan", "migrate:fresh", "--seed", "--force", "--no-interaction"], {
         cwd: API_DIR,
         stdio: "inherit",
-        env: { ...process.env, APP_ENV: "local", DB_CONNECTION: "sqlite", DB_DATABASE: E2E_DB_PATH },
+        env: {
+            ...process.env,
+            APP_ENV: "local",
+            DB_CONNECTION: "sqlite",
+            DB_DATABASE: E2E_DB_PATH,
+        },
     });
     copyFileSync(E2E_DB_PATH, E2E_BASELINE_PATH);
 }
