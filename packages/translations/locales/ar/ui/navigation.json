@@ -35,7 +35,8 @@
         "calendar": "التقويم",
         "activity": "النشاط",
         "messages": "الرسائل",
-        "scan": "المسح"
+        "scan": "المسح",
+        "subscription": "الاشتراك"
     },
     "overview": "ملخص",
     "scanners": "أجهزة المسح"

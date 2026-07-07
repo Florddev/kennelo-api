@@ -23,4 +23,5 @@ export type UserDto = {
     stripe_charges_enabled?: boolean;
     stripe_payouts_enabled?: boolean;
     stripe_onboarding_completed?: boolean;
+    plan?: "free" | "starter" | "pro" | null;
 };

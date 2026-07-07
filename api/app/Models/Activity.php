@@ -8,6 +8,7 @@ use App\Enums\ActivityPermissionEnum;
 use App\Enums\ActivityStatusEnum;
 use App\Enums\ActivityTypeEnum;
 use App\Enums\CollaboratorStatusEnum;
+use App\Enums\PlanEnum;
 use App\Enums\ReviewerTypeEnum;
 use App\Services\MediaService;
 use Illuminate\Database\Eloquent\Builder;
@@ -190,6 +191,21 @@ class Activity extends Model implements HasMedia
             ->accepted()
             ->withPermission($permission)
             ->exists();
+    }
+
+    public function effectivePlan(): PlanEnum
+    {
+        return $this->manager?->effectivePlan() ?? PlanEnum::FREE;
+    }
+
+    public function planLimit(string $key): ?int
+    {
+        return $this->effectivePlan()->limit($key);
+    }
+
+    public function planLimitIsUnlimited(string $key): bool
+    {
+        return $this->effectivePlan()->isUnlimited($key);
     }
 
     public function resolveStripeAccountId(): ?string

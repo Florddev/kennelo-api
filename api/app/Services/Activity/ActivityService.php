@@ -8,11 +8,16 @@ use App\Enums\PaginationEnum;
 use App\Models\Activity;
 use App\Models\Address;
 use App\Models\User;
+use App\Services\Subscription\PlanLimitService;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 
 class ActivityService
 {
+    public function __construct(
+        private readonly PlanLimitService $planLimits
+    ) {}
+
     public function getActivePaginated(array $filters = []): LengthAwarePaginator
     {
         $perPage = $filters['per_page'] ?? PaginationEnum::DEFAULT_PAGINATION->value();
@@ -76,6 +81,8 @@ class ActivityService
 
     public function create(User $user, array $data): Activity
     {
+        $this->planLimits->assertCanCreateActivity($user);
+
         return DB::transaction(function () use ($user, $data) {
             $addressId = null;
 

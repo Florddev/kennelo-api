@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\PlanEnum;
 use App\Enums\UserStatusEnum;
 use App\Services\MediaService;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -14,6 +15,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -131,6 +133,40 @@ class User extends Authenticatable implements HasLocalePreference, HasMedia, JWT
     public function managedActivities(): HasMany
     {
         return $this->hasMany(Activity::class, 'manager_id');
+    }
+
+    /**
+     * @return HasOne<Subscription, $this>
+     */
+    public function subscription(): HasOne
+    {
+        return $this->hasOne(Subscription::class)->latest();
+    }
+
+    public function effectivePlan(): PlanEnum
+    {
+        /** @var Subscription|null $subscription */
+        $subscription = $this->relationLoaded('subscription')
+            ? $this->getRelation('subscription')
+            : $this->subscription()->with('plan')->first();
+
+        if ($subscription === null || ! $subscription->isEffective()) {
+            return PlanEnum::FREE;
+        }
+
+        $slug = $subscription->plan instanceof SubscriptionPlan ? $subscription->plan->slug : '';
+
+        return PlanEnum::tryFrom($slug) ?? PlanEnum::FREE;
+    }
+
+    public function planLimit(string $key): ?int
+    {
+        return $this->effectivePlan()->limit($key);
+    }
+
+    public function planLimitIsUnlimited(string $key): bool
+    {
+        return $this->effectivePlan()->isUnlimited($key);
     }
 
     public function collaboratedActivities(): BelongsToMany

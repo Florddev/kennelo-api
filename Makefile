@@ -30,6 +30,9 @@ start: ## Start API, Web and Back-office
 	pnpm --filter base-nextjs dev &
 
 down: ## Stop API and Web (serve, queue, reverb, turbo, next)
+ifeq ($(OS),Windows_NT)
+	-@powershell -NoProfile -ExecutionPolicy Bypass -File scripts/kill-dev-ports.ps1
+else
 	-pkill -f "artisan serve"
 	-pkill -f "artisan queue:work"
 	-pkill -f "artisan reverb:start"
@@ -38,6 +41,7 @@ down: ## Stop API and Web (serve, queue, reverb, turbo, next)
 	-pkill -f "generate-routes-watch"
 	-pkill -f "scripts/watch.mjs"
 	-for p in 8000 8080 3000 3001; do lsof -ti :$$p | xargs kill -9 2>/dev/null || true; done
+endif
 
 larastan: ## Run larastan
 	cd api && ./vendor/bin/phpstan analyse --memory-limit=2G
@@ -89,3 +93,6 @@ setup:
 
 refresh: ## Refresh DB and seed
 	cd api && php artisan migrate:fresh --seed
+
+stripe:
+	stripe listen --forward-to localhost:8000/api/webhooks/stripe

@@ -6,6 +6,7 @@ use App\Models\StripeEvent;
 use App\Services\Finance\FinancialJournalService;
 use App\Services\Notification\NotificationService;
 use App\Services\Stripe\StripeWebhookService;
+use App\Services\Subscription\SubscriptionWebhookService;
 use Tests\Support\ThrowOnceWebhookService;
 
 it('keeps an event reprocessable when the handler throws', function () {
@@ -37,6 +38,7 @@ it('keeps an event reprocessable when the handler throws', function () {
     $service = new ThrowOnceWebhookService(
         app(NotificationService::class),
         app(FinancialJournalService::class),
+        app(SubscriptionWebhookService::class),
     );
     app()->instance(StripeWebhookService::class, $service);
 

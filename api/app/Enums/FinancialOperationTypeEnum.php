@@ -13,4 +13,6 @@ enum FinancialOperationTypeEnum: string
     case REFUND = 'refund';
     case PAYOUT = 'payout';
     case STATUS_CHANGE = 'status_change';
+    case SUBSCRIPTION_PAYMENT = 'subscription_payment';
+    case SUBSCRIPTION_REFUND = 'subscription_refund';
 }

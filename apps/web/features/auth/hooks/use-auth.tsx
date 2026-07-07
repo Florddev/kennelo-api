@@ -89,7 +89,7 @@ export function AuthProvider({
         } catch (error) {
             logger.error("Failed to load user:", error);
             const status = (error as { status?: number })?.status;
-            if (status === 401) {
+            if (status === 401 || (await authService.isAccessTokenExpired())) {
                 setIsAuthenticated(false);
                 setUser(null);
                 setActivities([]);

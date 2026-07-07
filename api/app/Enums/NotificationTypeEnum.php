@@ -40,6 +40,10 @@ enum NotificationTypeEnum: string
     case COLLABORATOR_ACCEPTED = 'collaborator_accepted';
     case COLLABORATOR_DECLINED = 'collaborator_declined';
 
+    case SUBSCRIPTION_ACTIVATED = 'subscription_activated';
+    case SUBSCRIPTION_PAYMENT_FAILED = 'subscription_payment_failed';
+    case SUBSCRIPTION_DOWNGRADED = 'subscription_downgraded';
+
     case FAVORITE_ADDED = 'favorite_added';
     case ACTIVITY_CREATED = 'activity_created';
     case ACTIVITY_UPDATED = 'activity_updated';

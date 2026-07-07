@@ -13,7 +13,7 @@ export class CookieStorageService implements IStorageService {
 
     async set(key: string, value: string): Promise<void> {
         if (typeof document === "undefined") return;
-        const { path = "/", sameSite = "Strict", secure = location.protocol === "https:" } = this.options;
+        const { path = "/", sameSite = "Lax", secure = location.protocol === "https:" } = this.options;
         const domainAttr = this.options.domain ? `; Domain=${this.options.domain}` : "";
         document.cookie = `${encodeURIComponent(key)}=${encodeURIComponent(value)}; path=${path}${domainAttr}; SameSite=${sameSite}${secure ? "; Secure" : ""}`;
     }

@@ -6,6 +6,7 @@ namespace App\Http\Requests\Activity;
 
 use App\Models\Activity;
 use App\Services\MediaService;
+use App\Services\Subscription\PlanLimitService;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Log;
@@ -17,9 +18,16 @@ class StoreActivityImageRequest extends FormRequest
     {
         $activity = $this->route('activity');
 
-        if ($activity instanceof Activity && $activity->getMedia(MediaService::COLLECTION_IMAGES)->count() >= 15) {
+        if (! $activity instanceof Activity) {
+            return true;
+        }
+
+        $maxPhotos = app(PlanLimitService::class)->maxPhotos($activity);
+
+        if ($maxPhotos !== null && $maxPhotos >= 0
+            && $activity->getMedia(MediaService::COLLECTION_IMAGES)->count() >= $maxPhotos) {
             throw ValidationException::withMessages([
-                'image' => ['This activity has reached the maximum number of images (15).'],
+                'image' => [__('plans.limit_reached.photos', ['limit' => (string) $maxPhotos])],
             ]);
         }
 
