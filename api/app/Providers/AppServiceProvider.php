@@ -13,6 +13,8 @@ use App\Models\Prospect;
 use App\Models\Review;
 use App\Models\ReviewReport;
 use App\Models\Scanner;
+use App\Models\Setting;
+use App\Models\SubscriptionPlan;
 use App\Models\User;
 use App\Policies\ActivityPolicy;
 use App\Policies\BookingPolicy;
@@ -23,6 +25,8 @@ use App\Policies\ProspectPolicy;
 use App\Policies\ReviewPolicy;
 use App\Policies\ReviewReportPolicy;
 use App\Policies\ScannerPolicy;
+use App\Policies\SettingPolicy;
+use App\Policies\SubscriptionPlanPolicy;
 use App\Policies\UserPolicy;
 use App\Services\Prospect\ApifyDiscoveryService;
 use App\Services\Prospect\Contracts\PlaceDiscoveryService;
@@ -64,6 +68,8 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Notification::class, NotificationPolicy::class);
         Gate::policy(Scanner::class, ScannerPolicy::class);
         Gate::policy(Prospect::class, ProspectPolicy::class);
+        Gate::policy(Setting::class, SettingPolicy::class);
+        Gate::policy(SubscriptionPlan::class, SubscriptionPlanPolicy::class);
 
         Route::bind('media', fn (string $value) => Media::where('uuid', $value)->firstOrFail());
 

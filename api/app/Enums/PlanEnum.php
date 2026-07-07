@@ -17,7 +17,7 @@ enum PlanEnum: string
 
     public function commissionRate(): string
     {
-        return (string) config('plans.'.$this->value.'.commission_rate', config('booking.host_commission_rate', '0.06'));
+        return (string) config('plans.'.$this->value.'.commission_rate', setting('host_commission_rate', config('booking.host_commission_rate', '0.06')));
     }
 
     /**

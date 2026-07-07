@@ -31,7 +31,7 @@ class BookingPayoutService
 
     public function releaseDuePayouts(): int
     {
-        $threshold = Carbon::now()->subHours((int) config('booking.payout_delay_hours', 24));
+        $threshold = Carbon::now()->subHours((int) setting('payout_delay_hours', config('booking.payout_delay_hours', 24)));
 
         $bookingIds = Booking::where('status', BookingStatusEnum::CONFIRMED)
             ->where('payment_status', PaymentStatusEnum::SUCCEEDED)

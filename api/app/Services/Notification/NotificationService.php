@@ -23,7 +23,7 @@ class NotificationService
      */
     public function notify(User|Collection $recipients, NotificationTypeEnum $type, array $data = []): void
     {
-        if ($type->isTierThree() && ! config('notifications.tier3_enabled')) {
+        if ($type->isTierThree() && ! setting('tier3_enabled', config('notifications.tier3_enabled'))) {
             return;
         }
 
