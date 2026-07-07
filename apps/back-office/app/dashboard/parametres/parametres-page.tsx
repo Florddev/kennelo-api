@@ -1,9 +1,6 @@
 "use client"
 
-import {
-  CreditCardIcon,
-  MoneyBag02Icon,
-} from "@hugeicons/core-free-icons"
+import { CreditCardIcon, MoneyBag02Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 
 import { SiteHeader } from "@/components/layout/site-header"
