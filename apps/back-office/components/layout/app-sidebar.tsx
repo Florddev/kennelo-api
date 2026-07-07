@@ -25,6 +25,7 @@ import {
   MapsIcon,
   Notebook01Icon,
   SearchList01Icon,
+  Settings02Icon,
   UserGroupIcon,
 } from "@hugeicons/core-free-icons"
 import KenneloIcon from "../svg/kennelo-icon"
@@ -86,6 +87,11 @@ const navSections = [
         title: "Journal",
         url: "/dashboard/journal",
         icon: <HugeiconsIcon icon={Notebook01Icon} strokeWidth={2} />,
+      },
+      {
+        title: "Paramètres",
+        url: "/dashboard/parametres",
+        icon: <HugeiconsIcon icon={Settings02Icon} strokeWidth={2} />,
       },
     ],
   },
