@@ -7,6 +7,7 @@ namespace Database\Seeders;
 use App\Enums\PlanEnum;
 use App\Models\SubscriptionPlan;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Artisan;
 
 class SubscriptionPlanSeeder extends Seeder
 {
@@ -19,8 +20,6 @@ class SubscriptionPlanSeeder extends Seeder
                 ['slug' => $plan->value],
                 [
                     'name' => $config['name'] ?? ucfirst($plan->value),
-                    'stripe_product_id' => $this->nullIfEmpty($config['stripe_product_id'] ?? null),
-                    'stripe_price_id' => $this->nullIfEmpty($config['stripe_price_id'] ?? null),
                     'description' => $config['description'] ?? null,
                     'price_monthly' => $config['price_monthly'] ?? '0.00',
                     'price_yearly' => $config['price_yearly'] ?? null,
@@ -32,10 +31,16 @@ class SubscriptionPlanSeeder extends Seeder
                 ]
             );
         }
+
+        if ($this->stripeConfigured()) {
+            Artisan::call('subscriptions:sync-stripe');
+        }
     }
 
-    private function nullIfEmpty(?string $value): ?string
+    private function stripeConfigured(): bool
     {
-        return $value === null || $value === '' ? null : $value;
+        $secret = (string) config('services.stripe.secret');
+
+        return $secret !== '' && ! str_starts_with($secret, 'sk_test_dummy');
     }
 }
