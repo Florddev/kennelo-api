@@ -18,6 +18,7 @@ interface ApiError extends Error {
 
 class ApiClient {
     public readonly baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+    public defaultTimeoutMs = 30000;
 
     private _tokenGetter: (() => Promise<string | null>) | undefined;
 
@@ -96,12 +97,24 @@ class ApiClient {
             headers["Authorization"] = `Bearer ${token}`;
         }
 
-        return await fetch(config.url, {
-            ...config.options,
-            method: config.method ?? "GET",
-            headers,
-            credentials: process.env.NEXT_PUBLIC_PLATFORM === "mobile" ? "omit" : "include",
-        });
+        const hasCallerSignal = config.options.signal != null;
+        const useTimeout = !hasCallerSignal && !isFormData && this.defaultTimeoutMs > 0;
+        const controller = useTimeout ? new AbortController() : null;
+        const timeoutId: ReturnType<typeof setTimeout> | null = controller
+            ? setTimeout(() => controller.abort(), this.defaultTimeoutMs)
+            : null;
+
+        try {
+            return await fetch(config.url, {
+                ...config.options,
+                method: config.method ?? "GET",
+                headers,
+                credentials: process.env.NEXT_PUBLIC_PLATFORM === "mobile" ? "omit" : "include",
+                ...(controller ? { signal: controller.signal } : {}),
+            });
+        } finally {
+            if (timeoutId) clearTimeout(timeoutId);
+        }
     }
 
     private async _request<T>(

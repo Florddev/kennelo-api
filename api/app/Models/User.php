@@ -140,7 +140,7 @@ class User extends Authenticatable implements HasLocalePreference, HasMedia, JWT
      */
     public function subscription(): HasOne
     {
-        return $this->hasOne(Subscription::class)->latestOfMany();
+        return $this->hasOne(Subscription::class)->latest();
     }
 
     public function effectivePlan(): PlanEnum

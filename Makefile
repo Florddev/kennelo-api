@@ -56,3 +56,6 @@ setup:
 
 refresh: ## Refresh DB and seed
 	cd api && php artisan migrate:fresh --seed
+
+stripe:
+	stripe listen --forward-to localhost:8000/api/webhooks/stripe

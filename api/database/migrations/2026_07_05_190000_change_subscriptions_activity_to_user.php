@@ -11,7 +11,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('subscriptions', function (Blueprint $table): void {
-            $table->dropForeign(['activity_id']);
+            $table->dropForeign('subscriptions_establishment_id_foreign');
             $table->renameColumn('activity_id', 'user_id');
         });
 
