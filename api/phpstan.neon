@@ -17,7 +17,5 @@ parameters:
     ignoreErrors:
         - path: tests/*
           message: '#Call to an undefined method Pest\\PendingCalls\\TestCall::#'
-        - path: database/migrations/*
-          message: '#Call to an undefined method Illuminate\\Database\\Schema\\ForeignKeyDefinition::#'
         - path: database/factories/*
           message: '#Call to an undefined method Faker\\Generator::#'
