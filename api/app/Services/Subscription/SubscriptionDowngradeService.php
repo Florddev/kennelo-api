@@ -43,7 +43,7 @@ class SubscriptionDowngradeService
 
     private function softDisableSurplusCycles(Activity $activity, PlanEnum $plan): void
     {
-        if (! config('plans.downgrade.soft_disable.cycles', false)) {
+        if (! setting('soft_disable_cycles', config('plans.downgrade.soft_disable.cycles', false))) {
             return;
         }
 

@@ -2,7 +2,15 @@
 
 declare(strict_types=1);
 
+use App\Services\Setting\SettingService;
 use Illuminate\Support\Carbon;
+
+if (! function_exists('setting')) {
+    function setting(string $key, mixed $default = null): mixed
+    {
+        return app(SettingService::class)->get($key, $default);
+    }
+}
 
 if (! function_exists('type_to_class')) {
     function type_to_class(string $type): ?string

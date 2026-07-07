@@ -12,6 +12,7 @@ class ProductionSeeder extends Seeder
     {
         $this->call([
             RoleSeeder::class,
+            SettingSeeder::class,
             SubscriptionPlanSeeder::class,
             AnimalTypeSeeder::class,
             AnimalBreedSeeder::class,

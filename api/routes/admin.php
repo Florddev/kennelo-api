@@ -9,7 +9,9 @@ use App\Http\Controllers\Admin\Prospect\ProspectContactController;
 use App\Http\Controllers\Admin\Prospect\ProspectController;
 use App\Http\Controllers\Admin\Prospect\ProspectNoteController;
 use App\Http\Controllers\Admin\SearchLogController;
+use App\Http\Controllers\Admin\Setting\SettingController;
 use App\Http\Controllers\Admin\StatsController;
+use App\Http\Controllers\Admin\Subscription\SubscriptionPlanController;
 use App\Http\Controllers\Admin\User\BulkController;
 use App\Http\Controllers\Admin\User\ImpersonationController;
 use App\Http\Controllers\Admin\User\NoteController;
@@ -96,3 +98,11 @@ Route::get('/audit-actions', [AuditController::class, 'index']);
 // Review moderation
 Route::get('/review-reports', [ReviewReportController::class, 'index']);
 Route::put('/review-reports/{report}', [ReviewReportController::class, 'update']);
+
+// Settings
+Route::get('/settings', [SettingController::class, 'index']);
+Route::put('/settings', [SettingController::class, 'update']);
+
+// Subscription plans
+Route::get('/subscription-plans', [SubscriptionPlanController::class, 'index']);
+Route::match(['put', 'patch'], '/subscription-plans/{plan}', [SubscriptionPlanController::class, 'update']);

@@ -451,7 +451,7 @@ class BookingService
 
     public function expireStalePending(): int
     {
-        $threshold = Carbon::now()->subHours((int) config('booking.acceptance_window_hours', 72));
+        $threshold = Carbon::now()->subHours((int) setting('acceptance_window_hours', config('booking.acceptance_window_hours', 72)));
 
         $bookingIds = Booking::where('status', BookingStatusEnum::PENDING)
             ->where('created_at', '<=', $threshold)
@@ -490,8 +490,8 @@ class BookingService
 
     public function remindPendingBookings(): int
     {
-        $reminderAt = Carbon::now()->subHours((int) config('booking.reminder_after_hours', 36));
-        $windowStart = Carbon::now()->subHours((int) config('booking.acceptance_window_hours', 72));
+        $reminderAt = Carbon::now()->subHours((int) setting('reminder_after_hours', config('booking.reminder_after_hours', 36)));
+        $windowStart = Carbon::now()->subHours((int) setting('acceptance_window_hours', config('booking.acceptance_window_hours', 72)));
 
         $bookingIds = Booking::where('status', BookingStatusEnum::PENDING)
             ->whereNull('reminded_at')
@@ -654,7 +654,7 @@ class BookingService
             ];
         }
 
-        $serviceFeeRate = (string) config('booking.user_service_fee_rate', '0.08');
+        $serviceFeeRate = (string) setting('user_service_fee_rate', config('booking.user_service_fee_rate', '0.08'));
         $hostCommissionRate = $activity->effectivePlan()->commissionRate();
 
         $serviceFee = bcmul($basePrice, $serviceFeeRate, 2);
