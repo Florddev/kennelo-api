@@ -11,6 +11,7 @@ update: ## Install deps Back/Front
 	cd api && composer install
 	cd api && php artisan storage:link
 	pnpm install
+	pnpm --filter @workspace/translations build
 
 update-deps: ## Bump deps + update locks
 	cd api && composer update

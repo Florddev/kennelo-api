@@ -34,15 +34,21 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
     const initialIsAuthenticated = await getInitialAuthState();
 
     return (
-        <html lang={DEFAULT_LOCALE} dir={DEFAULT_LOCALE_DIR} suppressHydrationWarning>
+        <html
+            lang={DEFAULT_LOCALE}
+            dir={DEFAULT_LOCALE_DIR}
+            data-scroll-behavior="smooth"
+            suppressHydrationWarning
+        >
             <head>
-                {process.env.NEXT_PUBLIC_PLATFORM !== "mobile" && (
-                    <script
-                        async
-                        crossOrigin="anonymous"
-                        src="https://tweakcn.com/live-preview.min.js"
-                    />
-                )}
+                {process.env.NODE_ENV === "development" &&
+                    process.env.NEXT_PUBLIC_PLATFORM !== "mobile" && (
+                        <script
+                            async
+                            crossOrigin="anonymous"
+                            src="https://tweakcn.com/live-preview.min.js"
+                        />
+                    )}
             </head>
             <body
                 className={cn(
