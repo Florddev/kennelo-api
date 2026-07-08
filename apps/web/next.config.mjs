@@ -10,10 +10,12 @@ const isDockerBuild = process.env.NEXT_PUBLIC_PLATFORM === 'docker';
 const apiOrigin = process.env.NEXT_PUBLIC_API_URL
     ? new URL(process.env.NEXT_PUBLIC_API_URL).origin
     : '';
-const reverbScheme = process.env.NEXT_PUBLIC_REVERB_SCHEME === 'https' ? 'wss' : 'ws';
-const reverbOrigin = process.env.NEXT_PUBLIC_REVERB_HOST
-    ? `${reverbScheme}://${process.env.NEXT_PUBLIC_REVERB_HOST}:${process.env.NEXT_PUBLIC_REVERB_PORT ?? ''}`
+const reverbHostPort = process.env.NEXT_PUBLIC_REVERB_HOST
+    ? `${process.env.NEXT_PUBLIC_REVERB_HOST}:${process.env.NEXT_PUBLIC_REVERB_PORT ?? ''}`
     : '';
+const reverbOrigins = reverbHostPort ? `ws://${reverbHostPort} wss://${reverbHostPort}` : '';
+const googleIdentityOrigin = 'https://accounts.google.com';
+const devThemePreviewOrigin = process.env.NODE_ENV === 'development' ? 'https://tweakcn.com' : '';
 
 const contentSecurityPolicy = [
     "default-src 'self'",
@@ -23,9 +25,12 @@ const contentSecurityPolicy = [
     "img-src 'self' data: blob: https:",
     "font-src 'self' data:",
     "style-src 'self' 'unsafe-inline'",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
-    `connect-src 'self' ${apiOrigin} ${reverbOrigin}`.trim(),
-].join('; ');
+    `script-src 'self' 'unsafe-inline' 'unsafe-eval' ${googleIdentityOrigin} ${devThemePreviewOrigin}`,
+    `frame-src 'self' ${googleIdentityOrigin}`,
+    `connect-src 'self' ${apiOrigin} ${reverbOrigins} ${googleIdentityOrigin}`,
+]
+    .map((directive) => directive.replace(/\s+/g, ' ').trim())
+    .join('; ');
 
 const securityHeaders = [
     { key: 'Content-Security-Policy', value: contentSecurityPolicy },

@@ -11,9 +11,13 @@ export async function refreshToken(): Promise<string> {
         throw new Error("No refresh token found");
     }
 
-    const response = await api.post<RefreshTokenResponseDto>("/refresh", {
-        refresh_token: refreshToken,
-    });
+    const response = await api.post<RefreshTokenResponseDto>(
+        "/refresh",
+        {
+            refresh_token: refreshToken,
+        },
+        { skipAuth: true },
+    );
 
     if (response.status !== 200) {
         throw new Error("Failed to refresh token");

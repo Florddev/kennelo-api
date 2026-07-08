@@ -31,7 +31,7 @@ export default function GuestLayout({
                             className="relative w-full h-full flex justify-start items-center font-semibold text-lg"
                         >
                             <Image
-                                className="object-cover max-h-full"
+                                className="object-cover max-h-full w-auto"
                                 src="/logo_font.svg"
                                 width={120}
                                 height={100}

@@ -9,6 +9,10 @@ export type ApiResponse<T> = {
     data: T | null;
 };
 
+export type ApiRequestOptions = RequestInit & {
+    skipAuth?: boolean;
+};
+
 interface ApiError extends Error {
     status: number;
     data: unknown;
@@ -77,15 +81,18 @@ class ApiClient {
     private async _fetchApi(
         url: string,
         method: string,
-        options: RequestInit = {},
+        options: ApiRequestOptions = {},
     ): Promise<Response> {
-        const config: RequestConfig = { url, method, options };
+        const { skipAuth, ...requestInit } = options;
+        const config: RequestConfig = { url, method, options: requestInit };
 
-        const token = this._tokenGetter
-            ? await this._tokenGetter()
-            : typeof window !== "undefined"
-              ? localStorage.getItem("access_token")
-              : null;
+        const token = skipAuth
+            ? null
+            : this._tokenGetter
+              ? await this._tokenGetter()
+              : typeof window !== "undefined"
+                ? localStorage.getItem("access_token")
+                : null;
 
         const isFormData = config.options.body instanceof FormData;
         const headers: Record<string, string> = {
@@ -120,7 +127,7 @@ class ApiClient {
     private async _request<T>(
         path: string,
         method: string,
-        options: RequestInit = {},
+        options: ApiRequestOptions = {},
         params?: Record<string, string | number | boolean>,
     ): Promise<ApiResponse<T>> {
         const url = this._buildUrl(path, params);
@@ -131,7 +138,7 @@ class ApiClient {
     async get<T = unknown>(
         path: string,
         params?: Record<string, string | number | boolean>,
-        options?: RequestInit,
+        options?: ApiRequestOptions,
     ): Promise<ApiResponse<T>> {
         return this._request<T>(path, "GET", { ...options }, params);
     }
@@ -139,7 +146,7 @@ class ApiClient {
     async post<T = unknown>(
         path: string,
         body?: unknown,
-        options?: RequestInit,
+        options?: ApiRequestOptions,
     ): Promise<ApiResponse<T>> {
         const serialized = body instanceof FormData ? body : JSON.stringify(body);
         return this._request<T>(path, "POST", { body: serialized, ...options });
@@ -148,12 +155,12 @@ class ApiClient {
     async put<T = unknown>(
         path: string,
         body?: unknown,
-        options?: RequestInit,
+        options?: ApiRequestOptions,
     ): Promise<ApiResponse<T>> {
         return this._request<T>(path, "PUT", { body: JSON.stringify(body), ...options });
     }
 
-    async delete<T = unknown>(path: string, options?: RequestInit): Promise<ApiResponse<T>> {
+    async delete<T = unknown>(path: string, options?: ApiRequestOptions): Promise<ApiResponse<T>> {
         return this._request<T>(path, "DELETE", { ...options });
     }
 }
