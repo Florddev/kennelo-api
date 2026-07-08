@@ -96,8 +96,12 @@ class EchoClient {
     }
 
     disconnect(): void {
-        this._echo?.disconnect();
+        const echo = this._echo;
         this._echo = null;
+
+        if (!echo) return;
+
+        setTimeout(() => echo.disconnect(), 0);
     }
 
     private(channel: string): ReturnType<Echo<"reverb">["private"]> {
@@ -106,7 +110,17 @@ class EchoClient {
     }
 
     leave(channel: string): void {
-        this._echo?.leave(channel);
+        if (!this._echo) return;
+
+        const connection = (
+            this._echo.connector as unknown as {
+                pusher?: { connection?: { state?: string } };
+            }
+        ).pusher?.connection;
+
+        if (connection?.state === "connected") {
+            this._echo.leave(channel);
+        }
     }
 }
 
