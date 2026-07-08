@@ -41,9 +41,12 @@ return new class extends Migration
             $table->timestamp('last_seen_at')->nullable()->index();
 
             $table->foreign('address_id')->references('id')->on('addresses')->nullOnDelete();
-            $table->foreign('banned_by')->references('id')->on('users')->nullOnDelete();
 
             $table->index('address_id', 'users_address_id_index');
+        });
+
+        Schema::table('users', function (Blueprint $table) {
+            $table->foreign('banned_by')->references('id')->on('users')->nullOnDelete();
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
