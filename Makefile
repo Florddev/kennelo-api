@@ -1,4 +1,18 @@
-.PHONY: help main update update-deps start down infra infra-down larastan test-e2e test-e2e-ui e2e-serve test-e2e-ui-reuse e2e-down
+# Makefile Kennelo — cibles de développement local et de déploiement.
+#
+# Les cibles de déploiement (deploy-preprod, deploy-prod, rollback, status)
+# s'exécutent sur le manager Swarm de l'environnement visé, depuis la racine
+# du dépôt cloné (~/kennelo). Elles composent checkout git + scripts
+# infra/scripts/deploy-*.sh pour l'usage manuel (fallback si le CD tombe,
+# debug, rollback). Les workflows GitHub Actions n'utilisent pas ces cibles :
+# ils font leur propre checkout puis appellent deploy-app.sh directement.
+#
+# Exemples :
+#   make deploy-preprod
+#   make deploy-prod TAG=v0.2.0
+#   make rollback TAG=v0.1.0
+
+.PHONY: help main update update-deps start down infra infra-down larastan test-e2e test-e2e-ui e2e-serve test-e2e-ui-reuse e2e-down deploy-preprod deploy-prod rollback status check-tag
 
 help: ## Show this message
 	@echo "Available commands:"
@@ -97,3 +111,30 @@ refresh: ## Refresh DB and seed
 
 stripe:
 	stripe listen --forward-to localhost:8000/api/webhooks/stripe
+
+##@ Déploiement (sur le manager Swarm de l'environnement)
+
+deploy-preprod: ## Deploy latest main to preprod
+	git checkout main
+	git pull --ff-only
+	ENV=preprod ./infra/scripts/deploy-app.sh
+
+deploy-prod: check-tag ## Deploy a tagged release to prod: make deploy-prod TAG=vX.Y.Z
+	git fetch --tags origin
+	git checkout $(TAG)
+	ENV=prod IMAGE_TAG=$(TAG) ./infra/scripts/deploy-app.sh
+
+rollback: deploy-prod ## Redeploy a previous release to prod: make rollback TAG=vX.Y.Z
+
+status: ## Show app services state (api, web, reverb)
+	docker service ls --filter name=api --filter name=web --filter name=reverb
+
+check-tag:
+	@if [ -z "$(TAG)" ]; then \
+		echo "Erreur : TAG est obligatoire (make deploy-prod TAG=vX.Y.Z)" >&2; \
+		exit 1; \
+	fi
+	@echo "$(TAG)" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+$$' || { \
+		echo "Erreur : TAG doit être au format vX.Y.Z (reçu : '$(TAG)')" >&2; \
+		exit 1; \
+	}
