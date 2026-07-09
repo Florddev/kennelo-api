@@ -1,6 +1,6 @@
 services:
   reverb:
-    image: ghcr.io/anthony14fr/kennelo-api:main
+    image: ghcr.io/anthony14fr/kennelo-api:${IMAGE_TAG}
     command: ["php", "artisan", "reverb:start", "--host=0.0.0.0", "--port=8080"]
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://127.0.0.1:8080/up"]
@@ -16,7 +16,7 @@ services:
       # Reverb server
       REVERB_SERVER_HOST: 0.0.0.0
       REVERB_SERVER_PORT: "8080"
-      REVERB_HOST: ws.kennelo.fr
+      REVERB_HOST: ${REVERB_PUBLIC_HOST}
       REVERB_PORT: "443"
       REVERB_SCHEME: https
       REVERB_APP_ID: kennelo
@@ -51,7 +51,7 @@ services:
       - kennelo-internal
       - kennelo-public
     deploy:
-      replicas: 2
+      replicas: ${REVERB_REPLICAS}
       restart_policy:
         condition: any
       update_config:

@@ -1,6 +1,6 @@
 services:
   web:
-    image: ghcr.io/anthony14fr/kennelo-web:main
+    image: ghcr.io/anthony14fr/kennelo-web:${IMAGE_TAG}
     networks:
       - kennelo-public
     healthcheck:
@@ -10,7 +10,7 @@ services:
       start_period: 30s
       retries: 3
     deploy:
-      replicas: 2
+      replicas: ${WEB_REPLICAS}
       restart_policy:
         condition: any
       update_config:
