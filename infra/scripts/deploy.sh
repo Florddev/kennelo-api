@@ -1,33 +1,32 @@
 #!/usr/bin/env bash
-# deploy.sh — Déploie (ou met à jour) toutes les stacks Kennelo sur le Swarm.
-# À exécuter sur le nœud manager depuis la racine du dépôt cloné.
+# deploy.sh — Orchestrateur de déploiement complet (setup initial, debug).
+# Enchaîne plateforme, applicatif, puis admin (prod uniquement).
+# Le CD n'appelle PAS ce script : il appelle deploy-app.sh directement.
+# Le checkout git est la responsabilité de l'appelant.
+#
+# Usage :
+#   ENV=preprod ./infra/scripts/deploy.sh
+#   ENV=prod IMAGE_TAG=v0.2.0 ./infra/scripts/deploy.sh
 set -euo pipefail
 
-STACK_DIR="infra/stacks"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-echo "==> Mise à jour du dépôt"
-git pull --ff-only
+source "$SCRIPT_DIR/lib.sh"
+load_env
 
-echo ""
-echo "==> Pull des images applicatives (depuis GHCR)"
-docker pull ghcr.io/anthony14fr/kennelo-api:feature-infra-swarm-cluster
-docker pull ghcr.io/anthony14fr/kennelo-web:feature-infra-swarm-cluster
+"$SCRIPT_DIR/deploy-platform.sh"
 
 echo ""
-echo "==> Déploiement des stacks d'infrastructure"
-docker stack deploy -c "$STACK_DIR/proxy.yml"    proxy
-docker stack deploy -c "$STACK_DIR/postgres.yml" postgres
-docker stack deploy -c "$STACK_DIR/redis.yml"    redis
-docker stack deploy -c "$STACK_DIR/minio.yml"    minio
+"$SCRIPT_DIR/deploy-app.sh"
 
-echo ""
-echo "==> Déploiement des stacks applicatives (avec auth registry)"
-docker stack deploy -c "$STACK_DIR/api.yml" api --with-registry-auth
-docker stack deploy -c "$STACK_DIR/web.yml" web --with-registry-auth
+if [[ "$ENV" == "prod" ]]; then
+  echo ""
+  "$SCRIPT_DIR/deploy-admin.sh"
+fi
 
 echo ""
 echo "==> État des services"
 docker service ls
 
 echo ""
-echo "Déploiement terminé."
+echo "Déploiement complet terminé ($ENV)."
