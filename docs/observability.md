@@ -1,7 +1,8 @@
 # Observabilité et exploitation du cluster
 
 Ce document décrit les outils d'administration du cluster (Portainer), leur
-sécurisation et les procédures d'exploitation associées.
+sécurisation, les procédures d'exploitation associées, et le fonctionnement
+des déploiements par environnement.
 
 ## Portainer
 
@@ -229,3 +230,81 @@ Depuis une machine externe (doit renvoyer 000) :
 curl -s -o /dev/null -w "%{http_code}" --max-time 5 http://46.101.124.234:9090
 curl -s -o /dev/null -w "%{http_code}" --max-time 5 http://46.101.124.234:3000
 ```
+
+## Déploiement et environnements
+
+Kennelo vit sur deux environnements : la production (cluster Swarm 3 nœuds)
+et la préproduction (VPS dédié mono-nœud, isolation complète). Le principe
+directeur : la branche main alimente la préproduction, un tag git `vX.Y.Z`
+déclenche une release de production. Chaque déploiement de production est
+ainsi une décision explicite, jamais un effet de bord d'un merge.
+
+La mécanique d'exécution (scripts, Makefile, variables d'environnement) est
+documentée dans `infra/README.md` ; cette section couvre le cycle de vie des
+images et la discipline de release.
+
+### Architecture des tags d'images
+
+La CI publie les images api et web sur GHCR avec des tags dont le nom dit
+exactement ce qu'ils contiennent :
+
+| Tag              | Produit sur       | Nature                                        |
+| ---------------- | ----------------- | --------------------------------------------- |
+| `preprod-latest` | push sur main     | Pointeur mobile, dernier merge, URLs préprod  |
+| `vX.Y.Z`         | push d'un tag git | Immuable, une release précise, URLs prod      |
+| `prod`           | push d'un tag git | Pointeur mobile vers la dernière release      |
+| `sha-xxx`        | chaque build      | Immuable, un commit précis, pour rollback fin |
+
+Les anciens tags `main` et `latest` ne sont plus produits : un tag ambigu sur
+ce qu'il contient finit toujours par provoquer une erreur opérationnelle.
+
+### Cycle de release standard
+
+1. Une PR est mergée sur main. La CI builde et publie `:preprod-latest`, qui
+   se déploie sur la préproduction (automatiquement, une fois le CD en
+   place).
+2. La version est validée sur la préproduction : parcours fonctionnels,
+   vérification des points sensibles de la PR.
+3. Un tag git `vX.Y.Z` est posé sur le commit validé et poussé. La CI builde
+   et publie `:vX.Y.Z` et `:prod`.
+4. La production est déployée sur ce tag (`make deploy-prod TAG=vX.Y.Z`, ou
+   le CD une fois en place).
+
+Un rollback est le redéploiement d'un tag antérieur — procédure détaillée
+dans `infra/README.md`.
+
+### Build par environnement pour l'image web
+
+L'image web est construite une fois par environnement, car les variables
+`NEXT_PUBLIC_*` (URL de l'API, hôte WebSocket) sont inlinées dans le bundle
+client au moment du build : une image buildée avec les URLs de production ne
+peut pas servir la préproduction. Les valeurs sont dérivées des fichiers
+`infra/env/*.env`, la même source de vérité que les scripts de déploiement.
+
+Cette stratégie est cohérente avec les builds mobiles Capacitor, distribués
+par nature en bundles statiques construits par environnement : un seul
+système de configuration pour le web et le mobile.
+
+### Réflexion ouverte : configuration runtime
+
+L'alternative — une image web unique lisant sa configuration au démarrage du
+conteneur — supprimerait le build par environnement, au prix d'un refactoring
+du front (les `NEXT_PUBLIC_*` ne peuvent plus être utilisés tels quels côté
+client). Elle ne se justifierait que si les besoins changent : déploiement
+multi-région, environnements éphémères par PR. Notée comme évolution
+possible, pas au barème à court terme.
+
+### Discipline de validation
+
+Ne jamais poser un tag de release sans avoir vu tourner le
+`:preprod-latest` correspondant sur la préproduction. C'est la contrepartie
+du build par environnement : l'image de production n'étant pas l'artefact
+exact testé en préproduction (les URLs diffèrent), la validation porte sur le
+commit, et elle doit avoir eu lieu.
+
+Le bug de configuration Google OAuth révélé à la bascule v0.1.0 (issue #93)
+illustre exactement ce que cette discipline intercepte : un mois de commits
+mergés sans jamais tourner devant un utilisateur, et le premier déploiement
+qui les embarque découvre le problème en production. Avec une préproduction
+alimentée à chaque merge, ce bug aurait été visible des semaines avant
+d'atteindre un tag.
