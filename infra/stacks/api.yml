@@ -1,17 +1,17 @@
 services:
   api:
-    image: ghcr.io/anthony14fr/kennelo-api:main
+    image: ghcr.io/anthony14fr/kennelo-api:${IMAGE_TAG}
     environment:
       APP_NAME: Kennelo
       APP_ENV: production
       APP_DEBUG: "false"
-      APP_URL: https://api.kennelo.fr
-      FRONTEND_URL: https://kennelo.fr
-      CORS_ALLOWED_ORIGINS: "https://kennelo.fr,https://www.kennelo.fr,https://kennelo.com,https://www.kennelo.com"
+      APP_URL: ${APP_URL}
+      FRONTEND_URL: ${FRONTEND_URL}
+      CORS_ALLOWED_ORIGINS: "${CORS_ALLOWED_ORIGINS}"
 
       APP_LOCALE: en
       APP_FALLBACK_LOCALE: en
-      DOMAIN_LOCALES: "kennelo.fr:fr,kennelo.com:en,kennelo.it:it,kennelo.be:fr,kennelo.de:de"
+      DOMAIN_LOCALES: "${DOMAIN_LOCALES}"
       DEFAULT_LOCALE: en
       AVAILABLE_LOCALES: "fr,en,it,de"
 
@@ -41,7 +41,7 @@ services:
       AWS_BUCKET: kennelo-media
       AWS_ENDPOINT: http://minio:9000
       AWS_USE_PATH_STYLE_ENDPOINT: "true"
-      AWS_URL: https://cdn.kennelo.fr/kennelo-media
+      AWS_URL: ${AWS_URL}
 
       JWT_ALGO: HS256
       JWT_TTL: "60"
@@ -50,7 +50,7 @@ services:
       BROADCAST_CONNECTION: reverb
       REVERB_APP_ID: kennelo
       REVERB_APP_KEY: kennelo-key
-      REVERB_HOST: ws.kennelo.fr
+      REVERB_HOST: ${REVERB_PUBLIC_HOST}
       REVERB_PORT: "443"
       REVERB_SCHEME: https
 
@@ -67,7 +67,7 @@ services:
       - kennelo-internal
       - kennelo-public
     deploy:
-      replicas: 2
+      replicas: ${API_REPLICAS}
       restart_policy:
         condition: any
       update_config:
