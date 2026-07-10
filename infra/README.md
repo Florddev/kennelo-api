@@ -54,8 +54,10 @@ secrets (`kennelo_*`) mais des valeurs différentes.
 ## Fichiers de configuration (`infra/env/`)
 
 Les valeurs qui varient entre environnements — tag d'image, domaines publics,
-CORS, replicas — vivent dans des fichiers versionnés, sourcés par les scripts
-de déploiement puis interpolés dans les stacks via `${VAR}` :
+CORS, replicas, identifiants publics du client OAuth Google
+(`NEXT_PUBLIC_GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_ID`, `GOOGLE_REDIRECT_URI`) —
+vivent dans des fichiers versionnés, sourcés par les scripts de déploiement
+puis interpolés dans les stacks via `${VAR}` :
 
 - `prod.env` : valeurs de la production
 - `preprod.env` : valeurs de la préproduction

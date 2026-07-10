@@ -308,3 +308,29 @@ mergés sans jamais tourner devant un utilisateur, et le premier déploiement
 qui les embarque découvre le problème en production. Avec une préproduction
 alimentée à chaque merge, ce bug aurait été visible des semaines avant
 d'atteindre un tag.
+
+### Authentification Google (OAuth)
+
+Le login Google repose sur un client OAuth de la Google Cloud Console,
+branché de bout en bout depuis la correction de l'issue #93. Un seul client
+est partagé entre production et préproduction : choix pragmatique tant
+qu'aucun des deux environnements ne sert d'utilisateurs externes, les
+origines autorisées du client listant simplement les deux domaines. Splitter
+en deux clients distincts reste possible si un besoin d'isolation apparaît.
+
+Le câblage suit la séparation public / privé habituelle :
+
+- Le **client_id** est public par nature. Il vit dans les fichiers
+  `infra/env/*.env` : inliné au build web via `NEXT_PUBLIC_GOOGLE_CLIENT_ID`
+  (comme les autres `NEXT_PUBLIC_*`, voir « Build par environnement »), et
+  injecté dans l'environnement du service api (`GOOGLE_CLIENT_ID`,
+  `GOOGLE_REDIRECT_URI`) pour Socialite côté Laravel.
+- Le **client_secret** est un Docker Secret
+  (`kennelo_google_client_secret`), jamais présent dans le dépôt. Sa valeur
+  venant de la Google Cloud Console, il est créé manuellement sur le manager
+  de chaque environnement — même procédure que `kennelo_app_key`, rappelée
+  par `bootstrap.sh` :
+
+```
+printf '%s' 'GOCSPX-...' | docker secret create kennelo_google_client_secret -
+```

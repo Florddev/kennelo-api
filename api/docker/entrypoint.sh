@@ -18,6 +18,7 @@ load_secret "DB_PASSWORD"           "/run/secrets/kennelo_postgres_password"
 load_secret "REDIS_PASSWORD"        "/run/secrets/kennelo_redis_password"
 load_secret "AWS_ACCESS_KEY_ID"     "/run/secrets/kennelo_minio_root_user"
 load_secret "AWS_SECRET_ACCESS_KEY" "/run/secrets/kennelo_minio_root_password"
+load_secret "GOOGLE_CLIENT_SECRET"  "/run/secrets/kennelo_google_client_secret"
 
 echo "Caching Laravel config, routes and views..."
 php artisan config:cache || true

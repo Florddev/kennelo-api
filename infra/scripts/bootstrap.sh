@@ -28,12 +28,19 @@ create_secret kennelo_redis_password      "$(openssl rand -base64 32 | tr -d '\n
 create_secret kennelo_minio_root_user     "kennelo_minio_admin"
 create_secret kennelo_minio_root_password "$(openssl rand -base64 32 | tr -d '\n')"
 create_secret kennelo_jwt_secret          "$(openssl rand -base64 64 | tr -d '\n')"
+create_secret kennelo_reverb_app_secret   "$(openssl rand -base64 32 | tr -d '\n')"
 
 echo ""
 echo "==> APP_KEY (Laravel)"
 echo "  Le secret kennelo_app_key doit être créé manuellement avec une clé"
 echo "  générée par 'php artisan key:generate --show' :"
 echo "    printf '%s' 'base64:...' | docker secret create kennelo_app_key -"
+
+echo ""
+echo "==> GOOGLE_CLIENT_SECRET (OAuth)"
+echo "  Le secret kennelo_google_client_secret doit être créé manuellement avec"
+echo "  la valeur du client OAuth de la Google Cloud Console :"
+echo "    printf '%s' 'GOCSPX-...' | docker secret create kennelo_google_client_secret -"
 
 echo ""
 echo "==> Secrets présents :"
