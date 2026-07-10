@@ -153,6 +153,10 @@
         "deleteDescription": "Êtes-vous sûr de vouloir supprimer cette activité ? Cette action est irréversible.",
         "deleteSuccess": "Activité supprimé avec succès"
     },
+    "overview": {
+        "quickLinks": "Gestion rapide",
+        "revenueThisMonth": "Chiffre d'affaires du mois"
+    },
     "dashboard": {
         "title": "Tableau de bord",
         "totalCapacity": "Capacité totale",
@@ -283,5 +287,6 @@
         "decline": "Refuser",
         "accepted": "Invitation acceptée",
         "declined": "Invitation refusée"
-    }
+    },
+    "manage": "Gérer mes activités"
 }

@@ -157,7 +157,7 @@ export function ConversationView({ onBack }: { onBack?: () => void }) {
                     )}
                     <div ref={messagesEndRef} />
                 </div>
-                <div className="md:px-8">
+                <div className="md:px-6">
                     <MessageComposer />
                 </div>
             </div>

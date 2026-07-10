@@ -1,29 +1,31 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Building2 } from "lucide-react";
-import { Calendar } from "@solar-icons/react";
 
-import { Badge } from "@workspace/ui/components/badge";
-import { cn } from "@workspace/ui/lib/utils";
+import { Separator } from "@workspace/ui/components/separator";
 import type { BookingStatus } from "@workspace/modules/bookings";
 
 import { useAuth } from "@/features/auth";
 import { useCalendarActivityBookings } from "@/features/bookings/hooks/use-calendar-activity-bookings";
-import { BookingsCalendar } from "@/features/bookings/components/bookings-calendar";
-import { DayBookingsSheet } from "@/features/bookings/components/day-bookings-sheet";
-import { bookingsForDay } from "@/features/bookings/lib/calendar-grid";
 import {
-    DEFAULT_ACTIVE_STATUSES,
-    SELECTABLE_STATUSES,
-    activityColor,
-    statusColor,
-} from "@/features/bookings/lib/booking-colors";
-import PageLayout from "@/components/layouts/page-layout";
+    BookingsCalendar,
+    CalendarSidebar,
+} from "@/features/bookings/components/bookings-calendar";
+import { DayBookingsSheet } from "@/features/bookings/components/day-bookings-sheet";
+import {
+    EMPTY_DAY_MOVEMENTS,
+    buildMonthWeeks,
+    buildMovementsByDay,
+    computeMonthStats,
+    movementsForDay,
+} from "@/features/bookings/lib/calendar-grid";
+import { DEFAULT_ACTIVE_STATUSES } from "@/features/bookings/lib/booking-colors";
 
 export default function HostingCalendarPage() {
     const t = useTranslations();
+    const locale = useLocale();
     const { activities, isLoaded } = useAuth();
 
     const activityMetaById = useMemo(() => {
@@ -39,16 +41,15 @@ export default function HostingCalendarPage() {
     }, [activities]);
 
     const [focusedMonth, setFocusedMonth] = useState(() => new Date());
-    const [activeActivityIds, setActiveActivityIds] = useState<string[]>(() =>
-        activities.map((activity) => activity.id),
-    );
+    const [selectedActivityIds, setSelectedActivityIds] = useState<string[] | null>(null);
     const [activeStatuses, setActiveStatuses] = useState<BookingStatus[]>(DEFAULT_ACTIVE_STATUSES);
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
     const [sheetOpen, setSheetOpen] = useState(false);
 
     const allActivityIds = useMemo(() => activities.map((activity) => activity.id), [activities]);
+    const activeActivityIds = selectedActivityIds ?? allActivityIds;
 
-    const weekStartsOn: 0 | 1 = 1;
+    const weekStartsOn: 0 | 1 = locale === "en" ? 0 : 1;
 
     const { bookingsByActivityId } = useCalendarActivityBookings({
         activityIds: allActivityIds,
@@ -65,15 +66,41 @@ export default function HostingCalendarPage() {
             .filter((booking) => activeStatusSet.has(booking.status));
     }, [bookingsByActivityId, activeActivityIds, activeStatuses]);
 
-    const dayBookings = useMemo(
-        () => (selectedDate ? bookingsForDay(selectedDate, filteredBookings) : []),
+    const weeks = useMemo(
+        () => buildMonthWeeks(focusedMonth, weekStartsOn),
+        [focusedMonth, weekStartsOn],
+    );
+
+    const movementsByDay = useMemo(
+        () => buildMovementsByDay(weeks, filteredBookings),
+        [weeks, filteredBookings],
+    );
+
+    const stats = useMemo(
+        () => computeMonthStats(weeks, movementsByDay, focusedMonth, filteredBookings),
+        [weeks, movementsByDay, focusedMonth, filteredBookings],
+    );
+
+    const dayMovements = useMemo(
+        () =>
+            selectedDate ? movementsForDay(selectedDate, filteredBookings) : EMPTY_DAY_MOVEMENTS,
         [selectedDate, filteredBookings],
     );
 
     const toggleActivity = (id: string) => {
-        setActiveActivityIds((prev) =>
-            prev.includes(id) ? prev.filter((eid) => eid !== id) : [...prev, id],
-        );
+        setSelectedActivityIds((prev) => {
+            const base = prev ?? allActivityIds;
+            return base.includes(id) ? base.filter((eid) => eid !== id) : [...base, id];
+        });
+    };
+
+    const toggleAllActivities = () => {
+        setSelectedActivityIds((prev) => {
+            const base = prev ?? allActivityIds;
+            return base.length === activities.length
+                ? []
+                : activities.map((activity) => activity.id);
+        });
     };
 
     const toggleStatus = (status: BookingStatus) => {
@@ -107,89 +134,44 @@ export default function HostingCalendarPage() {
         );
     }
 
-    const filters = (
-        <div className="flex flex-col gap-3">
-            {activities.length > 1 && (
-                <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-xs font-medium text-muted-foreground me-1">
-                        {t("features.hosting-calendar.filters.activities")}
-                    </span>
-                    {activities.map((activity) => {
-                        const meta = activityMetaById[activity.id]!;
-                        const color = activityColor(meta.colorIndex);
-                        const active = activeActivityIds.includes(activity.id);
-                        return (
-                            <button
-                                key={activity.id}
-                                type="button"
-                                onClick={() => toggleActivity(activity.id)}
-                                className={cn(
-                                    "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition-opacity",
-                                    color.chipBg,
-                                    color.chipBorder,
-                                    color.chipText,
-                                    !active && "opacity-40",
-                                )}
-                            >
-                                <span className={cn("size-2 rounded-full", color.dot)} />
-                                {activity.name}
-                            </button>
-                        );
-                    })}
-                </div>
-            )}
-
-            <div className="flex flex-wrap items-center gap-2">
-                <span className="text-xs font-medium text-muted-foreground me-1">
-                    {t("features.hosting-calendar.filters.statuses")}
-                </span>
-                {SELECTABLE_STATUSES.map((status) => {
-                    const color = statusColor(status);
-                    const active = activeStatuses.includes(status);
-                    return (
-                        <button
-                            key={status}
-                            type="button"
-                            onClick={() => toggleStatus(status)}
-                            className={cn("transition-opacity", !active && "opacity-40")}
-                        >
-                            <Badge variant="outline" className={cn(color.badge)}>
-                                {t(
-                                    `features.hosting-calendar.status.${status}` as Parameters<
-                                        typeof t
-                                    >[0],
-                                )}
-                            </Badge>
-                        </button>
-                    );
-                })}
-            </div>
-        </div>
-    );
-
     return (
-        <PageLayout
-            Icon={Calendar}
-            title={t("ui.navigation.hosting.calendar")}
-            headerBottom={filters}
-            className="px-6 pb-6 pt-2 space-y-0"
-        >
-            <div className="flex flex-col gap-4">
-                <BookingsCalendar
-                    focusedMonth={focusedMonth}
-                    onFocusedMonthChange={setFocusedMonth}
-                    bookings={filteredBookings}
-                    activityMetaById={activityMetaById}
-                    onDayClick={onDayClick}
-                />
-                <DayBookingsSheet
-                    open={sheetOpen}
-                    onOpenChange={setSheetOpen}
-                    selectedDate={selectedDate}
-                    bookings={dayBookings}
-                    activityMetaById={activityMetaById}
-                />
+        <>
+            <div className="flex flex-col md:flex-row w-full md:h-[calc(100dvh-var(--header-height))]">
+                <div className="w-full md:max-w-76 shrink-0 p-4 md:p-6 md:overflow-y-auto">
+                    <CalendarSidebar
+                        focusedMonth={focusedMonth}
+                        stats={stats}
+                        activities={activities}
+                        activityMetaById={activityMetaById}
+                        activeActivityIds={activeActivityIds}
+                        onToggleActivity={toggleActivity}
+                        onToggleAllActivities={toggleAllActivities}
+                        activeStatuses={activeStatuses}
+                        onToggleStatus={toggleStatus}
+                    />
+                </div>
+
+                <Separator orientation="vertical" className="hidden md:block w-[1px] h-full" />
+
+                <div className="flex-1 min-w-0 md:overflow-y-auto">
+                    <BookingsCalendar
+                        focusedMonth={focusedMonth}
+                        onFocusedMonthChange={setFocusedMonth}
+                        weeks={weeks}
+                        movementsByDay={movementsByDay}
+                        peak={stats.peak}
+                        weekStartsOn={weekStartsOn}
+                        onDayClick={onDayClick}
+                    />
+                </div>
             </div>
-        </PageLayout>
+
+            <DayBookingsSheet
+                open={sheetOpen}
+                onOpenChange={setSheetOpen}
+                selectedDate={selectedDate}
+                movements={dayMovements}
+            />
+        </>
     );
 }

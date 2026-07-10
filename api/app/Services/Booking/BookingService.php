@@ -67,7 +67,7 @@ class BookingService
     {
         $perPage = $filters['per_page'] ?? 15;
 
-        return Booking::with(['user', 'pets', 'services'])
+        return Booking::with(['user', 'pets.animalType', 'services'])
             ->where('activity_id', $activity->id)
             ->when(isset($filters['status']), fn ($q) => $q->where('status', $filters['status']))
             ->when(isset($filters['date_from']), fn ($q) => $q->where('check_in_date', '>=', $filters['date_from']))

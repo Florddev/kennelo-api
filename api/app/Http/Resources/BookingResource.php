@@ -40,13 +40,21 @@ class BookingResource extends JsonResource
             'paid_at' => $this->paid_at ? human_date($this->paid_at) : null,
             'user' => new UserResource($this->whenLoaded('user')),
             'activity' => new ActivityResource($this->whenLoaded('activity')),
-            'pets' => $this->whenLoaded('pets', fn () => $this->pets->map(fn (Pet $pet) => [
+            'pets' => $this->whenLoaded('pets', fn () => $this->pets->map(fn (Pet $pet): array => [
                 'id' => $pet->id,
                 'name' => $pet->name,
                 'price_per_night' => $pet->booking_pet->price_per_night,
                 'number_of_nights' => $pet->booking_pet->number_of_nights,
                 'subtotal' => $pet->booking_pet->subtotal,
-            ])),
+                'animal_type' => $pet->relationLoaded('animalType') && $pet->animalType !== null
+                    ? [
+                        'id' => $pet->animalType->id,
+                        'code' => $pet->animalType->code,
+                        'name' => $pet->animalType->name,
+                        'category' => $pet->animalType->category,
+                    ]
+                    : null,
+            ])->values()->all()),
             'services' => $this->whenLoaded('services', fn () => $this->services->map(fn (Service $service) => [
                 'id' => $service->id,
                 'name' => $service->name,

@@ -56,8 +56,6 @@ type StripeElementChangeEvent =
     | StripeCardExpiryElementChangeEvent
     | StripeCardCvcElementChangeEvent;
 
-const stripePromise = getStripe();
-
 const elementOptions = {
     style: {
         base: {
@@ -302,6 +300,8 @@ export function AddPaymentMethodDialog({
             appearance: { theme: "stripe" as const },
         };
     }, [clientSecret]);
+
+    const stripePromise = useMemo(() => getStripe(), []);
 
     const handleSuccess = useCallback(() => {
         onSuccess?.();

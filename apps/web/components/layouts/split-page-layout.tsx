@@ -30,7 +30,7 @@ function useSplitPageLayout() {
 }
 
 function SplitPageLayout({
-    isRoot,
+    isRoot = false,
     children,
     className,
 }: {
@@ -80,7 +80,7 @@ function SplitPageLayoutSidebar({
             data-slot="split-page-layout-sidebar"
             className={cn("w-full md:w-1/3 md:p-8 md:overflow-y-auto", className)}
         >
-            <div className="flex flex-col">{children}</div>
+            <div className="flex flex-col h-full">{children}</div>
         </div>
     );
 }

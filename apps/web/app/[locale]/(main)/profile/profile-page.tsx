@@ -46,11 +46,10 @@ export default function ProfilePage() {
         : 0;
 
     const memberSinceYear = isValidDate ? createdAtDate!.getFullYear().toString() : "0";
-
     const isManager = user?.hasAnyRoles(["manager"]) ?? false;
 
     return (
-        <div className="container mx-auto md:px-4">
+        <div className="container mx-auto p-4 md:p-6">
             <PageLayout
                 Icon={UserCircle}
                 title={t("features.profile.title")}
@@ -66,6 +65,7 @@ export default function ProfilePage() {
                         </Button>
                     </>
                 }
+                className="pb-12 md:pb-0"
             >
                 <div className="flex flex-col gap-4">
                     <EmailVerificationAlert
@@ -199,8 +199,11 @@ export default function ProfilePage() {
                         <Button
                             variant="default"
                             className="w-fit px-4 fixed bottom-14 left-1/2 transform -translate-x-1/2 mt-4"
+                            asChild
                         >
-                            {t("features.profile.switchToHostMode")}
+                            <Link href={routes.HostingNow()}>
+                                {t("features.profile.switchToHostMode")}
+                            </Link>
                         </Button>
                     )}
                 </div>

@@ -47,5 +47,6 @@
     "new": "Nouveau",
     "switchToClient": "Passer en mode client",
     "backTo": "Retour à {value}",
-    "saving": "Enregistrement…"
+    "saving": "Enregistrement…",
+    "discover": "Découvrir"
 }

@@ -34,5 +34,6 @@
     "new": "New",
     "switchToClient": "Switch to client mode",
     "backTo": "Back to {value}",
-    "saving": "Saving…"
+    "saving": "Saving…",
+    "discover": "Discover"
 }

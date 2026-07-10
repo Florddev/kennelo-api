@@ -119,7 +119,7 @@ function MessagePageContent() {
 
     return (
         <div className="flex w-full justify-between h-[calc(100dvh-var(--header-height))]">
-            <div className="w-full md:w-1/3 md:px-4 md:pt-2">
+            <div className="w-full md:max-w-96 p-4 md:p-6">
                 <PageLayout
                     title={t("features.conversations.title")}
                     Icon={ChatRoundLine}
@@ -133,7 +133,7 @@ function MessagePageContent() {
                                     className={cn(
                                         "flex justify-end",
                                         isSearching &&
-                                            "md:w-[calc(100%-4.5rem)] md:absolute md:left-0 md:top-6.5 md:px-4",
+                                            "md:w-[calc(100%-4.5rem)] md:absolute md:left-0 md:px-4",
                                     )}
                                 >
                                     <InputGroup
@@ -218,7 +218,7 @@ function MessagePageContent() {
 
             <Separator orientation="vertical" className="hidden md:block w-[1px] h-full" />
 
-            <div className="hidden md:flex flex-1 flex-col h-full w-2/3">
+            <div className="hidden md:flex flex-1 flex-col h-full w-full">
                 {selectedConversation && <ConversationView key={selectedConversation.id} />}
             </div>
         </div>

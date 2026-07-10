@@ -22,7 +22,8 @@ import { SplitPageLayout, SplitPageLayoutNavItem } from "@/components/layouts/sp
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useActivity } from "@/features/activities";
 import { Skeleton } from "@workspace/ui/components/skeleton";
-import ActivitySettingsInformations from "./informations/page";
+import ActivityInformationsPage from "./informations/activity-informations-page";
+import { isActiveSubRoute } from "../route-utils";
 
 export default function ActivityLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
@@ -70,8 +71,10 @@ export default function ActivityLayout({ children }: { children: React.ReactNode
         },
     ];
 
-    const isRoot = !settingsNav.some((item) => pathname.includes(item.href));
-    const currentPageLabel = settingsNav.find((item) => pathname.includes(item.href))?.label;
+    const isRoot = !settingsNav.some((item) => isActiveSubRoute(pathname, item.href));
+    const currentPageLabel = settingsNav.find((item) =>
+        isActiveSubRoute(pathname, item.href),
+    )?.label;
     const { activity } = useActivity(params.id);
 
     return (
@@ -120,7 +123,8 @@ export default function ActivityLayout({ children }: { children: React.ReactNode
                             comingSoon={item.comingSoon}
                             className={cn(
                                 "md:hover:bg-muted md:rounded-md md:p-4",
-                                (pathname.includes(item.href) || (isRoot && item.default)) &&
+                                (isActiveSubRoute(pathname, item.href) ||
+                                    (isRoot && item.default)) &&
                                     "md:bg-muted",
                             )}
                         />
@@ -130,7 +134,7 @@ export default function ActivityLayout({ children }: { children: React.ReactNode
 
             <SplitPageLayout.Content
                 className="md:w-3/4"
-                defaultContent={<ActivitySettingsInformations />}
+                defaultContent={<ActivityInformationsPage />}
             >
                 {children}
             </SplitPageLayout.Content>

@@ -153,6 +153,10 @@
         "deleteDescription": "Are you sure you want to delete this activity? This action cannot be undone.",
         "deleteSuccess": "Activity deleted successfully"
     },
+    "overview": {
+        "quickLinks": "Quick management",
+        "revenueThisMonth": "Revenue this month"
+    },
     "dashboard": {
         "title": "Dashboard",
         "totalCapacity": "Total capacity",
@@ -294,5 +298,6 @@
         "decline": "Decline",
         "accepted": "Invitation accepted",
         "declined": "Invitation declined"
-    }
+    },
+    "manage": "Manage my activities"
 }

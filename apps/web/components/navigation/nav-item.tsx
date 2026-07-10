@@ -4,6 +4,7 @@ import Link from "next/link";
 import { cn } from "@workspace/ui/lib/utils";
 import { Button } from "@workspace/ui/components/button";
 import { IconProps } from "@solar-icons/react";
+import AppIcon from "../app-icon";
 
 export interface NavigationItem {
     icon?: React.ComponentType<IconProps>;
@@ -44,18 +45,7 @@ export default function NavItem({
             asChild
         >
             <Link href={href}>
-                {Icon && (
-                    <Icon
-                        size={iconSize}
-                        weight={active ? "BoldDuotone" : "Linear"}
-                        className={cn(
-                            "transition-colors size-auto",
-                            active &&
-                                "scale-110 text-primary [&_*[opacity]]:opacity-100 [&_*[opacity]]:text-secondary",
-                            classNameIcon,
-                        )}
-                    />
-                )}
+                {Icon && <AppIcon Icon={Icon} size={iconSize} active={active} />}
                 {children}
             </Link>
         </Button>

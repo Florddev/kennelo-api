@@ -2,36 +2,28 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
-import {
-    Buildings,
-    Calendar,
-    ChatRoundLine,
-    CrownLine,
-    Magnifer,
-    SunFog,
-} from "@solar-icons/react";
+import { Calendar, ChatRoundLine, Scanner, SunFog } from "@solar-icons/react";
 
 import { cn } from "@workspace/ui/lib/utils";
 import { isActivePath } from "@workspace/common";
 
 import { useNavigation } from "@/hooks/use-navigation";
-import { useNavVisibility } from "@/providers/navigation-visibility-provider";
 import { NavigationItem } from "@/components/navigation/nav-item";
 import { EmailVerificationAlert } from "@/features/auth";
 import { BottomNavbar } from "../navigation/navbar/bottom-navbar";
 import { HostingNavbar } from "../navigation/navbar/hosting-navbar";
 
-interface HostingLayoutProps {
+export default function HostingLayout({
+    children,
+    className,
+}: {
     children: React.ReactNode;
     className?: string;
-}
-
-export default function HostingLayout({ children, className }: HostingLayoutProps) {
+}) {
     const pathname = usePathname();
     const locale = useLocale();
     const { routes } = useNavigation();
     const t = useTranslations();
-    const { isBottomNavbarVisible } = useNavVisibility();
     const isActive = (href: string) => isActivePath(href, pathname, locale);
 
     const links = [
@@ -50,14 +42,8 @@ export default function HostingLayout({ children, className }: HostingLayoutProp
         {
             href: routes.HostingScan(),
             label: t("ui.navigation.hosting.scan"),
-            icon: Magnifer,
+            icon: Scanner,
             active: isActive(routes.HostingScan()),
-        },
-        {
-            href: routes.MyActivities(),
-            label: t("ui.navigation.hosting.activity"),
-            icon: Buildings,
-            active: isActive(routes.MyActivities()),
         },
         {
             href: routes.HostingMessages(),
@@ -65,20 +51,20 @@ export default function HostingLayout({ children, className }: HostingLayoutProp
             icon: ChatRoundLine,
             active: isActive(routes.HostingMessages()),
         },
-        {
-            href: routes.HostingSubscription(),
-            label: t("ui.navigation.hosting.subscription"),
-            icon: CrownLine,
-            active: isActive(routes.HostingSubscription()),
-        },
-    ];
+        // {
+        //     href: routes.MyActivities(),
+        //     label: t("ui.navigation.hosting.activity"),
+        //     icon: NotesMinimalistic,
+        //     active: isActive(routes.MyActivities()),
+        // },
 
-    const desktopLinks = links.map(({ href, label, active, icon }) => ({
-        href,
-        label,
-        active,
-        icon,
-    }));
+        // {
+        //     href: routes.HostingSubscription(),
+        //     label: t("ui.navigation.hosting.subscription"),
+        //     icon: CrownLine,
+        //     active: isActive(routes.HostingSubscription()),
+        // },
+    ];
 
     const mobileNavigationItems: NavigationItem[] = links.map(({ icon, label, href, active }) => ({
         icon,
@@ -89,16 +75,16 @@ export default function HostingLayout({ children, className }: HostingLayoutProp
 
     return (
         <div className={cn("bg-card min-h-[100dvh]")}>
-            <HostingNavbar className="hidden md:flex" links={desktopLinks} />
+            <HostingNavbar className="hidden md:flex" links={[] /*desktopLinks*/} />
             <EmailVerificationAlert
                 title={t("features.auth.hostUnverified.title")}
                 description={t("features.auth.hostUnverified.description")}
                 className="px-4 pt-4 md:px-6"
             />
             <main className={cn("w-full h-full", className)}>{children}</main>
-            {isBottomNavbarVisible && (
-                <BottomNavbar className="block md:hidden" navigationItems={mobileNavigationItems} />
-            )}
+            {/* {isBottomNavbarVisible && ( */}
+            <BottomNavbar className="block md:hidden" navigationItems={mobileNavigationItems} />
+            {/* )} */}
         </div>
     );
 }

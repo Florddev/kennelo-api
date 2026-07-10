@@ -15,8 +15,22 @@ export type OccupancyByAnimalDto = {
     occupancy_rate: number;
 };
 
+export type RevenuePointDto = {
+    month: string;
+    amount: number;
+};
+
+export type DashboardRevenueDto = {
+    current_month: number;
+    previous_month: number;
+    change_rate: number | null;
+    currency: string;
+    series: RevenuePointDto[];
+};
+
 export type DashboardDto = {
     summary: DashboardSummaryDto;
     occupancy_by_animal: OccupancyByAnimalDto[];
+    revenue: DashboardRevenueDto;
     upcoming_bookings: unknown[];
 };

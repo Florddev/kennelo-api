@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Plus, Building2 } from "lucide-react";
-import { Buildings } from "@solar-icons/react";
+import { ChecklistMinimalistic } from "@solar-icons/react";
 
 import { Button } from "@workspace/ui/components/button";
 
@@ -30,8 +30,10 @@ export default function SelectActivityPage() {
 
     return (
         <PageLayout
-            Icon={Buildings}
+            Icon={ChecklistMinimalistic}
             title={t("features.activities.title")}
+            className="p-0"
+            containerClassName="p-4 md:p-8 gap-6"
             headerTop={
                 <Button asChild className="rounded-4xl gap-2">
                     <Link href={routes.BecomeHost()}>
@@ -62,7 +64,7 @@ export default function SelectActivityPage() {
                     </div>
                 </div>
             ) : (
-                <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                     {activities.map((activity) => (
                         <ActivitySelectCard key={activity.id} activity={activity} />
                     ))}

@@ -1,4 +1,34 @@
 {
     "title": "Aujourd'hui",
-    "description": "Vue d'ensemble de la journée pour votre activité"
+    "description": "Vue d'ensemble de la journée pour votre activité",
+    "noActivity": {
+        "title": "Aucune activité",
+        "description": "Créez une activité pour suivre votre journée ici."
+    },
+    "stats": {
+        "activeReservations": "Réservations actives",
+        "pending": "{count, plural, =0 {aucune en attente} =1 {# en attente} other {# en attente}}",
+        "present": "Animaux présents",
+        "capacity": "sur {count, plural, =1 {# place} other {# places}}",
+        "movements": "Mouvements du jour",
+        "movementsDetail": "{arrivals, plural, =1 {# arrivée} other {# arrivées}} · {departures, plural, =1 {# départ} other {# départs}}",
+        "unread": "Messages non lus"
+    },
+    "revenue": {
+        "evolution": "Évolution du chiffre d'affaires",
+        "thisMonth": "Ce mois-ci",
+        "newBadge": "Nouveau",
+        "vsPrevious": "vs mois dernier"
+    },
+    "sections": {
+        "arrivals": "Arrivées du jour",
+        "departures": "Départs du jour",
+        "noArrivals": "Aucune arrivée aujourd'hui",
+        "noDepartures": "Aucun départ aujourd'hui",
+        "occupancy": "Occupation par espèce",
+        "noOccupancy": "Aucune donnée d'occupation"
+    },
+    "actions": {
+        "seeMessages": "Voir les messages"
+    }
 }

@@ -19,7 +19,6 @@ import { useLocale, useTranslations } from "next-intl";
 import type { Locale } from "@/dictionaries";
 import { LanguageSelectorItems } from "../i18n/language-selector";
 import { routes } from "@/lib/routes";
-import { useNavigation } from "@/hooks/use-navigation";
 import { useAuth } from "@/features/auth";
 import { cn } from "@workspace/ui/lib/utils";
 import {
@@ -36,28 +35,18 @@ import {
 import { UserAvatar } from "@/features/auth/components/user-avatar";
 import { UserModel } from "@workspace/modules/users";
 
-interface UserMenuProps {
+export default function UserMenu({
+    user,
+    hasActivity,
+    className,
+}: {
     user?: UserModel;
     hasActivity?: boolean;
     className?: string;
-}
-
-function useHostSpaceHref() {
-    const { routes } = useNavigation();
-    const { activities, hasActivity } = useAuth();
-
-    if (!hasActivity) return undefined;
-    if (activities.length === 1) {
-        return routes.ActivityDetails({ id: activities[0]!.id });
-    }
-    return routes.MyActivities();
-}
-
-export default function UserMenu({ user, hasActivity, className }: UserMenuProps) {
+}) {
     const { theme, setTheme } = useTheme();
     const { logout } = useAuth();
     const locale = useLocale() as Locale;
-    const hostSpaceHref = useHostSpaceHref();
     const t = useTranslations();
 
     const themeOptions = [
@@ -100,9 +89,9 @@ export default function UserMenu({ user, hasActivity, className }: UserMenuProps
                                 <span>{t("ui.navigation.settings")}</span>
                             </Link>
                         </DropdownMenuItem>
-                        {hasActivity && hostSpaceHref && (
+                        {hasActivity && (
                             <DropdownMenuItem asChild>
-                                <Link href={hostSpaceHref} className="cursor-pointer">
+                                <Link href={routes.HostingNow()} className="cursor-pointer">
                                     <Buildings className="h-4 w-4" />
                                     <span>{t("common.actions.hostSpace")}</span>
                                 </Link>

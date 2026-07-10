@@ -37,7 +37,7 @@ function getMessagePreview(
 
 export function ConversationListItemSkeleton() {
     return (
-        <div className="w-full flex items-center gap-3 px-4 py-3 text-start">
+        <div className="w-full flex items-center gap-3 md:px-4 py-3 text-start">
             <Skeleton className="size-10 rounded-full" />
             <div className="flex-1 min-w-0">
                 <div className="flex justify-between items-center gap-2">
@@ -102,7 +102,7 @@ export function ConversationListItem({
         <button
             data-slot="conversation-list-item"
             className={cn(
-                "w-full flex items-center gap-3 px-4 py-2.5 md:py-4 text-start hover:bg-muted/50 transition-colors rounded-lg",
+                "w-full flex items-center gap-3 px-0 py-2.5 md:p-4 text-start hover:bg-muted/50 transition-colors rounded-lg",
                 isSelected && "bg-muted",
             )}
             onClick={onClick}

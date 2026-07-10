@@ -149,13 +149,12 @@ function PetsHeaderActions({
             <div
                 className={cn(
                     "flex justify-end w-fit",
-                    isSearching &&
-                        "md:w-[calc(100%-4.5rem)] md:absolute md:left-0 md:top-6.5 md:px-4",
+                    isSearching && "md:w-[calc(100%-4.5rem)] md:absolute md:left-0 md:px-4",
                 )}
             >
                 <InputGroup
                     className={cn(
-                        "h-7 gap-1 w-full transition-all duration-300 border-none bg-muted has-[[data-slot=input-group-control]:focus-visible]:ring-[2px]",
+                        "h-7 md:h-9 gap-1 w-full transition-all duration-300 border-none bg-muted has-[[data-slot=input-group-control]:focus-visible]:ring-[2px]",
                         !isSearching && "size-8",
                     )}
                     onClick={!isSearching ? onSearchOpen : undefined}
@@ -190,7 +189,7 @@ function PetsHeaderActions({
                     {!isMobile && t(ADD_PET_KEY)}
                 </Button>
             )}
-            <Button className="gap-2" variant="flat" size={buttonSize} asChild>
+            <Button className="gap-2 hidden" variant="flat" size={buttonSize} asChild>
                 <Link href={livePetHref}>
                     <Scanner className="size-3.5" />
                     {!isMobile && t(ADD_PET_KEY)}
@@ -246,45 +245,47 @@ export default function MyPetsPage() {
     const hasFilters = isAuthenticated && !isLoading && pets.length > 0;
 
     return (
-        <PageLayout
-            Icon={Hearts}
-            title={t("features.pets.title")}
-            headerTopClassName={cn(isSearching && "w-full")}
-            hideTitle={hideTitle}
-            headerTop={
-                isAuthenticated && (
-                    <PetsHeaderActions
-                        isSearching={isSearching}
-                        search={search}
-                        setSearch={setSearch}
-                        isMobile={isMobile}
-                        livePetHref={routes.LivePet()}
-                        onSearchOpen={handleSearchOpen}
-                        onSearchClose={handleSearchClose}
+        <div className="p-4 md:p-6">
+            <PageLayout
+                Icon={Hearts}
+                title={t("features.pets.title")}
+                headerTopClassName={cn(isSearching && "w-full")}
+                hideTitle={hideTitle}
+                headerTop={
+                    isAuthenticated && (
+                        <PetsHeaderActions
+                            isSearching={isSearching}
+                            search={search}
+                            setSearch={setSearch}
+                            isMobile={isMobile}
+                            livePetHref={routes.LivePet()}
+                            onSearchOpen={handleSearchOpen}
+                            onSearchClose={handleSearchClose}
+                            onCreatePet={handleCreatePet}
+                        />
+                    )
+                }
+                headerBottom={
+                    hasFilters ? (
+                        <PetTypeFilters
+                            availableTypes={availableTypes}
+                            typeFilter={typeFilter}
+                            setTypeFilter={setTypeFilter}
+                        />
+                    ) : null
+                }
+            >
+                {!isAuthenticated ? (
+                    <GuestPrompt loginHref={routes.Login()} />
+                ) : (
+                    <PetsContent
+                        isLoading={isLoading}
+                        pets={pets}
+                        filteredPets={filteredPets}
                         onCreatePet={handleCreatePet}
                     />
-                )
-            }
-            headerBottom={
-                hasFilters ? (
-                    <PetTypeFilters
-                        availableTypes={availableTypes}
-                        typeFilter={typeFilter}
-                        setTypeFilter={setTypeFilter}
-                    />
-                ) : null
-            }
-        >
-            {!isAuthenticated ? (
-                <GuestPrompt loginHref={routes.Login()} />
-            ) : (
-                <PetsContent
-                    isLoading={isLoading}
-                    pets={pets}
-                    filteredPets={filteredPets}
-                    onCreatePet={handleCreatePet}
-                />
-            )}
-        </PageLayout>
+                )}
+            </PageLayout>
+        </div>
     );
 }

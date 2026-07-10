@@ -39,13 +39,13 @@ export function ActivitySpeciesAvatars({ settings, className }: ActivitySpeciesA
     return (
         <AvatarGroup data-slot="activity-species-avatars" className={cn(className)}>
             {visible.map((setting) => (
-                <Avatar key={setting.id} className="size-9 bg-card">
-                    <AvatarFallback className="bg-muted">
+                <Avatar key={setting.id} className="size-7 after:border-0 bg-muted">
+                    <AvatarFallback className={cn(`bg-${setting.animalType.code}-100`)}>
                         {isIllustratedType(setting.animalType.code) ? (
                             <PetTypeIllustration
                                 code={setting.animalType.code}
                                 name={setting.animalType.name}
-                                className="size-5"
+                                className="size-4"
                             />
                         ) : (
                             <PawPrint className="size-4 text-muted-foreground" />
@@ -54,7 +54,7 @@ export function ActivitySpeciesAvatars({ settings, className }: ActivitySpeciesA
                 </Avatar>
             ))}
             {remaining > 0 && (
-                <AvatarGroupCount className="size-9 text-xs font-semibold">
+                <AvatarGroupCount className="size-7 text-xs font-semibold">
                     +{remaining}
                 </AvatarGroupCount>
             )}
