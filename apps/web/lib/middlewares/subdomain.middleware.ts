@@ -1,12 +1,16 @@
+import { routing } from "@/lib/i18n/routing";
 import { NextRequest, NextResponse } from "next/server";
 import { Middleware } from ".";
-import { routing } from "@/lib/i18n/routing";
+
+const SYSTEM_SUBDOMAINS = new Set(["www", "preprod", "staging", "admin", "api", "ws", "cdn"]);
 
 function extractSubdomain(request: NextRequest): string | null {
     const hostname = (request.headers.get("host") ?? "").split(":")[0]!;
     const segments = hostname.split(".");
     const first = segments[0]!;
     const second = segments[1];
+
+    if (SYSTEM_SUBDOMAINS.has(first)) return null;
 
     const isLocalhost = segments[segments.length - 1] === "localhost";
     const isSubdomain =
