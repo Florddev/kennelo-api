@@ -112,6 +112,7 @@ jobs:
             echo "api_url=${APP_URL}/api"
             echo "reverb_auth_endpoint=${APP_URL}/broadcasting/auth"
             echo "reverb_host=${REVERB_PUBLIC_HOST}"
+            echo "google_client_id=${NEXT_PUBLIC_GOOGLE_CLIENT_ID}"
           } >> "$GITHUB_OUTPUT"
 
       - name: Extract image metadata
@@ -143,3 +144,4 @@ jobs:
             NEXT_PUBLIC_REVERB_HOST=${{ steps.config.outputs.reverb_host }}
             NEXT_PUBLIC_REVERB_PORT=443
             NEXT_PUBLIC_REVERB_SCHEME=https
+            NEXT_PUBLIC_GOOGLE_CLIENT_ID=${{ steps.config.outputs.google_client_id }}
