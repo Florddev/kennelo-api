@@ -54,6 +54,9 @@ services:
       REVERB_PORT: "443"
       REVERB_SCHEME: https
 
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_REDIRECT_URI: ${GOOGLE_REDIRECT_URI}
+
       MAIL_MAILER: log
     secrets:
       - kennelo_app_key
@@ -63,6 +66,7 @@ services:
       - kennelo_redis_password
       - kennelo_minio_root_user
       - kennelo_minio_root_password
+      - kennelo_google_client_secret
     networks:
       - kennelo-internal
       - kennelo-public
@@ -94,4 +98,6 @@ secrets:
   kennelo_minio_root_user:
     external: true
   kennelo_minio_root_password:
+    external: true
+  kennelo_google_client_secret:
     external: true

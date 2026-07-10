@@ -47,6 +47,7 @@ services:
       - kennelo_redis_password
       - kennelo_minio_root_user
       - kennelo_minio_root_password
+      - kennelo_google_client_secret
     networks:
       - kennelo-internal
       - kennelo-public
@@ -78,4 +79,6 @@ secrets:
   kennelo_minio_root_user:
     external: true
   kennelo_minio_root_password:
+    external: true
+  kennelo_google_client_secret:
     external: true
