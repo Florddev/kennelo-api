@@ -334,3 +334,64 @@ Le câblage suit la séparation public / privé habituelle :
 ```
 printf '%s' 'GOCSPX-...' | docker secret create kennelo_google_client_secret -
 ```
+
+## CI/CD — Déploiement automatisé
+
+L'infrastructure Kennelo utilise deux workflows GitHub Actions pour le
+déploiement continu.
+
+### Préproduction
+
+Le workflow `deploy-preprod.yml` se déclenche automatiquement après tout push
+sur `main` qui produit un build Docker Images CI réussi. Il exécute :
+
+1. SSH sur le VPS préproduction (Hetzner CX23, IP 167.233.60.73)
+2. `git pull` de main
+3. `deploy-app.sh` avec `ENV=preprod` — rolling update des services api, web,
+   reverb sur `:preprod-latest`
+4. `migrate.sh` — application des nouvelles migrations et seeders de référence
+5. Health check sur `https://preprod.kennelo.fr/api/health`
+
+Aucune intervention manuelle n'est requise pour la préprod : les données de
+test peuvent être régénérées à volonté.
+
+### Production
+
+Le workflow `deploy-prod.yml` se déclenche automatiquement après tout push
+d'un tag `v*.*.*` qui produit un build Docker Images CI réussi. Il exécute :
+
+1. SSH sur le manager Swarm (DigitalOcean, IP 46.101.124.234)
+2. `git checkout <tag>`
+3. `deploy-app.sh` avec `ENV=prod` et `IMAGE_TAG=<tag>` — rolling update sur
+   les 2 workers
+4. Check des migrations en attente sur les containers api : si des migrations
+   Pending existent, le workflow échoue en signalant qu'il faut lancer
+   `migrate.sh` manuellement sur un worker
+5. Health check sur `https://kennelo.fr/api/health`
+
+Les migrations en prod restent volontairement manuelles pour prévenir toute
+perte de données silencieuse. Le workflow utilise le rebond SSH
+manager→worker (via la clé `~/.ssh/id_ed25519` de kennelo sur le manager,
+autorisée sur les workers) pour vérifier l'état des migrations dans le
+container api.
+
+### Clés SSH dédiées
+
+Les workflows utilisent deux paires de clés SSH ed25519 dédiées, distinctes
+des clés d'accès humaines. Les clés privées vivent dans les GitHub Secrets
+`SSH_PRIVATE_KEY_PREPROD` et `SSH_PRIVATE_KEY_PROD`. Les clés publiques sont
+ajoutées aux `authorized_keys` de l'user `kennelo` sur chaque cible. Cette
+séparation permet de révoquer indépendamment les accès CI/CD sans impacter
+les accès humains.
+
+### Rollback
+
+En cas de problème après un déploiement prod, la remise en état passe par le
+retag :
+
+- SSH sur le manager, `git checkout v<version-precedente>`
+- `ENV=prod IMAGE_TAG=v<version-precedente> ./infra/scripts/deploy-app.sh`
+
+Les images `:vX.Y.Z` sont immuables (produites une seule fois par la CI), ce
+qui garantit qu'un rollback vers une ancienne version tape sur le même
+binaire que le déploiement original.

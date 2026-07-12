@@ -1,0 +1,91 @@
+name: Deploy - Prod
+
+on:
+  workflow_run:
+    workflows: ["Docker Images - CI"]
+    types:
+      - completed
+
+concurrency:
+  group: deploy-prod
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy to prod
+    runs-on: ubuntu-latest
+    if: >
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      startsWith(github.event.workflow_run.head_branch, 'v')
+    steps:
+      - name: Extract tag name
+        id: tag
+        run: |
+          TAG="${{ github.event.workflow_run.head_branch }}"
+          echo "tag=${TAG}" >> $GITHUB_OUTPUT
+          echo "Déploiement du tag : ${TAG}"
+
+      - name: Setup SSH agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY_PROD }}
+
+      - name: Add prod manager to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ secrets.SSH_HOST_PROD }} >> ~/.ssh/known_hosts
+
+      - name: Deploy application code
+        env:
+          TAG: ${{ steps.tag.outputs.tag }}
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST_PROD }} << REMOTE
+            set -euo pipefail
+            cd ~/kennelo
+            git fetch --tags
+            git checkout ${TAG}
+            echo "==> Déploiement prod tag ${TAG}"
+            ENV=prod IMAGE_TAG=${TAG} ./infra/scripts/deploy-app.sh
+          REMOTE
+
+      - name: Wait for services to stabilize
+        run: sleep 30
+
+      - name: Check for pending migrations
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST_PROD }} << 'REMOTE'
+            set -euo pipefail
+            WORKER=$(docker service ps api_api --filter desired-state=running --format '{{.Node}}' | head -1)
+            if [ -z "$WORKER" ]; then
+              echo "⚠ Aucun worker api trouvé"
+              exit 0
+            fi
+            echo "Check migrations sur : $WORKER"
+            PENDING=$(ssh kennelo@$WORKER "docker exec \$(docker ps -q -f name=api_api | head -1) php artisan migrate:status 2>/dev/null | grep -c 'Pending' || true")
+            PENDING=${PENDING:-0}
+            if [ "$PENDING" -gt 0 ]; then
+              echo "⚠⚠⚠ $PENDING MIGRATION(S) EN ATTENTE EN PROD ⚠⚠⚠"
+              echo "Action requise : SSH sur le worker et lancer ~/kennelo/infra/scripts/migrate.sh"
+              exit 1
+            else
+              echo "✓ Aucune migration en attente"
+            fi
+          REMOTE
+
+      - name: Health check
+        env:
+          TAG: ${{ steps.tag.outputs.tag }}
+        run: |
+          echo "==> Vérification santé prod (tag ${TAG})"
+          for i in 1 2 3 4 5; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' https://kennelo.fr/api/health)
+            if [ "$code" = "200" ]; then
+              echo "✓ Prod OK (HTTP $code)"
+              exit 0
+            fi
+            echo "Tentative $i/5 : HTTP $code, retry dans 10s..."
+            sleep 10
+          done
+          echo "✗ Prod ne répond pas après 5 tentatives"
+          exit 1
