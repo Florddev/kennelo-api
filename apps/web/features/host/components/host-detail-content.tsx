@@ -16,6 +16,7 @@ import type {
 import type { DateRange } from "react-day-picker";
 
 import { useNavigation } from "@/hooks/use-navigation";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from "@/features/auth";
 import { usePets } from "@/features/pets/hooks/use-pets";
 import { useOpenConversation } from "@/features/conversations/hooks/use-open-conversation";
@@ -38,6 +39,7 @@ import { HostAnimalTypeEstimationSelector } from "./host-animal-type-estimation-
 import { HostCyclePricingSection } from "./host-cycle-pricing-section";
 import { HostReviewsSection } from "./host-reviews-section";
 import { HostBookingBar } from "./host-booking-bar";
+import { HostDetailDesktop } from "./host-detail-desktop";
 
 import { acceptedAnimalTypeIds, buildPetPriceMap } from "../lib/pricing";
 
@@ -58,6 +60,7 @@ export function HostDetailContent({
 }: HostDetailContentProps) {
     const t = useTranslations();
     const { router, routes } = useNavigation();
+    const isMobile = useIsMobile();
     const { user, isAuthenticated } = useAuth();
     const { openWithActivity, isPending: isContactPending } = useOpenConversation();
     const {
@@ -139,6 +142,7 @@ export function HostDetailContent({
     };
 
     const images = activity.images.map((img) => img.url);
+    const contactHandler = canContact ? () => openWithActivity(activity.id) : undefined;
 
     const galleryEmptyState = (
         <div className="flex aspect-[4/3] w-full items-center justify-center bg-muted">
@@ -148,6 +152,39 @@ export function HostDetailContent({
             </div>
         </div>
     );
+
+    if (!isMobile) {
+        return (
+            <HostDetailDesktop
+                activity={activity}
+                images={images}
+                galleryEmptyState={galleryEmptyState}
+                averageRating={averageRating}
+                reviewCount={reviewCount}
+                reviews={reviews}
+                areReviewsLoading={areReviewsLoading}
+                capacities={capacities}
+                priceRanges={priceRanges}
+                areSpeciesPricesLoading={areSpeciesPricesLoading}
+                cycles={cycles}
+                areCyclesLoading={areCyclesLoading}
+                availabilities={availabilities}
+                dateRange={dateRange}
+                onDateRangeChange={setDateRange}
+                priceMap={effectivePriceMap}
+                usePetSelector={usePetSelector}
+                eligiblePets={eligiblePets}
+                selectedPetIds={selectedPetIds}
+                onTogglePet={togglePet}
+                animalTypeCounts={animalTypeCounts}
+                onAnimalTypeCountChange={setAnimalTypeCount}
+                onBook={handleBook}
+                onContact={contactHandler}
+                isContactPending={isContactPending}
+                onBack={onBack}
+            />
+        );
+    }
 
     return (
         <DetailPageLayout
@@ -168,7 +205,7 @@ export function HostDetailContent({
                     priceMap={effectivePriceMap}
                     dateRange={dateRange}
                     onBook={handleBook}
-                    onContact={canContact ? () => openWithActivity(activity.id) : undefined}
+                    onContact={contactHandler}
                     isContactPending={isContactPending}
                 />
             }

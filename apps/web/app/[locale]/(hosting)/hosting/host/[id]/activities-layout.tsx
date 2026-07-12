@@ -15,6 +15,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useActivity } from "@/features/activities";
 import ActivityInfoPage from "./activity-info-page";
 import { Skeleton } from "@workspace/ui/components/skeleton";
+import { isActiveSubRoute, subRouteOf } from "./route-utils";
 
 export default function ActivityLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
@@ -53,11 +54,17 @@ export default function ActivityLayout({ children }: { children: React.ReactNode
     const activityNav: SplitPageLayoutNavItem[] = [];
 
     const allNavItems = [...configurationNav, ...activityNav];
-    const isRoot = !allNavItems.some((item) => pathname.includes(item.href));
-    const currentPageLabel = allNavItems.find((item) => pathname.includes(item.href))?.label;
+
+    const currentSubRoute = subRouteOf(pathname);
+
+    const isRoot = !allNavItems.some((item) => isActiveSubRoute(pathname, item.href));
+    const currentPageLabel = allNavItems.find((item) =>
+        isActiveSubRoute(pathname, item.href),
+    )?.label;
     const { activity } = useActivity(params.id);
 
-    const isSettingsPage = pathname.includes(routes.ActivitySettings({ id: params.id }));
+    const isSettingsPage =
+        currentSubRoute === "/settings" || currentSubRoute.startsWith("/settings/");
 
     return (
         <SplitPageLayout isRoot={isRoot}>
@@ -103,7 +110,8 @@ export default function ActivityLayout({ children }: { children: React.ReactNode
                             comingSoon={item.comingSoon}
                             className={cn(
                                 "md:hover:bg-muted md:rounded-md md:p-4",
-                                (pathname.includes(item.href) || (isRoot && item.default)) &&
+                                (isActiveSubRoute(pathname, item.href) ||
+                                    (isRoot && item.default)) &&
                                     "md:bg-muted",
                             )}
                         />

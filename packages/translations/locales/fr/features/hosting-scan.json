@@ -1,6 +1,27 @@
 {
-    "title": "Scan en direct",
-    "description": "Scannez une puce et consultez instantanément l'animal et sa réservation.",
+    "title": "Scan",
+    "description": "Scannez les puces, suivez vos scans et gérez vos scanners.",
+    "tabs": {
+        "live": "Scanner",
+        "history": "Historique",
+        "devices": "Scanners"
+    },
+    "manual": {
+        "placeholder": "Numéro de puce",
+        "submit": "Rechercher",
+        "hint": "Pas de scanner à portée ? Saisissez le numéro de puce manuellement."
+    },
+    "stats": {
+        "scanners": "Scanners",
+        "inCare": "En garde",
+        "scans": "Scans"
+    },
+    "inCare": {
+        "title": "Animaux en garde",
+        "description": "Les animaux actuellement présents dans vos établissements.",
+        "empty": "Aucun animal en garde actuellement.",
+        "noChip": "Non pucé"
+    },
     "notification": {
         "foundTitle": "Animal scanné",
         "notFoundTitle": "Puce inconnue scannée",

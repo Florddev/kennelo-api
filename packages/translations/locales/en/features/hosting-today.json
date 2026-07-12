@@ -1,4 +1,34 @@
 {
     "title": "Today",
-    "description": "Daily overview for your activity"
+    "description": "Daily overview for your activity",
+    "noActivity": {
+        "title": "No activity",
+        "description": "Create an activity to track your day here."
+    },
+    "stats": {
+        "activeReservations": "Active reservations",
+        "pending": "{count, plural, =0 {none pending} =1 {# pending} other {# pending}}",
+        "present": "Animals present",
+        "capacity": "of {count, plural, =1 {# spot} other {# spots}}",
+        "movements": "Movements today",
+        "movementsDetail": "{arrivals, plural, =1 {# arrival} other {# arrivals}} · {departures, plural, =1 {# departure} other {# departures}}",
+        "unread": "Unread messages"
+    },
+    "revenue": {
+        "evolution": "Revenue trend",
+        "thisMonth": "This month",
+        "newBadge": "New",
+        "vsPrevious": "vs last month"
+    },
+    "sections": {
+        "arrivals": "Today's arrivals",
+        "departures": "Today's departures",
+        "noArrivals": "No arrivals today",
+        "noDepartures": "No departures today",
+        "occupancy": "Occupancy by species",
+        "noOccupancy": "No occupancy data"
+    },
+    "actions": {
+        "seeMessages": "View messages"
+    }
 }

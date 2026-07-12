@@ -58,7 +58,7 @@ export function HostBookingBar({
     );
 }
 
-function PriceDisplay({
+export function PriceDisplay({
     priceMap,
     dateRange,
 }: {

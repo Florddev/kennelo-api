@@ -39,16 +39,43 @@ export class OccupancyByAnimalModel {
     }
 }
 
+export type RevenuePoint = {
+    month: string;
+    amount: number;
+};
+
+export class DashboardRevenueModel {
+    private constructor(
+        public readonly currentMonth: number,
+        public readonly previousMonth: number,
+        public readonly changeRate: number | null,
+        public readonly currency: string,
+        public readonly series: RevenuePoint[],
+    ) {}
+
+    static from(dto: DashboardDto["revenue"]): DashboardRevenueModel {
+        return new DashboardRevenueModel(
+            dto.current_month,
+            dto.previous_month,
+            dto.change_rate,
+            dto.currency,
+            dto.series.map((point) => ({ month: point.month, amount: point.amount })),
+        );
+    }
+}
+
 export class DashboardModel {
     private constructor(
         public readonly summary: DashboardSummaryModel,
         public readonly occupancyByAnimal: OccupancyByAnimalModel[],
+        public readonly revenue: DashboardRevenueModel,
     ) {}
 
     static from(dto: DashboardDto): DashboardModel {
         return new DashboardModel(
             DashboardSummaryModel.from(dto.summary),
             dto.occupancy_by_animal.map(OccupancyByAnimalModel.from),
+            DashboardRevenueModel.from(dto.revenue),
         );
     }
 }

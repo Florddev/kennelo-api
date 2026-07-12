@@ -382,7 +382,7 @@ function DeleteDialog({ onDelete, isDeleting }: { onDelete: () => void; isDeleti
         <AlertDialog>
             <AlertDialogTrigger asChild>
                 <Button
-                    variant="outline"
+                    variant="destructive"
                     size="sm"
                     className="rounded-4xl gap-1.5 text-destructive hover:text-destructive"
                 >
@@ -477,9 +477,9 @@ export function ActivityInfoSection({ activityId, t }: { activityId: string; t: 
                     </Badge>
                 </div>
                 {!isEditing && (
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1">
                         <Button
-                            variant="outline"
+                            variant="flat"
                             size="sm"
                             className="rounded-4xl gap-1.5"
                             onClick={() => setIsEditing(true)}

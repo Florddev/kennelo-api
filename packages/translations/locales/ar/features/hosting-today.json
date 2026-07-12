@@ -1,4 +1,34 @@
 {
     "title": "اليوم",
-    "description": "نظرة عامة يومية على نشاطك"
+    "description": "نظرة عامة يومية على نشاطك",
+    "noActivity": {
+        "title": "لا يوجد نشاط",
+        "description": "أنشئ نشاطًا لمتابعة يومك هنا."
+    },
+    "stats": {
+        "activeReservations": "الحجوزات النشطة",
+        "pending": "{count, plural, other {# قيد الانتظار}}",
+        "present": "الحيوانات الحاضرة",
+        "capacity": "من {count, plural, other {# مكان}}",
+        "movements": "حركات اليوم",
+        "movementsDetail": "{arrivals, plural, other {# وصول}} · {departures, plural, other {# مغادرة}}",
+        "unread": "رسائل غير مقروءة"
+    },
+    "revenue": {
+        "evolution": "تطور رقم الأعمال",
+        "thisMonth": "هذا الشهر",
+        "newBadge": "جديد",
+        "vsPrevious": "مقارنة بالشهر الماضي"
+    },
+    "sections": {
+        "arrivals": "وصول اليوم",
+        "departures": "مغادرة اليوم",
+        "noArrivals": "لا وصول اليوم",
+        "noDepartures": "لا مغادرة اليوم",
+        "occupancy": "الإشغال حسب النوع",
+        "noOccupancy": "لا توجد بيانات إشغال"
+    },
+    "actions": {
+        "seeMessages": "عرض الرسائل"
+    }
 }

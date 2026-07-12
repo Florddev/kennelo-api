@@ -153,6 +153,10 @@
         "deleteDescription": "هل أنت متأكد أنك تريد حذف هذه النشاط؟ لا يمكن التراجع عن هذا الإجراء.",
         "deleteSuccess": "تم حذف النشاط بنجاح"
     },
+    "overview": {
+        "quickLinks": "إدارة سريعة",
+        "revenueThisMonth": "إيرادات هذا الشهر"
+    },
     "dashboard": {
         "title": "لوحة التحكم",
         "totalCapacity": "السعة الإجمالية",
@@ -283,5 +287,6 @@
         "decline": "رفض",
         "accepted": "تم قبول الدعوة",
         "declined": "تم رفض الدعوة"
-    }
+    },
+    "manage": "إدارة أنشطتي"
 }

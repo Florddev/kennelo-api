@@ -330,7 +330,7 @@ export function TwoFactorSection() {
 
     return (
         <Card className="ring-0">
-            <CardContent className="flex flex-col gap-4 p-6">
+            <CardContent className="flex flex-col gap-4 p-0">
                 <div className="flex items-center gap-3">
                     <ShieldCheck className="size-6 text-primary" />
                     <div className="flex flex-col">

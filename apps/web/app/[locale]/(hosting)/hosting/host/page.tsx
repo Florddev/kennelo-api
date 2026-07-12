@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import SelectActivityPage from "./select-activity-page";
+import HostingLayout from "../hosting-layout";
 
 export async function generateMetadata({ params }: { params: { locale: string } }) {
     const { locale } = await params;
@@ -12,5 +13,9 @@ export async function generateMetadata({ params }: { params: { locale: string } 
 }
 
 export default function MyActivities() {
-    return <SelectActivityPage />;
+    return (
+        <HostingLayout>
+            <SelectActivityPage />
+        </HostingLayout>
+    );
 }

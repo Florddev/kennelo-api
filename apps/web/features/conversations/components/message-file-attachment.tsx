@@ -10,17 +10,21 @@ import { formatFileSize } from "../lib/utils";
 export function MessageFileAttachment({ file, isOwn }: { file: MessageFileModel; isOwn: boolean }) {
     const t = useTranslations("common.actions");
 
+    if (!file.fileUrl) {
+        return null;
+    }
+
     if (file.mimeType.startsWith("image/")) {
         return (
             <a
-                href={file.filePath}
+                href={file.fileUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 data-slot="message-image-attachment"
                 className="block"
             >
                 <Image
-                    src={file.filePath}
+                    src={file.fileUrl}
                     alt={file.fileName}
                     className="max-h-64 max-w-full rounded-2xl"
                     width={150}
@@ -32,7 +36,7 @@ export function MessageFileAttachment({ file, isOwn }: { file: MessageFileModel;
 
     return (
         <a
-            href={file.filePath}
+            href={file.fileUrl}
             download={file.fileName}
             target="_blank"
             rel="noopener noreferrer"

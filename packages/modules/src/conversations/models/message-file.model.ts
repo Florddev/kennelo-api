@@ -4,7 +4,7 @@ export class MessageFileModel {
     private constructor(
         public readonly id: string,
         public readonly fileName: string,
-        public readonly filePath: string,
+        public readonly fileUrl: string,
         public readonly fileType: string,
         public readonly fileSize: number,
         public readonly mimeType: string,
@@ -14,7 +14,7 @@ export class MessageFileModel {
         return new MessageFileModel(
             dto.id,
             dto.file_name,
-            dto.file_path,
+            dto.file_url,
             dto.file_type,
             dto.file_size,
             dto.mime_type,

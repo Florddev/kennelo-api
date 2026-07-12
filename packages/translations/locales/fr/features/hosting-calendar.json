@@ -15,6 +15,21 @@
         "sunday": "Dim"
     },
     "moreCount": "{count, plural, =1 {+# autre} other {+# autres}}",
+    "summary": {
+        "arrivals": "Arrivées",
+        "departures": "Départs",
+        "peak": "Pic d'occupation",
+        "stays": "Séjours"
+    },
+    "legend": {
+        "arrival": "Arrivée",
+        "departure": "Départ",
+        "occupancy": "Occupation"
+    },
+    "sidebar": {
+        "summary": "Résumé du mois",
+        "legend": "Légende"
+    },
     "filters": {
         "activities": "Activités",
         "statuses": "Statuts",
@@ -26,20 +41,21 @@
         "confirmed": "Confirmée",
         "in_progress": "En cours",
         "completed": "Terminée",
-        "cancelled": "Annulée"
+        "cancelled": "Annulée",
+        "rejected": "Refusée",
+        "expired": "Expirée"
     },
     "sheet": {
-        "title": "Réservations du {date}",
-        "empty": "Aucune réservation ce jour",
-        "bookingCount": "{count, plural, =1 {# réservation} other {# réservations}}",
-        "checkIn": "Arrivée",
-        "checkOut": "Départ",
-        "pets": "Animaux",
-        "total": "Total",
-        "actions": {
-            "confirm": "Confirmer",
-            "cancel": "Annuler",
-            "complete": "Marquer terminée"
+        "empty": "Aucun animal ce jour",
+        "recap": "{movements, plural, =0 {aucun mouvement} =1 {# mouvement} other {# mouvements}} · {staying, plural, =0 {aucun en séjour} other {# en séjour}}",
+        "hostedTotal": "Animaux hébergés",
+        "sections": {
+            "arrivals": "Arrivées",
+            "departures": "Départs",
+            "staying": "En séjour",
+            "emptyArrivals": "Aucune arrivée",
+            "emptyDepartures": "Aucun départ",
+            "emptyStaying": "Aucun animal en séjour"
         }
     }
 }

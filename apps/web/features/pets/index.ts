@@ -4,8 +4,10 @@
 
 export * from "./components/attribute-inline";
 export * from "./components/pet-card";
+export * from "./components/pet-desktop-gallery";
 export * from "./components/pet-detail-skeleton";
 export * from "./components/pet-image-empty-state";
+export * from "./components/pet-profile-desktop";
 export * from "./components/pet-profile-info";
 export * from "./components/pet-profile-reviews";
 export * from "./components/pet-review-card";

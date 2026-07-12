@@ -36,19 +36,17 @@ export function ConversationList() {
 
     if (filteredConversations.length === 0) {
         return (
-            <div className="p-4">
-                <Empty className="border">
-                    <EmptyMedia variant="icon">
-                        <Dialog2 />
-                    </EmptyMedia>
-                    <EmptyHeader>
-                        <EmptyTitle>{t("features.conversations.noConversations")}</EmptyTitle>
-                        <EmptyDescription>
-                            {t("features.conversations.noConversationsDescription")}
-                        </EmptyDescription>
-                    </EmptyHeader>
-                </Empty>
-            </div>
+            <Empty className="border">
+                <EmptyMedia variant="icon">
+                    <Dialog2 />
+                </EmptyMedia>
+                <EmptyHeader>
+                    <EmptyTitle>{t("features.conversations.noConversations")}</EmptyTitle>
+                    <EmptyDescription>
+                        {t("features.conversations.noConversationsDescription")}
+                    </EmptyDescription>
+                </EmptyHeader>
+            </Empty>
         );
     }
 

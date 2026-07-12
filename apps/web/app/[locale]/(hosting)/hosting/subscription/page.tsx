@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 
 import HostingSubscriptionPage from "./hosting-subscription-page";
+import HostingLayout from "../hosting-layout";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
     const { locale } = await params;
@@ -13,5 +14,9 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 }
 
 export default function HostingSubscription() {
-    return <HostingSubscriptionPage />;
+    return (
+        <HostingLayout>
+            <HostingSubscriptionPage />
+        </HostingLayout>
+    );
 }

@@ -30,8 +30,6 @@ import { ActivitySummaryCard } from "@/features/activities/components/activity-s
 import { PaymentMethodPicker } from "@/features/payment-methods/components/payment-method-picker";
 
 import { useBookingQuote } from "../hooks/use-booking-quote";
-
-const stripePromise = getStripe();
 import { BookingHeader } from "./booking-header";
 import { PriceBreakdown } from "./price-breakdown";
 import { BookingMessageSection } from "./booking-message-section";
@@ -171,7 +169,7 @@ export function BookingCheckoutForm({
         if (!result) return;
 
         if (result.paymentStatus !== "succeeded" && result.clientSecret) {
-            const stripe = await stripePromise;
+            const stripe = await getStripe();
             if (!stripe) {
                 toast.error(t("features.bookings.checkout.paymentSetupFailed"));
                 return;

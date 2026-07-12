@@ -1,6 +1,27 @@
 {
-    "title": "Live scan",
-    "description": "Scan a microchip and instantly view the pet and its stay.",
+    "title": "Scan",
+    "description": "Scan microchips, track your scans and manage your scanners.",
+    "tabs": {
+        "live": "Scanner",
+        "history": "History",
+        "devices": "Scanners"
+    },
+    "manual": {
+        "placeholder": "Microchip number",
+        "submit": "Search",
+        "hint": "No scanner nearby? Enter the microchip number manually."
+    },
+    "stats": {
+        "scanners": "Scanners",
+        "inCare": "In care",
+        "scans": "Scans"
+    },
+    "inCare": {
+        "title": "Pets in care",
+        "description": "Pets currently staying in your establishments.",
+        "empty": "No pets in care right now.",
+        "noChip": "No chip"
+    },
     "notification": {
         "foundTitle": "Pet scanned",
         "notFoundTitle": "Unknown chip scanned",

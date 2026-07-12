@@ -83,24 +83,26 @@ export default function FavoritesPage() {
     const { routes } = useNavigation();
 
     return (
-        <PageLayout Icon={FolderFavouriteStar} title={t("features.favorites.title")}>
-            {!isAuthenticated ? (
-                <div className="flex flex-col gap-4 py-1 text-sm">
-                    <div className="flex flex-col gap-1">
-                        <p className="text-lg text-primary font-semibold">
-                            {t("features.favorites.please-login")}
-                        </p>
-                        <span className="text-muted-foreground">
-                            {t("features.favorites.please-login-description")}
-                        </span>
+        <div className="p-4 md:p-6">
+            <PageLayout Icon={FolderFavouriteStar} title={t("features.favorites.title")}>
+                {!isAuthenticated ? (
+                    <div className="flex flex-col gap-4 py-1 text-sm">
+                        <div className="flex flex-col gap-1">
+                            <p className="text-lg text-primary font-semibold">
+                                {t("features.favorites.please-login")}
+                            </p>
+                            <span className="text-muted-foreground">
+                                {t("features.favorites.please-login-description")}
+                            </span>
+                        </div>
+                        <Button variant="default" className="w-fit px-5" asChild>
+                            <Link href={routes.Login()}>{t("common.actions.login")}</Link>
+                        </Button>
                     </div>
-                    <Button variant="default" className="w-fit px-5" asChild>
-                        <Link href={routes.Login()}>{t("common.actions.login")}</Link>
-                    </Button>
-                </div>
-            ) : (
-                <FavoritesContent />
-            )}
-        </PageLayout>
+                ) : (
+                    <FavoritesContent />
+                )}
+            </PageLayout>
+        </div>
     );
 }

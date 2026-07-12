@@ -56,7 +56,7 @@ export function MessageComposer() {
                     ))}
                 </div>
             )}
-            <div className="flex items-start gap-1 px-4 py-3 md:p-5 md:gap-2">
+            <div className="flex items-end gap-1 px-4 py-3 md:p-4 md:gap-2">
                 <input
                     ref={fileInputRef}
                     type="file"
@@ -69,7 +69,7 @@ export function MessageComposer() {
                     size="icon-xs"
                     onClick={() => fileInputRef.current?.click()}
                     aria-label={t("features.conversations.attachFile")}
-                    className="mb-0.5 flex-shrink-0"
+                    className="flex-shrink-0"
                 >
                     <Plus className="size-3.5" />
                 </Button>
@@ -82,7 +82,7 @@ export function MessageComposer() {
                     }}
                     onKeyDown={handleKeyDown}
                     placeholder={t("features.conversations.messagePlaceholder")}
-                    className="h-fit max-h-16 min-h-0 flex-1 rounded-xl py-0.5 px-1.5 text-sm border-none bg-transparent focus-visible:ring-[0]"
+                    className="h-full max-h-16 min-h-0 flex-1 py-0.5 rounded-none px-1.5 text-sm border-none bg-transparent focus-visible:ring-[0] pb-1"
                     rows={1}
                 />
                 <Button
@@ -90,7 +90,7 @@ export function MessageComposer() {
                     variant={canSend ? "default" : "flat"}
                     onClick={handleSend}
                     disabled={!canSend}
-                    className="mb-0.5 flex-shrink-0"
+                    className="flex-shrink-0"
                 >
                     <ArrowUp className="size-3.5" />
                 </Button>

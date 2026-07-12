@@ -1,34 +1,46 @@
 import {
-    differenceInCalendarDays,
     eachDayOfInterval,
     endOfMonth,
     endOfWeek,
-    isWithinInterval,
+    isSameDay,
+    isSameMonth,
     startOfDay,
     startOfMonth,
     startOfWeek,
 } from "date-fns";
 
-import type { BookingModel } from "@workspace/modules/bookings";
+import type { BookingModel, BookingPetModel, BookingStatus } from "@workspace/modules/bookings";
 
-export const MAX_VISIBLE_ROWS = 3;
-
-export type CalendarWeek = {
-    weekStart: Date;
-    days: Date[];
-    segments: BookingSegment[];
-    overflowByDayKey: Record<string, number>;
+export type MonthStats = {
+    arrivals: number;
+    departures: number;
+    peak: number;
+    stays: number;
 };
 
-export type BookingSegment = {
-    booking: BookingModel;
-    weekStartIso: string;
-    colStart: number;
-    colSpan: number;
-    row: number;
-    isStart: boolean;
-    isEnd: boolean;
-    hidden: boolean;
+export type PetMovement = {
+    bookingId: string;
+    activityId: string;
+    petId: string;
+    petName: string;
+    animalTypeCode: string | null;
+    animalTypeName: string | null;
+    customerName: string;
+    status: BookingStatus;
+};
+
+export type DayMovements = {
+    arrivals: PetMovement[];
+    departures: PetMovement[];
+    staying: PetMovement[];
+    occupancy: number;
+};
+
+export const EMPTY_DAY_MOVEMENTS: DayMovements = {
+    arrivals: [],
+    departures: [],
+    staying: [],
+    occupancy: 0,
 };
 
 export function dayKey(date: Date): string {
@@ -46,118 +58,105 @@ export function getMonthRange(focusedMonth: Date, weekStartsOn: 0 | 1) {
     return { monthStart, monthEnd, gridStart, gridEnd };
 }
 
-export function buildCalendarWeeks(
-    focusedMonth: Date,
-    bookings: BookingModel[],
-    weekStartsOn: 0 | 1,
-): CalendarWeek[] {
+export function buildMonthWeeks(focusedMonth: Date, weekStartsOn: 0 | 1): Date[][] {
     const { gridStart, gridEnd } = getMonthRange(focusedMonth, weekStartsOn);
     const allDays = eachDayOfInterval({ start: gridStart, end: gridEnd });
-    const weeks: CalendarWeek[] = [];
-
+    const weeks: Date[][] = [];
     for (let i = 0; i < allDays.length; i += 7) {
-        const days = allDays.slice(i, i + 7);
-        const weekStart = days[0]!;
-        const weekEnd = days[6]!;
-
-        const candidates = bookings
-            .map((booking) => buildSegmentForWeek(booking, weekStart, weekEnd))
-            .filter((segment): segment is BookingSegment => segment !== null);
-
-        const placed = assignRows(candidates);
-
-        const overflowByDayKey: Record<string, number> = {};
-        for (const segment of placed) {
-            if (!segment.hidden) continue;
-            for (let col = segment.colStart; col < segment.colStart + segment.colSpan; col++) {
-                const day = days[col]!;
-                const key = dayKey(day);
-                overflowByDayKey[key] = (overflowByDayKey[key] ?? 0) + 1;
-            }
-        }
-
-        weeks.push({
-            weekStart,
-            days,
-            segments: placed,
-            overflowByDayKey,
-        });
+        weeks.push(allDays.slice(i, i + 7));
     }
-
     return weeks;
 }
 
-function buildSegmentForWeek(
-    booking: BookingModel,
-    weekStart: Date,
-    weekEnd: Date,
-): BookingSegment | null {
-    const checkIn = startOfDay(new Date(booking.checkInDate));
-    const checkOut = startOfDay(new Date(booking.checkOutDate));
-    const weekStartDay = startOfDay(weekStart);
-    const weekEndDay = startOfDay(weekEnd);
-    const weekInterval = { start: weekStartDay, end: weekEndDay };
-
-    const overlaps =
-        isWithinInterval(checkIn, weekInterval) ||
-        isWithinInterval(checkOut, weekInterval) ||
-        (checkIn < weekStartDay && checkOut > weekEndDay);
-
-    if (!overlaps) return null;
-
-    const segmentStart = checkIn < weekStartDay ? weekStartDay : checkIn;
-    const segmentEnd = checkOut > weekEndDay ? weekEndDay : checkOut;
-
-    const colStart = differenceInCalendarDays(segmentStart, weekStartDay);
-    const colSpan = differenceInCalendarDays(segmentEnd, segmentStart) + 1;
-
+function toMovement(booking: BookingModel, pet: BookingPetModel): PetMovement {
     return {
-        booking,
-        weekStartIso: weekStartDay.toISOString(),
-        colStart,
-        colSpan,
-        row: -1,
-        isStart: checkIn >= weekStartDay,
-        isEnd: checkOut <= weekEndDay,
-        hidden: false,
+        bookingId: booking.id,
+        activityId: booking.activityId,
+        petId: pet.id,
+        petName: pet.name,
+        animalTypeCode: pet.animalType?.code ?? null,
+        animalTypeName: pet.animalType?.name ?? null,
+        customerName: booking.user ? booking.user.getFullName() : "—",
+        status: booking.status,
     };
 }
 
-function assignRows(segments: BookingSegment[]): BookingSegment[] {
-    const sorted = [...segments].sort((a, b) => {
-        if (a.colStart !== b.colStart) return a.colStart - b.colStart;
-        return b.colSpan - a.colSpan;
-    });
-
-    const rowEnds: number[] = [];
-
-    for (const segment of sorted) {
-        let assigned = -1;
-        for (let row = 0; row < rowEnds.length; row++) {
-            if (rowEnds[row]! <= segment.colStart) {
-                assigned = row;
-                break;
-            }
-        }
-        if (assigned === -1) {
-            assigned = rowEnds.length;
-            rowEnds.push(0);
-        }
-        rowEnds[assigned] = segment.colStart + segment.colSpan;
-        segment.row = assigned;
-        segment.hidden = assigned >= MAX_VISIBLE_ROWS;
-    }
-
-    return sorted;
-}
-
-export function bookingsForDay(date: Date, bookings: BookingModel[]): BookingModel[] {
+export function movementsForDay(date: Date, bookings: BookingModel[]): DayMovements {
     const target = startOfDay(date);
-    return bookings.filter((booking) => {
+    const arrivals: PetMovement[] = [];
+    const departures: PetMovement[] = [];
+    const staying: PetMovement[] = [];
+    let occupancy = 0;
+
+    for (const booking of bookings) {
         const checkIn = startOfDay(new Date(booking.checkInDate));
         const checkOut = startOfDay(new Date(booking.checkOutDate));
-        return target >= checkIn && target <= checkOut;
-    });
+
+        if (target < checkIn || target > checkOut) continue;
+
+        const isArrival = isSameDay(target, checkIn);
+        const isDeparture = isSameDay(target, checkOut);
+
+        for (const pet of booking.pets ?? []) {
+            occupancy += 1;
+            const movement = toMovement(booking, pet);
+            if (isArrival) {
+                arrivals.push(movement);
+            } else if (isDeparture) {
+                departures.push(movement);
+            } else {
+                staying.push(movement);
+            }
+        }
+    }
+
+    return { arrivals, departures, staying, occupancy };
+}
+
+export function buildMovementsByDay(
+    weeks: Date[][],
+    bookings: BookingModel[],
+): Record<string, DayMovements> {
+    const map: Record<string, DayMovements> = {};
+    for (const week of weeks) {
+        for (const day of week) {
+            map[dayKey(day)] = movementsForDay(day, bookings);
+        }
+    }
+    return map;
+}
+
+export function computeMonthStats(
+    weeks: Date[][],
+    movementsByDay: Record<string, DayMovements>,
+    focusedMonth: Date,
+    bookings: BookingModel[],
+): MonthStats {
+    const monthStart = startOfMonth(focusedMonth);
+    const monthEnd = endOfMonth(focusedMonth);
+
+    let arrivals = 0;
+    let departures = 0;
+    let peak = 0;
+
+    for (const week of weeks) {
+        for (const day of week) {
+            const movements = movementsByDay[dayKey(day)];
+            if (!movements) continue;
+            peak = Math.max(peak, movements.occupancy);
+            if (!isSameMonth(day, focusedMonth)) continue;
+            arrivals += movements.arrivals.length;
+            departures += movements.departures.length;
+        }
+    }
+
+    const stays = bookings.filter((booking) => {
+        const checkIn = new Date(booking.checkInDate);
+        const checkOut = new Date(booking.checkOutDate);
+        return checkIn <= monthEnd && checkOut >= monthStart;
+    }).length;
+
+    return { arrivals, departures, peak, stays };
 }
 
 export function shiftMonth(date: Date, delta: number): Date {

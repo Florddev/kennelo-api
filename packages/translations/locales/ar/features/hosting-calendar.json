@@ -15,6 +15,21 @@
         "sunday": "الأحد"
     },
     "moreCount": "{count, plural, =1 {+# آخر} other {+# آخرى}}",
+    "summary": {
+        "arrivals": "الوصول",
+        "departures": "المغادرة",
+        "peak": "ذروة الإشغال",
+        "stays": "الإقامات"
+    },
+    "legend": {
+        "arrival": "وصول",
+        "departure": "مغادرة",
+        "occupancy": "الإشغال"
+    },
+    "sidebar": {
+        "summary": "ملخص الشهر",
+        "legend": "مفتاح الرموز"
+    },
     "filters": {
         "activities": "الأنشطة",
         "statuses": "الحالات",
@@ -26,20 +41,21 @@
         "confirmed": "مؤكد",
         "in_progress": "قيد التنفيذ",
         "completed": "مكتمل",
-        "cancelled": "ملغى"
+        "cancelled": "ملغى",
+        "rejected": "مرفوض",
+        "expired": "منتهي"
     },
     "sheet": {
-        "title": "حجوزات {date}",
-        "empty": "لا توجد حجوزات في هذا اليوم",
-        "bookingCount": "{count, plural, =1 {# حجز} other {# حجوزات}}",
-        "checkIn": "تسجيل الوصول",
-        "checkOut": "تسجيل المغادرة",
-        "pets": "الحيوانات",
-        "total": "المجموع",
-        "actions": {
-            "confirm": "تأكيد",
-            "cancel": "إلغاء",
-            "complete": "وضع علامة مكتمل"
+        "empty": "لا توجد حيوانات في هذا اليوم",
+        "recap": "{movements, plural, other {# حركة}} · {staying, plural, other {# مقيم}}",
+        "hostedTotal": "الحيوانات المستضافة",
+        "sections": {
+            "arrivals": "الوصول",
+            "departures": "المغادرة",
+            "staying": "قيد الإقامة",
+            "emptyArrivals": "لا وصول",
+            "emptyDepartures": "لا مغادرة",
+            "emptyStaying": "لا حيوانات قيد الإقامة"
         }
     }
 }

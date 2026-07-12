@@ -97,7 +97,7 @@ type ActivityCyclesParams = {
 
 type ActivitySettingsInformationsParams = {
     locale?: string | number;
-    id: string | number;
+    id: string;
     search_params?: Record<string, string | number | boolean>;
 };
 

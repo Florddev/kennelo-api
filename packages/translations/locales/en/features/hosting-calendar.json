@@ -15,6 +15,21 @@
         "sunday": "Sun"
     },
     "moreCount": "{count, plural, =1 {+# more} other {+# more}}",
+    "summary": {
+        "arrivals": "Arrivals",
+        "departures": "Departures",
+        "peak": "Peak occupancy",
+        "stays": "Stays"
+    },
+    "legend": {
+        "arrival": "Arrival",
+        "departure": "Departure",
+        "occupancy": "Occupancy"
+    },
+    "sidebar": {
+        "summary": "Month summary",
+        "legend": "Legend"
+    },
     "filters": {
         "activities": "Activities",
         "statuses": "Statuses",
@@ -26,20 +41,21 @@
         "confirmed": "Confirmed",
         "in_progress": "In progress",
         "completed": "Completed",
-        "cancelled": "Cancelled"
+        "cancelled": "Cancelled",
+        "rejected": "Rejected",
+        "expired": "Expired"
     },
     "sheet": {
-        "title": "Bookings on {date}",
-        "empty": "No bookings on this day",
-        "bookingCount": "{count, plural, =1 {# booking} other {# bookings}}",
-        "checkIn": "Check-in",
-        "checkOut": "Check-out",
-        "pets": "Pets",
-        "total": "Total",
-        "actions": {
-            "confirm": "Confirm",
-            "cancel": "Cancel",
-            "complete": "Mark completed"
+        "empty": "No animals on this day",
+        "recap": "{movements, plural, =0 {no movements} =1 {# movement} other {# movements}} · {staying, plural, =0 {none staying} other {# staying}}",
+        "hostedTotal": "Animals hosted",
+        "sections": {
+            "arrivals": "Arrivals",
+            "departures": "Departures",
+            "staying": "Staying",
+            "emptyArrivals": "No arrivals",
+            "emptyDepartures": "No departures",
+            "emptyStaying": "No animals staying"
         }
     }
 }

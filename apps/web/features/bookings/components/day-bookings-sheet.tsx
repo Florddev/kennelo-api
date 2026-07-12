@@ -2,12 +2,9 @@
 
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
-import { useQueryClient } from "@tanstack/react-query";
+import { BedDouble, LogIn, LogOut, PawPrint } from "lucide-react";
 
-import { formatAmount } from "@workspace/common";
 import { Badge } from "@workspace/ui/components/badge";
-import { Button } from "@workspace/ui/components/button";
-import { Separator } from "@workspace/ui/components/separator";
 import {
     Sheet,
     SheetContent,
@@ -16,38 +13,64 @@ import {
     SheetTitle,
 } from "@workspace/ui/components/sheet";
 import { cn } from "@workspace/ui/lib/utils";
-import {
-    cancelActivityBooking,
-    completeActivityBooking,
-    confirmActivityBooking,
-    type BookingModel,
-} from "@workspace/modules/bookings";
 
-import { UserAvatar } from "@/features/auth/components/user-avatar";
-import { useAsyncState } from "@/hooks/use-async-state";
+import { PetTypeIllustration } from "@/features/pets/components/pet-type-illustration";
+import { isIllustratedType } from "@/features/pets/lib/pet-illustrations";
 import { useNavigation } from "@/hooks/use-navigation";
-import { activityColor, statusColor } from "../lib/booking-colors";
 
-type ActivityMeta = {
-    id: string;
-    name: string;
-    colorIndex: number;
+import { statusColor } from "../lib/booking-colors";
+import type { DayMovements, PetMovement } from "../lib/calendar-grid";
+
+type MovementSectionKind = "arrival" | "departure" | "staying";
+
+type SectionConfig = {
+    kind: MovementSectionKind;
+    Icon: typeof LogIn;
+    iconClass: string;
+    chipClass: string;
+    titleKey: string;
+    emptyKey: string;
 };
+
+const SECTIONS: SectionConfig[] = [
+    {
+        kind: "arrival",
+        Icon: LogIn,
+        iconClass: "text-emerald-600 dark:text-emerald-400",
+        chipClass: "bg-emerald-500/10",
+        titleKey: "features.hosting-calendar.sheet.sections.arrivals",
+        emptyKey: "features.hosting-calendar.sheet.sections.emptyArrivals",
+    },
+    {
+        kind: "departure",
+        Icon: LogOut,
+        iconClass: "text-rose-600 dark:text-rose-400",
+        chipClass: "bg-rose-500/10",
+        titleKey: "features.hosting-calendar.sheet.sections.departures",
+        emptyKey: "features.hosting-calendar.sheet.sections.emptyDepartures",
+    },
+    {
+        kind: "staying",
+        Icon: BedDouble,
+        iconClass: "text-sky-600 dark:text-sky-400",
+        chipClass: "bg-sky-500/10",
+        titleKey: "features.hosting-calendar.sheet.sections.staying",
+        emptyKey: "features.hosting-calendar.sheet.sections.emptyStaying",
+    },
+];
 
 type DayBookingsSheetProps = {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     selectedDate: Date | null;
-    bookings: BookingModel[];
-    activityMetaById: Record<string, ActivityMeta>;
+    movements: DayMovements;
 };
 
 export function DayBookingsSheet({
     open,
     onOpenChange,
     selectedDate,
-    bookings,
-    activityMetaById,
+    movements,
 }: DayBookingsSheetProps) {
     const locale = useLocale();
     const t = useTranslations();
@@ -61,31 +84,70 @@ export function DayBookingsSheet({
           }).format(selectedDate)
         : "";
 
+    const movementCount = movements.arrivals.length + movements.departures.length;
+    const isEmpty = movements.occupancy === 0;
+
+    const itemsByKind: Record<MovementSectionKind, PetMovement[]> = {
+        arrival: movements.arrivals,
+        departure: movements.departures,
+        staying: movements.staying,
+    };
+
     return (
         <Sheet open={open} onOpenChange={onOpenChange}>
             <SheetContent side="right" className="w-full sm:max-w-md flex flex-col gap-0 p-0">
-                <SheetHeader className="border-b">
-                    <SheetTitle className="capitalize">
-                        {t("features.hosting-calendar.sheet.title", { date: dateLabel })}
-                    </SheetTitle>
-                    <SheetDescription>
-                        {t("features.hosting-calendar.sheet.bookingCount", {
-                            count: bookings.length,
+                <SheetHeader className="border-b gap-3">
+                    <SheetTitle className="capitalize text-lg">{dateLabel}</SheetTitle>
+                    <SheetDescription className="sr-only">
+                        {t("features.hosting-calendar.sheet.recap", {
+                            movements: movementCount,
+                            staying: movements.staying.length,
                         })}
                     </SheetDescription>
+                    <div className="flex flex-wrap gap-2">
+                        <StatChip
+                            Icon={PawPrint}
+                            value={movements.occupancy}
+                            label={t("features.hosting-calendar.sheet.hostedTotal")}
+                            tone="border-primary/20 bg-primary/5 text-primary"
+                        />
+                        <StatChip
+                            Icon={LogIn}
+                            value={movements.arrivals.length}
+                            label={t("features.hosting-calendar.sheet.sections.arrivals")}
+                            tone="border-emerald-500/25 bg-emerald-500/5 text-emerald-600 dark:text-emerald-400"
+                        />
+                        <StatChip
+                            Icon={LogOut}
+                            value={movements.departures.length}
+                            label={t("features.hosting-calendar.sheet.sections.departures")}
+                            tone="border-rose-500/25 bg-rose-500/5 text-rose-600 dark:text-rose-400"
+                        />
+                        <StatChip
+                            Icon={BedDouble}
+                            value={movements.staying.length}
+                            label={t("features.hosting-calendar.sheet.sections.staying")}
+                            tone="border-sky-500/25 bg-sky-500/5 text-sky-600 dark:text-sky-400"
+                        />
+                    </div>
                 </SheetHeader>
 
-                <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-4">
-                    {bookings.length === 0 ? (
-                        <p className="text-sm text-muted-foreground text-center py-8">
-                            {t("features.hosting-calendar.sheet.empty")}
-                        </p>
+                <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-6">
+                    {isEmpty ? (
+                        <div className="flex flex-col items-center justify-center gap-3 py-12 text-center">
+                            <div className="flex items-center justify-center size-14 rounded-full bg-muted">
+                                <PawPrint className="size-6 text-muted-foreground" />
+                            </div>
+                            <p className="text-sm text-muted-foreground">
+                                {t("features.hosting-calendar.sheet.empty")}
+                            </p>
+                        </div>
                     ) : (
-                        bookings.map((booking) => (
-                            <BookingCard
-                                key={booking.id}
-                                booking={booking}
-                                activityMeta={activityMetaById[booking.activityId]}
+                        SECTIONS.map((section) => (
+                            <MovementSection
+                                key={section.kind}
+                                config={section}
+                                items={itemsByKind[section.kind]}
                             />
                         ))
                     )}
@@ -95,190 +157,110 @@ export function DayBookingsSheet({
     );
 }
 
-function BookingCard({
-    booking,
-    activityMeta,
+function StatChip({
+    Icon,
+    value,
+    label,
+    tone,
 }: {
-    booking: BookingModel;
-    activityMeta?: ActivityMeta;
+    Icon: typeof LogIn;
+    value: number;
+    label: string;
+    tone: string;
 }) {
-    const locale = useLocale();
-    const t = useTranslations();
-    const { routes } = useNavigation();
-
-    const status = statusColor(booking.status);
-    const color = activityColor(activityMeta?.colorIndex ?? 0);
-
-    const dateFormatter = new Intl.DateTimeFormat(locale, {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-    });
-    const checkInLabel = dateFormatter.format(new Date(booking.checkInDate));
-    const checkOutLabel = dateFormatter.format(new Date(booking.checkOutDate));
-
-    const customer = booking.user;
-    const customerName = customer ? customer.getFullName() : "—";
-    const showActions =
-        booking.isPending() || booking.isConfirmed() || booking.status === "in_progress";
-
     return (
-        <article
-            data-slot="booking-card"
+        <span
+            title={label}
             className={cn(
-                "rounded-2xl border bg-card flex flex-col overflow-hidden",
-                color.chipBorder,
+                "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-sm font-semibold",
+                tone,
             )}
         >
-            <header className="flex items-center justify-between gap-3 px-4 py-3 border-b">
-                <div className="flex items-center gap-3 min-w-0">
-                    <UserAvatar user={customer ?? undefined} className="size-10" />
-                    <div className="flex flex-col min-w-0">
-                        <span className="font-medium truncate">{customerName}</span>
-                        {activityMeta && (
-                            <span
-                                className={cn(
-                                    "text-xs font-medium px-1.5 py-0.5 rounded-md w-fit",
-                                    color.chipBg,
-                                    color.chipText,
-                                )}
-                            >
-                                {activityMeta.name}
-                            </span>
-                        )}
-                    </div>
-                </div>
-                <Badge variant="outline" className={cn("shrink-0", status.badge)}>
-                    {t(
-                        `features.hosting-calendar.status.${booking.status}` as Parameters<
-                            typeof t
-                        >[0],
-                    )}
-                </Badge>
-            </header>
-
-            <div className="px-4 py-3 grid grid-cols-2 gap-3 text-sm">
-                <div className="flex flex-col">
-                    <span className="text-xs text-muted-foreground">
-                        {t("features.hosting-calendar.sheet.checkIn")}
-                    </span>
-                    <span className="font-medium">{checkInLabel}</span>
-                </div>
-                <div className="flex flex-col">
-                    <span className="text-xs text-muted-foreground">
-                        {t("features.hosting-calendar.sheet.checkOut")}
-                    </span>
-                    <span className="font-medium">{checkOutLabel}</span>
-                </div>
-            </div>
-
-            {booking.pets && booking.pets.length > 0 && (
-                <>
-                    <Separator />
-                    <div className="px-4 py-3 flex flex-col gap-1.5">
-                        <span className="text-xs text-muted-foreground">
-                            {t("features.hosting-calendar.sheet.pets")}
-                        </span>
-                        <ul className="flex flex-wrap gap-1.5">
-                            {booking.pets.map((pet) => (
-                                <li key={pet.id}>
-                                    <Badge variant="flat" size="sm">
-                                        {pet.name}
-                                    </Badge>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                </>
-            )}
-
-            <Separator />
-            <div className="px-4 py-3 flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">
-                    {t("features.hosting-calendar.sheet.total")}
-                </span>
-                <span className="text-base font-semibold">
-                    {formatAmount(Number(booking.totalPrice))} €
-                </span>
-            </div>
-
-            {showActions && (
-                <>
-                    <Separator />
-                    <BookingCardActions booking={booking} />
-                </>
-            )}
-
-            <Separator />
-            <div className="px-4 py-2">
-                <Button size="sm" variant="ghost" className="text-muted-foreground -ms-2" asChild>
-                    <Link href={routes.BookingDetail({ id: booking.id })}>
-                        {t("common.actions.viewDetails")}
-                    </Link>
-                </Button>
-            </div>
-        </article>
+            <Icon className="size-3.5 shrink-0" />
+            {value}
+        </span>
     );
 }
 
-function BookingCardActions({ booking }: { booking: BookingModel }) {
+function MovementSection({ config, items }: { config: SectionConfig; items: PetMovement[] }) {
     const t = useTranslations();
-    const queryClient = useQueryClient();
-    const { execute: runConfirm, isLoading: isConfirming } = useAsyncState();
-    const { execute: runCancel, isLoading: isCancelling } = useAsyncState();
-    const { execute: runComplete, isLoading: isCompleting } = useAsyncState();
-
-    const invalidate = () => {
-        queryClient.invalidateQueries({ queryKey: ["hosting-calendar-bookings"] });
-    };
-
-    const onConfirm = () =>
-        runConfirm(() => confirmActivityBooking(booking.activityId, booking.id), {
-            onSuccess: invalidate,
-        });
-
-    const onCancel = () =>
-        runCancel(() => cancelActivityBooking(booking.activityId, booking.id), {
-            onSuccess: invalidate,
-        });
-
-    const onComplete = () =>
-        runComplete(() => completeActivityBooking(booking.activityId, booking.id), {
-            onSuccess: invalidate,
-        });
+    const { Icon } = config;
 
     return (
-        <footer className="px-4 py-3 flex flex-wrap items-center gap-2">
-            {booking.isPending() && (
-                <Button
-                    size="sm"
-                    onClick={onConfirm}
-                    disabled={isConfirming}
-                    className="rounded-full"
+        <section className="flex flex-col gap-2.5" data-slot="movement-section">
+            <header className="flex items-center gap-2">
+                <span
+                    className={cn(
+                        "flex items-center justify-center size-8 rounded-xl",
+                        config.chipClass,
+                    )}
                 >
-                    {t("features.hosting-calendar.sheet.actions.confirm")}
-                </Button>
+                    <Icon className={cn("size-4", config.iconClass)} />
+                </span>
+                <h3 className="flex-1 text-sm font-semibold">
+                    {t(config.titleKey as Parameters<typeof t>[0])}
+                </h3>
+                <span className="inline-flex items-center justify-center min-w-6 h-6 rounded-full bg-muted px-2 text-xs font-semibold text-muted-foreground">
+                    {items.length}
+                </span>
+            </header>
+
+            {items.length === 0 ? (
+                <p className="rounded-2xl border border-dashed py-4 text-center text-xs text-muted-foreground">
+                    {t(config.emptyKey as Parameters<typeof t>[0])}
+                </p>
+            ) : (
+                <ul className="flex flex-col gap-2">
+                    {items.map((movement) => (
+                        <li key={`${movement.bookingId}-${movement.petId}`}>
+                            <MovementRow movement={movement} />
+                        </li>
+                    ))}
+                </ul>
             )}
-            {(booking.isConfirmed() || booking.status === "in_progress") && (
-                <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={onComplete}
-                    disabled={isCompleting}
-                    className="rounded-full"
-                >
-                    {t("features.hosting-calendar.sheet.actions.complete")}
-                </Button>
-            )}
-            <Button
-                size="sm"
-                variant="ghost"
-                onClick={onCancel}
-                disabled={isCancelling}
-                className="rounded-full text-destructive hover:text-destructive ms-auto"
-            >
-                {t("features.hosting-calendar.sheet.actions.cancel")}
-            </Button>
-        </footer>
+        </section>
+    );
+}
+
+function MovementRow({ movement }: { movement: PetMovement }) {
+    const t = useTranslations();
+    const { routes } = useNavigation();
+
+    const status = statusColor(movement.status);
+    const illustrated =
+        movement.animalTypeCode !== null && isIllustratedType(movement.animalTypeCode);
+
+    const subtitle = movement.animalTypeName
+        ? `${movement.animalTypeName} · ${movement.customerName}`
+        : movement.customerName;
+
+    return (
+        <Link
+            href={routes.BookingDetail({ id: movement.bookingId })}
+            className="flex items-center gap-3 rounded-2xl border p-2.5 hover:bg-muted/40 hover:border-border transition-colors"
+        >
+            <span className="flex items-center justify-center size-11 rounded-xl bg-muted shrink-0">
+                {illustrated ? (
+                    <PetTypeIllustration
+                        code={movement.animalTypeCode!}
+                        name={movement.animalTypeName ?? ""}
+                        className="size-6"
+                    />
+                ) : (
+                    <PawPrint className="size-5 text-muted-foreground" />
+                )}
+            </span>
+            <div className="flex flex-col min-w-0 flex-1 gap-0.5">
+                <span className="font-medium truncate leading-tight">{movement.petName}</span>
+                <span className="text-xs text-muted-foreground truncate">{subtitle}</span>
+            </div>
+            <Badge variant="outline" className={cn("shrink-0", status.badge)}>
+                {t(
+                    `features.hosting-calendar.status.${movement.status}` as Parameters<
+                        typeof t
+                    >[0],
+                )}
+            </Badge>
+        </Link>
     );
 }

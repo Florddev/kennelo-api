@@ -38,7 +38,11 @@ export default function HostingSubscriptionPage() {
     }
 
     return (
-        <PageLayout Icon={CrownLine} title={t("features.subscriptions.title")}>
+        <PageLayout
+            Icon={CrownLine}
+            title={t("features.subscriptions.title")}
+            containerClassName="p-4 md:p-8"
+        >
             <SubscriptionManager />
         </PageLayout>
     );
