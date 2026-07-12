@@ -43,6 +43,12 @@ echo "  la valeur du client OAuth de la Google Cloud Console :"
 echo "    printf '%s' 'GOCSPX-...' | docker secret create kennelo_google_client_secret -"
 
 echo ""
+echo "==> RESEND_KEY (Emailing)"
+echo "  Le secret kennelo_resend_api_key doit être créé manuellement avec la clé"
+echo "  API Resend du domaine kennelo.com :"
+echo "    printf '%s' 're_...' | docker secret create kennelo_resend_api_key -"
+
+echo ""
 echo "==> Secrets présents :"
 docker secret ls --format '  {{.Name}}'
 
