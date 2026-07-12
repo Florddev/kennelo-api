@@ -6,9 +6,9 @@ import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { addActivityFavorite, removeActivityFavorite } from "@workspace/modules/activities";
 import { Button } from "@workspace/ui/components/button";
-import { KHeart } from "@workspace/ui/icons";
 import { cn } from "@workspace/ui/lib/utils";
 import { useAuth } from "@/features/auth";
+import { Heart } from "@solar-icons/react";
 
 type FavoriteButtonProps = {
     activityId: string;
@@ -52,15 +52,15 @@ export function FavoriteButton({ activityId, isFavorited, className }: FavoriteB
             size="icon-sm"
             variant="flat"
             onClick={handleClick}
-            disabled={mutation.isPending}
+            // disabled={mutation.isPending}
             aria-label={
                 favorited
                     ? t("features.explore.card.removeFromFavorites")
                     : t("features.explore.card.addToFavorites")
             }
-            className={cn("rounded-full", favorited && "text-primary", className)}
+            className={cn("rounded-full text-primary", favorited && "text-red-400", className)}
         >
-            <KHeart filled={favorited} size={18} />
+            <Heart weight={favorited ? "Bold" : "Linear"} size={18} />
         </Button>
     );
 }

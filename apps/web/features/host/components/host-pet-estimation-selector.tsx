@@ -32,6 +32,7 @@ type HostPetEstimationSelectorProps = {
     disabledPetIds?: string[];
     hiddenCount?: number;
     emptyHref?: string;
+    hideHeader?: boolean;
 };
 
 export function HostPetEstimationSelector({
@@ -41,10 +42,11 @@ export function HostPetEstimationSelector({
     disabledPetIds = [],
     hiddenCount = 0,
     emptyHref,
+    hideHeader = false,
 }: HostPetEstimationSelectorProps) {
     const t = useTranslations();
 
-    const header = (
+    const header = hideHeader ? null : (
         <div className="flex flex-col">
             <h2 className="text-lg font-semibold text-slate-900">
                 {t("features.host.detail.estimateTitle")}

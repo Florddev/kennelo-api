@@ -11,12 +11,14 @@ type HostAnimalTypeEstimationSelectorProps = {
     priceRanges: AnimalTypePriceRangeModel[];
     counts: Record<string, number>;
     onCountChange: (animalTypeId: string, count: number) => void;
+    hideHeader?: boolean;
 };
 
 export function HostAnimalTypeEstimationSelector({
     priceRanges,
     counts,
     onCountChange,
+    hideHeader = false,
 }: HostAnimalTypeEstimationSelectorProps) {
     const t = useTranslations();
 
@@ -26,14 +28,16 @@ export function HostAnimalTypeEstimationSelector({
 
     return (
         <section data-slot="host-animal-type-estimation-selector" className="flex flex-col gap-3">
-            <div className="flex flex-col">
-                <h2 className="text-lg font-semibold text-slate-900">
-                    {t("features.host.detail.estimateTypeTitle")}
-                </h2>
-                <p className="text-sm text-muted-foreground">
-                    {t("features.host.detail.estimateTypeDescription")}
-                </p>
-            </div>
+            {!hideHeader && (
+                <div className="flex flex-col">
+                    <h2 className="text-lg font-semibold text-slate-900">
+                        {t("features.host.detail.estimateTypeTitle")}
+                    </h2>
+                    <p className="text-sm text-muted-foreground">
+                        {t("features.host.detail.estimateTypeDescription")}
+                    </p>
+                </div>
+            )}
             <div className="flex flex-col gap-2">
                 {priceRanges.map((range) => {
                     const count = counts[range.animalType.id] ?? 0;

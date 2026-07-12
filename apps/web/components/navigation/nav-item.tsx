@@ -45,7 +45,14 @@ export default function NavItem({
             asChild
         >
             <Link href={href}>
-                {Icon && <AppIcon Icon={Icon} size={iconSize} active={active} />}
+                {Icon && (
+                    <AppIcon
+                        Icon={Icon}
+                        size={iconSize}
+                        active={active}
+                        className={classNameIcon}
+                    />
+                )}
                 {children}
             </Link>
         </Button>
