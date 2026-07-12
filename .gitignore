@@ -9,6 +9,8 @@ node_modules
 .pnp
 .pnp.js
 vendor/
+!/api/resources/views/vendor/
+!/api/resources/views/vendor/**
 
 # Local env files
 .env
