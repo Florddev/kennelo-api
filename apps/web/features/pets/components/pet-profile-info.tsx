@@ -25,7 +25,7 @@ type PetProfileInfoProps = {
 const YES_ACTION_KEY = "common.actions.yes";
 const NO_ACTION_KEY = "common.actions.no";
 
-function PetIdentityHeader({ pet, className }: { pet: PetModel; className: string }) {
+export function PetIdentityHeader({ pet, className }: { pet: PetModel; className?: string }) {
     return (
         <div className={cn("flex gap-2 items-center", className)}>
             <div className="flex flex-col w-full">
@@ -45,6 +45,59 @@ function PetIdentityHeader({ pet, className }: { pet: PetModel; className: strin
                 name={pet.name}
                 className="size-12"
             />
+        </div>
+    );
+}
+
+export function PetDescription({ pet, className }: { pet: PetModel; className?: string }) {
+    const t = useTranslations();
+
+    return (
+        <div className={cn("relative flex flex-1 flex-col gap-1", className)}>
+            <h3 className="text-xl font-semibold text-primary whitespace-nowrap">
+                {t("common.fields.description")}
+            </h3>
+            {pet.about ? (
+                <p className="text-xs text-primary">{pet.about}</p>
+            ) : (
+                <p className="text-xs text-muted-foreground">{t("features.pets.noDescription")}</p>
+            )}
+        </div>
+    );
+}
+
+export function PetAboutFrame({
+    pet,
+    ageDisplay,
+    className,
+}: {
+    pet: PetModel;
+    ageDisplay: string | null;
+    className?: string;
+}) {
+    const t = useTranslations();
+    const petColorClass = pet?.animalType?.getTailwindColorClass();
+
+    return (
+        <div className={className}>
+            <Frame
+                header={
+                    <PetSectionLabel
+                        title={t("features.pets.profile.about")}
+                        className="px-4 py-2"
+                    />
+                }
+                className={`bg-${petColorClass}-100 p-0 gap-3`}
+                contentClassName="border-0 bg-transparent p-3 pt-0"
+            >
+                <SectionShapeSvg className={`absolute top-0 left-0 text-${petColorClass}-400`} />
+                <PetBasicSection
+                    pet={pet}
+                    ageDisplay={ageDisplay}
+                    weight="Linear"
+                    className={`bg-${petColorClass}-50  text-${petColorClass}-950`}
+                />
+            </Frame>
         </div>
     );
 }
@@ -118,7 +171,7 @@ export function PetGroupedAttributesList({
             {title && <div className={cn("text-sm font-semibold", framed && "p-2")}>{title}</div>}
             <div
                 className={cn(
-                    "flex flex-wrap gap-y-2 gap-x-6 px-2",
+                    "flex flex-wrap md:flex-nowrap md:flex-col md:gap-y-3 gap-y-2 gap-x-6 px-2",
                     framed && "p-4 bg-white border rounded-sm",
                 )}
             >
@@ -232,12 +285,75 @@ export function PetDetailsSection({
     );
 }
 
+export function PetCharacterHabits({ pet }: { pet: PetModel }) {
+    const t = useTranslations();
+    const petColorClass = pet?.animalType?.getTailwindColorClass();
+
+    return (
+        <PetDetailsSection>
+            <div className="flex flex-col gap-4">
+                <PetGroupedAttributesList
+                    pet={pet}
+                    title={t("common.messages.socialization")}
+                    categories={["social"]}
+                    className={`bg-${petColorClass}-50 text-${petColorClass}-900`}
+                />
+                <PetGroupedAttributesList
+                    pet={pet}
+                    title={t("common.messages.boarding")}
+                    categories={["behavior", "habitat", "hygiene", "care"]}
+                    className={`bg-${petColorClass}-50 text-${petColorClass}-900`}
+                />
+                <PetGroupedAttributesList
+                    pet={pet}
+                    title={t("common.messages.otherInformation")}
+                    categories={["diet", "info"]}
+                    className={`bg-${petColorClass}-50 text-${petColorClass}-900`}
+                />
+                <PetGroupedAttributesList
+                    pet={pet}
+                    title={t("common.messages.health")}
+                    categories={["health"]}
+                    forceDisplay={
+                        !!(pet.isSterilized !== null || pet.microchipNumber || pet.healthNotes)
+                    }
+                    className={`bg-${petColorClass}-50 text-${petColorClass}-900`}
+                >
+                    {pet.isSterilized !== null && (
+                        <PetAttributeItem
+                            label={t("features.pets.fields.sterilized")}
+                            value={pet.isSterilized ? t(YES_ACTION_KEY) : t(NO_ACTION_KEY)}
+                            iconName="Scissors"
+                            className={`bg-${petColorClass}-50 text-${petColorClass}-900`}
+                        />
+                    )}
+                    {pet.microchipNumber && (
+                        <PetAttributeItem
+                            label={t("features.pets.fields.microchip")}
+                            value={pet.microchipNumber}
+                            iconName="Cpu"
+                            className={`bg-${petColorClass}-50 text-${petColorClass}-900`}
+                        />
+                    )}
+                    {pet.healthNotes && (
+                        <PetAttributeItem
+                            label={t("features.pets.profile.medicalNotes")}
+                            value={pet.healthNotes}
+                            iconName="InfoSquare"
+                            className={`bg-${petColorClass}-50 text-${petColorClass}-900`}
+                        />
+                    )}
+                </PetGroupedAttributesList>
+            </div>
+        </PetDetailsSection>
+    );
+}
+
 export function PetProfileInfo({ pet, ageDisplay }: PetProfileInfoProps) {
     const t = useTranslations();
     const { reviews } = usePetReviews(pet.id);
 
     const hasImages = pet.images && pet.images.length > 0;
-    const petColorClass = pet?.animalType?.getTailwindColorClass();
 
     return (
         <div className="flex flex-col gap-4 sm:px-0">
@@ -245,41 +361,9 @@ export function PetProfileInfo({ pet, ageDisplay }: PetProfileInfoProps) {
 
             <Separator className="opacity-30 mx-4" />
 
-            <div className="relative flex flex-1 flex-col gap-1 px-4">
-                <h3 className="text-xl font-semibold text-primary whitespace-nowrap">
-                    {t("common.fields.description")}
-                </h3>
-                {pet.about ? (
-                    <p className="text-xs text-primary">{pet.about}</p>
-                ) : (
-                    <p className="text-xs text-muted-foreground">
-                        {t("features.pets.noDescription")}
-                    </p>
-                )}
-            </div>
+            <PetDescription pet={pet} className="px-4" />
 
-            <div className="px-4">
-                <Frame
-                    header={
-                        <PetSectionLabel
-                            title={t("features.pets.profile.about")}
-                            className="px-4 py-2"
-                        />
-                    }
-                    className={`bg-${petColorClass}-100 p-0 gap-3`}
-                    contentClassName="border-0 bg-transparent p-3 pt-0"
-                >
-                    <SectionShapeSvg
-                        className={`absolute top-0 left-0 text-${petColorClass}-400`}
-                    />
-                    <PetBasicSection
-                        pet={pet}
-                        ageDisplay={ageDisplay}
-                        weight="Linear"
-                        className={`bg-${petColorClass}-50  text-${petColorClass}-950`}
-                    />
-                </Frame>
-            </div>
+            <PetAboutFrame pet={pet} ageDisplay={ageDisplay} className="px-4" />
 
             <Tabs defaultValue="overview" className="flex flex-col gap-0">
                 <Sticky
@@ -325,79 +409,7 @@ export function PetProfileInfo({ pet, ageDisplay }: PetProfileInfoProps) {
                         </p>
                     </div>
 
-                    <PetDetailsSection>
-                        <div className="flex flex-col gap-4">
-                            <PetGroupedAttributesList
-                                pet={pet}
-                                title={t("common.messages.socialization")}
-                                categories={["social"]}
-                                className={`bg-${petColorClass}-50 text-${petColorClass}-900`}
-                                // weight="BoldDuotone"
-                                // framed
-                            />
-                            <PetGroupedAttributesList
-                                pet={pet}
-                                title={t("common.messages.boarding")}
-                                categories={["behavior", "habitat", "hygiene", "care"]}
-                                className={`bg-${petColorClass}-50 text-${petColorClass}-900`}
-                                // weight="BoldDuotone"
-                                // framed
-                            />
-                            <PetGroupedAttributesList
-                                pet={pet}
-                                title={t("common.messages.otherInformation")}
-                                categories={["diet", "info"]}
-                                className={`bg-${petColorClass}-50 text-${petColorClass}-900`}
-                                // weight="BoldDuotone"
-                                // framed
-                            />
-                            <PetGroupedAttributesList
-                                pet={pet}
-                                title={t("common.messages.health")}
-                                categories={["health"]}
-                                forceDisplay={
-                                    !!(
-                                        pet.isSterilized !== null ||
-                                        pet.microchipNumber ||
-                                        pet.healthNotes
-                                    )
-                                }
-                                className={`bg-${petColorClass}-50 text-${petColorClass}-900`}
-                                // weight="BoldDuotone"
-                                // framed
-                            >
-                                {pet.isSterilized !== null && (
-                                    <PetAttributeItem
-                                        label={t("features.pets.fields.sterilized")}
-                                        value={
-                                            pet.isSterilized ? t(YES_ACTION_KEY) : t(NO_ACTION_KEY)
-                                        }
-                                        iconName="Scissors"
-                                        className={`bg-${petColorClass}-50 text-${petColorClass}-900`}
-                                        // weight="BoldDuotone"
-                                    />
-                                )}
-                                {pet.microchipNumber && (
-                                    <PetAttributeItem
-                                        label={t("features.pets.fields.microchip")}
-                                        value={pet.microchipNumber}
-                                        iconName="Cpu"
-                                        className={`bg-${petColorClass}-50 text-${petColorClass}-900`}
-                                        // weight="BoldDuotone"
-                                    />
-                                )}
-                                {pet.healthNotes && (
-                                    <PetAttributeItem
-                                        label={t("features.pets.profile.medicalNotes")}
-                                        value={pet.healthNotes}
-                                        iconName="InfoSquare"
-                                        className={`bg-${petColorClass}-50 text-${petColorClass}-900`}
-                                        // weight="BoldDuotone"
-                                    />
-                                )}
-                            </PetGroupedAttributesList>
-                        </div>
-                    </PetDetailsSection>
+                    <PetCharacterHabits pet={pet} />
                 </TabsContent>
 
                 <TabsContent value="gallery" className="flex flex-col gap-4 p-4">

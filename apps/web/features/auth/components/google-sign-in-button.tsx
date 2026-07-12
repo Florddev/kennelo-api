@@ -77,7 +77,7 @@ export function GoogleSignInButton({
             </div>
             <Button
                 type="button"
-                variant="outline"
+                variant="flat"
                 size="lg"
                 className="w-full font-medium text-md"
                 disabled={isLoading}
