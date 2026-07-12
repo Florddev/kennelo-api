@@ -57,7 +57,9 @@ services:
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
       GOOGLE_REDIRECT_URI: ${GOOGLE_REDIRECT_URI}
 
-      MAIL_MAILER: log
+      MAIL_MAILER: ${MAIL_MAILER}
+      MAIL_FROM_ADDRESS: ${MAIL_FROM_ADDRESS}
+      MAIL_FROM_NAME: ${MAIL_FROM_NAME}
     secrets:
       - kennelo_app_key
       - kennelo_jwt_secret
@@ -67,6 +69,7 @@ services:
       - kennelo_minio_root_user
       - kennelo_minio_root_password
       - kennelo_google_client_secret
+      - kennelo_resend_api_key
     networks:
       - kennelo-internal
       - kennelo-public
@@ -100,4 +103,6 @@ secrets:
   kennelo_minio_root_password:
     external: true
   kennelo_google_client_secret:
+    external: true
+  kennelo_resend_api_key:
     external: true
