@@ -12,7 +12,7 @@ import { SearchBarPets } from "./search-bar-pets";
 import { SearchBarSubmit } from "./search-bar-submit";
 import { SearchBarDivider } from "./search-bar-divider";
 
-export default function SearchBar() {
+export default function SearchBar({ className }: { className?: string }) {
     const {
         containerRef,
         locationInputRef,
@@ -37,7 +37,7 @@ export default function SearchBar() {
     } = useSearchBar();
 
     return (
-        <div ref={containerRef} className="relative w-full max-w-3xl">
+        <div ref={containerRef} className={cn("relative w-full max-w-3xl", className)}>
             <div
                 data-slot="search-bar"
                 data-expanded={isExpanded || undefined}

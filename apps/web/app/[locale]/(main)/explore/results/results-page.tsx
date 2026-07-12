@@ -20,12 +20,14 @@ import type { ActivityModel } from "@workspace/modules/activities";
 
 import { useNavVisibility } from "@/providers/navigation-visibility-provider";
 import { useNavigation } from "@/hooks/use-navigation";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { CompactSearchTrigger } from "@/features/explore/components/search-trigger";
 import { FilterChips } from "@/features/explore/components/filter-chips";
 import { HostCard } from "@/features/explore/components/host-card";
 import { useSearchResults } from "@/features/explore/hooks/use-search-results";
 import { useMobileSearch } from "@/features/search/hooks/use-mobile-search";
 import { MobileSearchOverlay } from "@/features/search/components/mobile/mobile-search-overlay";
+import SearchBar from "@/features/search/components/search-bar";
 import { CrownStar, PointOnMap } from "@solar-icons/react";
 import { PET_TYPES } from "@/features/search";
 
@@ -332,7 +334,7 @@ function ExploreMap({
     );
 }
 
-function EmptyResults({ onExpand, onModify }: { onExpand: () => void; onModify: () => void }) {
+function EmptyResults({ onExpand, onModify }: { onExpand: () => void; onModify?: () => void }) {
     const t = useTranslations();
 
     return (
@@ -352,9 +354,11 @@ function EmptyResults({ onExpand, onModify }: { onExpand: () => void; onModify: 
                 <Button onClick={onExpand} className="rounded-full w-full">
                     {t("features.explore.expandArea")}
                 </Button>
-                <Button onClick={onModify} variant="outline" className="rounded-full w-full">
-                    {t("features.explore.modifyCriteria")}
-                </Button>
+                {onModify && (
+                    <Button onClick={onModify} variant="outline" className="rounded-full w-full">
+                        {t("features.explore.modifyCriteria")}
+                    </Button>
+                )}
             </div>
         </div>
     );
@@ -535,10 +539,101 @@ function useSnapPoints() {
     return { snap, snapMax, snapPoints, handleSetSnap, handleToggleSnap };
 }
 
+function ResultsCount({ isLoading, count }: { isLoading: boolean; count: number }) {
+    const t = useTranslations();
+
+    if (isLoading) {
+        return (
+            <span className="h-5 w-36 bg-muted animate-pulse rounded-full inline-block align-middle" />
+        );
+    }
+
+    return <>{t("features.explore.hostsAvailable", { count })}</>;
+}
+
+function ExploreResultsDesktop({
+    activeFilter,
+    onFilterSelect,
+    isLoading,
+    hosts,
+    highlightedId,
+    onHighlightChange,
+    userDistanceMap,
+    onExpandArea,
+    geocodedCenter,
+    onSearchArea,
+}: {
+    activeFilter: string;
+    onFilterSelect: (id: string) => void;
+    isLoading: boolean;
+    hosts: ActivityModel[];
+    highlightedId: string | null;
+    onHighlightChange: (id: string | null) => void;
+    userDistanceMap: Record<string, number | null>;
+    onExpandArea: () => void;
+    geocodedCenter: [number, number] | null;
+    onSearchArea: (area: SearchArea) => void;
+}) {
+    return (
+        <div className="flex h-[calc(100dvh-var(--header-height))] flex-col bg-card">
+            <div className="relative z-30 shrink-0 border-b bg-card">
+                <div className="px-6 py-4">
+                    <SearchBar className="max-w-none" />
+                </div>
+                <div className="pb-3">
+                    <FilterChips activeFilter={activeFilter} onSelect={onFilterSelect} />
+                </div>
+            </div>
+
+            <div className="grid min-h-0 flex-1 grid-cols-3 overflow-hidden">
+                <div className="col-span-2 overflow-y-auto p-6">
+                    <h2 className="mb-4 text-lg font-bold">
+                        <ResultsCount isLoading={isLoading} count={hosts.length} />
+                    </h2>
+
+                    {hosts.length === 0 ? (
+                        <EmptyResults onExpand={onExpandArea} />
+                    ) : (
+                        <div className="grid grid-cols-2 gap-4 xl:grid-cols-3">
+                            {hosts.map((host) => (
+                                <div
+                                    key={host.id}
+                                    onMouseEnter={() => onHighlightChange(host.id)}
+                                    onMouseLeave={() => onHighlightChange(null)}
+                                >
+                                    <HostCard
+                                        host={host}
+                                        variant="vertical"
+                                        className="w-full"
+                                        highlighted={highlightedId === host.id}
+                                        distanceOverride={userDistanceMap[host.id] ?? null}
+                                    />
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+
+                <div className="relative col-span-1 border-s">
+                    <ExploreMap
+                        activities={hosts}
+                        highlightedId={highlightedId}
+                        onMarkerClick={(id) => onHighlightChange(highlightedId === id ? null : id)}
+                        onSearchArea={onSearchArea}
+                        geocodedCenter={geocodedCenter}
+                        onDismissHighlight={() => onHighlightChange(null)}
+                    />
+                </div>
+            </div>
+        </div>
+    );
+}
+
 export default function ExploreResultsPage() {
     const t = useTranslations();
     const formatter = useFormatter();
     const router = useRouter();
+    const isMobile = useIsMobile();
     const { setBottomNavbarVisible } = useNavVisibility();
     const userLocation = useUserLocation();
     const { snap, snapMax, snapPoints, handleSetSnap, handleToggleSnap } = useSnapPoints();
@@ -648,6 +743,51 @@ export default function ExploreResultsPage() {
         handleSearch();
     }
 
+    const searchOverlay = isOverlayOpen ? (
+        <MobileSearchOverlay
+            activeCollapsible={activeCollapsible}
+            locationSearchActive={locationSearchActive}
+            location={searchLocation}
+            dateRange={dateRange}
+            petCounts={searchPetCounts}
+            totalPets={totalPets}
+            filteredSuggestions={filteredSuggestions}
+            dateDisplay={dateDisplay}
+            isLastStep={isLastStep}
+            locationInputRef={locationInputRef}
+            formatDate={formatDate}
+            onClose={closeOverlay}
+            onToggleCollapsible={toggleCollapsible}
+            onSelectLocation={selectLocation}
+            onClearLocation={clearLocation}
+            onChangeLocation={setLocation}
+            onSelectDateRange={setDateRange}
+            onAdjustPet={adjustPetCount}
+            onClearAll={clearAll}
+            onSelectRecentSearch={selectRecentSearch}
+            onNext={handleNext}
+            onSearch={handleSearchAndClearBounds}
+            onSetLocationSearchActive={setLocationSearchActive}
+        />
+    ) : null;
+
+    if (!isMobile) {
+        return (
+            <ExploreResultsDesktop
+                activeFilter={activeFilter}
+                onFilterSelect={setActiveFilter}
+                isLoading={isLoading}
+                hosts={filteredHosts}
+                highlightedId={highlightedId}
+                onHighlightChange={setHighlightedId}
+                userDistanceMap={userDistanceMap}
+                onExpandArea={handleExpandArea}
+                geocodedCenter={geocodedCenter}
+                onSearchArea={setSearchArea}
+            />
+        );
+    }
+
     return (
         <div className="fixed inset-0 z-40 flex flex-col bg-card overflow-hidden">
             <div className="bg-card shadow-sm">
@@ -725,13 +865,10 @@ export default function ExploreResultsPage() {
                         >
                             <DrawerPrimitive.Title asChild>
                                 <h2>
-                                    {isLoading ? (
-                                        <span className="h-5 w-36 bg-muted animate-pulse rounded-full inline-block align-middle" />
-                                    ) : (
-                                        t("features.explore.hostsAvailable", {
-                                            count: filteredHosts.length,
-                                        })
-                                    )}
+                                    <ResultsCount
+                                        isLoading={isLoading}
+                                        count={filteredHosts.length}
+                                    />
                                 </h2>
                             </DrawerPrimitive.Title>
                         </div>
@@ -776,33 +913,7 @@ export default function ExploreResultsPage() {
                 onClose={() => setHighlightedId(null)}
             />
 
-            {isOverlayOpen && (
-                <MobileSearchOverlay
-                    activeCollapsible={activeCollapsible}
-                    locationSearchActive={locationSearchActive}
-                    location={searchLocation}
-                    dateRange={dateRange}
-                    petCounts={searchPetCounts}
-                    totalPets={totalPets}
-                    filteredSuggestions={filteredSuggestions}
-                    dateDisplay={dateDisplay}
-                    isLastStep={isLastStep}
-                    locationInputRef={locationInputRef}
-                    formatDate={formatDate}
-                    onClose={closeOverlay}
-                    onToggleCollapsible={toggleCollapsible}
-                    onSelectLocation={selectLocation}
-                    onClearLocation={clearLocation}
-                    onChangeLocation={setLocation}
-                    onSelectDateRange={setDateRange}
-                    onAdjustPet={adjustPetCount}
-                    onClearAll={clearAll}
-                    onSelectRecentSearch={selectRecentSearch}
-                    onNext={handleNext}
-                    onSearch={handleSearchAndClearBounds}
-                    onSetLocationSearchActive={setLocationSearchActive}
-                />
-            )}
+            {searchOverlay}
         </div>
     );
 }
