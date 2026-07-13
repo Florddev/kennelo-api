@@ -8,7 +8,7 @@ import {
   type ReactNode,
 } from "react"
 import { useRouter } from "next/navigation"
-import { api, LocalStorageService } from "@workspace/common"
+import { api, CookieStorageService } from "@workspace/common"
 import {
   authService,
   getCurrentUser,
@@ -33,7 +33,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter()
 
   useState(() => {
-    authService.configure(new LocalStorageService())
+    authService.configure(new CookieStorageService())
     api.setTokenGetter(() => authService.getAccessToken())
   })
 

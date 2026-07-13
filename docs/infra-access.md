@@ -45,6 +45,17 @@ ne présentent aucune surface d'attaque publique.
 Chaque alias ouvre un tunnel SSH vers le manager. Tant que le terminal reste
 ouvert, l'accès local fonctionne ; fermer le terminal ferme le tunnel.
 
+## Back-office d'administration
+
+Le back-office métier (gestion des utilisateurs, professionnels, prospection,
+audit) n'utilise pas de tunnel : il est exposé publiquement sur
+`https://admin.kennelo.fr` (prod) et `https://admin.preprod.kennelo.fr`
+(préprod), via un proxy host NPM pointant vers `back-office_back-office:3000`
+sur chaque environnement. L'accès est réservé aux comptes ayant le rôle
+`admin`, avec une protection multi-couche (proxy Next.js server-side, hook
+client, middleware API) détaillée dans `docs/observability.md`, section
+« Back-office d'administration ».
+
 ## Configuration (à recréer sur une nouvelle machine)
 
 ### Alias SSH

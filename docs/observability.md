@@ -245,8 +245,8 @@ images et la discipline de release.
 
 ### Architecture des tags d'images
 
-La CI publie les images api et web sur GHCR avec des tags dont le nom dit
-exactement ce qu'ils contiennent :
+La CI publie les images api, web et back-office sur GHCR avec des tags dont
+le nom dit exactement ce qu'ils contiennent :
 
 | Tag              | Produit sur       | Nature                                        |
 | ---------------- | ----------------- | --------------------------------------------- |
@@ -334,6 +334,36 @@ Le câblage suit la séparation public / privé habituelle :
 ```
 printf '%s' 'GOCSPX-...' | docker secret create kennelo_google_client_secret -
 ```
+
+### Back-office d'administration
+
+Le back-office (`apps/back-office`, image `kennelo-back-office`) suit le même
+cycle de release que le web : image par environnement (le
+`NEXT_PUBLIC_API_URL` est inliné au build), déployé par `deploy-app.sh` sur
+`admin.preprod.kennelo.fr` (préprod) et `admin.kennelo.fr` (prod), un replica
+par environnement.
+
+Contrairement aux interfaces d'administration du cluster (Portainer,
+Grafana), le back-office est exposé publiquement : c'est une application
+métier avec sa propre authentification, pas un outil de pilotage de
+l'infrastructure. Sa protection est multi-couche :
+
+1. Un proxy Next.js server-side (`apps/back-office/proxy.ts`) garde
+   `/dashboard/*` : token absent, expiré ou sans le rôle `admin` dans ses
+   claims → redirection vers `/login`. Le proxy décode le JWT sans en
+   vérifier la signature (le secret reste côté API) : il ferme la surface
+   d'exposition de l'interface, il ne fait pas autorité.
+2. Le hook client (`use-auth`) purge la session et refuse le login des
+   comptes non-admin.
+3. L'API Laravel reste la couche d'autorité : toutes les routes `/api/admin/*`
+   sont derrière `auth.jwt` + `role:admin`, un token forgé ou dégradé y prend
+   des 403 quelle que soit l'UI chargée.
+
+Cas particulier des tokens d'impersonation : ils portent les rôles de
+l'utilisateur cible, pas ceux de l'admin. Impersoner un utilisateur standard
+produit donc un token que le back-office rejette — c'est voulu, ces tokens
+servent à naviguer l'application web comme l'utilisateur, l'admin conserve
+son propre token pour le back-office.
 
 ## CI/CD — Déploiement automatisé
 

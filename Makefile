@@ -42,7 +42,7 @@ start: ## Start API, Web and Back-office
 	cd api && php artisan queue:work --queue=default --tries=1 --memory=1024 --timeout=180 &
 	cd api && php artisan reverb:start --host=0.0.0.0 --port=8080 &
 	pnpm --filter web dev &
-	pnpm --filter base-nextjs dev &
+	pnpm --filter back-office dev &
 
 down: ## Stop API and Web (serve, queue, reverb, turbo, next)
 ifeq ($(OS),Windows_NT)
@@ -126,8 +126,8 @@ deploy-prod: check-tag ## Deploy a tagged release to prod: make deploy-prod TAG=
 
 rollback: deploy-prod ## Redeploy a previous release to prod: make rollback TAG=vX.Y.Z
 
-status: ## Show app services state (api, web, reverb)
-	docker service ls --filter name=api --filter name=web --filter name=reverb
+status: ## Show app services state (api, web, reverb, back-office)
+	docker service ls --filter name=api --filter name=web --filter name=reverb --filter name=back-office
 
 check-tag:
 	@if [ -z "$(TAG)" ]; then \
