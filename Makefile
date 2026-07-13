@@ -126,8 +126,8 @@ deploy-prod: check-tag ## Deploy a tagged release to prod: make deploy-prod TAG=
 
 rollback: deploy-prod ## Redeploy a previous release to prod: make rollback TAG=vX.Y.Z
 
-status: ## Show app services state (api, web, reverb)
-	docker service ls --filter name=api --filter name=web --filter name=reverb
+status: ## Show app services state (api, web, reverb, back-office)
+	docker service ls --filter name=api --filter name=web --filter name=reverb --filter name=back-office
 
 check-tag:
 	@if [ -z "$(TAG)" ]; then \
