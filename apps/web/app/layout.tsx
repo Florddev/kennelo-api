@@ -2,7 +2,8 @@ import "@workspace/ui/globals.css";
 import { Geist_Mono, Plus_Jakarta_Sans, Bricolage_Grotesque } from "next/font/google"; // Fraunces
 import { Providers } from "@/components/providers";
 import { Suspense } from "react";
-import { DEFAULT_LOCALE, DEFAULT_LOCALE_DIR } from "@/dictionaries";
+import { getLocale, getTranslations } from "next-intl/server";
+import { LocaleDirection } from "@/dictionaries";
 import { cn } from "@workspace/ui/lib/utils";
 
 const fontHeading = Bricolage_Grotesque({
@@ -32,14 +33,12 @@ async function getInitialAuthState(): Promise<boolean> {
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
     const initialIsAuthenticated = await getInitialAuthState();
+    const locale = await getLocale();
+    const t = await getTranslations({ locale });
+    const dir = t("settings.dir") as LocaleDirection;
 
     return (
-        <html
-            lang={DEFAULT_LOCALE}
-            dir={DEFAULT_LOCALE_DIR}
-            data-scroll-behavior="smooth"
-            suppressHydrationWarning
-        >
+        <html lang={locale} dir={dir} data-scroll-behavior="smooth" suppressHydrationWarning>
             <head>
                 {process.env.NODE_ENV === "development" &&
                     process.env.NEXT_PUBLIC_PLATFORM !== "mobile" && (

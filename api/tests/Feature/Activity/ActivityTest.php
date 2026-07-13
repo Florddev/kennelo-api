@@ -133,8 +133,19 @@ it('admin can create an activity', function () {
         ->assertCreated();
 });
 
-it('regular user without role cannot create an activity', function () {
+it('regular verified user without role can create an activity and becomes a manager', function () {
     $user = User::factory()->create();
+
+    $this->withHeaders(asUser($user))
+        ->postJson('/api/activities', ['name' => 'Mon Chenil'])
+        ->assertCreated()
+        ->assertJsonPath('data.name', 'Mon Chenil');
+
+    expect($user->fresh()->hasRole('manager'))->toBeTrue();
+});
+
+it('user with unverified email cannot create an activity', function () {
+    $user = User::factory()->unverified()->create();
 
     $this->withHeaders(asUser($user))
         ->postJson('/api/activities', ['name' => 'Mon Chenil'])

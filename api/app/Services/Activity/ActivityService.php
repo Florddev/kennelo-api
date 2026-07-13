@@ -105,6 +105,10 @@ class ActivityService
                 'is_active' => true,
             ]);
 
+            if (! $user->hasRole('manager')) {
+                $user->assignRole('manager');
+            }
+
             return $activity->load(['address', 'manager', 'collaborators']);
         });
     }

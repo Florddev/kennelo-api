@@ -43,7 +43,7 @@ const webServer: PlaywrightTestConfig["webServer"] = EXTERNAL_SERVERS
               },
           },
           {
-              command: `pnpm --filter web dev`,
+              command: `pnpm --filter @workspace/translations build && pnpm --filter web dev`,
               cwd: resolve(ROOT_DIR, "..", ".."),
               url: `${WEB_URL}/en/login`,
               reuseExistingServer: !process.env.CI,

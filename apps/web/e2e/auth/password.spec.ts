@@ -53,10 +53,10 @@ test.describe("Change password — API contract (ephemeral user)", () => {
     });
 });
 
-test.describe("Change password — UI (blocked by settings sub-page bug)", () => {
+test.describe("Change password — UI", () => {
     test.use({ storageState: { cookies: [], origins: [] } });
 
-    test.fixme("changes the password from the settings UI", async ({ page, ephemeralUser }) => {
+    test("changes the password from the settings UI", async ({ page, ephemeralUser }) => {
         const user = await ephemeralUser();
         await loginViaUi(page, user.email, user.password);
 
