@@ -71,6 +71,10 @@ class ActivitySeeder extends Seeder
 
     private function fetchRemoteImage(string $url): ?string
     {
+        if (! config('seeding.remote_images')) {
+            return null;
+        }
+
         try {
             $response = Http::withoutVerifying()->withOptions(['allow_redirects' => true])->timeout(8)->get($url);
 

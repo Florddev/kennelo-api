@@ -257,6 +257,10 @@ class PetSeeder extends Seeder
 
     private function seedPetImages(string $petId, string $category, int $count, bool $withAvatar): void
     {
+        if (! config('seeding.remote_images')) {
+            return;
+        }
+
         $pet = Pet::find($petId);
 
         if (! $pet) {

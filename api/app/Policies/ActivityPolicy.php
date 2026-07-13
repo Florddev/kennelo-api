@@ -30,7 +30,7 @@ class ActivityPolicy
 
     public function create(User $user): bool
     {
-        return $user->hasRole('admin') || $user->hasRole('manager');
+        return $user->hasVerifiedEmail();
     }
 
     public function update(User $user, Activity $activity): bool

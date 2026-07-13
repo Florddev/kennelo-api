@@ -214,6 +214,10 @@ class ExploreSeeder extends Seeder
 
     private function fetchImage(int $width, int $height, string $keyword): ?string
     {
+        if (! config('seeding.remote_images')) {
+            return null;
+        }
+
         try {
             $response = Http::withoutVerifying()
                 ->withOptions(['allow_redirects' => true])

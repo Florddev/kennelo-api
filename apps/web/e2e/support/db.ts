@@ -21,6 +21,7 @@ function runArtisan(args: string[]): void {
             APP_ENV: "local",
             DB_CONNECTION: "sqlite",
             DB_DATABASE: E2E_DB_PATH,
+            SEED_REMOTE_IMAGES: "0",
         },
     });
 }
@@ -58,4 +59,12 @@ export function removeDb(): void {
 
 export function e2eDbExists(): boolean {
     return existsSync(E2E_DB_PATH);
+}
+
+export function verifyUserEmail(email: string): void {
+    const escaped = email.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+    runArtisan([
+        "tinker",
+        `--execute=App\\Models\\User::where('email', '${escaped}')->first()?->markEmailAsVerified();`,
+    ]);
 }

@@ -1,5 +1,7 @@
 import { test, expect } from "../support/fixtures";
 import { localePath, expectNoAppError } from "../support/selectors";
+import { newActivityPayload } from "../support/data";
+import { verifyUserEmail } from "../support/db";
 
 test.describe("Become a host — wizard (manager)", () => {
     test("renders the become-host wizard", async ({ page }) => {
@@ -80,5 +82,25 @@ test.describe("Become a host — wizard (manager)", () => {
             (a) => !beforeIds.has(a.id),
         );
         if (fresh) await managerApi.delete(`/activities/${fresh.id}`).catch(() => undefined);
+    });
+
+    test("a freshly registered, verified user can create their first activity and becomes a manager", async ({
+        ephemeralUser,
+    }) => {
+        const user = await ephemeralUser();
+        verifyUserEmail(user.email);
+
+        const created = await user.api.post<{ id: string; name: string }>(
+            "/activities",
+            newActivityPayload(),
+        );
+        expect(created.status).toBe(201);
+
+        const me = await user.api.get<{ roles: string[] }>("/user");
+        expect(me.data.roles).toContain("manager");
+
+        if (created.data?.id) {
+            await user.api.delete(`/activities/${created.data.id}`).catch(() => undefined);
+        }
     });
 });

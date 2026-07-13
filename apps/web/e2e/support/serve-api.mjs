@@ -26,6 +26,7 @@ function buildFreshDb() {
             APP_ENV: "local",
             DB_CONNECTION: "sqlite",
             DB_DATABASE: E2E_DB_PATH,
+            SEED_REMOTE_IMAGES: "0",
         },
     });
     copyFileSync(E2E_DB_PATH, E2E_BASELINE_PATH);
@@ -41,7 +42,7 @@ if (!existsSync(E2E_DB_PATH) || process.env.E2E_FORCE_DB_REBUILD === "1") {
 
 step("Step 2/2 — Starting the API server on http://localhost:8000 …");
 
-const child = spawn("php", ["artisan", "serve", "--host=127.0.0.1", "--port=8000"], {
+const child = spawn("php", ["artisan", "serve", "--host=127.0.0.1", "--port=8000", "--no-reload"], {
     cwd: API_DIR,
     stdio: "inherit",
     env: { ...process.env, APP_ENV: "local", DB_CONNECTION: "sqlite", DB_DATABASE: E2E_DB_PATH },
