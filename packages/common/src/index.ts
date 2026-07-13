@@ -8,6 +8,7 @@ export * from "./helpers/http.helper";
 export * from "./helpers/jwt.helper";
 export * from "./helpers/weekdays.helper";
 export * from "./http/api-client";
+export * from "./storage/cookie-storage.service";
 export * from "./storage/local-storage.service";
 export * from "./storage/storage.interface";
 export * from "./websocket/echo-client";
