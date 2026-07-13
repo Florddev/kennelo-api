@@ -17,9 +17,9 @@ Cluster Swarm 3 nœuds sur DigitalOcean (Frankfurt FRA1) :
 - **swarm-worker-1** (2 GB) : services applicatifs répliqués
 - **swarm-worker-2** (2 GB) : services applicatifs répliqués
 
-Domaines publics : `kennelo.fr`, `api.kennelo.fr`, `ws.kennelo.fr`. Le
-sous-domaine `cdn.kennelo.fr` est prévu pour servir les médias MinIO ; son
-proxy sera branché au chantier 2.
+Domaines publics : `kennelo.fr`, `api.kennelo.fr`, `ws.kennelo.fr`,
+`admin.kennelo.fr` (back-office). Le sous-domaine `cdn.kennelo.fr` est prévu
+pour servir les médias MinIO ; son proxy sera branché au chantier 2.
 
 ### Préproduction (à monter)
 
@@ -27,8 +27,8 @@ VPS dédié DigitalOcean mono-nœud (le manager est aussi le worker), isolation
 complète : aucune ressource partagée avec la production, ni base, ni Redis,
 ni MinIO, ni reverse proxy. Mêmes stacks que la production, déployées avec
 `infra/env/preprod.env` (replicas 1, domaines `preprod.kennelo.fr`,
-`api.preprod.kennelo.fr`, `ws.preprod.kennelo.fr`, `cdn.preprod.kennelo.fr`),
-sans les stacks d'administration.
+`api.preprod.kennelo.fr`, `ws.preprod.kennelo.fr`, `cdn.preprod.kennelo.fr`,
+`admin.preprod.kennelo.fr`), sans les stacks d'administration.
 
 ## Réseaux overlay
 
@@ -80,7 +80,7 @@ Les scripts sont découpés par cycle de vie des services :
 
 | Script               | Stacks                        | Quand                                                                        | Environnements  |
 | -------------------- | ----------------------------- | ---------------------------------------------------------------------------- | --------------- |
-| `deploy-app.sh`      | api, web, reverb              | À chaque merge (préprod) ou release (prod) ; le seul script appelé par le CD | preprod et prod |
+| `deploy-app.sh`      | api, web, reverb, back-office | À chaque merge (préprod) ou release (prod) ; le seul script appelé par le CD | preprod et prod |
 | `deploy-platform.sh` | proxy, postgres, redis, minio | Setup initial, changement de config plateforme                               | preprod et prod |
 | `deploy-admin.sh`    | portainer, monitoring         | Setup initial, upgrade des outils d'admin                                    | prod uniquement |
 | `deploy.sh`          | orchestrateur des trois       | Setup complet d'un environnement, debug                                      | preprod et prod |
@@ -114,7 +114,7 @@ manager Swarm de l'environnement visé (pas sur un poste de développement) :
 make deploy-preprod           # checkout main + pull + déploiement applicatif préprod
 make deploy-prod TAG=v0.2.0   # fetch tags + checkout du tag + déploiement prod épinglé
 make rollback TAG=v0.1.0      # redéploiement d'une release antérieure
-make status                   # état des services applicatifs (api, web, reverb)
+make status                   # état des services applicatifs (api, web, reverb, back-office)
 ```
 
 `TAG` est obligatoire et validé strictement (format `vX.Y.Z`) avant toute
@@ -144,17 +144,18 @@ préproduction) est documenté dans `docs/observability.md`, section
 
 ## Stacks
 
-| Fichier        | Service(s)                                   | Réseau            | Cycle de vie |
-| -------------- | -------------------------------------------- | ----------------- | ------------ |
-| proxy.yml      | Nginx Proxy Manager                          | public            | plateforme   |
-| postgres.yml   | PostgreSQL 16                                | internal          | plateforme   |
-| redis.yml      | Redis 7                                      | internal          | plateforme   |
-| minio.yml      | MinIO                                        | internal + public | plateforme   |
-| api.yml        | API Laravel                                  | internal + public | applicatif   |
-| web.yml        | Front Next.js                                | public            | applicatif   |
-| reverb.yml     | Laravel Reverb (WebSocket)                   | internal + public | applicatif   |
-| portainer.yml  | Portainer + agents                           | agent_network     | admin (prod) |
-| monitoring.yml | Prometheus, Grafana, node-exporter, cAdvisor | monitoring        | admin (prod) |
+| Fichier         | Service(s)                                   | Réseau            | Cycle de vie |
+| --------------- | -------------------------------------------- | ----------------- | ------------ |
+| proxy.yml       | Nginx Proxy Manager                          | public            | plateforme   |
+| postgres.yml    | PostgreSQL 16                                | internal          | plateforme   |
+| redis.yml       | Redis 7                                      | internal          | plateforme   |
+| minio.yml       | MinIO                                        | internal + public | plateforme   |
+| api.yml         | API Laravel                                  | internal + public | applicatif   |
+| web.yml         | Front Next.js                                | public            | applicatif   |
+| reverb.yml      | Laravel Reverb (WebSocket)                   | internal + public | applicatif   |
+| back-office.yml | Back-office d'administration (Next.js)       | public            | applicatif   |
+| portainer.yml   | Portainer + agents                           | agent_network     | admin (prod) |
+| monitoring.yml  | Prometheus, Grafana, node-exporter, cAdvisor | monitoring        | admin (prod) |
 
 ## Versions épinglées
 
