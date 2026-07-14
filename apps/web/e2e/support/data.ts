@@ -71,7 +71,7 @@ export function newActivityPayload(overrides: Record<string, unknown> = {}) {
             line1: "1 Rue de Test",
             city: "Paris",
             postal_code: "75001",
-            country: "France",
+            country: "FR",
         },
         ...overrides,
     };

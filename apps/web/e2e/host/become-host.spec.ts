@@ -53,7 +53,8 @@ test.describe("Become a host — wizard (manager)", () => {
                 await line1.fill("1 Rue de Test");
                 await page.getByLabel("City", { exact: true }).first().fill("Paris");
                 await page.getByLabel("Postal code", { exact: true }).first().fill("75001");
-                await page.getByLabel("Country", { exact: true }).first().fill("France");
+                await page.getByLabel("Country", { exact: true }).first().click();
+                await page.getByRole("option", { name: "France" }).first().click();
             }
 
             if (await submitVisible().count()) {
