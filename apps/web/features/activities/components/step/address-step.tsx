@@ -1,10 +1,20 @@
 "use client";
 
-import { Control } from "react-hook-form";
+import { Control, Controller } from "react-hook-form";
 import { useTranslations } from "next-intl";
+import { Field, FieldLabel, FieldError } from "@workspace/ui/components/field";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@workspace/ui/components/select";
 import { InputController } from "@/components/forms/input-controller";
 import type { CreateActivityInput } from "@workspace/modules/activities";
 import { StepShell } from "./step-shell";
+
+const COUNTRY_CODES = ["FR", "BE", "DE", "IT", "ES", "NL", "LU", "CH"] as const;
 
 type AddressStepProps = {
     control: Control<CreateActivityInput>;
@@ -62,13 +72,44 @@ export function AddressStep({ control, isLoading }: AddressStepProps) {
                     isLoading={isLoading}
                     type="text"
                 />
-                <InputController
+                <Controller
                     name="address.country"
                     control={control}
-                    label={t("common.fields.country")}
-                    placeholder={t("common.placeholders.country")}
-                    isLoading={isLoading}
-                    type="text"
+                    render={({ field, fieldState }) => {
+                        const showError =
+                            fieldState.invalid && (fieldState.isTouched || fieldState.isDirty);
+
+                        return (
+                            <Field data-invalid={showError} className="gap-1.5 group">
+                                <FieldLabel htmlFor="address-country">
+                                    {t("common.fields.country")}
+                                </FieldLabel>
+                                <Select
+                                    value={field.value}
+                                    onValueChange={field.onChange}
+                                    disabled={isLoading}
+                                >
+                                    <SelectTrigger
+                                        id="address-country"
+                                        className="rounded-4xl"
+                                        onBlur={field.onBlur}
+                                    >
+                                        <SelectValue
+                                            placeholder={t("common.placeholders.country")}
+                                        />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {COUNTRY_CODES.map((code) => (
+                                            <SelectItem key={code} value={code}>
+                                                {t(`common.countries.${code.toLowerCase()}`)}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                {showError && <FieldError errors={[fieldState.error]} />}
+                            </Field>
+                        );
+                    }}
                 />
             </div>
         </StepShell>
