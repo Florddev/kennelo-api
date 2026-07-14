@@ -53,7 +53,7 @@ class NotificationService
 
     public function unreadCount(User $user): int
     {
-        return Cache::remember(
+        return (int) Cache::remember(
             $this->unreadCountCacheKey((string) $user->id),
             self::UNREAD_COUNT_CACHE_TTL,
             fn (): int => Notification::where('user_id', $user->id)
