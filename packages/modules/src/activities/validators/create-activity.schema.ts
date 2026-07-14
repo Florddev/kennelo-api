@@ -20,7 +20,7 @@ export const addressSchema = z.object({
     city: z.string().min(1).max(100),
     postalCode: z.string().min(1).max(20),
     region: z.union([z.string().max(100), z.literal("")]).optional(),
-    country: z.string().min(1).max(100),
+    country: z.string().length(2),
 });
 
 export const createActivitySchema = z.object({
