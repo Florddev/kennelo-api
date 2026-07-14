@@ -32,7 +32,7 @@ class StoreActivityRequest extends FormRequest
             'address.city' => ['required_with:address', 'string', 'max:100'],
             'address.postal_code' => ['required_with:address', 'string', 'max:20'],
             'address.region' => ['sometimes', 'nullable', 'string', 'max:100'],
-            'address.country' => ['required_with:address', 'string', 'max:100'],
+            'address.country' => ['required_with:address', 'string', 'size:2'],
         ];
     }
 }

@@ -167,6 +167,41 @@ it('activity creation requires a name', function () {
         ->assertJsonValidationErrors(['name']);
 });
 
+it('activity creation accepts an ISO alpha-2 address country', function () {
+    $manager = User::factory()->create();
+    $manager->assignRole('manager');
+
+    $this->withHeaders(asUser($manager))
+        ->postJson('/api/activities', [
+            'name' => 'Chenil Adresse',
+            'address' => [
+                'line1' => '1 Rue de Test',
+                'city' => 'Paris',
+                'postal_code' => '75001',
+                'country' => 'FR',
+            ],
+        ])
+        ->assertCreated();
+});
+
+it('activity creation rejects a full country name in the address', function () {
+    $manager = User::factory()->create();
+    $manager->assignRole('manager');
+
+    $this->withHeaders(asUser($manager))
+        ->postJson('/api/activities', [
+            'name' => 'Chenil Adresse',
+            'address' => [
+                'line1' => '1 Rue de Test',
+                'city' => 'Paris',
+                'postal_code' => '75001',
+                'country' => 'France',
+            ],
+        ])
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors(['address.country']);
+});
+
 // ─── update ───────────────────────────────────────────────────────────────────
 
 it('manager (owner) can update their activity', function () {
