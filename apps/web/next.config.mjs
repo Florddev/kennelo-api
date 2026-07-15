@@ -15,6 +15,7 @@ const reverbHostPort = process.env.NEXT_PUBLIC_REVERB_HOST
     : '';
 const reverbOrigins = reverbHostPort ? `ws://${reverbHostPort} wss://${reverbHostPort}` : '';
 const googleIdentityOrigin = 'https://accounts.google.com';
+const mapTilesOrigins = 'https://basemaps.cartocdn.com https://*.basemaps.cartocdn.com';
 const devThemePreviewOrigin = process.env.NODE_ENV === 'development' ? 'https://tweakcn.com' : '';
 
 const contentSecurityPolicy = [
@@ -22,12 +23,12 @@ const contentSecurityPolicy = [
     "base-uri 'self'",
     "frame-ancestors 'none'",
     "object-src 'none'",
-    `img-src 'self' data: blob: https: ${apiOrigin}`,
+    "img-src 'self' data: blob: https:",
     "font-src 'self' data:",
     "style-src 'self' 'unsafe-inline'",
     `script-src 'self' 'unsafe-inline' 'unsafe-eval' ${googleIdentityOrigin} ${devThemePreviewOrigin}`,
     `frame-src 'self' ${googleIdentityOrigin}`,
-    `connect-src 'self' ${apiOrigin} ${reverbOrigins} ${googleIdentityOrigin}`,
+    `connect-src 'self' ${apiOrigin} ${reverbOrigins} ${googleIdentityOrigin} ${mapTilesOrigins}`,
 ]
     .map((directive) => directive.replace(/\s+/g, ' ').trim())
     .join('; ');

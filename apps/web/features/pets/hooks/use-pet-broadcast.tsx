@@ -41,8 +41,7 @@ export function usePetBroadcast() {
         if (!user) return;
 
         const channel = echoClient.private(`user.${user.id}`);
-
-        channel.listen(".pet.broadcast", (event: PetBroadcastEvent) => {
+        const listener = (event: PetBroadcastEvent) => {
             setHasBroadcast(true);
             setBroadcastedPet(
                 event.pet
@@ -55,10 +54,12 @@ export function usePetBroadcast() {
                       })
                     : null,
             );
-        });
+        };
+
+        channel.listen(".pet.broadcast", listener);
 
         return () => {
-            echoClient.leave(`user.${user.id}`);
+            channel.stopListening(".pet.broadcast", listener);
         };
     }, [user]);
 
