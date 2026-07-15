@@ -1,0 +1,25 @@
+# Template de la configuration rclone attendue par le secret Docker
+# kennelo_backup_rclone_conf. Les noms de remotes [spaces] et [r2] sont
+# imposés (référencés par BACKUP_REMOTES dans la stack backup).
+#
+# no_check_bucket est indispensable avec des clés granulaires limitées à un
+# bucket : sans lui, rclone tente un CreateBucket que la clé n'a pas le
+# droit de faire et échoue en 403.
+
+[spaces]
+type = s3
+provider = DigitalOcean
+access_key_id = <clé Spaces limitée au bucket kennelo-backups>
+secret_access_key = <secret Spaces>
+endpoint = fra1.digitaloceanspaces.com
+acl = private
+no_check_bucket = true
+
+[r2]
+type = s3
+provider = Cloudflare
+access_key_id = <Access Key ID du token R2 limité au bucket>
+secret_access_key = <secret du token R2>
+endpoint = https://<account-id>.r2.cloudflarestorage.com
+acl = private
+no_check_bucket = true

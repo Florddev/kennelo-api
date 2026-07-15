@@ -21,14 +21,16 @@ Domaines publics : `kennelo.fr`, `api.kennelo.fr`, `ws.kennelo.fr`,
 `admin.kennelo.fr` (back-office). Le sous-domaine `cdn.kennelo.fr` est prévu
 pour servir les médias MinIO ; son proxy sera branché au chantier 2.
 
-### Préproduction (à monter)
+### Préproduction
 
-VPS dédié DigitalOcean mono-nœud (le manager est aussi le worker), isolation
-complète : aucune ressource partagée avec la production, ni base, ni Redis,
-ni MinIO, ni reverse proxy. Mêmes stacks que la production, déployées avec
-`infra/env/preprod.env` (replicas 1, domaines `preprod.kennelo.fr`,
-`api.preprod.kennelo.fr`, `ws.preprod.kennelo.fr`, `cdn.preprod.kennelo.fr`,
-`admin.preprod.kennelo.fr`), sans les stacks d'administration.
+VPS dédié Hetzner CX23 (Falkenstein), Swarm mono-nœud (le manager est aussi
+le worker), isolation complète : aucune ressource partagée avec la
+production, ni base, ni Redis, ni MinIO, ni reverse proxy. Mêmes stacks que
+la production, déployées avec `infra/env/preprod.env` (replicas 1, domaines
+`preprod.kennelo.fr`, `api.preprod.kennelo.fr`, `ws.preprod.kennelo.fr`,
+`cdn.preprod.kennelo.fr`, `admin.preprod.kennelo.fr`), sans les stacks
+d'administration. Alimentée en continu : chaque merge sur main y est
+déployé automatiquement par le workflow deploy-preprod.
 
 ## Réseaux overlay
 
@@ -78,12 +80,12 @@ les différences de configuration entre les deux environnements.
 
 Les scripts sont découpés par cycle de vie des services :
 
-| Script               | Stacks                        | Quand                                                                        | Environnements  |
-| -------------------- | ----------------------------- | ---------------------------------------------------------------------------- | --------------- |
-| `deploy-app.sh`      | api, web, reverb, back-office | À chaque merge (préprod) ou release (prod) ; le seul script appelé par le CD | preprod et prod |
-| `deploy-platform.sh` | proxy, postgres, redis, minio | Setup initial, changement de config plateforme                               | preprod et prod |
-| `deploy-admin.sh`    | portainer, monitoring         | Setup initial, upgrade des outils d'admin                                    | prod uniquement |
-| `deploy.sh`          | orchestrateur des trois       | Setup complet d'un environnement, debug                                      | preprod et prod |
+| Script               | Stacks                                | Quand                                                                        | Environnements  |
+| -------------------- | ------------------------------------- | ---------------------------------------------------------------------------- | --------------- |
+| `deploy-app.sh`      | api, web, reverb, back-office, worker | À chaque merge (préprod) ou release (prod) ; le seul script appelé par le CD | preprod et prod |
+| `deploy-platform.sh` | proxy, postgres, redis, minio         | Setup initial, changement de config plateforme                               | preprod et prod |
+| `deploy-admin.sh`    | portainer, monitoring                 | Setup initial, upgrade des outils d'admin                                    | prod uniquement |
+| `deploy.sh`          | orchestrateur des trois               | Setup complet d'un environnement, debug                                      | preprod et prod |
 
 Tous s'exécutent sur le manager Swarm de l'environnement visé, depuis la
 racine du dépôt cloné, et lisent deux variables :
@@ -114,7 +116,7 @@ manager Swarm de l'environnement visé (pas sur un poste de développement) :
 make deploy-preprod           # checkout main + pull + déploiement applicatif préprod
 make deploy-prod TAG=v0.2.0   # fetch tags + checkout du tag + déploiement prod épinglé
 make rollback TAG=v0.1.0      # redéploiement d'une release antérieure
-make status                   # état des services applicatifs (api, web, reverb, back-office)
+make status                   # état des services applicatifs (api, web, reverb, back-office, worker)
 ```
 
 `TAG` est obligatoire et validé strictement (format `vX.Y.Z`) avant toute
@@ -139,7 +141,7 @@ ENV=prod IMAGE_TAG=sha-abc1234 ./infra/scripts/deploy-app.sh
 ```
 
 Le cycle de release complet (quand taguer, discipline de validation en
-préproduction) est documenté dans `docs/observability.md`, section
+préproduction) est documenté dans `infra/docs/observability.md`, section
 « Déploiement et environnements ».
 
 ## Stacks
@@ -153,9 +155,11 @@ préproduction) est documenté dans `docs/observability.md`, section
 | api.yml         | API Laravel                                  | internal + public | applicatif   |
 | web.yml         | Front Next.js                                | public            | applicatif   |
 | reverb.yml      | Laravel Reverb (WebSocket)                   | internal + public | applicatif   |
+| worker.yml      | Workers de queue Laravel (queue:work)        | internal          | applicatif   |
 | back-office.yml | Back-office d'administration (Next.js)       | public            | applicatif   |
 | portainer.yml   | Portainer + agents                           | agent_network     | admin (prod) |
 | monitoring.yml  | Prometheus, Grafana, node-exporter, cAdvisor | monitoring        | admin (prod) |
+| backup.yml      | Sauvegardes 3-2-1 (pg_dump + médias MinIO)   | internal          | admin (prod) |
 
 ## Versions épinglées
 

@@ -49,6 +49,28 @@ echo "  API Resend du domaine kennelo.com :"
 echo "    printf '%s' 're_...' | docker secret create kennelo_resend_api_key -"
 
 echo ""
+echo "==> Stripe (paiements)"
+echo "  Deux secrets à créer manuellement, valeurs du dashboard Stripe :"
+echo "    printf '%s' 'sk_...' | docker secret create kennelo_stripe_secret_key -"
+echo "    printf '%s' 'whsec_...' | docker secret create kennelo_stripe_webhook_secret -"
+echo "  Le whsec est propre à CHAQUE endpoint webhook déclaré dans le dashboard"
+echo "  (un par environnement : api.kennelo.fr et api.preprod.kennelo.fr)."
+
+echo ""
+echo "==> Sauvegardes 3-2-1 (prod uniquement)"
+echo "  Trois secrets à créer manuellement avant de déployer la stack backup :"
+echo "  1. La config rclone avec les remotes 'spaces' (DO Spaces) et 'r2'"
+echo "     (Cloudflare R2), clés créées dans les consoles respectives"
+echo "     (template : infra/backup/rclone.conf.example) :"
+echo "    docker secret create kennelo_backup_rclone_conf ./rclone.conf"
+echo "  2. La passphrase de chiffrement des dumps. La générer, la stocker"
+echo "     AUSSI dans le gestionnaire de mots de passe de l'équipe (sans elle,"
+echo "     les sauvegardes sont illisibles), puis :"
+echo "    printf '%s' '<passphrase>' | docker secret create kennelo_backup_gpg_passphrase -"
+echo "  3. L'URL de ping healthchecks.io :"
+echo "    printf '%s' 'https://hc-ping.com/...' | docker secret create kennelo_backup_healthchecks_url -"
+
+echo ""
 echo "==> Secrets présents :"
 docker secret ls --format '  {{.Name}}'
 

@@ -19,6 +19,7 @@ fi
 echo "==> Déploiement admin ($ENV)"
 docker stack deploy -c "$STACK_DIR/portainer.yml"  portainer
 docker stack deploy -c "$STACK_DIR/monitoring.yml" monitoring
+docker stack deploy -c "$STACK_DIR/backup.yml"     backup --with-registry-auth
 
 echo ""
 echo "Déploiement admin terminé."

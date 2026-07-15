@@ -220,3 +220,11 @@ Les règles détaillées sont documentées dans [`CLAUDE.md`](./CLAUDE.md). En r
 | Schéma Zod          | `camelCaseSchema` | `createBookingSchema`               |
 | Action              | `camelCase`       | `createBooking`, `getBookings`      |
 | Hook                | `use-kebab-case`  | `use-auth.tsx`                      |
+
+## Infrastructure et déploiement
+
+L'infrastructure (Docker Swarm, deux environnements — production DigitalOcean
+et préproduction Hetzner — CI/CD par images versionnées, sauvegardes) est
+documentée dans [infra/README.md](infra/README.md). Les procédures
+d'exploitation (accès SSH, observabilité, déploiement, restauration) vivent
+dans [infra/docs/](infra/docs/).
