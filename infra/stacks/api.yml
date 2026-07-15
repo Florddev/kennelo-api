@@ -57,6 +57,11 @@ services:
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
       GOOGLE_REDIRECT_URI: ${GOOGLE_REDIRECT_URI}
 
+      STRIPE_KEY: ${STRIPE_KEY}
+      STRIPE_CURRENCY: ${STRIPE_CURRENCY}
+      STRIPE_PRICE_STARTER: ${STRIPE_PRICE_STARTER}
+      STRIPE_PRICE_PRO: ${STRIPE_PRICE_PRO}
+
       MAIL_MAILER: ${MAIL_MAILER}
       MAIL_FROM_ADDRESS: ${MAIL_FROM_ADDRESS}
       MAIL_FROM_NAME: ${MAIL_FROM_NAME}
@@ -70,6 +75,8 @@ services:
       - kennelo_minio_root_password
       - kennelo_google_client_secret
       - kennelo_resend_api_key
+      - kennelo_stripe_secret_key
+      - kennelo_stripe_webhook_secret
     networks:
       - kennelo-internal
       - kennelo-public
@@ -105,4 +112,8 @@ secrets:
   kennelo_google_client_secret:
     external: true
   kennelo_resend_api_key:
+    external: true
+  kennelo_stripe_secret_key:
+    external: true
+  kennelo_stripe_webhook_secret:
     external: true
