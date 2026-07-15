@@ -16,7 +16,7 @@ on:
       - 'package.json'
       - 'pnpm-lock.yaml'
       - 'pnpm-workspace.yaml'
-      - 'infra/env/**'
+      - 'infra/config/**'
       - 'infra/backup/**'
       - '.github/workflows/docker-images-ci.yml'
   workflow_dispatch:
@@ -95,7 +95,7 @@ jobs:
       # Les NEXT_PUBLIC_* sont figés au build (bundle client Next.js) :
       # une image web est donc construite PAR environnement. Push sur
       # main → URLs préprod, push de tag v*.*.* → URLs prod. Les URLs
-      # sont dérivées de infra/env/<env>.env, source unique de vérité
+      # sont dérivées de infra/config/<env>.conf, source unique de vérité
       # partagée avec les scripts de déploiement.
       - name: Load web build config
         id: config
@@ -106,7 +106,7 @@ jobs:
             env_name=preprod
           fi
           set -a
-          source "infra/env/$env_name.env"
+          source "infra/config/$env_name.conf"
           set +a
           {
             echo "env_name=$env_name"
@@ -184,7 +184,7 @@ jobs:
             env_name=preprod
           fi
           set -a
-          source "infra/env/$env_name.env"
+          source "infra/config/$env_name.conf"
           set +a
           echo "api_url=${APP_URL}/api" >> "$GITHUB_OUTPUT"
 

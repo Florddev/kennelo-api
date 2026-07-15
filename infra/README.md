@@ -4,7 +4,7 @@ Infrastructure as Code des environnements Kennelo. Les stacks, scripts et
 fichiers de configuration de ce dossier servent tous les environnements : la
 production aujourd'hui, la préproduction dès que son VPS sera monté. Ce qui
 varie entre environnements ne vit jamais dans les stacks, uniquement dans
-`infra/env/`.
+`infra/config/`.
 
 ## Architecture
 
@@ -26,7 +26,7 @@ pour servir les médias MinIO ; son proxy sera branché au chantier 2.
 VPS dédié Hetzner CX23 (Falkenstein), Swarm mono-nœud (le manager est aussi
 le worker), isolation complète : aucune ressource partagée avec la
 production, ni base, ni Redis, ni MinIO, ni reverse proxy. Mêmes stacks que
-la production, déployées avec `infra/env/preprod.env` (replicas 1, domaines
+la production, déployées avec `infra/config/preprod.conf` (replicas 1, domaines
 `preprod.kennelo.fr`, `api.preprod.kennelo.fr`, `ws.preprod.kennelo.fr`,
 `cdn.preprod.kennelo.fr`, `admin.preprod.kennelo.fr`), sans les stacks
 d'administration. Alimentée en continu : chaque merge sur main y est
@@ -53,7 +53,7 @@ dossier. Ils sont créés une fois par environnement via
 `infra/scripts/bootstrap.sh` ; chaque environnement porte les mêmes noms de
 secrets (`kennelo_*`) mais des valeurs différentes.
 
-## Fichiers de configuration (`infra/env/`)
+## Fichiers de configuration (`infra/config/`)
 
 Les valeurs qui varient entre environnements — tag d'image, domaines publics,
 CORS, replicas, identifiants publics du client OAuth Google
@@ -61,19 +61,19 @@ CORS, replicas, identifiants publics du client OAuth Google
 vivent dans des fichiers versionnés, sourcés par les scripts de déploiement
 puis interpolés dans les stacks via `${VAR}` :
 
-- `prod.env` : valeurs de la production
-- `preprod.env` : valeurs de la préproduction
-- `example.env` : template documenté, liste chaque variable attendue avec son
+- `prod.conf` : valeurs de la production
+- `preprod.conf` : valeurs de la préproduction
+- `example.conf` : template documenté, liste chaque variable attendue avec son
   commentaire
 
 Règle d'or : **aucun secret dans ces fichiers**. Mots de passe, clés API,
 tokens et certificats vont exclusivement dans les Docker Secrets.
 
 Discipline : toute nouvelle variable ajoutée à une stack doit aussi être
-ajoutée à `example.env`, avec son commentaire. C'est ce qui garde le template
+ajoutée à `example.conf`, avec son commentaire. C'est ce qui garde le template
 fiable comme documentation vivante.
 
-`diff infra/env/prod.env infra/env/preprod.env` montre en une commande toutes
+`diff infra/config/prod.conf infra/config/preprod.conf` montre en une commande toutes
 les différences de configuration entre les deux environnements.
 
 ## Déploiement
@@ -91,7 +91,7 @@ Tous s'exécutent sur le manager Swarm de l'environnement visé, depuis la
 racine du dépôt cloné, et lisent deux variables :
 
 - `ENV` (obligatoire) : `preprod` ou `prod`. Détermine le fichier
-  `infra/env/$ENV.env` sourcé avant le déploiement.
+  `infra/config/$ENV.conf` sourcé avant le déploiement.
 - `IMAGE_TAG` (optionnel) : surcharge le tag d'image par défaut de
   l'environnement (`preprod-latest` en préprod, `prod` en prod), par exemple
   pour déployer une version précise.

@@ -4,7 +4,7 @@
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 STACK_DIR="$REPO_ROOT/infra/stacks"
-ENV_DIR="$REPO_ROOT/infra/env"
+CONF_DIR="$REPO_ROOT/infra/config"
 
 load_env() {
   if [[ "${ENV:-}" != "preprod" && "${ENV:-}" != "prod" ]]; then
@@ -13,7 +13,7 @@ load_env() {
     exit 1
   fi
 
-  local env_file="$ENV_DIR/$ENV.env"
+  local env_file="$CONF_DIR/$ENV.conf"
   if [[ ! -f "$env_file" ]]; then
     echo "Erreur : fichier d'environnement introuvable : $env_file" >&2
     exit 1
@@ -29,7 +29,7 @@ require_vars() {
   local var missing=0
   for var in "$@"; do
     if [[ -z "${!var:-}" ]]; then
-      echo "Erreur : variable requise non définie : $var (voir infra/env/example.env)" >&2
+      echo "Erreur : variable requise non définie : $var (voir infra/config/example.conf)" >&2
       missing=1
     fi
   done
