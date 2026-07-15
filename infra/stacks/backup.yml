@@ -1,0 +1,45 @@
+services:
+  backup:
+    image: ghcr.io/anthony14fr/kennelo-backup:${IMAGE_TAG}
+    environment:
+      BACKUP_REMOTES: "spaces r2"
+      BACKUP_BUCKET: kennelo-backups
+    secrets:
+      - kennelo_postgres_password
+      - kennelo_minio_root_user
+      - kennelo_minio_root_password
+      - kennelo_backup_rclone_conf
+      - kennelo_backup_gpg_passphrase
+      - kennelo_backup_healthchecks_url
+    volumes:
+      - kennelo-backups:/backups
+    networks:
+      - kennelo-internal
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      restart_policy:
+        condition: any
+
+networks:
+  kennelo-internal:
+    external: true
+
+volumes:
+  kennelo-backups:
+
+secrets:
+  kennelo_postgres_password:
+    external: true
+  kennelo_minio_root_user:
+    external: true
+  kennelo_minio_root_password:
+    external: true
+  kennelo_backup_rclone_conf:
+    external: true
+  kennelo_backup_gpg_passphrase:
+    external: true
+  kennelo_backup_healthchecks_url:
+    external: true

@@ -1,0 +1,3 @@
+# Sauvegarde quotidienne 3-2-1 à 04h00 UTC. La sortie part sur le stdout
+# du container (visible via docker service logs backup_backup).
+0 4 * * * /usr/local/bin/backup.sh >> /proc/1/fd/1 2>&1

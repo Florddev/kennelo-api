@@ -21,14 +21,16 @@ Domaines publics : `kennelo.fr`, `api.kennelo.fr`, `ws.kennelo.fr`,
 `admin.kennelo.fr` (back-office). Le sous-domaine `cdn.kennelo.fr` est prévu
 pour servir les médias MinIO ; son proxy sera branché au chantier 2.
 
-### Préproduction (à monter)
+### Préproduction
 
-VPS dédié DigitalOcean mono-nœud (le manager est aussi le worker), isolation
-complète : aucune ressource partagée avec la production, ni base, ni Redis,
-ni MinIO, ni reverse proxy. Mêmes stacks que la production, déployées avec
-`infra/env/preprod.env` (replicas 1, domaines `preprod.kennelo.fr`,
-`api.preprod.kennelo.fr`, `ws.preprod.kennelo.fr`, `cdn.preprod.kennelo.fr`,
-`admin.preprod.kennelo.fr`), sans les stacks d'administration.
+VPS dédié Hetzner CX23 (Falkenstein), Swarm mono-nœud (le manager est aussi
+le worker), isolation complète : aucune ressource partagée avec la
+production, ni base, ni Redis, ni MinIO, ni reverse proxy. Mêmes stacks que
+la production, déployées avec `infra/env/preprod.env` (replicas 1, domaines
+`preprod.kennelo.fr`, `api.preprod.kennelo.fr`, `ws.preprod.kennelo.fr`,
+`cdn.preprod.kennelo.fr`, `admin.preprod.kennelo.fr`), sans les stacks
+d'administration. Alimentée en continu : chaque merge sur main y est
+déployé automatiquement par le workflow deploy-preprod.
 
 ## Réseaux overlay
 
@@ -139,7 +141,7 @@ ENV=prod IMAGE_TAG=sha-abc1234 ./infra/scripts/deploy-app.sh
 ```
 
 Le cycle de release complet (quand taguer, discipline de validation en
-préproduction) est documenté dans `docs/observability.md`, section
+préproduction) est documenté dans `infra/docs/observability.md`, section
 « Déploiement et environnements ».
 
 ## Stacks
@@ -156,6 +158,7 @@ préproduction) est documenté dans `docs/observability.md`, section
 | back-office.yml | Back-office d'administration (Next.js)       | public            | applicatif   |
 | portainer.yml   | Portainer + agents                           | agent_network     | admin (prod) |
 | monitoring.yml  | Prometheus, Grafana, node-exporter, cAdvisor | monitoring        | admin (prod) |
+| backup.yml      | Sauvegardes 3-2-1 (pg_dump + médias MinIO)   | internal          | admin (prod) |
 
 ## Versions épinglées
 
