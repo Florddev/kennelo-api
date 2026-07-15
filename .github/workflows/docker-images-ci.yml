@@ -17,6 +17,7 @@ on:
       - 'pnpm-lock.yaml'
       - 'pnpm-workspace.yaml'
       - 'infra/env/**'
+      - 'infra/backup/**'
       - '.github/workflows/docker-images-ci.yml'
   workflow_dispatch:
 
@@ -204,3 +205,47 @@ jobs:
           cache-to: type=gha,scope=back-office,mode=max
           build-args: |
             NEXT_PUBLIC_API_URL=${{ steps.config.outputs.api_url }}
+
+  build-backup:
+    name: Build Backup image
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v4
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract image metadata
+        id: meta
+        uses: docker/metadata-action@v6
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_OWNER }}/kennelo-backup
+          tags: |
+            type=raw,value=preprod-latest,enable=${{ github.ref == 'refs/heads/main' }}
+            type=semver,pattern=v{{version}}
+            type=raw,value=prod,enable=${{ startsWith(github.ref, 'refs/tags/v') }}
+            type=sha,prefix=sha-
+
+      - name: Build and push Backup image
+        uses: docker/build-push-action@v7
+        with:
+          context: infra/backup
+          file: infra/backup/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha,scope=backup
+          cache-to: type=gha,scope=backup,mode=max
