@@ -59,13 +59,12 @@ export function useHostingScanNotifier() {
         if (!user) return;
 
         const channel = echoClient.private(`user.${user.id}`);
+        const listener = (event: PetBroadcastEvent) => handlerRef.current(event);
 
-        channel.listen(".pet.broadcast", (event: PetBroadcastEvent) => {
-            handlerRef.current(event);
-        });
+        channel.listen(".pet.broadcast", listener);
 
         return () => {
-            echoClient.leave(`user.${user.id}`);
+            channel.stopListening(".pet.broadcast", listener);
         };
     }, [user]);
 }
