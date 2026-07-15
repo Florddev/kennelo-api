@@ -20,6 +20,8 @@ load_secret "AWS_ACCESS_KEY_ID"     "/run/secrets/kennelo_minio_root_user"
 load_secret "AWS_SECRET_ACCESS_KEY" "/run/secrets/kennelo_minio_root_password"
 load_secret "GOOGLE_CLIENT_SECRET"  "/run/secrets/kennelo_google_client_secret"
 load_secret "RESEND_KEY"            "/run/secrets/kennelo_resend_api_key"
+load_secret "STRIPE_SECRET"         "/run/secrets/kennelo_stripe_secret_key"
+load_secret "STRIPE_WEBHOOK_SECRET" "/run/secrets/kennelo_stripe_webhook_secret"
 
 echo "Caching Laravel config, routes and views..."
 php artisan config:cache || true
