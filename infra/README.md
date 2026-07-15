@@ -21,14 +21,16 @@ Domaines publics : `kennelo.fr`, `api.kennelo.fr`, `ws.kennelo.fr`,
 `admin.kennelo.fr` (back-office). Le sous-domaine `cdn.kennelo.fr` est prévu
 pour servir les médias MinIO ; son proxy sera branché au chantier 2.
 
-### Préproduction (à monter)
+### Préproduction
 
-VPS dédié DigitalOcean mono-nœud (le manager est aussi le worker), isolation
-complète : aucune ressource partagée avec la production, ni base, ni Redis,
-ni MinIO, ni reverse proxy. Mêmes stacks que la production, déployées avec
-`infra/env/preprod.env` (replicas 1, domaines `preprod.kennelo.fr`,
-`api.preprod.kennelo.fr`, `ws.preprod.kennelo.fr`, `cdn.preprod.kennelo.fr`,
-`admin.preprod.kennelo.fr`), sans les stacks d'administration.
+VPS dédié Hetzner CX23 (Falkenstein), Swarm mono-nœud (le manager est aussi
+le worker), isolation complète : aucune ressource partagée avec la
+production, ni base, ni Redis, ni MinIO, ni reverse proxy. Mêmes stacks que
+la production, déployées avec `infra/env/preprod.env` (replicas 1, domaines
+`preprod.kennelo.fr`, `api.preprod.kennelo.fr`, `ws.preprod.kennelo.fr`,
+`cdn.preprod.kennelo.fr`, `admin.preprod.kennelo.fr`), sans les stacks
+d'administration. Alimentée en continu : chaque merge sur main y est
+déployé automatiquement par le workflow deploy-preprod.
 
 ## Réseaux overlay
 
