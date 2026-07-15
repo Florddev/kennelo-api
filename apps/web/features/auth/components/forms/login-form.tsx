@@ -8,6 +8,7 @@ import { loginUserSchema, type LoginUserInput, loginUser } from "@workspace/modu
 import { Button } from "@workspace/ui/components/button";
 import { Alert, AlertDescription } from "@workspace/ui/components/alert";
 import { useTranslations } from "next-intl";
+import posthog from "posthog-js";
 import { useAsyncState } from "@/hooks/use-async-state";
 import { InputController } from "@/components/forms/input-controller";
 import { useNavigation } from "@/hooks/use-navigation";
@@ -57,6 +58,7 @@ export function LoginForm({
         }
 
         const freshUser = await refreshUser();
+        posthog.capture("user_logged_in", { method: "email" });
         onSuccess?.(localeOrDefault(freshUser?.locale));
     };
 

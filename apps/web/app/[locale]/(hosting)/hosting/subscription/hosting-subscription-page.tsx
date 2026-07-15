@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { CrownLine } from "@solar-icons/react";
 
+import posthog from "posthog-js";
 import PageLayout from "@/components/layouts/page-layout";
 import { useAuth } from "@/features/auth";
 import { useNavigation } from "@/hooks/use-navigation";
@@ -32,6 +33,15 @@ export default function HostingSubscriptionPage() {
             toast.info(t("features.subscriptions.checkout.canceled"));
         }
     }, [checkoutStatus, t]);
+
+    useEffect(() => {
+        if (isLoaded && isAuthenticated) {
+            posthog.capture("subscription_viewed", {
+                checkout_status: checkoutStatus ?? undefined,
+            });
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isLoaded, isAuthenticated]);
 
     if (!isLoaded || !isAuthenticated) {
         return null;

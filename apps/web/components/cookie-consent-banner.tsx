@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import posthog from "posthog-js";
 import { Button } from "@workspace/ui/components/button";
 import { useNavigation } from "@/hooks/use-navigation";
 
@@ -23,6 +24,11 @@ export function CookieConsentBanner() {
     const choose = (value: CookieConsent) => {
         window.localStorage.setItem(STORAGE_KEY, value);
         setConsent(value);
+        if (value === "all") {
+            posthog.opt_in_capturing();
+        } else {
+            posthog.opt_out_capturing();
+        }
     };
 
     if (consent !== null) {

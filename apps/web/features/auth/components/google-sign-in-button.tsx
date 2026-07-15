@@ -4,6 +4,7 @@ import { useGoogleLogin } from "@react-oauth/google";
 import { useLocale, useTranslations } from "next-intl";
 import { loginWithGoogle } from "@workspace/modules/users";
 import { Button } from "@workspace/ui/components/button";
+import posthog from "posthog-js";
 import { useAsyncState } from "@/hooks/use-async-state";
 import { useAuth } from "@/features/auth/hooks/use-auth";
 import { localeOrDefault, type Locale } from "@/dictionaries";
@@ -67,6 +68,7 @@ export function GoogleSignInButton({
             }
 
             const freshUser = await refreshUser();
+            posthog.capture("user_logged_in", { method: "google" });
             onSuccess?.(localeOrDefault(freshUser?.locale));
         },
     });

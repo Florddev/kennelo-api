@@ -2,3 +2,4 @@ e2e/fixtures/.auth/
 playwright-report/
 test-results/
 next-env.d.ts
+.env.local

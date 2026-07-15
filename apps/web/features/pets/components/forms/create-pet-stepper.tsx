@@ -15,6 +15,7 @@ import {
     upsertPetAttributes,
 } from "@workspace/modules/pets";
 import { type FieldPath } from "react-hook-form";
+import posthog from "posthog-js";
 import { FormStepper } from "@/components/forms/stepper/form-stepper";
 import { type FormStepDefinition } from "@/components/forms/stepper/stepper-types";
 import { useAsyncState } from "@/hooks/use-async-state";
@@ -288,6 +289,10 @@ export function CreatePetStepper() {
             }
         }
 
+        posthog.capture("pet_created", {
+            animal_type: selectedAnimalType?.name,
+            pet_id: petId,
+        });
         await queryClient.invalidateQueries({ queryKey: ["pets", "list"] });
         setFormKey((previous) => previous + 1);
         setCreatedPetId(null);

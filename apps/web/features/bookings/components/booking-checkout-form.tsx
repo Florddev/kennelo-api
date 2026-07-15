@@ -16,6 +16,7 @@ import type {
 import type { PetModel } from "@workspace/modules/pets";
 import type { DateRange } from "react-day-picker";
 
+import posthog from "posthog-js";
 import { getStripe } from "@/lib/stripe";
 import { useNavigation } from "@/hooks/use-navigation";
 import { useAsyncState } from "@/hooks/use-async-state";
@@ -185,6 +186,12 @@ export function BookingCheckoutForm({
             }
         }
 
+        posthog.capture("booking_created", {
+            activity_id: activity.id,
+            nights,
+            pet_count: selectedPets.length,
+            total_amount: quote?.totalPrice,
+        });
         toast.success(t("features.bookings.checkout.successTitle"), {
             description: t("features.bookings.checkout.successDescription"),
         });

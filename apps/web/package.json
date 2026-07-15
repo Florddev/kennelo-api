@@ -61,6 +61,8 @@
         "next": "16.2.6",
         "next-intl": "^4.9.2",
         "next-themes": "^0.4.6",
+        "posthog-js": "^1.400.1",
+        "posthog-node": "^5.42.0",
         "pusher-js": "^8.5.0",
         "react": "^19.2.4",
         "react-day-picker": "^9.13.2",
