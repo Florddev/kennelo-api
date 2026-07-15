@@ -30,7 +30,12 @@
             "comingSoon": "قريبًا"
         },
         "payment": {
-            "comingSoon": "قريبًا"
+            "tabs": {
+                "bankAccount": "الحساب البنكي",
+                "pendingRequests": "الطلبات المعلقة"
+            },
+            "noActivities": "ليس لديك أي نشاط بعد.",
+            "bankAccountShared": "حسابك البنكي مشترك بين جميع أنشطتك — قم بإعداده مرة واحدة فقط."
         },
         "bookings": {
             "title": "الحجوزات",

@@ -58,11 +58,6 @@ type MyActivitiesParams = {
     search_params?: Record<string, string | number | boolean>;
 };
 
-type TempParams = {
-    locale?: string | number;
-    search_params?: Record<string, string | number | boolean>;
-};
-
 type ActivityBookingsParams = {
     locale?: string | number;
     id: string;
@@ -363,10 +358,6 @@ function MyActivities(params?: MyActivitiesParams): string {
     return buildRoute("/[locale]/hosting/host", params);
 }
 
-function Temp(params?: TempParams): string {
-    return buildRoute("/[locale]/hosting/host/temp", params);
-}
-
 function ActivityBookings(params: ActivityBookingsParams): string {
     return buildRoute("/[locale]/hosting/host/[id]/bookings", params);
 }
@@ -567,7 +558,6 @@ export const routes = {
     Home,
     HostingCalendar,
     MyActivities,
-    Temp,
     ActivityBookings,
     ActivityInvoices,
     ActivityOverview,

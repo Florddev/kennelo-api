@@ -1,12 +1,4 @@
 {
-    "bankAccountShared": "Your bank account is shared across all your activities — only set it up once.",
-    "temp": {
-        "tabs": {
-            "bankAccount": "Bank account",
-            "pendingRequests": "Pending requests"
-        },
-        "noActivities": "You don't have any activities yet."
-    },
     "bankAccount": {
         "connectedAs": "Connected as {name} ({email})",
         "coveredActivities": "Activities using this account",
