@@ -491,3 +491,9 @@ depuis le manager prod, calmement, dans l'ordre.
 Le cycle complet (sauvegarde, sinistre simulé, restauration depuis la copie
 externe) a été validé de bout en bout lors de la mise en place, et chaque
 restauration réelle ou de test doit être notée ici avec sa date.
+
+Historique des restaurations :
+
+- 2026-07-15 — restauration de test (mise en service) : dump du premier run
+  de production restauré depuis R2 dans une base jetable, 68 tables et
+  comptages vérifiés. Chaîne complète validée en conditions réelles.

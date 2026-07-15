@@ -113,3 +113,17 @@ Recharger ensuite avec `source ~/.zshrc`.
 - Les interfaces d'administration accessibles par tunnel (NPM, Portainer,
   Grafana, Prometheus) ont leurs ports bloqués au public par le pare-feu. Voir
   `observability.md` pour le détail de la sécurisation des ports.
+
+## Propriété des comptes de services
+
+En attendant les adresses de service (`admin@kennelo.fr`…), les comptes des
+services liés à l'infrastructure sont portés par des comptes personnels,
+documentés ici pour le bus factor :
+
+| Service                                   | Compte             | Rôle                             |
+| ----------------------------------------- | ------------------ | -------------------------------- |
+| Cloudflare (zones DNS kennelo.\*)         | compte de Florian  | DNS, certificats d'origine       |
+| Cloudflare R2 (copie externe des backups) | compte de Thami    | bucket kennelo-backups           |
+| DigitalOcean (cluster prod + Spaces)      | compte de Thami    | droplets, bucket kennelo-backups |
+| Hetzner (VPS préproduction)               | compte de Thami    | preprod-manager                  |
+| healthchecks.io (supervision backups)     | developer@thami.fr | check kennelo-backup-prod        |
