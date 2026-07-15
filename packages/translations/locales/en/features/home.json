@@ -1,6 +1,66 @@
 {
-    "badge": "The reference for pet boarding",
     "title": "Find the perfect boarding",
     "title-accent": "for your pet",
-    "subtitle": "Thousands of verified hosts to welcome your companion with care and love"
+    "subtitle": "Thousands of verified hosts to welcome your companion with care and love",
+    "species": {
+        "title": "Explore by animal type",
+        "subtitle": "Specialized hosts for every companion, whatever their species"
+    },
+    "how-it-works": {
+        "title": "How it works",
+        "subtitle": "Book a boarding with confidence, in 3 steps",
+        "search": {
+            "title": "Search",
+            "description": "Find a host near you, filtered by species and your pet's needs"
+        },
+        "book": {
+            "title": "Book",
+            "description": "Pick your dates and confirm your booking in just a few clicks"
+        },
+        "enjoy": {
+            "title": "Enjoy",
+            "description": "Travel with peace of mind, your companion is in good hands"
+        }
+    },
+    "why": {
+        "title": "Why Kennelo",
+        "subtitle": "A platform built for the peace of mind of owners and their pets",
+        "verified": {
+            "title": "Verified hosts",
+            "description": "Every profile is checked before they can welcome animals"
+        },
+        "care": {
+            "title": "Personalized care",
+            "description": "Your pet's habits and specific needs are shared with the host"
+        },
+        "community": {
+            "title": "Trusted community",
+            "description": "Verified reviews left by real pet owners"
+        },
+        "secure": {
+            "title": "Secure environment",
+            "description": "Protected payments and support available at every step"
+        }
+    },
+    "scan": {
+        "title": "Kennelo Scan",
+        "subtitle": "Our hosts identify your pet with a single scan of its microchip: profile, current booking and owner contact appear instantly",
+        "instant": {
+            "title": "Instant scan",
+            "description": "One chip scan is enough to pull up the pet's full profile"
+        },
+        "wireless": {
+            "title": "Wireless",
+            "description": "Connects via Bluetooth to the KenoTag scanner, usable anywhere on site"
+        },
+        "tracking": {
+            "title": "Stay tracking",
+            "description": "Scan history and bookings at hand for every host"
+        }
+    },
+    "become-host": {
+        "title": "Got room to welcome pets?",
+        "subtitle": "Become a Kennelo host and earn income by taking care of animals near you",
+        "cta": "Become a host"
+    }
 }

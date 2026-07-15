@@ -9,15 +9,10 @@ export default function HomeHero() {
     const t = useTranslations();
 
     return (
-        <section className="flex flex-col justify-center items-center gap-4 h-[65vh]">
+        <section className="flex flex-col justify-center items-center gap-4 h-[48vh]">
             <div className="relative overflow-hidden rounded-3xl flex items-center justify-center">
                 <div className="relative z-10 text-center flex flex-col gap-6">
                     <div className="flex flex-col gap-5 text-center pb-8">
-                        <div className="inline-flex self-center items-center gap-2 backdrop-blur-sm bg-secondary/20 border border-secondary/80 rounded-full px-4 py-1.5">
-                            <span className="text-xs font-semibold tracking-wide text-foreground/80">
-                                {t("features.home.badge")}
-                            </span>
-                        </div>
                         <h1 className="text-5xl lg:text-6xl font-bold font-heading leading-[1.1] tracking-tight">
                             {t("features.home.title")}
                             <br />
@@ -30,7 +25,7 @@ export default function HomeHero() {
                 </div>
             </div>
             <div className="hidden md:block w-full">
-                <SearchBar />
+                <SearchBar className="mx-auto" />
             </div>
             <div className="md:hidden w-full px-4">
                 <MobileSearch />
