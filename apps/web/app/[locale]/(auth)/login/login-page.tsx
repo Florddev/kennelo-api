@@ -23,6 +23,8 @@ function renderChallengeForm(
     onSuccess: (locale: string) => void,
     onTwoFactorRequired: (token: string) => void,
     onPasswordExpired: (token: string) => void,
+    magicLinkHref: string,
+    magicLinkLabel: string,
 ) {
     if (challenge?.type === "two-factor") {
         return <TwoFactorChallengeForm challengeToken={challenge.token} onSuccess={onSuccess} />;
@@ -44,6 +46,9 @@ function renderChallengeForm(
                 onTwoFactorRequired={onTwoFactorRequired}
                 onPasswordExpired={onPasswordExpired}
             />
+            <Link href={magicLinkHref} className="text-center text-sm text-primary hover:underline">
+                {magicLinkLabel}
+            </Link>
         </div>
     );
 }
@@ -93,6 +98,8 @@ export default function LoginPage() {
                             handleSuccess,
                             handleTwoFactorRequired,
                             handlePasswordExpired,
+                            routes.MagicLink(),
+                            t("features.auth.magicLink.cta"),
                         )}
                     </FieldGroup>
                     {!challenge && (

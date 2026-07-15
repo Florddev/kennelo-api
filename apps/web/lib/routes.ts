@@ -18,6 +18,16 @@ type LoginParams = {
     search_params?: Record<string, string | number | boolean>;
 };
 
+type MagicLinkParams = {
+    locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type MagicLinkVerifyParams = {
+    locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
 type RegisterParams = {
     locale?: string | number;
     search_params?: Record<string, string | number | boolean>;
@@ -141,6 +151,26 @@ type HostingScanResultParams = {
 };
 
 type HostingSubscriptionParams = {
+    locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type CguParams = {
+    locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type CgvParams = {
+    locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type ConfidentialiteParams = {
+    locale?: string | number;
+    search_params?: Record<string, string | number | boolean>;
+};
+
+type ContactParams = {
     locale?: string | number;
     search_params?: Record<string, string | number | boolean>;
 };
@@ -301,6 +331,14 @@ function Login(params?: LoginParams): string {
     return buildRoute("/[locale]/login", params);
 }
 
+function MagicLink(params?: MagicLinkParams): string {
+    return buildRoute("/[locale]/magic-link", params);
+}
+
+function MagicLinkVerify(params?: MagicLinkVerifyParams): string {
+    return buildRoute("/[locale]/magic-link/verify", params);
+}
+
 function Register(params?: RegisterParams): string {
     return buildRoute("/[locale]/register", params);
 }
@@ -391,6 +429,22 @@ function HostingScanResult(params: HostingScanResultParams): string {
 
 function HostingSubscription(params?: HostingSubscriptionParams): string {
     return buildRoute("/[locale]/hosting/subscription", params);
+}
+
+function Cgu(params?: CguParams): string {
+    return buildRoute("/[locale]/cgu", params);
+}
+
+function Cgv(params?: CgvParams): string {
+    return buildRoute("/[locale]/cgv", params);
+}
+
+function Confidentialite(params?: ConfidentialiteParams): string {
+    return buildRoute("/[locale]/confidentialite", params);
+}
+
+function Contact(params?: ContactParams): string {
+    return buildRoute("/[locale]/contact", params);
 }
 
 function BecomeHost(params?: BecomeHostParams): string {
@@ -505,6 +559,8 @@ export const routes = {
     RootPage,
     ForgotPassword,
     Login,
+    MagicLink,
+    MagicLinkVerify,
     Register,
     ResetPassword,
     VerifyEmail,
@@ -528,6 +584,10 @@ export const routes = {
     HostingScan,
     HostingScanResult,
     HostingSubscription,
+    Cgu,
+    Cgv,
+    Confidentialite,
+    Contact,
     BecomeHost,
     BookingDetail,
     Explore,

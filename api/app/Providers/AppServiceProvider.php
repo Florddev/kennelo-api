@@ -16,6 +16,7 @@ use App\Models\Scanner;
 use App\Models\Setting;
 use App\Models\SubscriptionPlan;
 use App\Models\User;
+use App\Notifications\MagicLinkNotification;
 use App\Policies\ActivityPolicy;
 use App\Policies\BookingPolicy;
 use App\Policies\ConversationPolicy;
@@ -95,6 +96,22 @@ class AppServiceProvider extends ServiceProvider
             return config('app.frontend_url').'/verify-email?'.http_build_query([
                 'id' => $notifiable->getKey(),
                 'hash' => sha1($notifiable->getEmailForVerification()),
+                'expires' => $params['expires'] ?? '',
+                'signature' => $params['signature'] ?? '',
+            ]);
+        });
+
+        MagicLinkNotification::createUrlUsing(function (User $notifiable) {
+            $signedUrl = URL::temporarySignedRoute(
+                'magic-link.verify',
+                now()->addMinutes((int) config('auth.magic_link.expire')),
+                ['id' => $notifiable->getKey()],
+            );
+
+            parse_str((string) parse_url($signedUrl, PHP_URL_QUERY), $params);
+
+            return config('app.frontend_url').'/magic-link/verify?'.http_build_query([
+                'id' => $notifiable->getKey(),
                 'expires' => $params['expires'] ?? '',
                 'signature' => $params['signature'] ?? '',
             ]);
