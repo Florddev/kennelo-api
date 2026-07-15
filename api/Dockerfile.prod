@@ -91,6 +91,7 @@ WORKDIR /app
 COPY --from=builder /app /app
 
 COPY api/docker/nginx.conf      /etc/nginx/nginx.conf
+COPY api/docker/php.ini         /usr/local/etc/php/conf.d/zz-uploads.ini
 COPY api/docker/php-fpm.conf    /usr/local/etc/php-fpm.d/zz-overrides.conf
 COPY api/docker/supervisord.conf /etc/supervisor/supervisord.conf
 COPY api/docker/entrypoint.sh    /entrypoint.sh
