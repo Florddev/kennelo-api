@@ -30,7 +30,12 @@
             "comingSoon": "Coming soon"
         },
         "payment": {
-            "comingSoon": "Coming soon"
+            "tabs": {
+                "bankAccount": "Bank account",
+                "pendingRequests": "Pending requests"
+            },
+            "noActivities": "You don't have any activities yet.",
+            "bankAccountShared": "Your bank account is shared across all your activities — only set it up once."
         },
         "bookings": {
             "title": "Bookings",

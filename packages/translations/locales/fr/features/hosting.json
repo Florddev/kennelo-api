@@ -1,12 +1,4 @@
 {
-    "bankAccountShared": "Votre compte bancaire est partagé entre tous vos activités — vous ne le configurez qu'une fois.",
-    "temp": {
-        "tabs": {
-            "bankAccount": "Compte bancaire",
-            "pendingRequests": "Demandes en attente"
-        },
-        "noActivities": "Vous n'avez encore aucune activité."
-    },
     "bankAccount": {
         "connectedAs": "Connecté en tant que {name} ({email})",
         "coveredActivities": "Activités utilisant ce compte",

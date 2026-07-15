@@ -67,7 +67,6 @@ export default function ActivityLayout({ children }: { children: React.ReactNode
             label: t("features.activities.manager.nav.payment"),
             icon: Card,
             default: false,
-            comingSoon: true,
         },
     ];
 
