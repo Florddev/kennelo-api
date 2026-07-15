@@ -139,7 +139,7 @@ ENV=prod IMAGE_TAG=sha-abc1234 ./infra/scripts/deploy-app.sh
 ```
 
 Le cycle de release complet (quand taguer, discipline de validation en
-préproduction) est documenté dans `docs/observability.md`, section
+préproduction) est documenté dans `infra/docs/observability.md`, section
 « Déploiement et environnements ».
 
 ## Stacks
