@@ -4,6 +4,7 @@ import { Providers } from "@/components/providers";
 import { Suspense } from "react";
 import { getLocale, getTranslations } from "next-intl/server";
 import { LocaleDirection } from "@/dictionaries";
+import { routing } from "@/lib/i18n/routing";
 import { cn } from "@workspace/ui/lib/utils";
 
 const fontHeading = Bricolage_Grotesque({
@@ -31,9 +32,14 @@ async function getInitialAuthState(): Promise<boolean> {
     return cookieStore.has("access_token");
 }
 
+async function getRootLocale(): Promise<string> {
+    if (process.env.NEXT_PUBLIC_ROUTE_MODE === "static") return routing.defaultLocale;
+    return getLocale();
+}
+
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
     const initialIsAuthenticated = await getInitialAuthState();
-    const locale = await getLocale();
+    const locale = await getRootLocale();
     const t = await getTranslations({ locale });
     const dir = t("settings.dir") as LocaleDirection;
 
