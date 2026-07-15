@@ -14,13 +14,14 @@ load_env
 require_vars IMAGE_TAG APP_URL FRONTEND_URL CORS_ALLOWED_ORIGINS \
   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY STRIPE_KEY STRIPE_CURRENCY \
   DOMAIN_LOCALES AWS_URL REVERB_PUBLIC_HOST \
-  API_REPLICAS WEB_REPLICAS REVERB_REPLICAS BACK_OFFICE_REPLICAS
+  API_REPLICAS WEB_REPLICAS REVERB_REPLICAS BACK_OFFICE_REPLICAS WORKER_REPLICAS
 
 echo "==> Déploiement applicatif ($ENV, images :$IMAGE_TAG)"
 docker stack deploy -c "$STACK_DIR/api.yml"         api         --with-registry-auth
 docker stack deploy -c "$STACK_DIR/web.yml"         web         --with-registry-auth
 docker stack deploy -c "$STACK_DIR/reverb.yml"      reverb      --with-registry-auth
 docker stack deploy -c "$STACK_DIR/back-office.yml" back-office --with-registry-auth
+docker stack deploy -c "$STACK_DIR/worker.yml"      worker      --with-registry-auth
 
 echo ""
 echo "Déploiement applicatif terminé."

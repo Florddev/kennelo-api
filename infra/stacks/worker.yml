@@ -1,0 +1,106 @@
+services:
+  worker:
+    image: ghcr.io/anthony14fr/kennelo-api:${IMAGE_TAG}
+    command: ["php", "artisan", "queue:work", "redis", "--sleep=3", "--tries=3", "--max-time=3600"]
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -f 'queue:work' || exit 1"]
+      interval: 30s
+      timeout: 10s
+      start_period: 20s
+      retries: 3
+    environment:
+      APP_NAME: Kennelo
+      APP_ENV: production
+      APP_DEBUG: "false"
+      APP_URL: ${APP_URL}
+      FRONTEND_URL: ${FRONTEND_URL}
+
+      APP_LOCALE: en
+      APP_FALLBACK_LOCALE: en
+      DOMAIN_LOCALES: "${DOMAIN_LOCALES}"
+      DEFAULT_LOCALE: en
+      AVAILABLE_LOCALES: "fr,en,it,de"
+
+      LOG_CHANNEL: stderr
+      LOG_LEVEL: warning
+
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_DATABASE: kennelo
+      DB_USERNAME: kennelo
+
+      CACHE_STORE: redis
+      QUEUE_CONNECTION: redis
+      REDIS_CLIENT: predis
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      REDIS_DB: "0"
+      REDIS_CACHE_DB: "1"
+
+      FILESYSTEM_DISK: s3
+      MEDIA_DISK: s3
+      AWS_DEFAULT_REGION: us-east-1
+      AWS_BUCKET: kennelo-media
+      AWS_ENDPOINT: http://minio:9000
+      AWS_USE_PATH_STYLE_ENDPOINT: "true"
+      AWS_URL: ${AWS_URL}
+
+      BROADCAST_CONNECTION: reverb
+      REVERB_APP_ID: kennelo
+      REVERB_APP_KEY: kennelo-key
+      REVERB_HOST: ${REVERB_PUBLIC_HOST}
+      REVERB_PORT: "443"
+      REVERB_SCHEME: https
+
+      STRIPE_KEY: ${STRIPE_KEY}
+      STRIPE_CURRENCY: ${STRIPE_CURRENCY}
+      STRIPE_PRICE_STARTER: ${STRIPE_PRICE_STARTER}
+      STRIPE_PRICE_PRO: ${STRIPE_PRICE_PRO}
+
+      MAIL_MAILER: ${MAIL_MAILER}
+      MAIL_FROM_ADDRESS: ${MAIL_FROM_ADDRESS}
+      MAIL_FROM_NAME: ${MAIL_FROM_NAME}
+    secrets:
+      - kennelo_app_key
+      - kennelo_jwt_secret
+      - kennelo_reverb_app_secret
+      - kennelo_postgres_password
+      - kennelo_redis_password
+      - kennelo_minio_root_user
+      - kennelo_minio_root_password
+      - kennelo_resend_api_key
+      - kennelo_stripe_secret_key
+    networks:
+      - kennelo-internal
+    deploy:
+      replicas: ${WORKER_REPLICAS}
+      restart_policy:
+        condition: any
+      update_config:
+        parallelism: 1
+        delay: 10s
+
+networks:
+  kennelo-internal:
+    external: true
+
+secrets:
+  kennelo_app_key:
+    external: true
+  kennelo_jwt_secret:
+    external: true
+  kennelo_reverb_app_secret:
+    external: true
+  kennelo_postgres_password:
+    external: true
+  kennelo_redis_password:
+    external: true
+  kennelo_minio_root_user:
+    external: true
+  kennelo_minio_root_password:
+    external: true
+  kennelo_resend_api_key:
+    external: true
+  kennelo_stripe_secret_key:
+    external: true
