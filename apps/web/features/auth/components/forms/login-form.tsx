@@ -4,7 +4,12 @@ import Link from "next/link";
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { loginUserSchema, type LoginUserInput, loginUser } from "@workspace/modules/users";
+import {
+    loginUserSchema,
+    type LoginUserInput,
+    loginUser,
+    type UserModel,
+} from "@workspace/modules/users";
 import { Button } from "@workspace/ui/components/button";
 import { Alert, AlertDescription } from "@workspace/ui/components/alert";
 import { useTranslations } from "next-intl";
@@ -12,14 +17,13 @@ import { useAsyncState } from "@/hooks/use-async-state";
 import { InputController } from "@/components/forms/input-controller";
 import { useNavigation } from "@/hooks/use-navigation";
 import { useAuth } from "@/features/auth/hooks/use-auth";
-import { localeOrDefault, type Locale } from "@/dictionaries";
 import { Letter, LockKeyholeMinimalistic } from "@solar-icons/react";
 
 export function LoginForm({
     onSuccess,
     onTwoFactorRequired,
 }: {
-    onSuccess?: (locale: Locale) => void;
+    onSuccess?: (user: UserModel | null) => void;
     onTwoFactorRequired?: (challengeToken: string) => void;
 }) {
     const { error, isLoading, execute } = useAsyncState();
@@ -50,7 +54,7 @@ export function LoginForm({
         }
 
         const freshUser = await refreshUser();
-        onSuccess?.(localeOrDefault(freshUser?.locale));
+        onSuccess?.(freshUser);
     };
 
     return (

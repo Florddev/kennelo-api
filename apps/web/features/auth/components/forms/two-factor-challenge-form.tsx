@@ -6,6 +6,7 @@ import {
     twoFactorChallengeSchema,
     type TwoFactorChallengeInput,
     verifyTwoFactorChallenge,
+    type UserModel,
 } from "@workspace/modules/users";
 import { Button } from "@workspace/ui/components/button";
 import { Alert, AlertDescription } from "@workspace/ui/components/alert";
@@ -18,14 +19,13 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useAsyncState } from "@/hooks/use-async-state";
 import { useAuth } from "@/features/auth/hooks/use-auth";
-import { localeOrDefault, type Locale } from "@/dictionaries";
 
 export function TwoFactorChallengeForm({
     challengeToken,
     onSuccess,
 }: {
     challengeToken: string;
-    onSuccess?: (locale: Locale) => void;
+    onSuccess?: (user: UserModel | null) => void;
 }) {
     const { error, isLoading, execute } = useAsyncState();
     const { refreshUser } = useAuth();
@@ -42,7 +42,7 @@ export function TwoFactorChallengeForm({
         await execute(() => verifyTwoFactorChallenge(challengeToken, data, remember), {
             onSuccess: async () => {
                 const freshUser = await refreshUser();
-                onSuccess?.(localeOrDefault(freshUser?.locale));
+                onSuccess?.(freshUser);
             },
         });
     };

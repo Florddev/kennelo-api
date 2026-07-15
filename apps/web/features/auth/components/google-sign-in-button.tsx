@@ -1,12 +1,10 @@
 "use client";
 
-import { useGoogleLogin } from "@react-oauth/google";
-import { useLocale, useTranslations } from "next-intl";
-import { loginWithGoogle } from "@workspace/modules/users";
+import { useTranslations } from "next-intl";
 import { Button } from "@workspace/ui/components/button";
-import { useAsyncState } from "@/hooks/use-async-state";
-import { useAuth } from "@/features/auth/hooks/use-auth";
-import { localeOrDefault, type Locale } from "@/dictionaries";
+import { useGoogleSignIn } from "@/features/auth/hooks/use-google-sign-in";
+import { isCapacitorApp } from "@/lib/platform";
+import { type UserModel } from "@workspace/modules/users";
 
 function GoogleIcon() {
     return (
@@ -35,36 +33,14 @@ export function GoogleSignInButton({
     onSuccess,
     onTwoFactorRequired,
 }: {
-    onSuccess?: (locale: Locale) => void;
+    onSuccess?: (user: UserModel | null) => void;
     onTwoFactorRequired?: (challengeToken: string) => void;
 }) {
     const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
-    const locale = useLocale();
     const t = useTranslations();
-    const { isLoading, execute } = useAsyncState();
-    const { refreshUser } = useAuth();
+    const { signIn, isLoading } = useGoogleSignIn({ onSuccess, onTwoFactorRequired });
 
-    const login = useGoogleLogin({
-        flow: "implicit",
-        scope: "openid email profile",
-        onSuccess: async (response) => {
-            const result = await execute(() => loginWithGoogle(response.access_token, locale));
-
-            if (!result) {
-                return;
-            }
-
-            if ("twoFactor" in result) {
-                onTwoFactorRequired?.(result.challengeToken);
-                return;
-            }
-
-            const freshUser = await refreshUser();
-            onSuccess?.(localeOrDefault(freshUser?.locale));
-        },
-    });
-
-    if (!clientId) {
+    if (!clientId && !isCapacitorApp()) {
         return null;
     }
 
@@ -81,7 +57,9 @@ export function GoogleSignInButton({
                 size="lg"
                 className="w-full font-medium text-md"
                 disabled={isLoading}
-                onClick={() => login()}
+                onClick={() => {
+                    void signIn();
+                }}
             >
                 {isLoading ? (
                     <span className="size-4 rounded-full border-2 border-muted-foreground/30 border-t-primary animate-spin" />

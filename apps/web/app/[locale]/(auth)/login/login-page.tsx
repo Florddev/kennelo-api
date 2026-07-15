@@ -5,17 +5,30 @@ import Link from "next/link";
 import { LoginForm, GoogleSignInButton, TwoFactorChallengeForm } from "@/features/auth";
 import { useNavigation } from "@/hooks/use-navigation";
 import { useTranslations } from "next-intl";
+import { type UserModel } from "@workspace/modules/users";
 import { FieldDescription, FieldGroup } from "@workspace/ui/components/field";
 import { safeRedirectPath } from "@/lib/safe-redirect";
+import { localeOrDefault } from "@/dictionaries";
 
 export default function LoginPage() {
     const { routes, router, params } = useNavigation<{ redirect_url?: string }>();
     const t = useTranslations();
     const [challengeToken, setChallengeToken] = useState<string | null>(null);
 
-    const handleSuccess = (locale: string) => {
-        const target = safeRedirectPath(params.redirect_url);
-        router.push(target ?? routes.Home({ locale }));
+    const handleSuccess = (user: UserModel | null) => {
+        const redirect = safeRedirectPath(params.redirect_url);
+
+        if (redirect) {
+            router.push(redirect);
+            return;
+        }
+
+        const locale = localeOrDefault(user?.locale);
+        const target = user?.hasAnyRoles(["manager"])
+            ? routes.HostingNow({ locale })
+            : routes.Explore({ locale });
+
+        router.push(target);
     };
 
     return (
