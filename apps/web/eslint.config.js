@@ -19,7 +19,15 @@ const e2eDisabledRules = Object.fromEntries(
 /** @type {import("eslint").Linter.Config} */
 export default [
     {
-        ignores: [".next/**", ".turbo/**", "node_modules/**", "android/**", "ios/**"],
+        ignores: [
+            ".next/**",
+            ".turbo/**",
+            "node_modules/**",
+            "android/**",
+            "ios/**",
+            "playwright-report/**",
+            "test-results/**",
+        ],
     },
     ...nextJsConfig,
     {

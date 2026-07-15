@@ -5,6 +5,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { DirectionProvider } from "@workspace/ui/components/direction";
 import { LocaleDirection } from "@/dictionaries";
 import LocaleUpdater from "@/components/i18n/locale-updater";
+import { CookieConsentBanner } from "@/components/cookie-consent-banner";
 import { NotificationsProvider } from "@/features/notifications";
 import { HostingScanNotifier } from "@/features/hosting-scan";
 import { JSX } from "react";
@@ -45,6 +46,7 @@ export default async function LocaleLayout({
             <NextIntlClientProvider locale={locale}>
                 <HostingScanNotifier />
                 <NotificationsProvider>{children}</NotificationsProvider>
+                <CookieConsentBanner />
             </NextIntlClientProvider>
         </DirectionProvider>
     );

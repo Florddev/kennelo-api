@@ -16,7 +16,10 @@
     "navigation": {
         "settings": "الإعدادات",
         "help": "مركز المساعدة",
-        "privacy": "سياسة الخصوصية"
+        "privacy": "سياسة الخصوصية",
+        "terms": "شروط الاستخدام",
+        "salesTerms": "شروط البيع",
+        "contact": "اتصل بنا"
     },
     "switchToHostMode": "التبديل إلى وضع المضيف"
 }

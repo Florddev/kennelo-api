@@ -4,6 +4,7 @@ import { useGoogleLogin } from "@react-oauth/google";
 import { useLocale, useTranslations } from "next-intl";
 import { loginWithGoogle } from "@workspace/modules/users";
 import { Button } from "@workspace/ui/components/button";
+import posthog from "posthog-js";
 import { useAsyncState } from "@/hooks/use-async-state";
 import { useAuth } from "@/features/auth/hooks/use-auth";
 import { localeOrDefault, type Locale } from "@/dictionaries";
@@ -34,9 +35,11 @@ function GoogleIcon() {
 export function GoogleSignInButton({
     onSuccess,
     onTwoFactorRequired,
+    onPasswordExpired,
 }: {
     onSuccess?: (locale: Locale) => void;
     onTwoFactorRequired?: (challengeToken: string) => void;
+    onPasswordExpired?: (challengeToken: string) => void;
 }) {
     const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
     const locale = useLocale();
@@ -59,7 +62,13 @@ export function GoogleSignInButton({
                 return;
             }
 
+            if ("passwordExpired" in result) {
+                onPasswordExpired?.(result.challengeToken);
+                return;
+            }
+
             const freshUser = await refreshUser();
+            posthog.capture("user_logged_in", { method: "google" });
             onSuccess?.(localeOrDefault(freshUser?.locale));
         },
     });

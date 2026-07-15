@@ -57,6 +57,7 @@ class RegisteredUserController extends Controller
             'email' => $request->email,
             'phone' => $request->phone,
             'password' => Hash::make((string) $request->string('password')),
+            'password_changed_at' => now(),
             'locale' => $request->locale ?? config('app.locale', 'en'),
         ]);
 

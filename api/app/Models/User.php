@@ -31,6 +31,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string|null $two_factor_secret
  * @property array<int, string>|null $two_factor_recovery_codes
  * @property Carbon|null $two_factor_confirmed_at
+ * @property Carbon|null $password_changed_at
  */
 class User extends Authenticatable implements HasLocalePreference, HasMedia, JWTSubject, MustVerifyEmail
 {
@@ -48,6 +49,7 @@ class User extends Authenticatable implements HasLocalePreference, HasMedia, JWT
         'last_seen_at',
         'status',
         'password',
+        'password_changed_at',
         'locale',
         'address_id',
         'stripe_account_id',
@@ -76,6 +78,7 @@ class User extends Authenticatable implements HasLocalePreference, HasMedia, JWT
             'is_id_verified' => 'boolean',
             'status' => UserStatusEnum::class,
             'password' => self::PASSWORD_CAST,
+            'password_changed_at' => 'datetime',
             'stripe_charges_enabled' => 'boolean',
             'stripe_payouts_enabled' => 'boolean',
             'stripe_onboarding_completed' => 'boolean',

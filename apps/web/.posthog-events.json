@@ -1,0 +1,47 @@
+[
+    {
+        "event_name": "user_signed_up",
+        "event_description": "Fired when a user completes email registration.",
+        "file": "features/auth/components/forms/register-form.tsx"
+    },
+    {
+        "event_name": "user_logged_in",
+        "event_description": "Fired when a user successfully logs in via email/password.",
+        "file": "features/auth/components/forms/login-form.tsx"
+    },
+    {
+        "event_name": "user_logged_in",
+        "event_description": "Fired when a user successfully logs in via Google OAuth.",
+        "file": "features/auth/components/google-sign-in-button.tsx"
+    },
+    {
+        "event_name": "user_logged_out",
+        "event_description": "Fired when a user logs out of the application.",
+        "file": "features/auth/hooks/use-auth.tsx"
+    },
+    {
+        "event_name": "booking_created",
+        "event_description": "Fired when a user successfully submits a booking and payment completes.",
+        "file": "features/bookings/components/booking-checkout-form.tsx"
+    },
+    {
+        "event_name": "host_viewed",
+        "event_description": "Fired when a user views a host listing detail page (top of booking funnel).",
+        "file": "app/[locale]/(main)/host/[id]/host-detail-page.tsx"
+    },
+    {
+        "event_name": "search_performed",
+        "event_description": "Fired when a user performs a host search with location, dates, and/or pet filters.",
+        "file": "app/[locale]/(main)/explore/results/results-page.tsx"
+    },
+    {
+        "event_name": "pet_created",
+        "event_description": "Fired when a user completes the new pet creation stepper.",
+        "file": "features/pets/components/forms/create-pet-stepper.tsx"
+    },
+    {
+        "event_name": "subscription_viewed",
+        "event_description": "Fired when a host views the subscription management page.",
+        "file": "app/[locale]/(hosting)/hosting/subscription/hosting-subscription-page.tsx"
+    }
+]

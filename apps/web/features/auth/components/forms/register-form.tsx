@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { registerUserSchema, type RegisterUserInput, registerUser } from "@workspace/modules/users";
 import { Button } from "@workspace/ui/components/button";
 import { useLocale, useTranslations } from "next-intl";
+import posthog from "posthog-js";
 import { useAsyncState } from "@/hooks/use-async-state";
 import { InputController } from "@/components/forms/input-controller";
 import { useAuth } from "@/features/auth/hooks/use-auth";
@@ -34,6 +35,7 @@ export function RegisterForm({ onSuccess }: { onSuccess?: () => void }) {
             setFieldError: setError,
             onSuccess: async () => {
                 await refreshUser();
+                posthog.capture("user_signed_up", { method: "email" });
                 onSuccess?.();
             },
         });

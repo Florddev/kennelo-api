@@ -115,6 +115,8 @@ jobs:
             echo "reverb_host=${REVERB_PUBLIC_HOST}"
             echo "google_client_id=${NEXT_PUBLIC_GOOGLE_CLIENT_ID}"
             echo "stripe_publishable_key=${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}"
+            echo "posthog_project_token=${NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN}"
+            echo "posthog_host=${NEXT_PUBLIC_POSTHOG_HOST}"
           } >> "$GITHUB_OUTPUT"
 
       - name: Extract image metadata
@@ -148,6 +150,8 @@ jobs:
             NEXT_PUBLIC_REVERB_SCHEME=https
             NEXT_PUBLIC_GOOGLE_CLIENT_ID=${{ steps.config.outputs.google_client_id }}
             NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${{ steps.config.outputs.stripe_publishable_key }}
+            NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN=${{ steps.config.outputs.posthog_project_token }}
+            NEXT_PUBLIC_POSTHOG_HOST=${{ steps.config.outputs.posthog_host }}
 
   build-back-office:
     name: Build Back-office image

@@ -18,6 +18,8 @@ return [
 
     'two_factor_challenge_ttl' => (int) env('JWT_TWO_FACTOR_CHALLENGE_TTL', 5),
 
+    'password_reset_challenge_ttl' => (int) env('JWT_PASSWORD_RESET_CHALLENGE_TTL', 15),
+
     'impersonation_ttl' => (int) env('JWT_IMPERSONATION_TTL', 15),
 
     'refresh_token_ttl' => (int) env('JWT_REFRESH_TOKEN_TTL', 43200),
