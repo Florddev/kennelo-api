@@ -40,6 +40,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Validation\Rules\Password;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Stripe\StripeClient;
 
@@ -72,6 +73,8 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(SubscriptionPlan::class, SubscriptionPlanPolicy::class);
 
         Route::bind('media', fn (string $value) => Media::where('uuid', $value)->firstOrFail());
+
+        Password::defaults(fn () => Password::min(12)->letters()->mixedCase()->numbers()->symbols());
 
         ResetPassword::createUrlUsing(function (object $notifiable, string $token) {
             return config('app.frontend_url').'/reset-password?'.http_build_query([

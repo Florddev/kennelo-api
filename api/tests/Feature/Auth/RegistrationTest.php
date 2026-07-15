@@ -9,8 +9,8 @@ test('new users can register', function () {
         'first_name' => 'Test',
         'last_name' => 'User',
         'email' => 'test@example.com',
-        'password' => 'password',
-        'password_confirmation' => 'password',
+        'password' => 'Str0ng!Passw0rd',
+        'password_confirmation' => 'Str0ng!Passw0rd',
     ]);
 
     $response->assertCreated()
@@ -30,8 +30,8 @@ test('registration fails with duplicate email', function () {
         'first_name' => 'Test',
         'last_name' => 'User',
         'email' => 'taken@example.com',
-        'password' => 'password',
-        'password_confirmation' => 'password',
+        'password' => 'Str0ng!Passw0rd',
+        'password_confirmation' => 'Str0ng!Passw0rd',
     ]);
 
     $response->assertUnprocessable()
@@ -50,8 +50,8 @@ test('registration fails with password confirmation mismatch', function () {
         'first_name' => 'Test',
         'last_name' => 'User',
         'email' => 'test@example.com',
-        'password' => 'password',
-        'password_confirmation' => 'different',
+        'password' => 'Str0ng!Passw0rd',
+        'password_confirmation' => 'Different!Passw0rd',
     ]);
 
     $response->assertUnprocessable()

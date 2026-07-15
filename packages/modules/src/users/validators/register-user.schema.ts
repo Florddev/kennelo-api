@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { passwordRules } from "./password-rules";
 
 export const registerUserSchema = z
     .object({
@@ -16,12 +17,7 @@ export const registerUserSchema = z
             .email("Invalid email address")
             .max(255, "Email must be less than 255 characters"),
         // phone: z.string().max(20, "Phone number must be less than 20 characters").optional(),
-        password: z
-            .string()
-            .min(8, "Password must be at least 8 characters")
-            .regex(/[a-z]/, "Password must contain at least one lowercase letter")
-            .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-            .regex(/[0-9]/, "Password must contain at least one number"),
+        password: passwordRules,
         passwordConfirmation: z.string().min(1, "Password confirmation is required"),
         locale: z.string().optional(),
     })

@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 
 export const E2E_PREFIX = "E2E";
 export const E2E_EMAIL_DOMAIN = "kennelo-e2e.test";
-export const E2E_STRONG_PASSWORD = "E2ePass123!";
+export const E2E_STRONG_PASSWORD = "E2ePass1234!";
 
 export function e2eLabel(kind: string): string {
     return `${E2E_PREFIX}-${kind}-${randomUUID().slice(0, 8)}`;
