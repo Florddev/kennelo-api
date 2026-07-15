@@ -27,6 +27,7 @@ export function ActivityInfoStep({ control, isLoading }: ActivityInfoStepProps) 
                 placeholder={t("common.placeholders.activityName")}
                 isLoading={isLoading}
                 type="text"
+                compact
             />
             <TextareaController
                 name="description"
@@ -35,6 +36,7 @@ export function ActivityInfoStep({ control, isLoading }: ActivityInfoStepProps) 
                 placeholder={t("common.placeholders.description")}
                 isLoading={isLoading}
                 rows={5}
+                compact
             />
         </StepShell>
     );

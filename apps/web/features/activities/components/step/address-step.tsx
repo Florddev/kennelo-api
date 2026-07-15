@@ -36,6 +36,7 @@ export function AddressStep({ control, isLoading }: AddressStepProps) {
                 placeholder={t("common.placeholders.addressLine1")}
                 isLoading={isLoading}
                 type="text"
+                compact
             />
             <InputController
                 name="address.line2"
@@ -44,6 +45,7 @@ export function AddressStep({ control, isLoading }: AddressStepProps) {
                 placeholder={t("common.placeholders.addressLine2")}
                 isLoading={isLoading}
                 type="text"
+                compact
             />
             <div className="grid grid-cols-2 gap-4">
                 <InputController
@@ -53,6 +55,7 @@ export function AddressStep({ control, isLoading }: AddressStepProps) {
                     placeholder={t("common.placeholders.city")}
                     isLoading={isLoading}
                     type="text"
+                    compact
                 />
                 <InputController
                     name="address.postalCode"
@@ -61,6 +64,7 @@ export function AddressStep({ control, isLoading }: AddressStepProps) {
                     placeholder={t("common.placeholders.postalCode")}
                     isLoading={isLoading}
                     type="text"
+                    compact
                 />
             </div>
             <div className="grid grid-cols-2 gap-4">
@@ -71,6 +75,7 @@ export function AddressStep({ control, isLoading }: AddressStepProps) {
                     placeholder={t("common.placeholders.region")}
                     isLoading={isLoading}
                     type="text"
+                    compact
                 />
                 <Controller
                     name="address.country"
@@ -91,7 +96,8 @@ export function AddressStep({ control, isLoading }: AddressStepProps) {
                                 >
                                     <SelectTrigger
                                         id="address-country"
-                                        className="rounded-4xl"
+                                        size="sm"
+                                        className="rounded-4xl w-full"
                                         onBlur={field.onBlur}
                                     >
                                         <SelectValue

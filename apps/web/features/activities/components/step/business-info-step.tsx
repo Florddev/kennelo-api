@@ -26,6 +26,7 @@ export function BusinessInfoStep({ control, isLoading }: BusinessInfoStepProps) 
                 placeholder={t("common.placeholders.siret")}
                 isLoading={isLoading}
                 type="text"
+                compact
             />
         </StepShell>
     );
