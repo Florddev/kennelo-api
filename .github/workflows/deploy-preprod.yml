@@ -41,8 +41,28 @@ jobs:
             ENV=preprod ./infra/scripts/deploy-app.sh
           REMOTE
 
-      - name: Wait for services to stabilize
-        run: sleep 30
+      - name: Wait for rolling update to complete
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST_PREPROD }} << 'REMOTE'
+            set -euo pipefail
+            for service in api_api web_web reverb_reverb back-office_back-office worker_worker; do
+              state=""
+              for i in $(seq 1 60); do
+                state=$(docker service inspect "$service" --format '{{if .UpdateStatus}}{{.UpdateStatus.State}}{{else}}completed{{end}}')
+                if [ "$state" = "completed" ]; then break; fi
+                if [ "$state" = "paused" ] || [ "$state" = "rollback_completed" ]; then
+                  echo "✗ $service : rolling update en état $state"
+                  exit 1
+                fi
+                sleep 5
+              done
+              if [ "$state" != "completed" ]; then
+                echo "✗ $service : rolling update toujours en cours après 5 minutes"
+                exit 1
+              fi
+              echo "✓ $service à jour"
+            done
+          REMOTE
 
       - name: Run migrations
         run: |
