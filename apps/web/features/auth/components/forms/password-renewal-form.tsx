@@ -6,13 +6,13 @@ import {
     renewPasswordSchema,
     type RenewPasswordInput,
     renewExpiredPassword,
+    type UserModel,
 } from "@workspace/modules/users";
 import { Button } from "@workspace/ui/components/button";
 import { useTranslations } from "next-intl";
 import { useAsyncState } from "@/hooks/use-async-state";
 import { InputController } from "@/components/forms/input-controller";
 import { useAuth } from "@/features/auth/hooks/use-auth";
-import { localeOrDefault, type Locale } from "@/dictionaries";
 import { LockKeyholeMinimalistic } from "@solar-icons/react";
 
 export function PasswordRenewalForm({
@@ -20,7 +20,7 @@ export function PasswordRenewalForm({
     onSuccess,
 }: {
     challengeToken: string;
-    onSuccess?: (locale: Locale) => void;
+    onSuccess?: (user: UserModel | null) => void;
 }) {
     const { isLoading, execute } = useAsyncState();
     const { refreshUser } = useAuth();
@@ -36,7 +36,7 @@ export function PasswordRenewalForm({
             setFieldError: setError,
             onSuccess: async () => {
                 const freshUser = await refreshUser();
-                onSuccess?.(localeOrDefault(freshUser?.locale));
+                onSuccess?.(freshUser);
             },
         });
     };

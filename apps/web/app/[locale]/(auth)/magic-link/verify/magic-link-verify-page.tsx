@@ -2,13 +2,14 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { verifyMagicLink } from "@workspace/modules/users";
+import { verifyMagicLink, type UserModel } from "@workspace/modules/users";
 import { TwoFactorChallengeForm, PasswordRenewalForm } from "@/features/auth";
 import { FieldDescription, FieldGroup } from "@workspace/ui/components/field";
 import { useTranslations } from "next-intl";
 import { useNavigation } from "@/hooks/use-navigation";
 import { useAuth } from "@/features/auth/hooks/use-auth";
 import { safeRedirectPath } from "@/lib/safe-redirect";
+import { localeOrDefault } from "@/dictionaries";
 import { logger } from "@/lib/logger";
 
 type VerificationState =
@@ -31,9 +32,20 @@ export default function MagicLinkVerifyPage() {
 
     const { id, expires, signature } = params;
 
-    const handleSuccess = (locale: string) => {
-        const target = safeRedirectPath(params.redirect_url);
-        router.push(target ?? routes.Home({ locale }));
+    const handleSuccess = (user: UserModel | null) => {
+        const redirect = safeRedirectPath(params.redirect_url);
+
+        if (redirect) {
+            router.push(redirect);
+            return;
+        }
+
+        const locale = localeOrDefault(user?.locale);
+        const target = user?.hasAnyRoles(["manager"])
+            ? routes.HostingNow({ locale })
+            : routes.Explore({ locale });
+
+        router.push(target);
     };
 
     useEffect(() => {
@@ -56,7 +68,7 @@ export default function MagicLinkVerifyPage() {
 
                 setState({ status: "success" });
                 const freshUser = await refreshUser();
-                handleSuccess(freshUser?.locale ?? "en");
+                handleSuccess(freshUser);
             })
             .catch((error: unknown) => {
                 logger.error("Magic link verification failed:", error);
