@@ -16,6 +16,11 @@ const reverbHostPort = process.env.NEXT_PUBLIC_REVERB_HOST
 const reverbOrigins = reverbHostPort ? `ws://${reverbHostPort} wss://${reverbHostPort}` : '';
 const googleIdentityOrigin = 'https://accounts.google.com';
 const mapTilesOrigins = 'https://basemaps.cartocdn.com https://*.basemaps.cartocdn.com';
+const stripeScriptOrigins = 'https://connect-js.stripe.com https://js.stripe.com https://*.js.stripe.com';
+const stripeFrameOrigins =
+    'https://connect-js.stripe.com https://js.stripe.com https://*.js.stripe.com https://hooks.stripe.com';
+const stripeConnectOrigins =
+    'https://api.stripe.com https://merchant-ui-api.stripe.com https://r.stripe.com https://errors.stripe.com';
 const devThemePreviewOrigin = process.env.NODE_ENV === 'development' ? 'https://tweakcn.com' : '';
 
 const contentSecurityPolicy = [
@@ -26,9 +31,10 @@ const contentSecurityPolicy = [
     "img-src 'self' data: blob: https:",
     "font-src 'self' data:",
     "style-src 'self' 'unsafe-inline'",
-    `script-src 'self' 'unsafe-inline' 'unsafe-eval' ${googleIdentityOrigin} ${devThemePreviewOrigin}`,
-    `frame-src 'self' ${googleIdentityOrigin}`,
-    `connect-src 'self' ${apiOrigin} ${reverbOrigins} ${googleIdentityOrigin} ${mapTilesOrigins}`,
+    "worker-src 'self' blob:",
+    `script-src 'self' 'unsafe-inline' 'unsafe-eval' ${googleIdentityOrigin} ${stripeScriptOrigins} ${devThemePreviewOrigin}`,
+    `frame-src 'self' ${googleIdentityOrigin} ${stripeFrameOrigins}`,
+    `connect-src 'self' ${apiOrigin} ${reverbOrigins} ${googleIdentityOrigin} ${mapTilesOrigins} ${stripeConnectOrigins}`,
 ]
     .map((directive) => directive.replace(/\s+/g, ' ').trim())
     .join('; ');

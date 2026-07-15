@@ -1,12 +1,4 @@
 {
-    "bankAccountShared": "حسابك البنكي مشترك بين جميع أنشطةك — تقوم بإعداده مرة واحدة فقط.",
-    "temp": {
-        "tabs": {
-            "bankAccount": "الحساب المصرفي",
-            "pendingRequests": "الطلبات المعلقة"
-        },
-        "noActivities": "ليس لديك أي نشاط بعد."
-    },
     "bankAccount": {
         "connectedAs": "متصل باسم {name} ({email})",
         "coveredActivities": "الأنشطة التي تستخدم هذا الحساب",

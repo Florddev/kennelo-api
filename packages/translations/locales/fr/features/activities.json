@@ -30,7 +30,12 @@
             "comingSoon": "Bientôt disponible"
         },
         "payment": {
-            "comingSoon": "Bientôt disponible"
+            "tabs": {
+                "bankAccount": "Compte bancaire",
+                "pendingRequests": "Demandes en attente"
+            },
+            "noActivities": "Vous n'avez pas encore d'activité.",
+            "bankAccountShared": "Votre compte bancaire est partagé entre toutes vos activités — configurez-le une seule fois."
         },
         "bookings": {
             "title": "Réservations",
