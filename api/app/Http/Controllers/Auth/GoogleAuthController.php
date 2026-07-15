@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Services\GoogleAuthService;
 use App\Services\JWTService;
 use App\Services\MediaService;
+use App\Services\PasswordExpirationService;
 use App\Services\TwoFactorService;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\JsonResponse;
@@ -31,17 +32,21 @@ class GoogleAuthController extends Controller
 
     protected GoogleAuthService $googleAuthService;
 
+    protected PasswordExpirationService $passwordExpirationService;
+
     /**
      * Create a new controller instance.
      */
     public function __construct(
         JWTService $jwtService,
         TwoFactorService $twoFactorService,
-        GoogleAuthService $googleAuthService
+        GoogleAuthService $googleAuthService,
+        PasswordExpirationService $passwordExpirationService
     ) {
         $this->jwtService = $jwtService;
         $this->twoFactorService = $twoFactorService;
         $this->googleAuthService = $googleAuthService;
+        $this->passwordExpirationService = $passwordExpirationService;
     }
 
     /**
@@ -112,6 +117,15 @@ class GoogleAuthController extends Controller
             return response()->json([
                 'two_factor' => true,
                 'challenge_token' => $this->jwtService->generateChallengeToken($user),
+            ]);
+        }
+
+        $expiredChallengeToken = $this->passwordExpirationService->challengeTokenIfExpired($user);
+
+        if ($expiredChallengeToken !== null) {
+            return response()->json([
+                'password_expired' => true,
+                'challenge_token' => $expiredChallengeToken,
             ]);
         }
 

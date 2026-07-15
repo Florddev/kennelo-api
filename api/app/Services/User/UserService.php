@@ -92,7 +92,15 @@ class UserService
             throw InvalidCurrentPasswordException::wrongPassword();
         }
 
-        $user->update(['password' => $data['password']]);
+        $user->update(['password' => $data['password'], 'password_changed_at' => now()]);
+    }
+
+    public function renewExpiredPassword(User $user, string $password): void
+    {
+        $user->forceFill([
+            'password' => $password,
+            'password_changed_at' => now(),
+        ])->save();
     }
 
     public function changeEmail(User $user, array $data): User

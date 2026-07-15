@@ -34,9 +34,11 @@ function GoogleIcon() {
 export function GoogleSignInButton({
     onSuccess,
     onTwoFactorRequired,
+    onPasswordExpired,
 }: {
     onSuccess?: (locale: Locale) => void;
     onTwoFactorRequired?: (challengeToken: string) => void;
+    onPasswordExpired?: (challengeToken: string) => void;
 }) {
     const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
     const locale = useLocale();
@@ -56,6 +58,11 @@ export function GoogleSignInButton({
 
             if ("twoFactor" in result) {
                 onTwoFactorRequired?.(result.challengeToken);
+                return;
+            }
+
+            if ("passwordExpired" in result) {
+                onPasswordExpired?.(result.challengeToken);
                 return;
             }
 

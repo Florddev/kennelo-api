@@ -127,4 +127,30 @@ class JWTService
 
         return $user;
     }
+
+    public function generatePasswordResetChallengeToken(User $user): string
+    {
+        $this->jwt->factory()->setTTL((int) config('jwt.password_reset_challenge_ttl', 15));
+        $token = $this->jwt->claims(['type' => 'password_reset_challenge'])->fromUser($user);
+        $this->jwt->factory()->setTTL((int) config('jwt.ttl'));
+
+        return $token;
+    }
+
+    public function validatePasswordResetChallengeToken(string $token): User
+    {
+        $payload = $this->validateToken($token);
+
+        if (! isset($payload->type) || $payload->type !== 'password_reset_challenge') {
+            throw new \Exception('Invalid token type');
+        }
+
+        $user = User::find($payload->sub);
+
+        if (! $user) {
+            throw new \Exception('User not found');
+        }
+
+        return $user;
+    }
 }
