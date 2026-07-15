@@ -98,7 +98,7 @@ COPY api/docker/entrypoint.sh    /entrypoint.sh
 
 RUN chmod +x /entrypoint.sh \
     && mkdir -p /run/nginx /var/log/supervisor \
-    && chown -R www-data:www-data /app/storage /app/bootstrap/cache
+    && chown -R www-data:www-data /app/storage /app/bootstrap/cache /var/lib/nginx
 
 EXPOSE 80
 
