@@ -4,6 +4,7 @@ import { useCallback } from "react";
 
 import { useGoogleLogin } from "@react-oauth/google";
 import { useLocale } from "next-intl";
+import posthog from "posthog-js";
 import { SocialLogin } from "@capgo/capacitor-social-login";
 
 import { loginWithGoogle, type UserModel } from "@workspace/modules/users";
@@ -15,6 +16,7 @@ import { isNative } from "@/lib/platform";
 type GoogleSignInHandlers = {
     onSuccess?: (user: UserModel | null) => void;
     onTwoFactorRequired?: (challengeToken: string) => void;
+    onPasswordExpired?: (challengeToken: string) => void;
 };
 
 let nativeInitialized = false;
@@ -56,7 +58,11 @@ async function nativeGoogleAccessToken(): Promise<string | null> {
     }
 }
 
-export function useGoogleSignIn({ onSuccess, onTwoFactorRequired }: GoogleSignInHandlers) {
+export function useGoogleSignIn({
+    onSuccess,
+    onTwoFactorRequired,
+    onPasswordExpired,
+}: GoogleSignInHandlers) {
     const locale = useLocale();
     const { isLoading, execute } = useAsyncState();
     const { refreshUser } = useAuth();
@@ -78,12 +84,18 @@ export function useGoogleSignIn({ onSuccess, onTwoFactorRequired }: GoogleSignIn
                         return;
                     }
 
+                    if ("passwordExpired" in auth) {
+                        onPasswordExpired?.(auth.challengeToken);
+                        return;
+                    }
+
                     const freshUser = await refreshUser();
+                    posthog.capture("user_logged_in", { method: "google" });
                     onSuccess?.(freshUser);
                 },
                 { displayError: true },
             ),
-        [execute, locale, onSuccess, onTwoFactorRequired, refreshUser],
+        [execute, locale, onSuccess, onTwoFactorRequired, onPasswordExpired, refreshUser],
     );
 
     const webLogin = useGoogleLogin({

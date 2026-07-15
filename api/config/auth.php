@@ -111,6 +111,12 @@ return [
         'expire' => (int) env('AUTH_VERIFICATION_EXPIRE', 60),
     ],
 
+    'password_expiry_days' => (int) env('AUTH_PASSWORD_EXPIRY_DAYS', 60),
+
+    'magic_link' => [
+        'expire' => (int) env('AUTH_MAGIC_LINK_EXPIRE', 15),
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Password Confirmation Timeout

@@ -32,13 +32,19 @@ function GoogleIcon() {
 export function GoogleSignInButton({
     onSuccess,
     onTwoFactorRequired,
+    onPasswordExpired,
 }: {
     onSuccess?: (user: UserModel | null) => void;
     onTwoFactorRequired?: (challengeToken: string) => void;
+    onPasswordExpired?: (challengeToken: string) => void;
 }) {
     const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
     const t = useTranslations();
-    const { signIn, isLoading } = useGoogleSignIn({ onSuccess, onTwoFactorRequired });
+    const { signIn, isLoading } = useGoogleSignIn({
+        onSuccess,
+        onTwoFactorRequired,
+        onPasswordExpired,
+    });
 
     if (!clientId && !isCapacitorApp()) {
         return null;

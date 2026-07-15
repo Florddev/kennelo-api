@@ -1,6 +1,8 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
+import posthog from "posthog-js";
 
 import { useNavigation } from "@/hooks/use-navigation";
 import {
@@ -19,6 +21,18 @@ export default function HostDetailPage() {
 
     const { activity, capacities, isLoading } = useHostActivity(id);
     const { availabilities } = useHostAvailabilities(id);
+
+    const trackedRef = useRef(false);
+    useEffect(() => {
+        if (activity && !trackedRef.current) {
+            trackedRef.current = true;
+            posthog.capture("host_viewed", {
+                activity_id: activity.id,
+                is_professional: activity.isProfessional,
+                min_price: activity.minPrice,
+            });
+        }
+    }, [activity]);
 
     if (isLoading) {
         return <HostDetailSkeleton />;

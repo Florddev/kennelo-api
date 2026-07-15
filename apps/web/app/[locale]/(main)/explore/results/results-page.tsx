@@ -6,6 +6,7 @@ import { ChevronLeft, SlidersHorizontal, MapPin, X } from "lucide-react";
 import { useTranslations, useFormatter } from "next-intl";
 import { Drawer as DrawerPrimitive } from "vaul";
 
+import posthog from "posthog-js";
 import { cn } from "@workspace/ui/lib/utils";
 import { Button } from "@workspace/ui/components/button";
 import {
@@ -648,6 +649,19 @@ export default function ExploreResultsPage() {
     const dateTo = stringParam(params.dateTo);
 
     const geocodedCenter = useGeocodeLocation(location);
+
+    const searchTrackedRef = useRef(false);
+    useEffect(() => {
+        if (!searchTrackedRef.current) {
+            searchTrackedRef.current = true;
+            posthog.capture("search_performed", {
+                location: location || undefined,
+                date_from: dateFrom || undefined,
+                date_to: dateTo || undefined,
+            });
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const petCounts: Record<string, number> = {};
     PET_TYPES.forEach((type) => {

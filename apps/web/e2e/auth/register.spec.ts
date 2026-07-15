@@ -1,6 +1,6 @@
 import { test, expect } from "../support/fixtures";
 import { localePath, register } from "../support/selectors";
-import { newUserPayload } from "../support/data";
+import { newUserPayload, E2E_STRONG_PASSWORD } from "../support/data";
 import { ApiClient } from "../support/api-client";
 
 test.use({ storageState: { cookies: [], origins: [] } });
@@ -39,8 +39,8 @@ test.describe("Register", () => {
         await register.firstName(page).fill("Dup");
         await register.lastName(page).fill("User");
         await register.email(page).fill("user@orus.com");
-        await register.password(page).fill("E2ePass123!");
-        await register.confirmPassword(page).fill("E2ePass123!");
+        await register.password(page).fill(E2E_STRONG_PASSWORD);
+        await register.confirmPassword(page).fill(E2E_STRONG_PASSWORD);
         await register.submit(page).click();
 
         await expect(page).toHaveURL(/\/register/);

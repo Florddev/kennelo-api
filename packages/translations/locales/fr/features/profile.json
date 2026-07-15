@@ -16,7 +16,10 @@
     "navigation": {
         "settings": "Paramètres",
         "help": "Centre d'aide",
-        "privacy": "Politique de confidentialité"
+        "privacy": "Politique de confidentialité",
+        "terms": "Conditions générales d'utilisation",
+        "salesTerms": "Conditions générales de vente",
+        "contact": "Contact"
     },
     "switchToHostMode": "Passer en mode hôte"
 }

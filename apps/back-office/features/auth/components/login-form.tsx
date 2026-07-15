@@ -64,6 +64,13 @@ export function LoginForm() {
     try {
       const result = await loginUser(parsed.data)
 
+      if ("passwordExpired" in result) {
+        toast.error(
+          "Votre mot de passe a expiré. Renouvelez-le depuis l'application Kennelo avant de vous reconnecter ici."
+        )
+        return
+      }
+
       if (!(result instanceof AuthModel)) {
         toast.error(
           "L'authentification à deux facteurs n'est pas prise en charge ici."

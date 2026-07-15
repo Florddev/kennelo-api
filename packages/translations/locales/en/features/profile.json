@@ -16,7 +16,10 @@
     "navigation": {
         "settings": "Settings",
         "help": "Help center",
-        "privacy": "Privacy policy"
+        "privacy": "Privacy policy",
+        "terms": "Terms of service",
+        "salesTerms": "Terms of sale",
+        "contact": "Contact"
     },
     "switchToHostMode": "Switch to host mode"
 }

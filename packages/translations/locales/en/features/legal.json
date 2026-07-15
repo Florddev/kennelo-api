@@ -1,0 +1,23 @@
+{
+    "cgu": {
+        "title": "Conditions générales d'utilisation"
+    },
+    "cgv": {
+        "title": "Conditions générales de vente"
+    },
+    "confidentialite": {
+        "title": "Politique de confidentialité"
+    },
+    "contact": {
+        "title": "Contact",
+        "intro": "Une question, un problème ou une suggestion ? Écrivez-nous à l'adresse ci-dessous, nous vous répondrons dans les meilleurs délais.",
+        "emailLabel": "Adresse email",
+        "postalLabel": "Adresse postale"
+    },
+    "cookieConsent": {
+        "message": "Nous utilisons des cookies pour assurer le fonctionnement du site et, avec votre accord, mesurer son audience. Vous pouvez accepter ou refuser les cookies non essentiels.",
+        "acceptAll": "Accepter tout",
+        "rejectNonEssential": "Refuser le non-essentiel",
+        "learnMore": "En savoir plus"
+    }
+}

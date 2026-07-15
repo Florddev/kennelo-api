@@ -27,8 +27,8 @@ test('password can be reset with valid token', function () {
         $response = $this->post('/api/reset-password', [
             'token' => $notification->token,
             'email' => $user->email,
-            'password' => 'password',
-            'password_confirmation' => 'password',
+            'password' => 'Str0ng!Passw0rd',
+            'password_confirmation' => 'Str0ng!Passw0rd',
         ]);
 
         $response->assertStatus(200)

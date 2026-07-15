@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import {
     Bell,
+    DocumentText,
+    Letter,
     Logout2,
     QuestionCircle,
     Settings,
@@ -180,10 +182,26 @@ export default function ProfilePage() {
                                 <NavRow
                                     icon={ShieldCheck}
                                     label={t("features.profile.navigation.privacy")}
-                                    href="#"
+                                    href={routes.Confidentialite()}
                                     displayArrow
-                                    disabled
-                                    comingSoon
+                                />
+                                <NavRow
+                                    icon={DocumentText}
+                                    label={t("features.profile.navigation.terms")}
+                                    href={routes.Cgu()}
+                                    displayArrow
+                                />
+                                <NavRow
+                                    icon={DocumentText}
+                                    label={t("features.profile.navigation.salesTerms")}
+                                    href={routes.Cgv()}
+                                    displayArrow
+                                />
+                                <NavRow
+                                    icon={Letter}
+                                    label={t("features.profile.navigation.contact")}
+                                    href={routes.Contact()}
+                                    displayArrow
                                 />
                                 <NavRow
                                     icon={Logout2}

@@ -279,7 +279,7 @@ L'image web est construite une fois par environnement, car les variables
 `NEXT_PUBLIC_*` (URL de l'API, hôte WebSocket) sont inlinées dans le bundle
 client au moment du build : une image buildée avec les URLs de production ne
 peut pas servir la préproduction. Les valeurs sont dérivées des fichiers
-`infra/env/*.env`, la même source de vérité que les scripts de déploiement.
+`infra/config/*.conf`, la même source de vérité que les scripts de déploiement.
 
 Cette stratégie est cohérente avec les builds mobiles Capacitor, distribués
 par nature en bundles statiques construits par environnement : un seul
@@ -321,7 +321,7 @@ en deux clients distincts reste possible si un besoin d'isolation apparaît.
 Le câblage suit la séparation public / privé habituelle :
 
 - Le **client_id** est public par nature. Il vit dans les fichiers
-  `infra/env/*.env` : inliné au build web via `NEXT_PUBLIC_GOOGLE_CLIENT_ID`
+  `infra/config/*.conf` : inliné au build web via `NEXT_PUBLIC_GOOGLE_CLIENT_ID`
   (comme les autres `NEXT_PUBLIC_*`, voir « Build par environnement »), et
   injecté dans l'environnement du service api (`GOOGLE_CLIENT_ID`,
   `GOOGLE_REDIRECT_URI`) pour Socialite côté Laravel.

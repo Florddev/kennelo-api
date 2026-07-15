@@ -9,6 +9,7 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\TwoFactorChallengeRequest;
 use App\Http\Resources\AuthTokenResource;
 use App\Services\JWTService;
+use App\Services\PasswordExpirationService;
 use App\Services\TwoFactorService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -28,13 +29,19 @@ class AuthenticatedSessionController extends Controller
 
     protected TwoFactorService $twoFactorService;
 
+    protected PasswordExpirationService $passwordExpirationService;
+
     /**
      * Create a new controller instance.
      */
-    public function __construct(JWTService $jwtService, TwoFactorService $twoFactorService)
-    {
+    public function __construct(
+        JWTService $jwtService,
+        TwoFactorService $twoFactorService,
+        PasswordExpirationService $passwordExpirationService
+    ) {
         $this->jwtService = $jwtService;
         $this->twoFactorService = $twoFactorService;
+        $this->passwordExpirationService = $passwordExpirationService;
     }
 
     /**
@@ -55,6 +62,15 @@ class AuthenticatedSessionController extends Controller
             return response()->json([
                 'two_factor' => true,
                 'challenge_token' => $this->jwtService->generateChallengeToken($user),
+            ]);
+        }
+
+        $expiredChallengeToken = $this->passwordExpirationService->challengeTokenIfExpired($user);
+
+        if ($expiredChallengeToken !== null) {
+            return response()->json([
+                'password_expired' => true,
+                'challenge_token' => $expiredChallengeToken,
             ]);
         }
 
@@ -98,6 +114,17 @@ class AuthenticatedSessionController extends Controller
             : null;
 
         $user->load('roles');
+
+        $expiredChallengeToken = $this->passwordExpirationService->challengeTokenIfExpired($user);
+
+        if ($expiredChallengeToken !== null) {
+            $this->jwtService->blacklistToken($challengeToken);
+
+            return response()->json([
+                'password_expired' => true,
+                'challenge_token' => $expiredChallengeToken,
+            ]);
+        }
 
         $accessToken = $this->jwtService->generateAccessToken($user);
         $refreshToken = $this->jwtService->generateRefreshToken($user);

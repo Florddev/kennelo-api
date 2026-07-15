@@ -7,6 +7,7 @@ import { getCurrentUser, logoutUser, authService, refreshToken } from "@workspac
 import { getActivities, ActivityModel } from "@workspace/modules/activities";
 import { api } from "@workspace/common";
 import { useRouter } from "next/navigation";
+import posthog from "posthog-js";
 import { logger } from "@/lib/logger";
 import { routes } from "@/lib/routes";
 import { getAppStorage } from "@/lib/storage";
@@ -85,6 +86,14 @@ export function AuthProvider({
             ]);
             setUser(currentUser);
             setActivities(userActivities);
+            if (currentUser) {
+                posthog.identify(currentUser.id, {
+                    email: currentUser.email,
+                    firstName: currentUser.firstName,
+                    lastName: currentUser.lastName,
+                    locale: currentUser.locale,
+                });
+            }
             return currentUser;
         } catch (error) {
             logger.error("Failed to load user:", error);
@@ -111,6 +120,8 @@ export function AuthProvider({
         } catch (error) {
             logger.error("Logout error:", error);
         } finally {
+            posthog.capture("user_logged_out");
+            posthog.reset();
             queryClient.clear();
             setIsAuthenticated(false);
             setUser(null);

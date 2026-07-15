@@ -7,6 +7,8 @@ export * from "./components/google-sign-in-button";
 export * from "./components/user-avatar";
 export * from "./components/forms/forgot-password-form";
 export * from "./components/forms/login-form";
+export * from "./components/forms/magic-link-request-form";
+export * from "./components/forms/password-renewal-form";
 export * from "./components/forms/register-form";
 export * from "./components/forms/reset-password-form";
 export * from "./components/forms/two-factor-challenge-form";

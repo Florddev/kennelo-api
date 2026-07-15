@@ -9,7 +9,14 @@ export type TwoFactorRequired = {
     challengeToken: string;
 };
 
-export async function loginUser(input: LoginUserInput): Promise<AuthModel | TwoFactorRequired> {
+export type PasswordExpiredRequired = {
+    passwordExpired: true;
+    challengeToken: string;
+};
+
+export async function loginUser(
+    input: LoginUserInput,
+): Promise<AuthModel | TwoFactorRequired | PasswordExpiredRequired> {
     const rememberToken = await authService.getRememberToken();
 
     const response = await api.post<AuthResponseDto>("/login", {
@@ -28,6 +35,10 @@ export async function loginUser(input: LoginUserInput): Promise<AuthModel | TwoF
 
     if (response.data.two_factor && response.data.challenge_token) {
         return { twoFactor: true, challengeToken: response.data.challenge_token };
+    }
+
+    if (response.data.password_expired && response.data.challenge_token) {
+        return { passwordExpired: true, challengeToken: response.data.challenge_token };
     }
 
     const authModel = AuthModel.from(response.data);

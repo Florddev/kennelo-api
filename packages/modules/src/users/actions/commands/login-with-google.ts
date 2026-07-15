@@ -2,12 +2,12 @@ import { api } from "@workspace/common";
 import { AuthModel } from "../../models/auth.model";
 import { AuthResponseDto } from "../../models/dtos/auth.dto";
 import { authService } from "../../services/auth.service";
-import { TwoFactorRequired } from "./login-user";
+import { PasswordExpiredRequired, TwoFactorRequired } from "./login-user";
 
 export async function loginWithGoogle(
     token: string,
     locale?: string,
-): Promise<AuthModel | TwoFactorRequired> {
+): Promise<AuthModel | TwoFactorRequired | PasswordExpiredRequired> {
     const rememberToken = await authService.getRememberToken();
 
     const response = await api.post<AuthResponseDto>("/login/google", {
@@ -26,6 +26,10 @@ export async function loginWithGoogle(
 
     if (response.data.two_factor && response.data.challenge_token) {
         return { twoFactor: true, challengeToken: response.data.challenge_token };
+    }
+
+    if (response.data.password_expired && response.data.challenge_token) {
+        return { passwordExpired: true, challengeToken: response.data.challenge_token };
     }
 
     const authModel = AuthModel.from(response.data);
