@@ -9,6 +9,7 @@ import { Toaster } from "@workspace/ui/components/sonner";
 import { AuthProvider } from "@/features/auth/hooks/use-auth";
 import { NavigationVisibilityProvider } from "@/providers/navigation-visibility-provider";
 import { WebsocketProvider } from "@/providers/websocket-provider";
+import { CookieConsentBanner } from "@/components/cookie-consent-banner";
 
 export function Providers({
     children,
@@ -43,6 +44,7 @@ export function Providers({
                 </QueryClientProvider>
             </TooltipProvider>
             <Toaster />
+            <CookieConsentBanner />
         </NextThemesProvider>
     );
 
