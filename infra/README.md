@@ -158,6 +158,7 @@ préproduction) est documenté dans `infra/docs/observability.md`, section
 | back-office.yml | Back-office d'administration (Next.js)       | public            | applicatif   |
 | portainer.yml   | Portainer + agents                           | agent_network     | admin (prod) |
 | monitoring.yml  | Prometheus, Grafana, node-exporter, cAdvisor | monitoring        | admin (prod) |
+| backup.yml      | Sauvegardes 3-2-1 (pg_dump + médias MinIO)   | internal          | admin (prod) |
 
 ## Versions épinglées
 

@@ -425,3 +425,69 @@ retag :
 Les images `:vX.Y.Z` sont immuables (produites une seule fois par la CI), ce
 qui garantit qu'un rollback vers une ancienne version tape sur le même
 binaire que le déploiement original.
+
+## Sauvegardes — politique 3-2-1
+
+La politique de recouvrement couvre le contenu de la base de données et les
+fichiers utilisateurs (bucket MinIO `kennelo-media`). Sont exclus, car
+reconstructibles : Redis (cache et queues), les images Docker (rebuildées
+par la CI) et la configuration (versionnée dans git).
+
+### Mapping 3-2-1
+
+| Exigence                 | Réalisation                                             |
+| ------------------------ | ------------------------------------------------------- |
+| 3 sauvegardes identiques | volume local du manager + DO Spaces + Cloudflare R2     |
+| 2 médiums différents     | disque (volume local) et stockage objet S3 (Spaces, R2) |
+| 1 sauvegarde externe     | Cloudflare R2, fournisseur distinct de DigitalOcean     |
+
+### Fonctionnement
+
+La stack `backup` (cycle de vie admin, prod uniquement, épinglée sur le
+manager) exécute chaque nuit à 04h00 UTC le script `backup.sh` de l'image
+`kennelo-backup` (`infra/backup/`, versionnée et buildée par la CI) :
+
+1. `pg_dump` au format custom, chiffré en AES256 (gpg symétrique, passphrase
+   dans le secret `kennelo_backup_gpg_passphrase` — également conservée dans
+   le gestionnaire de mots de passe de l'équipe), écrit atomiquement sur le
+   volume local `kennelo-backups`
+2. copie incrémentale des médias MinIO vers le volume local, sans
+   propagation des suppressions (un delete accidentel en production ne
+   détruit pas l'historique sauvegardé)
+3. envoi de l'ensemble vers les remotes rclone `spaces` et `r2` (secret
+   `kennelo_backup_rclone_conf`)
+4. rétention : 7 dumps quotidiens, 4 hebdomadaires (copie du dimanche),
+   purge appliquée sur les trois cibles
+5. ping healthchecks.io en fin de run (`/fail` en cas d'erreur) : un échec
+   de sauvegarde déclenche une alerte email, l'échec silencieux est
+   impossible
+
+Vérifier l'état : `docker service logs backup_backup --tail 50` sur le
+manager, et le dashboard healthchecks.io.
+
+### Runbook — restauration de la production
+
+Scénario : perte ou corruption de la base et/ou des médias. À dérouler
+depuis le manager prod, calmement, dans l'ordre.
+
+1. Évaluer : `docker service ls`, logs de l'api, état de postgres. Décider
+   du périmètre (base seule, médias seuls, les deux).
+2. Couper l'écriture applicative :
+   `docker service scale api_api=0 reverb_reverb=0`
+3. Ouvrir un shell dans le container de backup :
+   `docker exec -it $(docker ps -q -f name=backup_backup | head -1) bash`
+4. Lister les dumps disponibles (au choix : `local`, `spaces`, `r2`) :
+   `ls /backups/db/daily` ou
+   `rclone --config /run/secrets/kennelo_backup_rclone_conf lsf r2:kennelo-backups/db/daily`
+5. Restaurer — le script demande une confirmation tapée :
+   `restore.sh --source r2 --latest` (ajouter `--db-only` ou `--media-only`
+   pour restreindre, `--file db/daily/<nom>.dump.gpg` pour une date précise)
+6. Relancer : `docker service scale api_api=2 reverb_reverb=2`
+7. Vérifier : `curl https://kennelo.fr/api/health`,
+   `curl https://api.kennelo.fr/up`, un parcours de connexion, et
+   `php artisan migrate:status` dans un container api (rebond worker)
+8. Consigner l'incident : cause, dump utilisé, durée d'indisponibilité.
+
+Le cycle complet (sauvegarde, sinistre simulé, restauration depuis la copie
+externe) a été validé de bout en bout lors de la mise en place, et chaque
+restauration réelle ou de test doit être notée ici avec sa date.
