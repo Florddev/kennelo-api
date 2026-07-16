@@ -245,6 +245,30 @@
     --color-rabbit-900: oklch(21.78% 0 0);
     --color-rabbit-950: oklch(14.96% 0 0);
 
+    --color-ferret-50: oklch(98.48% 0.0013 106.42);
+    --color-ferret-100: oklch(96.99% 0.0013 106.42);
+    --color-ferret-200: oklch(92.37% 0.0042 56.37);
+    --color-ferret-300: oklch(86.92% 0.0060 59.64);
+    --color-ferret-400: oklch(71.57% 0.0145 53.27);
+    --color-ferret-500: oklch(62.17% 0.0188 56.02);
+    --color-ferret-600: oklch(44.65% 0.0157 71.11);
+    --color-ferret-700: oklch(37.55% 0.0130 67.42);
+    --color-ferret-800: oklch(26.67% 0.0093 28.99);
+    --color-ferret-900: oklch(21.70% 0.0086 59.18);
+    --color-ferret-950: oklch(14.78% 0.0069 57.60);
+
+    --color-rodent-50: oklch(97.57% 0.0017 247.84);
+    --color-rodent-100: oklch(94.24% 0.0046 258.33);
+    --color-rodent-200: oklch(89.65% 0.0105 261.79);
+    --color-rodent-300: oklch(82.44% 0.0172 259.42);
+    --color-rodent-400: oklch(77.72% 0.0205 260.17);
+    --color-rodent-500: oklch(66.23% 0.0333 265.22);
+    --color-rodent-600: oklch(60.17% 0.0378 270.72);
+    --color-rodent-700: oklch(55.27% 0.0395 274.46);
+    --color-rodent-800: oklch(48.91% 0.0308 275.85);
+    --color-rodent-900: oklch(42.69% 0.0251 276.37);
+    --color-rodent-950: oklch(31.94% 0.0142 279.91);
+
     --color-reptile-50: oklch(98.24% 0.0288 123.98);
     --color-reptile-100: oklch(96.22% 0.0645 125.50);
     --color-reptile-200: oklch(92.95% 0.1194 127.13);
