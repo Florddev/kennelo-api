@@ -22,6 +22,12 @@
             "subtitle": "What type of facility do you manage?",
             "error": "Please select an activity type"
         },
+        "animalTypes": {
+            "title": "Which animals do you welcome?",
+            "subtitle": "Select all the animal types your activity accepts",
+            "reviewLabel": "Accepted animals",
+            "error": "Please select at least one animal type"
+        },
         "activityInfo": {
             "title": "Your activity",
             "subtitle": "Tell us about your place"
@@ -37,6 +43,15 @@
         "businessInfo": {
             "title": "Business information",
             "subtitle": "Optional legal details"
+        },
+        "media": {
+            "title": "Photos of your activity",
+            "subtitle": "Add a profile picture and a few photos to showcase your place",
+            "avatarLabel": "Profile picture",
+            "imagesLabel": "Additional photos",
+            "pickImages": "Add photos",
+            "avatarUploadError": "Failed to upload the profile picture",
+            "imagesUploadError": "Failed to upload the photos"
         },
         "review": {
             "title": "Review & confirm",

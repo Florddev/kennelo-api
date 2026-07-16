@@ -2,9 +2,10 @@
 
 import { useWatch, Control } from "react-hook-form";
 import { useTranslations } from "next-intl";
-import { Pencil, Building2, Phone, MapPin, FileText, AlertCircle } from "lucide-react";
+import { Pencil, Building2, Phone, MapPin, FileText, AlertCircle, PawPrint } from "lucide-react";
 import { Button } from "@workspace/ui/components/button";
 import type { CreateActivityInput } from "@workspace/modules/activities";
+import type { AnimalTypeModel } from "@workspace/modules/pets";
 import { useStepper } from "rhf-stepper";
 import type { FormStepDefinition } from "@/components/forms/stepper/stepper-types";
 import { StepShell } from "./step-shell";
@@ -61,12 +62,18 @@ type ReviewStepProps = {
     isLoading: boolean;
     error?: string;
     steps: FormStepDefinition<CreateActivityInput>[];
+    animalTypes: AnimalTypeModel[];
 };
 
-export function ReviewStep({ control, error, steps }: ReviewStepProps) {
+export function ReviewStep({ control, error, steps, animalTypes }: ReviewStepProps) {
     const t = useTranslations();
     const { jumpTo } = useStepper<CreateActivityInput>();
     const values = useWatch({ control });
+
+    const selectedAnimalTypeNames = (values.animalTypeIds ?? [])
+        .map((id) => animalTypes.find((animalType) => animalType.id.toString() === id)?.name)
+        .filter((name): name is string => Boolean(name))
+        .join(", ");
 
     const stepIndexById = Object.fromEntries(
         steps
@@ -97,6 +104,17 @@ export function ReviewStep({ control, error, steps }: ReviewStepProps) {
                 )}
 
                 <div className="flex flex-col gap-4">
+                    <ReviewSection
+                        title={t("features.become-host.steps.animalTypes.title")}
+                        icon={PawPrint}
+                        onEdit={() => goTo("animal-types")}
+                    >
+                        <ReviewItem
+                            label={t("features.become-host.steps.animalTypes.reviewLabel")}
+                            value={selectedAnimalTypeNames}
+                        />
+                    </ReviewSection>
+
                     <ReviewSection
                         title={t("features.become-host.steps.activityInfo.title")}
                         icon={Building2}

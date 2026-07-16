@@ -10,6 +10,7 @@ export async function createActivity(input: CreateActivityInput): Promise<Activi
     };
 
     if (input.type) body.type = input.type;
+    if (input.animalTypeIds?.length) body.animal_type_ids = input.animalTypeIds;
     if (input.description) body.description = input.description;
     if (input.phone) body.phone = input.phone;
     if (input.email) body.email = input.email;

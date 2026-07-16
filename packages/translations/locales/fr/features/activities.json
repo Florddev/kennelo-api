@@ -118,6 +118,8 @@
     "detail": {
         "sections": {
             "details": "Détails de l'activité",
+            "animalTypes": "Animaux acceptés",
+            "media": "Photos",
             "contact": "Coordonnées",
             "address": "Adresse",
             "business": "Informations légales",
@@ -147,7 +149,8 @@
             "email": "Aucun e-mail",
             "website": "Aucun site web",
             "siret": "Aucun numéro SIRET",
-            "description": "Aucune description"
+            "description": "Aucune description",
+            "animalTypes": "Aucun type d'animal sélectionné"
         },
         "notFound": "Activité introuvable",
         "notFoundDescription": "Cet activité n'existe pas ou vous n'y avez pas accès.",

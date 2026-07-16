@@ -38,6 +38,8 @@ import { useAsyncState } from "@/hooks/use-async-state";
 import { InputController } from "@/components/forms/input-controller";
 import { TextareaController } from "@/components/forms/textarea-controller";
 import { useActivity, activityQueryKey } from "../hooks/use-activity";
+import { ActivityAnimalTypesDisplay } from "./activity-animal-types-display";
+import { ActivityMediaManager } from "./activity-media-manager";
 
 const SECTION_HEADER_CLASS = "text-sm font-medium text-muted-foreground uppercase tracking-wider";
 
@@ -45,6 +47,7 @@ const T_SECTIONS_DETAILS = "features.activities.detail.sections.details" as cons
 const T_SECTIONS_CONTACT = "features.activities.detail.sections.contact" as const;
 const T_SECTIONS_ADDRESS = "features.activities.detail.sections.address" as const;
 const T_SECTIONS_BUSINESS = "features.activities.detail.sections.business" as const;
+const T_SECTIONS_ANIMAL_TYPES = "features.activities.detail.sections.animalTypes" as const;
 
 const STATUS_BADGE_CLASS = {
     active: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/40",
@@ -113,6 +116,20 @@ function ViewMode({ activity, t }: { activity: ActivityModel; t: Translator }) {
                                 t("features.activities.detail.empty.description")}
                         </p>
                     </div>
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader className="pb-2">
+                    <CardTitle className={SECTION_HEADER_CLASS}>
+                        {t(T_SECTIONS_ANIMAL_TYPES)}
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className="py-3">
+                    <ActivityAnimalTypesDisplay
+                        activityId={activity.id}
+                        emptyLabel={t("features.activities.detail.empty.animalTypes")}
+                    />
                 </CardContent>
             </Card>
 
@@ -499,7 +516,10 @@ export function ActivityInfoSection({ activityId, t }: { activityId: string; t: 
                     onUpdated={handleUpdated}
                 />
             ) : (
-                <ViewMode activity={activity} t={t} />
+                <>
+                    <ViewMode activity={activity} t={t} />
+                    <ActivityMediaManager activity={activity} />
+                </>
             )}
         </div>
     );

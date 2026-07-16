@@ -22,6 +22,12 @@
             "subtitle": "Quel type de structure gérez-vous ?",
             "error": "Veuillez sélectionner un type d’activité"
         },
+        "animalTypes": {
+            "title": "Quels animaux accueillez-vous ?",
+            "subtitle": "Sélectionnez tous les types d'animaux que votre activité accepte",
+            "reviewLabel": "Animaux acceptés",
+            "error": "Veuillez sélectionner au moins un type d'animal"
+        },
         "activityInfo": {
             "title": "Votre activité",
             "subtitle": "Parlez-nous de votre lieu"
@@ -37,6 +43,15 @@
         "businessInfo": {
             "title": "Informations légales",
             "subtitle": "Détails juridiques optionnels"
+        },
+        "media": {
+            "title": "Photos de votre activité",
+            "subtitle": "Ajoutez une photo de profil et quelques photos pour mettre en valeur votre lieu",
+            "avatarLabel": "Photo de profil",
+            "imagesLabel": "Photos supplémentaires",
+            "pickImages": "Ajouter des photos",
+            "avatarUploadError": "Échec de l'envoi de la photo de profil",
+            "imagesUploadError": "Échec de l'envoi des photos"
         },
         "review": {
             "title": "Vérification & confirmation",
