@@ -13,7 +13,6 @@ import {
     uploadActivityAvatar,
 } from "@workspace/modules/activities";
 import { Card, CardContent, CardHeader, CardTitle } from "@workspace/ui/components/card";
-import { Button } from "@workspace/ui/components/button";
 import { Field, FieldLabel } from "@workspace/ui/components/field";
 import { cn } from "@workspace/ui/lib/utils";
 
