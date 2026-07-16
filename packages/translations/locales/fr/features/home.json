@@ -62,5 +62,11 @@
         "title": "Vous avez de la place pour accueillir des animaux ?",
         "subtitle": "Devenez hébergeur Kennelo et générez des revenus en prenant soin d'animaux près de chez vous",
         "cta": "Devenir hébergeur"
+    },
+    "footer": {
+        "tagline": "La pension idéale pour votre animal, où que vous soyez.",
+        "navigation": "Navigation",
+        "legal": "Légal",
+        "rights": "Tous droits réservés."
     }
 }

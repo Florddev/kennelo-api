@@ -1,13 +1,14 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { PawPrint } from "lucide-react";
 
 import { cn } from "@workspace/ui/lib/utils";
-import { Card } from "@workspace/ui/components/card";
-import { PetTypeIllustration } from "@/features/pets/components/pet-type-illustration";
+import { ChoiceCardLabel } from "@workspace/ui/components/choice-cards";
 import { isIllustratedType } from "@/features/pets/lib/pet-illustrations";
+import { BackgroundShapeSvg } from "@/components/svg/background-shape";
 import { useNavigation } from "@/hooks/use-navigation";
 
 const SPECIES = [
@@ -21,28 +22,44 @@ const SPECIES = [
     "amphibian",
 ] as const;
 
-const COLOR_MAPPED_TYPES = new Set(["dog", "cat", "bird", "rabbit", "reptile", "amphibian"]);
+function shapeRotation(type: string) {
+    let hash = 0;
+    for (let i = 0; i < type.length; i++) {
+        hash = (hash * 31 + type.charCodeAt(i)) % 360;
+    }
+    return hash;
+}
 
 function SpeciesCard({ type, label }: { type: string; label: string }) {
     const illustrated = isIllustratedType(type);
-    const hasColor = COLOR_MAPPED_TYPES.has(type);
 
     return (
-        <Card
-            className={cn(
-                "w-28 shrink-0 py-5 transition-transform hover:scale-[1.03]",
-                hasColor ? `bg-${type}-50` : "bg-muted",
+        <div className="relative group/card w-40 shrink-0 overflow-hidden flex flex-col items-start justify-between gap-6 rounded-lg border border-input py-4 px-5 text-start transition-all bg-card">
+            {illustrated ? (
+                <div className="relative w-full h-24 group-hover/card:scale-115 transition-transform z-10">
+                    <Image
+                        src={`/illustrations/pets/${type}.svg`}
+                        alt={label}
+                        className="object-contain"
+                        fill
+                    />
+                </div>
+            ) : (
+                <div className="relative w-full h-24 flex items-center justify-center group-hover/card:scale-115 transition-transform z-10">
+                    <PawPrint className="size-12 text-primary" />
+                </div>
             )}
-        >
-            <div className="flex flex-col items-center gap-3 text-center">
-                {illustrated ? (
-                    <PetTypeIllustration code={type} className="size-10" />
-                ) : (
-                    <PawPrint className="size-10 text-muted-foreground" strokeWidth={1.5} />
-                )}
-                <span className="text-sm font-medium">{label}</span>
+            <div className="flex flex-col gap-1 justify-center items-center w-full z-10">
+                <ChoiceCardLabel className="text-xl">{label}</ChoiceCardLabel>
             </div>
-        </Card>
+            <BackgroundShapeSvg
+                className={cn(
+                    "absolute top-0 -start-1/2 translate-x-1/2 -translate-y-1/2 text-muted scale-125",
+                    "z-0 group-hover/card:scale-120 transition-all duration-300",
+                )}
+                style={{ transform: `rotate(${shapeRotation(type)}deg)` }}
+            />
+        </div>
     );
 }
 
@@ -57,8 +74,8 @@ export default function ExploreSpecies() {
 
     return (
         <section data-slot="explore-species" className="flex flex-col gap-5">
-            <div className="flex flex-col gap-1 text-center">
-                <h2 className="text-2xl font-bold font-heading tracking-tight">
+            <div className="flex flex-col gap-2 text-center">
+                <h2 className="text-4xl font-bold tracking-tight">
                     {t("features.home.species.title")}
                 </h2>
                 <p className="text-muted-foreground text-sm">
