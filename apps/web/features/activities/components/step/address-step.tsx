@@ -1,19 +1,12 @@
 "use client";
 
-import { useState } from "react";
-import { Control, Controller, useFormContext, useWatch } from "react-hook-form";
+import { useMemo, useState } from "react";
+import { Control, useFormContext, useWatch } from "react-hook-form";
 import { useTranslations } from "next-intl";
 import { MapPin } from "lucide-react";
-import { Field, FieldLabel, FieldError } from "@workspace/ui/components/field";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@workspace/ui/components/select";
+import { Global, Streets, MapPoint, Mailbox, Signpost2 } from "@solar-icons/react";
 import { Map, MapControls, MapMarker, MarkerContent } from "@workspace/ui/components/mapcn";
-import { InputController } from "@/components/forms/input-controller";
+import { InlineController, type InlineOption } from "@/components/forms/inline-controller";
 import type { CreateActivityInput } from "@workspace/modules/activities";
 import type { AddressSuggestionModel } from "@workspace/modules/address";
 import { StepShell } from "./step-shell";
@@ -34,6 +27,15 @@ export function AddressStep({ control, isLoading }: AddressStepProps) {
     const t = useTranslations();
     const { setValue } = useFormContext<CreateActivityInput>();
     const address = useWatch({ control, name: "address" });
+
+    const countryOptions = useMemo<InlineOption[]>(
+        () =>
+            COUNTRY_CODES.map((code) => ({
+                value: code,
+                label: t(`common.countries.${code.toLowerCase()}`),
+            })),
+        [t],
+    );
 
     const latitude = address?.latitude ?? null;
     const longitude = address?.longitude ?? null;
@@ -86,95 +88,61 @@ export function AddressStep({ control, isLoading }: AddressStepProps) {
                 </div>
             </div>
 
-            <InputController
+            <InlineController
                 name="address.line1"
                 control={control}
+                type="text"
                 label={t("common.fields.addressLine1")}
                 placeholder={t("common.placeholders.addressLine1")}
+                Icon={Streets}
                 isLoading={isLoading}
-                type="text"
-                compact
             />
-            <InputController
+            <InlineController
                 name="address.line2"
                 control={control}
+                type="text"
                 label={t("common.fields.addressLine2")}
                 placeholder={t("common.placeholders.addressLine2")}
+                Icon={Signpost2}
                 isLoading={isLoading}
-                type="text"
-                compact
             />
-            <div className="grid grid-cols-2 gap-4">
-                <InputController
-                    name="address.city"
-                    control={control}
-                    label={t("common.fields.city")}
-                    placeholder={t("common.placeholders.city")}
-                    isLoading={isLoading}
-                    type="text"
-                    compact
-                />
-                <InputController
-                    name="address.postalCode"
-                    control={control}
-                    label={t("common.fields.postalCode")}
-                    placeholder={t("common.placeholders.postalCode")}
-                    isLoading={isLoading}
-                    type="text"
-                    compact
-                />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-                <InputController
-                    name="address.region"
-                    control={control}
-                    label={t("common.fields.region")}
-                    placeholder={t("common.placeholders.region")}
-                    isLoading={isLoading}
-                    type="text"
-                    compact
-                />
-                <Controller
-                    name="address.country"
-                    control={control}
-                    render={({ field, fieldState }) => {
-                        const showError =
-                            fieldState.invalid && (fieldState.isTouched || fieldState.isDirty);
-
-                        return (
-                            <Field data-invalid={showError} className="gap-1.5 group">
-                                <FieldLabel htmlFor="address-country">
-                                    {t("common.fields.country")}
-                                </FieldLabel>
-                                <Select
-                                    value={field.value}
-                                    onValueChange={field.onChange}
-                                    disabled={isLoading}
-                                >
-                                    <SelectTrigger
-                                        id="address-country"
-                                        size="sm"
-                                        className="rounded-4xl w-full"
-                                        onBlur={field.onBlur}
-                                    >
-                                        <SelectValue
-                                            placeholder={t("common.placeholders.country")}
-                                        />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {COUNTRY_CODES.map((code) => (
-                                            <SelectItem key={code} value={code}>
-                                                {t(`common.countries.${code.toLowerCase()}`)}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                {showError && <FieldError errors={[fieldState.error]} />}
-                            </Field>
-                        );
-                    }}
-                />
-            </div>
+            <InlineController
+                name="address.city"
+                control={control}
+                type="text"
+                label={t("common.fields.city")}
+                placeholder={t("common.placeholders.city")}
+                Icon={MapPoint}
+                isLoading={isLoading}
+            />
+            <InlineController
+                name="address.postalCode"
+                control={control}
+                type="text"
+                label={t("common.fields.postalCode")}
+                placeholder={t("common.placeholders.postalCode")}
+                Icon={Mailbox}
+                isLoading={isLoading}
+            />
+            <InlineController
+                name="address.region"
+                control={control}
+                type="text"
+                label={t("common.fields.region")}
+                placeholder={t("common.placeholders.region")}
+                Icon={MapPoint}
+                isLoading={isLoading}
+            />
+            <InlineController
+                name="address.country"
+                control={control}
+                type="list"
+                label={t("common.fields.country")}
+                placeholder={t("common.placeholders.country")}
+                Icon={Global}
+                options={countryOptions}
+                isLoading={isLoading}
+            />
         </StepShell>
     );
 }

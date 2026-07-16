@@ -28,6 +28,7 @@ export type InlineControllerProps<TFieldValues extends FieldValues> = {
     unit?: string;
     allowApproximate?: boolean;
     creatable?: boolean;
+    defaultCountry?: string;
     className?: string;
 };
 
@@ -41,6 +42,7 @@ export { InlineDate } from "./inline-inputs/inline-date";
 export { InlineList } from "./inline-inputs/inline-list";
 export { InlineMultiList } from "./inline-inputs/inline-multi-list";
 export { InlineNumber } from "./inline-inputs/inline-number";
+export { InlinePhone } from "./inline-inputs/inline-phone";
 export { InlineText } from "./inline-inputs/inline-text";
 export { InlineTextarea } from "./inline-inputs/inline-textarea";
 
@@ -59,6 +61,7 @@ export function InlineController<TFieldValues extends FieldValues>({
     unit,
     allowApproximate,
     creatable,
+    defaultCountry,
     className,
 }: InlineControllerProps<TFieldValues>): JSX.Element {
     return (
@@ -79,6 +82,7 @@ export function InlineController<TFieldValues extends FieldValues>({
                     unit={unit}
                     allowApproximate={allowApproximate}
                     creatable={creatable}
+                    defaultCountry={defaultCountry}
                     className={className}
                     field={field as ControllerRenderProps<FieldValues, string>}
                     fieldState={fieldState}

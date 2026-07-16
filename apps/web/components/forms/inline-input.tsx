@@ -16,6 +16,7 @@ import { InlineDate } from "./inline-inputs/inline-date";
 import { InlineList } from "./inline-inputs/inline-list";
 import { InlineMultiList } from "./inline-inputs/inline-multi-list";
 import { InlineNumber } from "./inline-inputs/inline-number";
+import { InlinePhone } from "./inline-inputs/inline-phone";
 import { InlineText } from "./inline-inputs/inline-text";
 import { InlineTextarea } from "./inline-inputs/inline-textarea";
 import {
@@ -27,6 +28,9 @@ import {
 export type InlineProps = InlineFieldBaseProps & {
     type?:
         | "text"
+        | "email"
+        | "url"
+        | "phone"
         | "textarea"
         | "number"
         | "date"
@@ -42,6 +46,7 @@ export type InlineProps = InlineFieldBaseProps & {
     unit?: string;
     allowApproximate?: boolean;
     creatable?: boolean;
+    defaultCountry?: string;
     options?: InlineOption[];
     value?: InlineValue;
     onChange?: (value: InlineValue) => void;
@@ -66,6 +71,7 @@ export function Inline({
     unit,
     allowApproximate,
     creatable,
+    defaultCountry,
     className,
     value,
     onChange,
@@ -89,6 +95,18 @@ export function Inline({
 
     if (type === "textarea") {
         return <InlineTextarea {...base} value={value as string | undefined} />;
+    }
+    if (type === "phone") {
+        return (
+            <InlinePhone
+                {...base}
+                value={value as string | undefined}
+                defaultCountry={defaultCountry}
+            />
+        );
+    }
+    if (type === "email" || type === "url") {
+        return <InlineText {...base} value={value as string | undefined} inputType={type} />;
     }
     if (type === "number") {
         return (

@@ -141,7 +141,10 @@ export function HostDetailContent({
         );
     };
 
-    const images = activity.images.map((img) => img.url);
+    const images = useMemo(() => {
+        const gallery = activity.images.map((image) => image.url);
+        return activity.avatarUrl ? [activity.avatarUrl, ...gallery] : gallery;
+    }, [activity.avatarUrl, activity.images]);
     const contactHandler = canContact ? () => openWithActivity(activity.id) : undefined;
 
     const galleryEmptyState = (

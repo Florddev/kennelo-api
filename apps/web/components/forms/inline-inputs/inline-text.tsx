@@ -15,6 +15,7 @@ import { RowLabel, resolveInlineField, rowCn } from "./shared";
 export type InlineTextProps = InlineFieldBaseProps<string> & {
     field?: ControllerRenderProps<FieldValues, string>;
     fieldState?: ControllerFieldState;
+    inputType?: "text" | "email" | "url" | "tel";
 };
 
 export function InlineText({
@@ -29,6 +30,7 @@ export function InlineText({
     placeholder,
     isLoading,
     className,
+    inputType = "text",
 }: InlineTextProps) {
     const resolved = resolveInlineField<string>({
         field,
@@ -50,7 +52,7 @@ export function InlineText({
             <RowLabel Icon={Icon} label={label} />
             <input
                 id={inputId}
-                type="text"
+                type={inputType}
                 placeholder={placeholder}
                 disabled={isLoading}
                 name={resolved.name}
