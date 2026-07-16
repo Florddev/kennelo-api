@@ -9,7 +9,7 @@ export default function HomeHero() {
     const t = useTranslations();
 
     return (
-        <section className="flex flex-col justify-center items-center gap-4 h-[48vh]">
+        <section className="flex flex-col justify-center items-center gap-4 h-[90vh] md:h-[60vh]">
             <div className="relative overflow-hidden rounded-3xl flex items-center justify-center">
                 <div className="relative z-10 text-center flex flex-col gap-6">
                     <div className="flex flex-col gap-5 text-center pb-8">

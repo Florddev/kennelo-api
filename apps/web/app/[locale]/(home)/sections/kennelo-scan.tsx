@@ -14,8 +14,8 @@ export default function KenneloScan() {
 
     return (
         <section data-slot="kennelo-scan" className="flex flex-col gap-8">
-            <div className="flex flex-col gap-1 text-center">
-                <h2 className="text-2xl font-bold font-heading tracking-tight">
+            <div className="flex flex-col gap-2 text-center">
+                <h2 className="text-4xl font-bold tracking-tight">
                     {t("features.home.scan.title")}
                 </h2>
                 <p className="mx-auto max-w-xl text-sm text-muted-foreground">

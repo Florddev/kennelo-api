@@ -18,10 +18,10 @@ export default function BecomeHostCta() {
         >
             <span
                 aria-hidden
-                className="pointer-events-none absolute -top-10 -start-10 h-40 w-48 rounded-[50%] bg-secondary/60"
+                className="pointer-events-none absolute -top-10 -start-10 h-40 w-48 rounded-[50%] bg-secondary"
             />
             <div className="relative flex flex-1 flex-col items-center gap-3 self-center text-center md:items-start md:text-start">
-                <h2 className="text-2xl font-bold font-heading tracking-tight">
+                <h2 className="text-2xl font-bold tracking-tight">
                     {t("features.home.become-host.title")}
                 </h2>
                 <p className="max-w-md text-muted-foreground">

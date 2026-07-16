@@ -62,5 +62,11 @@
         "title": "Got room to welcome pets?",
         "subtitle": "Become a Kennelo host and earn income by taking care of animals near you",
         "cta": "Become a host"
+    },
+    "footer": {
+        "tagline": "The perfect boarding for your pet, wherever you are.",
+        "navigation": "Navigation",
+        "legal": "Legal",
+        "rights": "All rights reserved."
     }
 }
