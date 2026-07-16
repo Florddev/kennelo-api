@@ -25,6 +25,7 @@ export const addressSchema = z.object({
 
 export const createActivitySchema = z.object({
     type: z.enum(ACTIVITY_TYPES).optional(),
+    animalTypeIds: z.array(z.string()).min(1),
     name: z.string().min(1).max(255),
     description: z.union([z.string().max(2000), z.literal("")]).optional(),
     phone: z.union([z.string().max(20), z.literal("")]).optional(),

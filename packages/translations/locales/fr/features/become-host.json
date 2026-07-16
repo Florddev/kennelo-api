@@ -22,6 +22,12 @@
             "subtitle": "Quel type de structure gérez-vous ?",
             "error": "Veuillez sélectionner un type d’activité"
         },
+        "animalTypes": {
+            "title": "Quels animaux accueillez-vous ?",
+            "subtitle": "Sélectionnez tous les types d'animaux que votre activité accepte",
+            "reviewLabel": "Animaux acceptés",
+            "error": "Veuillez sélectionner au moins un type d'animal"
+        },
         "activityInfo": {
             "title": "Votre activité",
             "subtitle": "Parlez-nous de votre lieu"

@@ -22,6 +22,12 @@
             "subtitle": "What type of facility do you manage?",
             "error": "Please select an activity type"
         },
+        "animalTypes": {
+            "title": "Which animals do you welcome?",
+            "subtitle": "Select all the animal types your activity accepts",
+            "reviewLabel": "Accepted animals",
+            "error": "Please select at least one animal type"
+        },
         "activityInfo": {
             "title": "Your activity",
             "subtitle": "Tell us about your place"
