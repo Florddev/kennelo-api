@@ -1,6 +1,66 @@
 {
-    "badge": "La référence des pensions animalières",
     "title": "Trouvez la pension idéale",
     "title-accent": "pour votre animal",
-    "subtitle": "Des milliers d'hébergeurs vérifiés pour accueillir votre compagnon avec soin et amour"
+    "subtitle": "Des milliers d'hébergeurs vérifiés pour accueillir votre compagnon avec soin et amour",
+    "species": {
+        "title": "Explorez par type d'animal",
+        "subtitle": "Des hébergeurs spécialisés pour chaque compagnon, quelle que soit son espèce"
+    },
+    "how-it-works": {
+        "title": "Comment ça marche",
+        "subtitle": "Réservez une pension en toute confiance, en 3 étapes",
+        "search": {
+            "title": "Recherchez",
+            "description": "Trouvez un hébergeur près de chez vous, filtré selon l'espèce et les besoins de votre animal"
+        },
+        "book": {
+            "title": "Réservez",
+            "description": "Choisissez vos dates et confirmez votre réservation en toute simplicité"
+        },
+        "enjoy": {
+            "title": "Profitez",
+            "description": "Partez l'esprit tranquille, votre compagnon est entre de bonnes mains"
+        }
+    },
+    "why": {
+        "title": "Pourquoi Kennelo",
+        "subtitle": "Une plateforme pensée pour la tranquillité des propriétaires et de leurs animaux",
+        "verified": {
+            "title": "Hébergeurs vérifiés",
+            "description": "Chaque profil est contrôlé avant de pouvoir accueillir des animaux"
+        },
+        "care": {
+            "title": "Soin personnalisé",
+            "description": "Vos habitudes et besoins spécifiques sont transmis à l'hébergeur"
+        },
+        "community": {
+            "title": "Communauté de confiance",
+            "description": "Des avis vérifiés laissés par de vrais propriétaires"
+        },
+        "secure": {
+            "title": "Environnement sécurisé",
+            "description": "Paiements protégés et assistance disponible à chaque étape"
+        }
+    },
+    "scan": {
+        "title": "Kennelo Scan",
+        "subtitle": "Nos hébergeurs identifient votre animal en un scan grâce à sa puce électronique : profil, réservation en cours et coordonnées du propriétaire s'affichent instantanément",
+        "instant": {
+            "title": "Scan instantané",
+            "description": "Un scan de la puce suffit pour retrouver le profil complet de l'animal"
+        },
+        "wireless": {
+            "title": "Sans fil",
+            "description": "Connecté en Bluetooth au scanner KenoTag, disponible partout dans l'établissement"
+        },
+        "tracking": {
+            "title": "Suivi des séjours",
+            "description": "Historique des scans et des réservations à portée de main pour chaque hébergeur"
+        }
+    },
+    "become-host": {
+        "title": "Vous avez de la place pour accueillir des animaux ?",
+        "subtitle": "Devenez hébergeur Kennelo et générez des revenus en prenant soin d'animaux près de chez vous",
+        "cta": "Devenir hébergeur"
+    }
 }

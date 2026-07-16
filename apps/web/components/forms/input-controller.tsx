@@ -42,6 +42,7 @@ type InputControllerProps<TFieldValues extends FieldValues> = {
     Icon?: React.ComponentType<IconProps>;
     defaultCountry?: string;
     labelAction?: React.ReactNode;
+    compact?: boolean;
 };
 
 type InputFieldProps = Omit<InputControllerProps<FieldValues>, "name" | "control"> & {
@@ -59,6 +60,7 @@ type TextInputSectionProps = {
     autoComplete?: string;
     Icon?: React.ComponentType<IconProps>;
     fieldId: string;
+    compact?: boolean;
 };
 
 type NumberInputSectionProps = {
@@ -67,6 +69,7 @@ type NumberInputSectionProps = {
     placeholder?: string;
     isLoading?: boolean;
     fieldId: string;
+    compact?: boolean;
 };
 
 type DateInputSectionProps = {
@@ -75,6 +78,7 @@ type DateInputSectionProps = {
     placeholder?: string;
     isLoading?: boolean;
     fieldId: string;
+    compact?: boolean;
 };
 
 function TextInputSection({
@@ -86,6 +90,7 @@ function TextInputSection({
     autoComplete,
     Icon,
     fieldId,
+    compact,
 }: TextInputSectionProps) {
     const [showPassword, setShowPassword] = useState(false);
     const t = useTranslations();
@@ -97,7 +102,13 @@ function TextInputSection({
         : t("common.fields.passwordShow");
 
     return (
-        <InputGroup className="bg-card py-5 md:py-6 px-0.5 rounded-2xl gap-1">
+        <InputGroup
+            className={
+                compact
+                    ? "bg-card py-3 md:py-4 px-0.5 rounded-2xl gap-0.5"
+                    : "bg-card py-5 md:py-6 px-0.5 rounded-2xl gap-1"
+            }
+        >
             <InputGroupInput
                 {...field}
                 id={fieldId}
@@ -131,9 +142,16 @@ function NumberInputSection({
     placeholder,
     isLoading,
     fieldId,
+    compact,
 }: NumberInputSectionProps) {
     return (
-        <InputGroup className="bg-card py-5 md:py-6 px-0.5 rounded-2xl gap-1">
+        <InputGroup
+            className={
+                compact
+                    ? "bg-card py-3 md:py-4 px-0.5 rounded-2xl gap-0.5"
+                    : "bg-card py-5 md:py-6 px-0.5 rounded-2xl gap-1"
+            }
+        >
             <InputGroupInput
                 {...field}
                 id={fieldId}
@@ -159,6 +177,7 @@ function DateInputSection({
     placeholder,
     isLoading,
     fieldId,
+    compact,
 }: DateInputSectionProps) {
     const [open, setOpen] = useState(false);
     const isMobile = useIsMobile();
@@ -190,7 +209,11 @@ function DateInputSection({
             variant="outline"
             disabled={isLoading}
             aria-invalid={showError}
-            className="justify-between rounded-2xl bg-card w-full py-5 md:py-6"
+            className={
+                compact
+                    ? "justify-between rounded-2xl bg-card w-full py-4 md:py-4"
+                    : "justify-between rounded-2xl bg-card w-full py-5 md:py-6"
+            }
         >
             {formattedDate}
             <CalendarIcon className="size-4 text-muted-foreground" />
@@ -244,6 +267,7 @@ function InputControl({
     autoComplete,
     Icon,
     defaultCountry,
+    compact,
 }: Omit<InputFieldProps, "label" | "description" | "showPasswordIndicator">) {
     const fieldId = field.name;
     const showError = shouldShowError(fieldState);
@@ -259,6 +283,7 @@ function InputControl({
                 disabled={isLoading}
                 autoComplete={autoComplete ?? "tel"}
                 defaultCountry={defaultCountry as never}
+                className={compact ? "[&>button]:py-4 [&>button]:rounded-s-2xl" : undefined}
             />
         );
     }
@@ -297,6 +322,7 @@ function InputControl({
             autoComplete={autoComplete}
             Icon={Icon}
             fieldId={fieldId}
+            compact={compact}
         />
     );
 }
@@ -314,6 +340,7 @@ function InputField({
     showPasswordIndicator,
     defaultCountry,
     labelAction,
+    compact,
 }: InputFieldProps) {
     const isPassword = type === "password";
     const fieldId = field.name;
@@ -338,6 +365,7 @@ function InputField({
                 autoComplete={autoComplete}
                 Icon={Icon}
                 defaultCountry={defaultCountry}
+                compact={compact}
             />
 
             {showError && <FieldError errors={[fieldState.error]} />}

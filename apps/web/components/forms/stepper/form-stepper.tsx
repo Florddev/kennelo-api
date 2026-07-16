@@ -262,7 +262,7 @@ export function FormStepper<TFieldValues extends FieldValues>({
                                     </div>
 
                                     <div className="relative h-full w-full overflow-auto">
-                                        <div className="container mx-auto h-full px-4">
+                                        <div className="h-full w-full px-4 md:px-8">
                                             {steps.map((step, index) => {
                                                 const isVisible = visibleIndices.includes(index);
 

@@ -1,4 +1,13 @@
-export const ILLUSTRATED_TYPES = ["dog", "cat", "bird", "amphibian", "rabbit", "reptile"] as const;
+export const ILLUSTRATED_TYPES = [
+    "dog",
+    "cat",
+    "bird",
+    "amphibian",
+    "rabbit",
+    "reptile",
+    "rodent",
+    "ferret",
+] as const;
 
 export type IllustratedType = (typeof ILLUSTRATED_TYPES)[number];
 

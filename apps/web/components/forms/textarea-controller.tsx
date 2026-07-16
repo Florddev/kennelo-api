@@ -12,6 +12,7 @@ type TextareaControllerProps<TFieldValues extends FieldValues> = {
     placeholder?: string;
     isLoading?: boolean;
     rows?: number;
+    compact?: boolean;
 };
 
 export function TextareaController<TFieldValues extends FieldValues>({
@@ -22,6 +23,7 @@ export function TextareaController<TFieldValues extends FieldValues>({
     placeholder,
     isLoading,
     rows,
+    compact,
 }: TextareaControllerProps<TFieldValues>) {
     return (
         <Controller
@@ -41,7 +43,9 @@ export function TextareaController<TFieldValues extends FieldValues>({
                             placeholder={placeholder}
                             disabled={isLoading}
                             rows={rows}
-                            className="bg-card rounded-2xl"
+                            className={
+                                compact ? "bg-card rounded-2xl py-2.5" : "bg-card rounded-2xl"
+                            }
                         />
                         {showError && <FieldError errors={[fieldState.error]} />}
                         {description && <FieldDescription>{description}</FieldDescription>}

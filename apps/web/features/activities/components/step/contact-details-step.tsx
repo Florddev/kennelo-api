@@ -29,6 +29,7 @@ export function ContactDetailsStep({ control, isLoading }: ContactDetailsStepPro
                 isLoading={isLoading}
                 type="phone"
                 defaultCountry={phoneCountryCode}
+                compact
             />
             <InputController
                 name="email"
@@ -37,6 +38,7 @@ export function ContactDetailsStep({ control, isLoading }: ContactDetailsStepPro
                 placeholder={t("common.placeholders.email")}
                 isLoading={isLoading}
                 type="email"
+                compact
             />
             <InputController
                 name="website"
@@ -45,6 +47,7 @@ export function ContactDetailsStep({ control, isLoading }: ContactDetailsStepPro
                 placeholder={t("common.placeholders.website")}
                 isLoading={isLoading}
                 type="url"
+                compact
             />
         </StepShell>
     );

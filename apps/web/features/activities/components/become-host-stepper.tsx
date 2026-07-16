@@ -178,7 +178,7 @@ export function BecomeHostStepper() {
             }}
             onSubmit={onSubmit}
             isLoading={isLoading}
-            className="w-full max-w-2xl mx-auto"
+            className="w-full max-w-none"
         />
     );
 }
