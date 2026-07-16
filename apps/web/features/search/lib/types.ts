@@ -1,13 +1,17 @@
 import type { DateRange } from "react-day-picker";
+import type { PlaceSuggestionModel } from "@workspace/modules/address";
 
 export type PetType = "dog" | "cat" | "bird" | "reptile";
 export type PetCounts = Record<PetType, number>;
 export type ActivePanel = "location" | "dates" | "pets" | null;
 
-export type LocationSuggestion = {
-    id: string;
-    name: string;
-    type: "city" | "region";
+export type LocationSuggestion = PlaceSuggestionModel;
+
+export type SelectedPlace = {
+    label: string;
+    latitude: number;
+    longitude: number;
+    radiusKm: number;
 };
 
 export type RecentSearch = {

@@ -35,7 +35,8 @@ type MobileSearchOverlayProps = {
     formatDate: (date: Date) => string;
     onClose: () => void;
     onToggleCollapsible: (panel: MobileCollapsible) => void;
-    onSelectLocation: (name: string) => void;
+    onSelectLocation: (suggestion: LocationSuggestion) => void;
+    onSelectNearby: (name: string) => void;
     onSelectRecentSearch: (recent: RecentSearch) => void;
     onClearLocation: () => void;
     onChangeLocation: (value: string) => void;
@@ -148,6 +149,7 @@ export function MobileSearchOverlay({
     onClose,
     onToggleCollapsible,
     onSelectLocation,
+    onSelectNearby,
     onSelectRecentSearch,
     onClearLocation,
     onChangeLocation,
@@ -223,7 +225,7 @@ export function MobileSearchOverlay({
                             </div>
 
                             <LocationSuggestionRow
-                                onClick={() => onSelectLocation(t("features.search.nearby"))}
+                                onClick={() => onSelectNearby(t("features.search.nearby"))}
                                 iconClassName="bg-secondary/20"
                                 icon={<Navigation className="size-4 text-secondary-foreground" />}
                                 title={t("features.search.nearby")}
@@ -317,6 +319,7 @@ export function MobileSearchOverlay({
                     filteredSuggestions={filteredSuggestions}
                     locationInputRef={locationInputRef}
                     onSelect={onSelectLocation}
+                    onSelectRecent={onSelectNearby}
                     onClear={onClearLocation}
                     onChange={onChangeLocation}
                     onBack={() => onSetLocationSearchActive(false)}

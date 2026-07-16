@@ -11,7 +11,8 @@ import { RECENT_SEARCHES } from "../../lib/constants";
 type LocationPanelProps = {
     location: string;
     filteredSuggestions: LocationSuggestion[];
-    onSelect: (name: string) => void;
+    onSelect: (suggestion: LocationSuggestion) => void;
+    onSelectRecent: (name: string) => void;
     formatDate: (date: Date) => string;
     className?: string;
 };
@@ -85,6 +86,7 @@ export function LocationPanel({
     location,
     filteredSuggestions,
     onSelect,
+    onSelectRecent,
     formatDate,
     className,
 }: LocationPanelProps) {
@@ -109,10 +111,10 @@ export function LocationPanel({
                         filteredSuggestions.map((suggestion) => (
                             <SuggestionItem
                                 key={suggestion.id}
-                                onClick={() => onSelect(suggestion.name)}
+                                onClick={() => onSelect(suggestion)}
                                 icon={<MapPin size={17} className="text-muted-foreground" />}
                                 title={suggestion.name}
-                                subtitle={suggestion.type}
+                                subtitle={suggestion.getSubtitle()}
                             />
                         ))
                     )}
@@ -126,7 +128,7 @@ export function LocationPanel({
                                 <RecentSearchItem
                                     key={recent.id}
                                     recent={recent}
-                                    onSelect={() => onSelect(recent.location)}
+                                    onSelect={() => onSelectRecent(recent.location)}
                                     formatDate={formatDate}
                                     petCountLabel={t("features.search.pets.count", {
                                         count: recent.petCount,
@@ -141,7 +143,7 @@ export function LocationPanel({
                     <div className="px-4">
                         <SectionHeader label={t("features.search.suggestions")} />
                         <SuggestionItem
-                            onClick={() => onSelect(t("features.search.nearby"))}
+                            onClick={() => onSelectRecent(t("features.search.nearby"))}
                             iconClassName="bg-secondary/20"
                             icon={<Navigation size={17} className="text-secondary-foreground" />}
                             title={t("features.search.nearby")}

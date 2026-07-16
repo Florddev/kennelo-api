@@ -134,6 +134,7 @@ export default function MobileSearch() {
                     onClose={closeOverlay}
                     onToggleCollapsible={toggleCollapsible}
                     onSelectLocation={selectLocation}
+                    onSelectNearby={setLocation}
                     onClearLocation={clearLocation}
                     onChangeLocation={setLocation}
                     onSelectDateRange={setDateRange}

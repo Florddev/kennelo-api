@@ -1,12 +1,19 @@
 "use client";
 
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
 import type { DateRange } from "react-day-picker";
 
-import type { ActivePanel, PetCounts, PetType } from "../lib/types";
-import { LOCATION_SUGGESTIONS, PET_TYPES } from "../lib/constants";
+import type {
+    ActivePanel,
+    LocationSuggestion,
+    PetCounts,
+    PetType,
+    SelectedPlace,
+} from "../lib/types";
+import { PET_TYPES } from "../lib/constants";
+import { useLocationSuggestions } from "./use-location-suggestions";
 
 export function useSearchBar() {
     const locale = useLocale();
@@ -16,6 +23,7 @@ export function useSearchBar() {
 
     const [activePanel, setActivePanel] = useState<ActivePanel>(null);
     const [location, setLocation] = useState("");
+    const [selectedPlace, setSelectedPlace] = useState<SelectedPlace | null>(null);
     const [dateRange, setDateRange] = useState<DateRange | undefined>();
     const [petCounts, setPetCounts] = useState<PetCounts>({
         dog: 0,
@@ -28,11 +36,8 @@ export function useSearchBar() {
     const totalPets = Object.values(petCounts).reduce((sum, n) => sum + n, 0);
     const selectedPetTypes = PET_TYPES.filter((t) => petCounts[t] > 0);
 
-    const filteredSuggestions = useMemo(() => {
-        if (!location.trim()) return [];
-        const query = location.toLowerCase();
-        return LOCATION_SUGGESTIONS.filter((s) => s.name.toLowerCase().includes(query));
-    }, [location]);
+    const { suggestions: filteredSuggestions, isFetching: isSearchingLocation } =
+        useLocationSuggestions(location);
 
     useEffect(() => {
         if (activePanel === "location") {
@@ -68,19 +73,31 @@ export function useSearchBar() {
         setPetCounts((prev) => ({ ...prev, [type]: Math.max(0, prev[type] + delta) }));
     }
 
-    function selectLocation(name: string) {
-        setLocation(name);
+    function selectLocation(suggestion: LocationSuggestion) {
+        setLocation(suggestion.getLabel());
+        setSelectedPlace({
+            label: suggestion.getLabel(),
+            latitude: suggestion.latitude,
+            longitude: suggestion.longitude,
+            radiusKm: suggestion.radiusKm,
+        });
         setActivePanel("dates");
     }
 
     function clearLocation() {
         setLocation("");
+        setSelectedPlace(null);
         locationInputRef.current?.focus();
     }
 
     function handleSearch() {
         const params = new URLSearchParams();
         if (location) params.set("location", location);
+        if (selectedPlace && selectedPlace.label === location) {
+            params.set("lat", String(selectedPlace.latitude));
+            params.set("lng", String(selectedPlace.longitude));
+            params.set("radius", String(selectedPlace.radiusKm));
+        }
         if (dateRange?.from) params.set("dateFrom", dateRange.from.toISOString().slice(0, 10));
         if (dateRange?.to) params.set("dateTo", dateRange.to.toISOString().slice(0, 10));
         PET_TYPES.forEach((type) => {
@@ -105,6 +122,7 @@ export function useSearchBar() {
         totalPets,
         selectedPetTypes,
         filteredSuggestions,
+        isSearchingLocation,
         dateDisplay: getDateDisplay(),
         formatDate,
         selectLocation,

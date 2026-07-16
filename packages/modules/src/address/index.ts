@@ -3,7 +3,9 @@
  */
 
 export * from "./actions/queries/search-addresses";
+export * from "./actions/queries/search-places";
 export * from "./models/address-suggestion.model";
 export * from "./models/address.model";
+export * from "./models/place-suggestion.model";
 export * from "./models/dtos/address.dto";
 export * from "./models/dtos/photon-feature.dto";
