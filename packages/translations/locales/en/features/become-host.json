@@ -38,7 +38,9 @@
         },
         "address": {
             "title": "Location",
-            "subtitle": "Where is your activity located?"
+            "subtitle": "Where is your activity located?",
+            "searchPlaceholder": "Search for an address...",
+            "searchEmpty": "No address found"
         },
         "businessInfo": {
             "title": "Business information",

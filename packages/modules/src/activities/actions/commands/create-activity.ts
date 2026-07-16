@@ -25,6 +25,8 @@ export async function createActivity(input: CreateActivityInput): Promise<Activi
             postal_code: input.address.postalCode,
             region: input.address.region || null,
             country: input.address.country,
+            latitude: input.address.latitude ?? null,
+            longitude: input.address.longitude ?? null,
         };
     }
 

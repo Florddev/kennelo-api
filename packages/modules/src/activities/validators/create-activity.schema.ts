@@ -21,6 +21,8 @@ export const addressSchema = z.object({
     postalCode: z.string().min(1).max(20),
     region: z.union([z.string().max(100), z.literal("")]).optional(),
     country: z.string().length(2),
+    latitude: z.number().min(-90).max(90).nullable().optional(),
+    longitude: z.number().min(-180).max(180).nullable().optional(),
 });
 
 export const createActivitySchema = z.object({

@@ -38,7 +38,9 @@
         },
         "address": {
             "title": "Localisation",
-            "subtitle": "Où se trouve votre activité ?"
+            "subtitle": "Où se trouve votre activité ?",
+            "searchPlaceholder": "Rechercher une adresse...",
+            "searchEmpty": "Aucune adresse trouvée"
         },
         "businessInfo": {
             "title": "Informations légales",
