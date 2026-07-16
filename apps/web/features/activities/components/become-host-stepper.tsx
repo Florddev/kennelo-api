@@ -261,6 +261,8 @@ export function BecomeHostStepper() {
                     postalCode: "",
                     region: "",
                     country: "",
+                    latitude: null,
+                    longitude: null,
                 },
             }}
             steps={steps}

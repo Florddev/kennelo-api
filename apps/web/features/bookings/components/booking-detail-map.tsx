@@ -2,8 +2,12 @@
 
 import { useTranslations } from "next-intl";
 import { MapPoint } from "@solar-icons/react";
+import { MapPin } from "lucide-react";
 
 import type { AddressModel } from "@workspace/modules/address";
+import { Map, MapControls, MapMarker, MarkerContent } from "@workspace/ui/components/mapcn";
+
+const DETAIL_ZOOM = 15;
 
 export function BookingDetailMap({ address }: { address: AddressModel | null }) {
     const t = useTranslations();
@@ -17,18 +21,14 @@ export function BookingDetailMap({ address }: { address: AddressModel | null }) 
         );
     }
 
-    const lat = address.latitude;
-    const lon = address.longitude;
-    const delta = 0.008;
-    const src = `https://www.openstreetmap.org/export/embed.html?bbox=${lon - delta},${lat - delta},${lon + delta},${lat + delta}&layer=mapnik&marker=${lat},${lon}`;
-
     return (
-        <iframe
-            src={src}
-            title={t("features.bookings.detail.locationSection")}
-            className="w-full h-full border-0"
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-        />
+        <Map center={[address.longitude, address.latitude]} zoom={DETAIL_ZOOM}>
+            <MapMarker longitude={address.longitude} latitude={address.latitude}>
+                <MarkerContent>
+                    <MapPin className="size-8 fill-primary/30 text-primary" />
+                </MarkerContent>
+            </MapMarker>
+            <MapControls position="bottom-right" />
+        </Map>
     );
 }

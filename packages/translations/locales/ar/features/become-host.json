@@ -38,7 +38,9 @@
         },
         "address": {
             "title": "الموقع",
-            "subtitle": "أين تقع نشاطك؟"
+            "subtitle": "أين تقع نشاطك؟",
+            "searchPlaceholder": "ابحث عن عنوان...",
+            "searchEmpty": "لم يتم العثور على عنوان"
         },
         "businessInfo": {
             "title": "معلومات تجارية",

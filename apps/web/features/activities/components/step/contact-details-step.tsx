@@ -2,7 +2,8 @@
 
 import { Control } from "react-hook-form";
 import { useTranslations } from "next-intl";
-import { InputController } from "@/components/forms/input-controller";
+import { Global, Letter, Phone } from "@solar-icons/react";
+import { InlineController } from "@/components/forms/inline-controller";
 import type { CreateActivityInput } from "@workspace/modules/activities";
 import { usePhoneCountryCode } from "@/hooks/use-phone-country-code";
 import { StepShell } from "./step-shell";
@@ -21,33 +22,33 @@ export function ContactDetailsStep({ control, isLoading }: ContactDetailsStepPro
             title={t("features.become-host.steps.contactDetails.title")}
             subtitle={t("features.become-host.steps.contactDetails.subtitle")}
         >
-            <InputController
+            <InlineController
                 name="phone"
                 control={control}
+                type="phone"
                 label={t("common.fields.phone")}
                 placeholder={t("common.placeholders.phone")}
-                isLoading={isLoading}
-                type="phone"
+                Icon={Phone}
                 defaultCountry={phoneCountryCode}
-                compact
+                isLoading={isLoading}
             />
-            <InputController
+            <InlineController
                 name="email"
                 control={control}
+                type="email"
                 label={t("common.fields.email")}
                 placeholder={t("common.placeholders.email")}
+                Icon={Letter}
                 isLoading={isLoading}
-                type="email"
-                compact
             />
-            <InputController
+            <InlineController
                 name="website"
                 control={control}
+                type="url"
                 label={t("common.fields.website")}
                 placeholder={t("common.placeholders.website")}
+                Icon={Global}
                 isLoading={isLoading}
-                type="url"
-                compact
             />
         </StepShell>
     );

@@ -26,6 +26,8 @@ export async function updateActivity(
             postal_code: input.address.postalCode,
             region: input.address.region || null,
             country: input.address.country,
+            latitude: input.address.latitude ?? null,
+            longitude: input.address.longitude ?? null,
         };
     }
 

@@ -16,6 +16,7 @@ const reverbHostPort = process.env.NEXT_PUBLIC_REVERB_HOST
 const reverbOrigins = reverbHostPort ? `ws://${reverbHostPort} wss://${reverbHostPort}` : '';
 const googleIdentityOrigin = 'https://accounts.google.com';
 const mapTilesOrigins = 'https://basemaps.cartocdn.com https://*.basemaps.cartocdn.com';
+const geocodingOrigin = 'https://photon.komoot.io';
 const stripeScriptOrigins = 'https://connect-js.stripe.com https://js.stripe.com https://*.js.stripe.com';
 const stripeFrameOrigins =
     'https://connect-js.stripe.com https://js.stripe.com https://*.js.stripe.com https://hooks.stripe.com';
@@ -34,7 +35,7 @@ const contentSecurityPolicy = [
     "worker-src 'self' blob:",
     `script-src 'self' 'unsafe-inline' 'unsafe-eval' ${googleIdentityOrigin} ${stripeScriptOrigins} ${devThemePreviewOrigin}`,
     `frame-src 'self' ${googleIdentityOrigin} ${stripeFrameOrigins}`,
-    `connect-src 'self' ${apiOrigin} ${reverbOrigins} ${googleIdentityOrigin} ${mapTilesOrigins} ${stripeConnectOrigins}`,
+    `connect-src 'self' ${apiOrigin} ${reverbOrigins} ${googleIdentityOrigin} ${mapTilesOrigins} ${geocodingOrigin} ${stripeConnectOrigins}`,
 ]
     .map((directive) => directive.replace(/\s+/g, ' ').trim())
     .join('; ');

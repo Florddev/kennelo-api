@@ -35,6 +35,8 @@ class StoreActivityRequest extends FormRequest
             'address.postal_code' => ['required_with:address', 'string', 'max:20'],
             'address.region' => ['sometimes', 'nullable', 'string', 'max:100'],
             'address.country' => ['required_with:address', 'string', 'size:2'],
+            'address.latitude' => ['sometimes', 'nullable', 'numeric', 'between:-90,90'],
+            'address.longitude' => ['sometimes', 'nullable', 'numeric', 'between:-180,180'],
         ];
     }
 }
