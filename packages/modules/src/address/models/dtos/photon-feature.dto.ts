@@ -17,6 +17,7 @@ export type PhotonFeatureDto = {
         country?: string;
         countrycode?: string;
         type?: string;
+        extent?: [number, number, number, number];
     };
 };
 

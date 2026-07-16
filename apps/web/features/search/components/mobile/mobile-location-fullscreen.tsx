@@ -11,7 +11,8 @@ type MobileLocationFullscreenProps = {
     location: string;
     filteredSuggestions: LocationSuggestion[];
     locationInputRef: React.RefObject<HTMLInputElement | null>;
-    onSelect: (name: string) => void;
+    onSelect: (suggestion: LocationSuggestion) => void;
+    onSelectRecent: (name: string) => void;
     onClear: () => void;
     onChange: (value: string) => void;
     onBack: () => void;
@@ -23,6 +24,7 @@ export function MobileLocationFullscreen({
     filteredSuggestions,
     locationInputRef,
     onSelect,
+    onSelectRecent,
     onClear,
     onChange,
     onBack,
@@ -72,6 +74,7 @@ export function MobileLocationFullscreen({
                     location={location}
                     filteredSuggestions={filteredSuggestions}
                     onSelect={onSelect}
+                    onSelectRecent={onSelectRecent}
                     formatDate={formatDate}
                     className="static w-full shadow-none ring-0 rounded-none py-3 max-h-none"
                 />

@@ -41,35 +41,6 @@ type SearchCoords = { lat: number; lng: number };
 type MapBounds = { north: number; south: number; east: number; west: number };
 type SearchArea = { coords: SearchCoords; bounds: MapBounds | null; radius: number };
 
-function useGeocodeLocation(query: string): [number, number] | null {
-    const [result, setResult] = useState<{ query: string; center: [number, number] } | null>(null);
-
-    useEffect(() => {
-        if (!query) return;
-        let cancelled = false;
-
-        fetch(
-            `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1`,
-        )
-            .then((res) => res.json())
-            .then((data: Array<{ lat: string; lon: string }>) => {
-                if (!cancelled && data[0]) {
-                    setResult({
-                        query,
-                        center: [parseFloat(data[0].lat), parseFloat(data[0].lon)],
-                    });
-                }
-            })
-            .catch(() => {});
-
-        return () => {
-            cancelled = true;
-        };
-    }, [query]);
-
-    return result?.query === query ? result.center : null;
-}
-
 function useUserLocation(): { lat: number; lng: number } | null {
     const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
 
@@ -431,6 +402,12 @@ function stringParam(val: unknown): string {
     return typeof val === "string" ? val : "";
 }
 
+function numberParam(val: unknown): number | null {
+    if (typeof val !== "string" || val === "") return null;
+    const parsed = Number(val);
+    return Number.isFinite(parsed) ? parsed : null;
+}
+
 function expandSearchArea(
     searchArea: SearchArea | null,
     geocodedCenter: [number, number] | null,
@@ -494,7 +471,8 @@ function buildDateRangeText(dateFrom: string, dateTo: string, format: (d: Date) 
 function resolveSearchParams(
     location: string,
     searchArea: SearchArea | null,
-    geocodedCenter: [number, number] | null,
+    selectedCenter: [number, number] | null,
+    selectedRadius: number | null,
 ): {
     location: string | undefined;
     coords: SearchCoords | undefined;
@@ -509,11 +487,11 @@ function resolveSearchParams(
             bounds: searchArea.bounds,
         };
     }
-    if (geocodedCenter) {
+    if (selectedCenter) {
         return {
             location: undefined,
-            coords: { lat: geocodedCenter[0], lng: geocodedCenter[1] },
-            radius: GEOCODE_DEFAULT_RADIUS,
+            coords: { lat: selectedCenter[0], lng: selectedCenter[1] },
+            radius: selectedRadius ?? GEOCODE_DEFAULT_RADIUS,
             bounds: null,
         };
     }
@@ -647,8 +625,14 @@ export default function ExploreResultsPage() {
     const location = stringParam(params.location);
     const dateFrom = stringParam(params.dateFrom);
     const dateTo = stringParam(params.dateTo);
+    const latParam = numberParam(params.lat);
+    const lngParam = numberParam(params.lng);
+    const radiusParam = numberParam(params.radius);
 
-    const geocodedCenter = useGeocodeLocation(location);
+    const geocodedCenter = useMemo<[number, number] | null>(
+        () => (latParam !== null && lngParam !== null ? [latParam, lngParam] : null),
+        [latParam, lngParam],
+    );
 
     const searchTrackedRef = useRef(false);
     useEffect(() => {
@@ -672,7 +656,7 @@ export default function ExploreResultsPage() {
         }
     });
 
-    const searchParams = resolveSearchParams(location, searchArea, geocodedCenter);
+    const searchParams = resolveSearchParams(location, searchArea, geocodedCenter, radiusParam);
     const { bounds } = searchParams;
     const { activities, isLoading } = useSearchResults({
         location: searchParams.location,
@@ -773,6 +757,7 @@ export default function ExploreResultsPage() {
             onClose={closeOverlay}
             onToggleCollapsible={toggleCollapsible}
             onSelectLocation={selectLocation}
+            onSelectNearby={setLocation}
             onClearLocation={clearLocation}
             onChangeLocation={setLocation}
             onSelectDateRange={setDateRange}

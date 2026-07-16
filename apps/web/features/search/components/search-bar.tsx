@@ -90,6 +90,7 @@ export default function SearchBar({ className }: { className?: string }) {
                     location={location}
                     filteredSuggestions={filteredSuggestions}
                     onSelect={selectLocation}
+                    onSelectRecent={setLocation}
                     formatDate={formatDate}
                 />
             )}

@@ -1,22 +1,6 @@
-import type { LocationSuggestion, PetType, RecentSearch } from "./types";
+import type { PetType, RecentSearch } from "./types";
 
 export const PET_TYPES: PetType[] = ["dog", "cat", "bird", "reptile"];
-
-export const LOCATION_SUGGESTIONS: LocationSuggestion[] = [
-    { id: "paris", name: "Paris, Île-de-France", type: "city" },
-    { id: "lyon", name: "Lyon, Auvergne-Rhône-Alpes", type: "city" },
-    { id: "marseille", name: "Marseille, Provence-Alpes-Côte d'Azur", type: "city" },
-    { id: "bordeaux", name: "Bordeaux, Nouvelle-Aquitaine", type: "city" },
-    { id: "toulouse", name: "Toulouse, Occitanie", type: "city" },
-    { id: "nice", name: "Nice, Provence-Alpes-Côte d'Azur", type: "city" },
-    { id: "nantes", name: "Nantes, Pays de la Loire", type: "city" },
-    { id: "strasbourg", name: "Strasbourg, Grand Est", type: "city" },
-    { id: "montpellier", name: "Montpellier, Occitanie", type: "city" },
-    { id: "rennes", name: "Rennes, Bretagne", type: "city" },
-    { id: "bretagne", name: "Bretagne", type: "region" },
-    { id: "normandie", name: "Normandie", type: "region" },
-    { id: "occitanie", name: "Occitanie", type: "region" },
-];
 
 export const RECENT_SEARCHES: RecentSearch[] = [
     {
