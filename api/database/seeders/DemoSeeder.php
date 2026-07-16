@@ -162,6 +162,45 @@ class DemoSeeder extends Seeder
         ['terrarium-cancelled', 'client3@kennelo.fr', 'terrarium', 'cancelled', ['Gaïa'], 14, 5, null, 'refunded'],
         ['palace-rejected', 'client1@kennelo.fr', 'palace', 'rejected', ['Oslo'], -12, 3, 'Oslo peut être bruyant la nuit.', 'refunded'],
         ['voliere-expired', 'client3@kennelo.fr', 'voliere', 'expired', ['Rio'], -8, 3, null, 'canceled'],
+        ['palace-review-1', 'client1@kennelo.fr', 'palace', 'completed', ['Oslo'], -60, 4, null, 'succeeded'],
+        ['palace-review-2', 'client1@kennelo.fr', 'palace', 'completed', ['Oslo'], -90, 6, null, 'succeeded'],
+        ['moustaches-review-1', 'client1@kennelo.fr', 'moustaches', 'completed', ['Pixel'], -50, 5, null, 'succeeded'],
+        ['moustaches-review-2', 'client1@kennelo.fr', 'moustaches', 'completed', ['Pixel'], -75, 3, null, 'succeeded'],
+        ['clapier-review-1', 'client2@kennelo.fr', 'clapier', 'completed', ['Caramel', 'Noisette'], -70, 4, null, 'succeeded'],
+        ['clapier-review-2', 'client4@kennelo.fr', 'clapier', 'completed', ['Torpille'], -55, 3, null, 'succeeded'],
+        ['voliere-review-1', 'client3@kennelo.fr', 'voliere', 'completed', ['Rio'], -65, 5, null, 'succeeded'],
+        ['voliere-review-2', 'client3@kennelo.fr', 'voliere', 'completed', ['Rio'], -95, 3, null, 'succeeded'],
+        ['terrarium-review-1', 'client3@kennelo.fr', 'terrarium', 'completed', ['Gaïa'], -45, 6, null, 'succeeded'],
+        ['terrarium-review-2', 'client3@kennelo.fr', 'terrarium', 'completed', ['Gaïa'], -80, 4, null, 'succeeded'],
+        ['furets-review-1', 'client4@kennelo.fr', 'furets', 'completed', ['Jack'], -85, 4, null, 'succeeded'],
+        ['furets-review-2', 'client2@kennelo.fr', 'furets', 'completed', ['Noisette'], -35, 3, null, 'succeeded'],
+    ];
+
+    private array $reviews = [
+        'palace-review-1' => [4.9, 'Oslo est revenu épuisé de bonheur, les balades quotidiennes au bois de Vincennes ont fait toute la différence.', true],
+        'palace-review-2' => [4.7, 'Équipe aux petits soins, photos envoyées chaque soir et box impeccable. On reviendra !', true],
+        'moustaches-review-1' => [5.0, 'Pixel a eu droit à sa chambre vitrée côté soleil, elle n\'avait presque pas envie de rentrer à la maison.', true],
+        'moustaches-review-2' => [4.2, 'Très bonne garde, juste un peu d\'attente au moment du dépôt le samedi matin.', true],
+        'clapier-completed' => [4.8, 'Caramel a été chouchouté et son foin de Crau était bien au rendez-vous. Merci !', true],
+        'clapier-review-1' => [4.6, 'Enclos séparés comme demandé et légumes frais tous les jours, rien à redire.', true],
+        'clapier-review-2' => [4.4, 'Torpille est revenu détendu, communication très réactive pendant tout le séjour.', true],
+        'voliere-review-1' => [4.9, 'Rio a adoré la volière de sociabilisation, il est même revenu avec deux nouveaux mots au répertoire.', true],
+        'voliere-review-2' => [3.6, 'Équipe sérieuse mais la volière commune était un peu bruyante pour mon perroquet, séjour correct sans plus.', false],
+        'terrarium-review-1' => [5.0, 'Hygrométrie surveillée de près, Gaïa était en pleine forme au retour. De vrais pros du reptile.', true],
+        'terrarium-review-2' => [4.7, 'Installation impeccable et conseils précieux sur l\'éclairage UVB, je recommande.', true],
+        'furets-completed' => [4.8, 'Jack et Torpille ont profité des tunnels et des hamacs, séjour parfait du début à la fin.', true],
+        'furets-review-1' => [4.6, 'Jack revient toujours heureux, le parcours de jeu est une merveille pour les furets.', true],
+        'furets-review-2' => [4.3, 'Bonne pension pour ma petite ratoune, personnel attentionné et local très propre.', true],
+    ];
+
+    private array $reviewCriteriaCodes = [
+        'cleanliness',
+        'communication',
+        'animal_care',
+        'instructions_respect',
+        'value_for_money',
+        'environment',
+        'reactivity',
     ];
 
     public function run(): void
@@ -179,6 +218,7 @@ class DemoSeeder extends Seeder
         $petModels = $this->seedPets($userModels, $animalTypes);
         $bookingIds = $this->seedBookings($userModels, $activities, $petModels);
         $this->seedConversations($userModels, $activities, $bookingIds);
+        $this->seedReviews($userModels, $bookingIds);
     }
 
     private function uid(string $key): string
@@ -523,6 +563,54 @@ class DemoSeeder extends Seeder
         }
 
         return $bookingIds;
+    }
+
+    private function seedReviews(array $userModels, array $bookingIds): void
+    {
+        $bookingsByKey = [];
+        foreach ($this->bookings as $booking) {
+            $bookingsByKey[$booking[0]] = $booking;
+        }
+
+        $scoreOffsets = [0.0, 0.2, -0.3, 0.1, -0.2, 0.2, 0.0];
+
+        foreach ($this->reviews as $bookingKey => [$rating, $comment, $wouldRecommend]) {
+            [, $email, , , , $startOffset, $nights] = $bookingsByKey[$bookingKey];
+            $publishedAt = CarbonImmutable::now()->addDays($startOffset + $nights + 2);
+            $reviewId = $this->uid('review:'.$bookingKey);
+
+            $this->upsertKeepingId(
+                'reviews',
+                ['booking_id' => $bookingIds[$bookingKey], 'reviewer_type' => 'user'],
+                [
+                    'reviewer_id' => $userModels[$email]->id,
+                    'overall_rating' => $rating,
+                    'comment' => $comment,
+                    'would_recommend' => $wouldRecommend,
+                    'is_published' => true,
+                    'published_at' => $publishedAt,
+                    'created_at' => $publishedAt,
+                    'updated_at' => $publishedAt,
+                ],
+                $reviewId
+            );
+
+            $reviewId = DB::table('reviews')
+                ->where('booking_id', $bookingIds[$bookingKey])
+                ->where('reviewer_type', 'user')
+                ->value('id');
+
+            foreach ($this->reviewCriteriaCodes as $index => $code) {
+                $score = round(min(5.0, max(3.0, $rating + $scoreOffsets[$index])), 1);
+
+                $this->upsertKeepingId(
+                    'review_criteria_scores',
+                    ['review_id' => $reviewId, 'criteria_code' => $code],
+                    ['score' => $score, 'created_at' => $publishedAt],
+                    $this->uid('score:'.$bookingKey.':'.$code)
+                );
+            }
+        }
     }
 
     private function seedConversations(array $userModels, array $activities, array $bookingIds): void
