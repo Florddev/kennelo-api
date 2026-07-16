@@ -44,6 +44,15 @@
             "title": "Business information",
             "subtitle": "Optional legal details"
         },
+        "media": {
+            "title": "Photos of your activity",
+            "subtitle": "Add a profile picture and a few photos to showcase your place",
+            "avatarLabel": "Profile picture",
+            "imagesLabel": "Additional photos",
+            "pickImages": "Add photos",
+            "avatarUploadError": "Failed to upload the profile picture",
+            "imagesUploadError": "Failed to upload the photos"
+        },
         "review": {
             "title": "Review & confirm",
             "subtitle": "Make sure everything looks good",

@@ -44,6 +44,15 @@
             "title": "Informations légales",
             "subtitle": "Détails juridiques optionnels"
         },
+        "media": {
+            "title": "Photos de votre activité",
+            "subtitle": "Ajoutez une photo de profil et quelques photos pour mettre en valeur votre lieu",
+            "avatarLabel": "Photo de profil",
+            "imagesLabel": "Photos supplémentaires",
+            "pickImages": "Ajouter des photos",
+            "avatarUploadError": "Échec de l'envoi de la photo de profil",
+            "imagesUploadError": "Échec de l'envoi des photos"
+        },
         "review": {
             "title": "Vérification & confirmation",
             "subtitle": "Assurez-vous que tout est correct",

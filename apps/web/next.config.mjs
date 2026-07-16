@@ -28,7 +28,7 @@ const contentSecurityPolicy = [
     "base-uri 'self'",
     "frame-ancestors 'none'",
     "object-src 'none'",
-    "img-src 'self' data: blob: https:",
+    `img-src 'self' data: blob: https: ${apiOrigin}`,
     "font-src 'self' data:",
     "style-src 'self' 'unsafe-inline'",
     "worker-src 'self' blob:",
