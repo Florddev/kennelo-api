@@ -118,6 +118,8 @@
     "detail": {
         "sections": {
             "details": "Activity details",
+            "animalTypes": "Accepted animals",
+            "media": "Photos",
             "contact": "Contact information",
             "address": "Address",
             "business": "Business information",
@@ -147,7 +149,8 @@
             "email": "No email address",
             "website": "No website",
             "siret": "No SIRET number",
-            "description": "No description provided"
+            "description": "No description provided",
+            "animalTypes": "No animal type selected"
         },
         "notFound": "Activity not found",
         "notFoundDescription": "This activity does not exist or you don't have access to it.",

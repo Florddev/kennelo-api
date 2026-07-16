@@ -5,7 +5,11 @@ declare(strict_types=1);
 namespace App\Services\Activity;
 
 use App\Enums\PaginationEnum;
+use App\Enums\WeekDayEnum;
 use App\Models\Activity;
+use App\Models\ActivityCycle;
+use App\Models\ActivityCycleSetting;
+use App\Models\ActivityCycleSettingPrice;
 use App\Models\Address;
 use App\Models\User;
 use App\Services\Subscription\PlanLimitService;
@@ -14,6 +18,10 @@ use Illuminate\Support\Facades\DB;
 
 class ActivityService
 {
+    private const DEFAULT_MAX_CAPACITY = 10;
+
+    private const DEFAULT_PRICE = 20;
+
     public function __construct(
         private readonly PlanLimitService $planLimits
     ) {}
@@ -109,8 +117,42 @@ class ActivityService
                 $user->assignRole('manager');
             }
 
+            if (! empty($data['animal_type_ids'])) {
+                $this->seedDefaultCycle($activity, $data['animal_type_ids']);
+            }
+
             return $activity->load(['address', 'manager', 'collaborators']);
         });
+    }
+
+    /**
+     * @param  array<int, string>  $animalTypeIds
+     */
+    private function seedDefaultCycle(Activity $activity, array $animalTypeIds): void
+    {
+        $cycle = ActivityCycle::create([
+            'activity_id' => $activity->id,
+            'start_date' => null,
+            'end_date' => null,
+            'priority' => 0,
+            'is_active' => true,
+        ]);
+
+        foreach (array_unique($animalTypeIds) as $animalTypeId) {
+            $setting = ActivityCycleSetting::create([
+                'activity_cycle_id' => $cycle->id,
+                'animal_type_id' => $animalTypeId,
+                'max_capacity' => self::DEFAULT_MAX_CAPACITY,
+            ]);
+
+            foreach (WeekDayEnum::cases() as $weekday) {
+                ActivityCycleSettingPrice::create([
+                    'activity_cycle_setting_id' => $setting->id,
+                    'weekday' => $weekday->value,
+                    'price' => self::DEFAULT_PRICE,
+                ]);
+            }
+        }
     }
 
     public function update(Activity $activity, array $data): Activity

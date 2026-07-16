@@ -20,6 +20,8 @@ class StoreActivityRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'type' => ['sometimes', 'nullable', new Enum(ActivityTypeEnum::class)],
+            'animal_type_ids' => ['sometimes', 'array'],
+            'animal_type_ids.*' => ['uuid', 'exists:animal_types,id'],
             'description' => ['sometimes', 'nullable', 'string', 'max:2000'],
             'phone' => ['sometimes', 'nullable', 'string', 'max:20'],
             'email' => ['sometimes', 'nullable', 'email', 'max:255'],
