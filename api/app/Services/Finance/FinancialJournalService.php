@@ -7,6 +7,7 @@ namespace App\Services\Finance;
 use App\Enums\FinancialOperationTypeEnum;
 use App\Models\Booking;
 use App\Models\FinancialOperation;
+use Illuminate\Support\Str;
 
 class FinancialJournalService
 {
@@ -24,7 +25,7 @@ class FinancialJournalService
             'booking_id' => $booking?->id,
             'type' => $type,
             'amount' => $amount,
-            'currency' => $amount !== null ? strtoupper((string) config('services.stripe.currency', 'eur')) : null,
+            'currency' => $amount !== null ? Str::upper((string) config('services.stripe.currency', 'eur')) : null,
             'stripe_reference' => $stripeReference,
             'metadata' => $metadata === [] ? null : $metadata,
         ]);

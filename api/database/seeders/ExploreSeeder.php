@@ -18,7 +18,6 @@ use App\Models\User;
 use App\Services\MediaService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Spatie\Permission\Models\Role;
@@ -126,8 +125,8 @@ class ExploreSeeder extends Seeder
                 $booking = Booking::create([
                     'user_id' => $reviewer->id,
                     'activity_id' => $activity->id,
-                    'check_in_date' => Carbon::now()->subDays($daysAgo + 7)->format('Y-m-d'),
-                    'check_out_date' => Carbon::now()->subDays($daysAgo)->format('Y-m-d'),
+                    'check_in_date' => now()->subDays($daysAgo + 7)->format('Y-m-d'),
+                    'check_out_date' => now()->subDays($daysAgo)->format('Y-m-d'),
                     'total_price' => random_int(50, 300),
                     'status' => BookingStatusEnum::COMPLETED,
                 ]);
@@ -140,7 +139,7 @@ class ExploreSeeder extends Seeder
                     'comment' => fake()->boolean(70) ? fake()->paragraph() : null,
                     'would_recommend' => fake()->boolean(85),
                     'is_published' => true,
-                    'published_at' => Carbon::now()->subDays($daysAgo - 1),
+                    'published_at' => now()->subDays($daysAgo - 1),
                 ]);
             }
         }
@@ -177,7 +176,7 @@ class ExploreSeeder extends Seeder
 
             $price = random_int($min * 100, $max * 100) / 100;
 
-            $now = Carbon::now();
+            $now = now();
             $priceRows = array_map(fn (int $weekday): array => [
                 'id' => (string) Str::uuid(),
                 'activity_cycle_setting_id' => $setting->id,

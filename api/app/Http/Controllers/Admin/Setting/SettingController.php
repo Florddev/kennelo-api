@@ -10,7 +10,6 @@ use App\Http\Requests\Admin\Setting\UpdateSettingsRequest;
 use App\Models\Setting;
 use App\Services\Setting\SettingService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Carbon;
 
 /**
  * @tags Admin Settings
@@ -28,7 +27,7 @@ class SettingController extends Controller
         return response()->json([
             'data' => $this->settings->grouped(),
             'status' => ApiStatusEnum::SUCCESS,
-            'timestamp' => human_date(Carbon::now()),
+            'timestamp' => human_date(now()),
         ]);
     }
 
@@ -42,7 +41,7 @@ class SettingController extends Controller
             'data' => $this->settings->grouped(),
             'message' => 'Settings updated successfully',
             'status' => ApiStatusEnum::SUCCESS,
-            'timestamp' => human_date(Carbon::now()),
+            'timestamp' => human_date(now()),
         ]);
     }
 }

@@ -46,10 +46,10 @@ class TwoFactorService
     {
         $codes = $user->two_factor_recovery_codes ?? [];
 
-        $remaining = array_values(array_filter(
-            $codes,
-            fn (string $stored) => ! hash_equals($stored, $code),
-        ));
+        $remaining = collect($codes)
+            ->reject(fn (string $stored) => hash_equals($stored, $code))
+            ->values()
+            ->all();
 
         if (count($remaining) === count($codes)) {
             return false;

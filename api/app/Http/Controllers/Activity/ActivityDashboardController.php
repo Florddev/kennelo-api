@@ -9,7 +9,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Activity;
 use App\Services\Activity\ActivityDashboardService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Carbon;
 
 /**
  * @tags Activities
@@ -27,7 +26,7 @@ class ActivityDashboardController extends Controller
         return response()->json([
             'data' => $dashboard,
             'status' => ApiStatusEnum::SUCCESS,
-            'timestamp' => human_date(Carbon::now()),
+            'timestamp' => human_date(now()),
         ]);
     }
 }

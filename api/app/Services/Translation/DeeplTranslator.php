@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace App\Services\Translation;
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 
 class DeeplTranslator
 {
     public function isConfigured(): bool
     {
-        return ! empty(config('services.deepl.key'));
+        return filled(config('services.deepl.key'));
     }
 
     public function sourceLocale(): string
@@ -35,7 +36,10 @@ class DeeplTranslator
      */
     public function targetLocales(): array
     {
-        return array_values(array_diff($this->availableLocales(), [$this->sourceLocale()]));
+        return collect($this->availableLocales())
+            ->diff([$this->sourceLocale()])
+            ->values()
+            ->all();
     }
 
     public function translate(string $text, string $source, string $target): string
@@ -44,8 +48,8 @@ class DeeplTranslator
             'Authorization' => 'DeepL-Auth-Key '.config('services.deepl.key'),
         ])->asForm()->post(config('services.deepl.url'), [
             'text' => $text,
-            'source_lang' => strtoupper($source),
-            'target_lang' => strtoupper($target),
+            'source_lang' => Str::upper($source),
+            'target_lang' => Str::upper($target),
         ])->throw();
 
         return $response->json('translations.0.text', $text);

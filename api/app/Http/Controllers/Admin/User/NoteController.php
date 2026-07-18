@@ -15,7 +15,6 @@ use App\Services\Admin\User\NoteService;
 use App\Services\User\UserService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
 /**
@@ -43,7 +42,7 @@ class NoteController extends Controller
         return UserNoteResource::collection($notes)
             ->additional([
                 'status' => ApiStatusEnum::SUCCESS,
-                'timestamp' => human_date(Carbon::now()),
+                'timestamp' => human_date(now()),
             ])
             ->response();
     }
@@ -64,7 +63,7 @@ class NoteController extends Controller
             ->additional([
                 'message' => 'Note created successfully',
                 'status' => ApiStatusEnum::SUCCESS,
-                'timestamp' => human_date(Carbon::now()),
+                'timestamp' => human_date(now()),
             ])
             ->response()
             ->setStatusCode(201);
@@ -82,7 +81,7 @@ class NoteController extends Controller
             ->additional([
                 'message' => 'Note updated successfully',
                 'status' => ApiStatusEnum::SUCCESS,
-                'timestamp' => human_date(Carbon::now()),
+                'timestamp' => human_date(now()),
             ])
             ->response();
     }
@@ -98,7 +97,7 @@ class NoteController extends Controller
         return response()->json([
             'message' => 'Note deleted successfully',
             'status' => ApiStatusEnum::SUCCESS,
-            'timestamp' => human_date(Carbon::now()),
+            'timestamp' => human_date(now()),
         ]);
     }
 
@@ -108,7 +107,7 @@ class NoteController extends Controller
             return response()->json([
                 'message' => 'Invalid UUID format',
                 'status' => ApiStatusEnum::ERROR,
-                'timestamp' => human_date(Carbon::now()),
+                'timestamp' => human_date(now()),
             ], 400);
         }
 
@@ -126,7 +125,7 @@ class NoteController extends Controller
         return response()->json([
             'message' => 'Not found',
             'status' => ApiStatusEnum::ERROR,
-            'timestamp' => human_date(Carbon::now()),
+            'timestamp' => human_date(now()),
         ], 404);
     }
 }

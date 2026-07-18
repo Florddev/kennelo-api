@@ -7,7 +7,6 @@ namespace App\Http\Middleware;
 use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -30,7 +29,7 @@ class TrackLastSeen
                 User::withInactive()
                     ->withTrashed()
                     ->whereKey($user->id)
-                    ->update(['last_seen_at' => Carbon::now()]);
+                    ->update(['last_seen_at' => now()]);
             }
         }
 

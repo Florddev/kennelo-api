@@ -10,7 +10,6 @@ use App\Http\Requests\Admin\Prospect\MapProspectsRequest;
 use App\Models\Prospect;
 use App\Services\Admin\Prospect\ProspectService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Carbon;
 
 /**
  * @tags Admin Prospect Map
@@ -28,7 +27,7 @@ class MapController extends Controller
         return response()->json([
             'data' => $this->prospects->mapGeoJson($request->validated()),
             'status' => ApiStatusEnum::SUCCESS,
-            'timestamp' => human_date(Carbon::now()),
+            'timestamp' => human_date(now()),
         ]);
     }
 }

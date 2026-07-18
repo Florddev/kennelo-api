@@ -6,7 +6,6 @@ namespace App\Services\Admin\Activity;
 
 use App\Models\Activity;
 use App\Services\Prospect\Contracts\PlaceDiscoveryService;
-use Illuminate\Support\Carbon;
 
 class ActivityGoogleService
 {
@@ -44,7 +43,7 @@ class ActivityGoogleService
             'google_rating' => $data['google_rating'] ?? null,
             'google_reviews_count' => $data['google_reviews_count'] ?? null,
             'google_maps_url' => $data['google_maps_url'] ?? $this->mapsUrlFromPlaceId($placeId),
-            'google_synced_at' => Carbon::now(),
+            'google_synced_at' => now(),
         ]);
 
         return $activity->fresh(['address', 'manager', 'reviewedBy']);

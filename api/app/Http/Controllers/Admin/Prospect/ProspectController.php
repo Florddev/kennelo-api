@@ -16,7 +16,6 @@ use App\Models\Prospect;
 use App\Models\ProspectImport;
 use App\Services\Admin\Prospect\ProspectService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Carbon;
 
 /**
  * @tags Admin Prospects
@@ -36,7 +35,7 @@ class ProspectController extends Controller
         return ProspectResource::collection($prospects)
             ->additional([
                 'status' => ApiStatusEnum::SUCCESS,
-                'timestamp' => human_date(Carbon::now()),
+                'timestamp' => human_date(now()),
             ])
             ->response();
     }
@@ -50,7 +49,7 @@ class ProspectController extends Controller
         return (new ProspectResource($prospect))
             ->additional([
                 'status' => ApiStatusEnum::SUCCESS,
-                'timestamp' => human_date(Carbon::now()),
+                'timestamp' => human_date(now()),
             ])
             ->response();
     }
@@ -91,7 +90,7 @@ class ProspectController extends Controller
         return response()->json([
             'message' => 'Prospect deleted successfully',
             'status' => ApiStatusEnum::SUCCESS,
-            'timestamp' => human_date(Carbon::now()),
+            'timestamp' => human_date(now()),
         ]);
     }
 
@@ -108,7 +107,7 @@ class ProspectController extends Controller
                 'message' => 'Prospects imported successfully',
                 'data' => $result,
                 'status' => ApiStatusEnum::SUCCESS,
-                'timestamp' => human_date(Carbon::now()),
+                'timestamp' => human_date(now()),
             ]);
         }
 
@@ -118,7 +117,7 @@ class ProspectController extends Controller
             ->additional([
                 'message' => 'Prospect import queued successfully',
                 'status' => ApiStatusEnum::SUCCESS,
-                'timestamp' => human_date(Carbon::now()),
+                'timestamp' => human_date(now()),
             ])
             ->response()
             ->setStatusCode(202);
@@ -131,7 +130,7 @@ class ProspectController extends Controller
         return (new ProspectImportResource($import))
             ->additional([
                 'status' => ApiStatusEnum::SUCCESS,
-                'timestamp' => human_date(Carbon::now()),
+                'timestamp' => human_date(now()),
             ])
             ->response();
     }
@@ -142,7 +141,7 @@ class ProspectController extends Controller
             ->additional([
                 'message' => $message,
                 'status' => ApiStatusEnum::SUCCESS,
-                'timestamp' => human_date(Carbon::now()),
+                'timestamp' => human_date(now()),
             ])
             ->response();
     }

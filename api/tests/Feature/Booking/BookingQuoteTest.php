@@ -9,6 +9,7 @@ use App\Models\ActivityCycleSetting;
 use App\Models\AnimalType;
 use App\Models\Pet;
 use App\Models\User;
+use Illuminate\Support\Str;
 
 function makeQuoteFixtures(?callable $priceFor = null, int $closedMask = 0): array
 {
@@ -16,12 +17,12 @@ function makeQuoteFixtures(?callable $priceFor = null, int $closedMask = 0): arr
     $activity = Activity::factory()->create([
         'manager_id' => $manager->id,
         'is_active' => true,
-        'stripe_account_id' => 'acct_test_'.uniqid(),
+        'stripe_account_id' => 'acct_test_'.Str::random(8),
         'stripe_charges_enabled' => true,
         'stripe_payouts_enabled' => true,
         'stripe_onboarding_completed' => true,
     ]);
-    $animalType = AnimalType::create(['code' => 'dog_'.uniqid(), 'name' => 'Chien', 'category' => 'mammals']);
+    $animalType = AnimalType::create(['code' => 'dog_'.Str::random(8), 'name' => 'Chien', 'category' => 'mammals']);
 
     $cycle = ActivityCycle::create([
         'activity_id' => $activity->id,
@@ -76,7 +77,7 @@ it('returns a price quote for the selected dates and pets', function () {
 it('rejects a quote for an animal type the activity does not accept', function () {
     $user = User::factory()->create();
     [$activity] = makeQuoteFixtures();
-    $otherType = AnimalType::create(['code' => 'cat_'.uniqid(), 'name' => 'Chat', 'category' => 'mammals']);
+    $otherType = AnimalType::create(['code' => 'cat_'.Str::random(8), 'name' => 'Chat', 'category' => 'mammals']);
     $pet = Pet::create(['user_id' => $user->id, 'animal_type_id' => $otherType->id, 'name' => 'Whiskers']);
 
     $this->withHeaders(asUser($user))

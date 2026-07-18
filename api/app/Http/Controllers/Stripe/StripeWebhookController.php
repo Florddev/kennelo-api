@@ -9,7 +9,6 @@ use App\Models\StripeEvent;
 use App\Services\Stripe\StripeWebhookService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Stripe\Exception\SignatureVerificationException;
 use Stripe\Webhook;
@@ -52,7 +51,7 @@ class StripeWebhookController extends Controller
 
         $this->webhookService->handleEvent($event);
 
-        $record->update(['processed_at' => Carbon::now()]);
+        $record->update(['processed_at' => now()]);
 
         return response()->json(['received' => true]);
     }

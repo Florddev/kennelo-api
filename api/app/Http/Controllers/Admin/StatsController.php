@@ -8,7 +8,6 @@ use App\Enums\ApiStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Services\Admin\Stats\StatsService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Carbon;
 
 /**
  * @tags Admin Stats
@@ -24,7 +23,7 @@ class StatsController extends Controller
         return response()->json([
             'data' => $this->stats->overview(),
             'status' => ApiStatusEnum::SUCCESS,
-            'timestamp' => human_date(Carbon::now()),
+            'timestamp' => human_date(now()),
         ]);
     }
 
@@ -33,7 +32,7 @@ class StatsController extends Controller
         return response()->json([
             'data' => $this->stats->searches(),
             'status' => ApiStatusEnum::SUCCESS,
-            'timestamp' => human_date(Carbon::now()),
+            'timestamp' => human_date(now()),
         ]);
     }
 
@@ -42,7 +41,7 @@ class StatsController extends Controller
         return response()->json([
             'data' => $this->stats->business(),
             'status' => ApiStatusEnum::SUCCESS,
-            'timestamp' => human_date(Carbon::now()),
+            'timestamp' => human_date(now()),
         ]);
     }
 
@@ -51,7 +50,7 @@ class StatsController extends Controller
         return response()->json([
             'data' => $this->stats->finance(),
             'status' => ApiStatusEnum::SUCCESS,
-            'timestamp' => human_date(Carbon::now()),
+            'timestamp' => human_date(now()),
         ]);
     }
 
@@ -60,7 +59,7 @@ class StatsController extends Controller
         return response()->json([
             'data' => $this->stats->bookings(),
             'status' => ApiStatusEnum::SUCCESS,
-            'timestamp' => human_date(Carbon::now()),
+            'timestamp' => human_date(now()),
         ]);
     }
 
@@ -69,7 +68,7 @@ class StatsController extends Controller
         return response()->json([
             'data' => $this->stats->community(),
             'status' => ApiStatusEnum::SUCCESS,
-            'timestamp' => human_date(Carbon::now()),
+            'timestamp' => human_date(now()),
         ]);
     }
 }

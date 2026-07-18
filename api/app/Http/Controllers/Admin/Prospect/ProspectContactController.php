@@ -13,7 +13,6 @@ use App\Models\ProspectContact;
 use App\Services\Admin\Prospect\ProspectContactService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 
 /**
  * @tags Admin Prospect Contacts
@@ -33,7 +32,7 @@ class ProspectContactController extends Controller
         return ProspectContactResource::collection($contacts)
             ->additional([
                 'status' => ApiStatusEnum::SUCCESS,
-                'timestamp' => human_date(Carbon::now()),
+                'timestamp' => human_date(now()),
             ])
             ->response();
     }
@@ -48,7 +47,7 @@ class ProspectContactController extends Controller
             ->additional([
                 'message' => 'Contact logged successfully',
                 'status' => ApiStatusEnum::SUCCESS,
-                'timestamp' => human_date(Carbon::now()),
+                'timestamp' => human_date(now()),
             ])
             ->response()
             ->setStatusCode(201);
@@ -62,7 +61,7 @@ class ProspectContactController extends Controller
             return response()->json([
                 'message' => 'Not found',
                 'status' => ApiStatusEnum::ERROR,
-                'timestamp' => human_date(Carbon::now()),
+                'timestamp' => human_date(now()),
             ], 404);
         }
 
@@ -71,7 +70,7 @@ class ProspectContactController extends Controller
         return response()->json([
             'message' => 'Contact deleted successfully',
             'status' => ApiStatusEnum::SUCCESS,
-            'timestamp' => human_date(Carbon::now()),
+            'timestamp' => human_date(now()),
         ]);
     }
 }

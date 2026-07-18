@@ -110,8 +110,6 @@ class StripePaymentMethodService
     {
         $pm = $this->stripe->paymentMethods->retrieve($paymentMethodId);
 
-        if (($pm->customer ?? null) !== $user->stripe_customer_id) {
-            throw new AccessDeniedHttpException('Payment method does not belong to the current user.');
-        }
+        throw_if(($pm->customer ?? null) !== $user->stripe_customer_id, AccessDeniedHttpException::class, 'Payment method does not belong to the current user.');
     }
 }

@@ -16,8 +16,8 @@ use App\Models\BookingPayout;
 use App\Services\Finance\FinancialJournalService;
 use App\Services\Notification\NotificationRecipientResolver;
 use App\Services\Notification\NotificationService;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Stripe\StripeClient;
 
 class BookingPayoutService
@@ -31,7 +31,7 @@ class BookingPayoutService
 
     public function releaseDuePayouts(): int
     {
-        $threshold = Carbon::now()->subHours((int) setting('payout_delay_hours', config('booking.payout_delay_hours', 24)));
+        $threshold = now()->subHours((int) setting('payout_delay_hours', config('booking.payout_delay_hours', 24)));
 
         $bookingIds = Booking::where('status', BookingStatusEnum::CONFIRMED)
             ->where('payment_status', PaymentStatusEnum::SUCCEEDED)
@@ -89,9 +89,9 @@ class BookingPayoutService
                 'stripe_transfer_id' => $transfer->id,
                 'activity_stripe_account_id' => $accountId,
                 'amount' => $booking->activity_amount,
-                'currency' => strtoupper($currency),
+                'currency' => Str::upper($currency),
                 'status' => PayoutStatusEnum::IN_TRANSIT,
-                'transferred_at' => Carbon::now(),
+                'transferred_at' => now(),
             ]);
 
             $booking->update(['stripe_transfer_id' => $transfer->id]);

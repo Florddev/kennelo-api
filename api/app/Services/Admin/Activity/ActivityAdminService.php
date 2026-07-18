@@ -10,7 +10,6 @@ use App\Models\Activity;
 use App\Models\User;
 use App\Services\Prospect\CompanyLookupService;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Carbon;
 
 class ActivityAdminService
 {
@@ -59,7 +58,7 @@ class ActivityAdminService
             'is_active' => true,
             'rejection_reason' => null,
             'reviewed_by' => $admin->id,
-            'reviewed_at' => Carbon::now(),
+            'reviewed_at' => now(),
         ]);
 
         return $activity->fresh(['address', 'manager', 'reviewedBy']);
@@ -72,7 +71,7 @@ class ActivityAdminService
             'is_active' => false,
             'rejection_reason' => $data['reason'],
             'reviewed_by' => $admin->id,
-            'reviewed_at' => Carbon::now(),
+            'reviewed_at' => now(),
         ]);
 
         return $activity->fresh(['address', 'manager', 'reviewedBy']);
@@ -106,7 +105,7 @@ class ActivityAdminService
                 'siret' => $company['siret'] ?? $activity->siret,
                 'siren' => $company['siren'] ?? $activity->siren,
                 'ape_code' => $company['ape_code'] ?? $activity->ape_code,
-                'company_verified_at' => Carbon::now(),
+                'company_verified_at' => now(),
                 'company_verification_data' => $company,
             ]);
         }

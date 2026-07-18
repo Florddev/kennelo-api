@@ -20,7 +20,6 @@ use App\Models\Activity;
 use App\Models\ActivityCycle;
 use App\Services\Activity\ActivityCycleService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Carbon;
 
 /**
  * @tags Activities
@@ -38,7 +37,7 @@ class ActivityCycleController extends Controller
         return ActivityCycleResource::collection($cycles)
             ->additional([
                 'status' => ApiStatusEnum::SUCCESS,
-                'timestamp' => human_date(Carbon::now()),
+                'timestamp' => human_date(now()),
             ])
             ->response();
     }
@@ -52,7 +51,7 @@ class ActivityCycleController extends Controller
         return ActivityCycleSettingResource::collection($settings)
             ->additional([
                 'status' => ApiStatusEnum::SUCCESS,
-                'timestamp' => human_date(Carbon::now()),
+                'timestamp' => human_date(now()),
             ])
             ->response();
     }
@@ -65,7 +64,7 @@ class ActivityCycleController extends Controller
 
         return response()->json([
             'status' => ApiStatusEnum::SUCCESS,
-            'timestamp' => human_date(Carbon::now()),
+            'timestamp' => human_date(now()),
             'data' => $prices,
         ]);
     }
@@ -79,7 +78,7 @@ class ActivityCycleController extends Controller
         return ActivityCycleResource::collection($cycles)
             ->additional([
                 'status' => ApiStatusEnum::SUCCESS,
-                'timestamp' => human_date(Carbon::now()),
+                'timestamp' => human_date(now()),
             ])
             ->response();
     }
@@ -92,7 +91,7 @@ class ActivityCycleController extends Controller
 
         return response()->json([
             'status' => ApiStatusEnum::SUCCESS,
-            'timestamp' => human_date(Carbon::now()),
+            'timestamp' => human_date(now()),
             'data' => $ranges->map(fn (array $range): array => [
                 'animal_type' => new AnimalTypeResource($range['animal_type']),
                 'min_price' => $range['min_price'],
@@ -110,7 +109,7 @@ class ActivityCycleController extends Controller
         return (new ActivityCycleResource($cycle))
             ->additional([
                 'status' => ApiStatusEnum::SUCCESS,
-                'timestamp' => human_date(Carbon::now()),
+                'timestamp' => human_date(now()),
             ])
             ->response()
             ->setStatusCode(201);
@@ -125,7 +124,7 @@ class ActivityCycleController extends Controller
         return ActivityCycleResource::collection($cycles)
             ->additional([
                 'status' => ApiStatusEnum::SUCCESS,
-                'timestamp' => human_date(Carbon::now()),
+                'timestamp' => human_date(now()),
             ])
             ->response();
     }
@@ -140,7 +139,7 @@ class ActivityCycleController extends Controller
         return (new ActivityCycleResource($cycle))
             ->additional([
                 'status' => ApiStatusEnum::SUCCESS,
-                'timestamp' => human_date(Carbon::now()),
+                'timestamp' => human_date(now()),
             ])
             ->response();
     }
@@ -165,7 +164,7 @@ class ActivityCycleController extends Controller
         return (new ActivityCycleResource($cycle))
             ->additional([
                 'status' => ApiStatusEnum::SUCCESS,
-                'timestamp' => human_date(Carbon::now()),
+                'timestamp' => human_date(now()),
             ])
             ->response();
     }
@@ -180,7 +179,7 @@ class ActivityCycleController extends Controller
         return (new ActivityCycleResource($cycle))
             ->additional([
                 'status' => ApiStatusEnum::SUCCESS,
-                'timestamp' => human_date(Carbon::now()),
+                'timestamp' => human_date(now()),
             ])
             ->response();
     }

@@ -33,9 +33,7 @@ class TwoFactorAuthenticationController extends Controller
     {
         $user = $request->user();
 
-        if ($user->two_factor_confirmed_at !== null) {
-            abort(409, 'Two-factor authentication is already enabled.');
-        }
+        abort_if($user->two_factor_confirmed_at !== null, 409, 'Two-factor authentication is already enabled.');
 
         $this->ensureStepUp($user, $request);
 
@@ -57,9 +55,7 @@ class TwoFactorAuthenticationController extends Controller
     {
         $user = $request->user();
 
-        if ($user->two_factor_secret === null) {
-            abort(409, 'Two-factor authentication has not been initiated.');
-        }
+        abort_if($user->two_factor_secret === null, 409, 'Two-factor authentication has not been initiated.');
 
         if (! $this->twoFactorService->verify($user->two_factor_secret, (string) $request->validated('code'))) {
             throw ValidationException::withMessages(['code' => 'The provided two-factor code is invalid.']);
@@ -104,9 +100,7 @@ class TwoFactorAuthenticationController extends Controller
     {
         $user = $request->user();
 
-        if ($user->two_factor_confirmed_at === null) {
-            abort(409, 'Two-factor authentication is not enabled.');
-        }
+        abort_if($user->two_factor_confirmed_at === null, 409, 'Two-factor authentication is not enabled.');
 
         $this->ensureStepUp($user, $request);
 

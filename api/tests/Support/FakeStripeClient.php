@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Support;
 
+use Illuminate\Support\Str;
 use Stripe\Checkout\Session;
 use Stripe\Collection;
 use Stripe\Customer;
@@ -65,7 +66,7 @@ class FakeStripeClient extends StripeClient
             {
                 $this->recorder->record('customers.create', $params);
 
-                return Customer::constructFrom(['id' => 'cus_test_'.uniqid()]);
+                return Customer::constructFrom(['id' => 'cus_test_'.Str::random(8)]);
             }
         };
 
@@ -81,10 +82,10 @@ class FakeStripeClient extends StripeClient
                 $this->recorder->record('paymentIntents.create', $params);
 
                 return PaymentIntent::constructFrom([
-                    'id' => 'pi_test_'.uniqid(),
+                    'id' => 'pi_test_'.Str::random(8),
                     'latest_charge' => null,
                     'status' => 'requires_capture',
-                    'client_secret' => 'pi_test_secret_'.uniqid(),
+                    'client_secret' => 'pi_test_secret_'.Str::random(8),
                 ]);
             }
 
@@ -94,7 +95,7 @@ class FakeStripeClient extends StripeClient
 
                 return PaymentIntent::constructFrom([
                     'id' => $id,
-                    'latest_charge' => 'ch_test_'.uniqid(),
+                    'latest_charge' => 'ch_test_'.Str::random(8),
                     'status' => 'succeeded',
                 ]);
             }
@@ -121,7 +122,7 @@ class FakeStripeClient extends StripeClient
             {
                 $this->recorder->record('transfers.create', $params);
 
-                return Transfer::constructFrom(['id' => 'tr_test_'.uniqid()]);
+                return Transfer::constructFrom(['id' => 'tr_test_'.Str::random(8)]);
             }
         };
 
@@ -136,7 +137,7 @@ class FakeStripeClient extends StripeClient
             {
                 $this->recorder->record('refunds.create', $params);
 
-                return Refund::constructFrom(['id' => 're_test_'.uniqid(), 'amount' => 1000]);
+                return Refund::constructFrom(['id' => 're_test_'.Str::random(8), 'amount' => 1000]);
             }
         };
 
@@ -192,7 +193,7 @@ class FakeStripeClient extends StripeClient
             {
                 $this->recorder->record('products.create', $params);
 
-                return Product::constructFrom(['id' => 'prod_test_'.uniqid()]);
+                return Product::constructFrom(['id' => 'prod_test_'.Str::random(8)]);
             }
         };
 
@@ -214,7 +215,7 @@ class FakeStripeClient extends StripeClient
             {
                 $this->recorder->record('prices.create', $params);
 
-                return Price::constructFrom(['id' => 'price_test_'.uniqid()]);
+                return Price::constructFrom(['id' => 'price_test_'.Str::random(8)]);
             }
         };
 
@@ -230,8 +231,8 @@ class FakeStripeClient extends StripeClient
                 $this->recorder->record('checkout.sessions.create', $params);
 
                 return Session::constructFrom([
-                    'id' => 'cs_test_'.uniqid(),
-                    'url' => 'https://checkout.stripe.test/session/'.uniqid(),
+                    'id' => 'cs_test_'.Str::random(8),
+                    'url' => 'https://checkout.stripe.test/session/'.Str::random(8),
                 ]);
             }
         };

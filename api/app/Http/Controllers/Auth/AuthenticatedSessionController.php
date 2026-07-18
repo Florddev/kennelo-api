@@ -102,7 +102,7 @@ class AuthenticatedSessionController extends Controller
             ? $this->twoFactorService->verify((string) $user->two_factor_secret, $code)
             : $this->twoFactorService->consumeRecoveryCode(
                 $user,
-                strtoupper(trim((string) $request->validated('recovery_code'))),
+                (string) str((string) $request->validated('recovery_code'))->trim()->upper(),
             );
 
         if (! $verified) {

@@ -11,7 +11,6 @@ use App\Models\Booking;
 use App\Models\Pet;
 use App\Models\Review;
 use App\Models\User;
-use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -81,8 +80,8 @@ class PetReviewSeeder extends Seeder
                 $booking = Booking::create([
                     'user_id' => $petOwner->id,
                     'activity_id' => $activity->id,
-                    'check_in_date' => Carbon::now()->subDays($daysAgo + $nights)->format('Y-m-d'),
-                    'check_out_date' => Carbon::now()->subDays($daysAgo)->format('Y-m-d'),
+                    'check_in_date' => now()->subDays($daysAgo + $nights)->format('Y-m-d'),
+                    'check_out_date' => now()->subDays($daysAgo)->format('Y-m-d'),
                     'total_price' => $nights * 30.00,
                     'status' => BookingStatusEnum::COMPLETED,
                 ]);
@@ -101,7 +100,7 @@ class PetReviewSeeder extends Seeder
                     'comment' => $data['comment'],
                     'would_recommend' => true,
                     'is_published' => true,
-                    'published_at' => Carbon::now()->subDays($daysAgo - 1),
+                    'published_at' => now()->subDays($daysAgo - 1),
                 ]);
             }
         });

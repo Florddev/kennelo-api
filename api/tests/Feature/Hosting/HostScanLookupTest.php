@@ -8,10 +8,11 @@ use App\Models\AnimalType;
 use App\Models\Booking;
 use App\Models\Pet;
 use App\Models\User;
+use Illuminate\Support\Str;
 
 function scannedPet(User $owner): Pet
 {
-    $animalType = AnimalType::create(['code' => 'dog_'.uniqid(), 'name' => 'Chien', 'category' => 'mammals']);
+    $animalType = AnimalType::create(['code' => 'dog_'.Str::random(8), 'name' => 'Chien', 'category' => 'mammals']);
 
     return Pet::create([
         'user_id' => $owner->id,

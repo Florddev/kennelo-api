@@ -14,7 +14,6 @@ use App\Models\Activity;
 use App\Services\Activity\ActivityService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 
 /**
  * @tags Activities
@@ -34,7 +33,7 @@ class ActivityController extends Controller
         return ActivityResource::collection($activities)
             ->additional([
                 'status' => ApiStatusEnum::SUCCESS,
-                'timestamp' => human_date(Carbon::now()),
+                'timestamp' => human_date(now()),
             ])
             ->response();
     }
@@ -48,7 +47,7 @@ class ActivityController extends Controller
         return (new ActivityResource($activity))
             ->additional([
                 'status' => ApiStatusEnum::SUCCESS,
-                'timestamp' => human_date(Carbon::now()),
+                'timestamp' => human_date(now()),
             ])
             ->response()
             ->setStatusCode(201);
@@ -63,7 +62,7 @@ class ActivityController extends Controller
         return (new ActivityResource($activity))
             ->additional([
                 'status' => ApiStatusEnum::SUCCESS,
-                'timestamp' => human_date(Carbon::now()),
+                'timestamp' => human_date(now()),
             ])
             ->response();
     }
@@ -77,7 +76,7 @@ class ActivityController extends Controller
         return (new ActivityResource($activity))
             ->additional([
                 'status' => ApiStatusEnum::SUCCESS,
-                'timestamp' => human_date(Carbon::now()),
+                'timestamp' => human_date(now()),
             ])
             ->response();
     }

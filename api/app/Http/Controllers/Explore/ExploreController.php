@@ -11,7 +11,6 @@ use App\Http\Resources\ExploreActivityResource;
 use App\Services\Explore\ExploreService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 
 class ExploreController extends Controller
 {
@@ -23,16 +22,16 @@ class ExploreController extends Controller
 
         $sections = $this->service->getSections($lat, $lng, $request->user());
 
-        $sectionsData = array_map(fn ($section) => [
+        $sectionsData = collect($sections)->map(fn ($section) => [
             'id' => $section['id'],
             'has_more' => $section['has_more'],
             'activities' => ExploreActivityResource::collection($section['activities'])->resolve($request),
-        ], $sections);
+        ])->all();
 
         return response()->json([
             'data' => ['sections' => $sectionsData],
             'status' => ApiStatusEnum::SUCCESS->value,
-            'timestamp' => human_date(Carbon::now()),
+            'timestamp' => human_date(now()),
         ]);
     }
 
@@ -43,9 +42,7 @@ class ExploreController extends Controller
 
         $result = $this->service->getSectionPage($sectionId, $lat, $lng, $page, $request->user());
 
-        if ($result === null) {
-            abort(404);
-        }
+        abort_if($result === null, 404);
 
         return response()->json([
             'data' => [
@@ -57,7 +54,7 @@ class ExploreController extends Controller
                 ],
             ],
             'status' => ApiStatusEnum::SUCCESS->value,
-            'timestamp' => human_date(Carbon::now()),
+            'timestamp' => human_date(now()),
         ]);
     }
 
@@ -78,7 +75,7 @@ class ExploreController extends Controller
                 ],
             ],
             'status' => ApiStatusEnum::SUCCESS->value,
-            'timestamp' => human_date(Carbon::now()),
+            'timestamp' => human_date(now()),
         ]);
     }
 

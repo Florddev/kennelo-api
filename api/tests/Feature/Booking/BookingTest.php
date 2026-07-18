@@ -18,6 +18,7 @@ use App\Models\Message;
 use App\Models\Pet;
 use App\Models\User;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Str;
 use Stripe\StripeClient;
 use Tests\Support\FakeStripeClient;
 
@@ -27,12 +28,12 @@ function makeBookingFixtures(): array
     $activity = Activity::factory()->create([
         'manager_id' => $manager->id,
         'is_active' => true,
-        'stripe_account_id' => 'acct_test_'.uniqid(),
+        'stripe_account_id' => 'acct_test_'.Str::random(8),
         'stripe_charges_enabled' => true,
         'stripe_payouts_enabled' => true,
         'stripe_onboarding_completed' => true,
     ]);
-    $animalType = AnimalType::create(['code' => 'dog_'.uniqid(), 'name' => 'Chien', 'category' => 'mammals']);
+    $animalType = AnimalType::create(['code' => 'dog_'.Str::random(8), 'name' => 'Chien', 'category' => 'mammals']);
 
     $activityCycle = ActivityCycle::create([
         'activity_id' => $activity->id,

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\User;
+use Illuminate\Support\Facades\Log;
 use PHPOpenSourceSaver\JWTAuth\Exceptions\JWTException;
 use PHPOpenSourceSaver\JWTAuth\Exceptions\TokenExpiredException;
 use PHPOpenSourceSaver\JWTAuth\Exceptions\TokenInvalidException;
@@ -56,26 +57,21 @@ class JWTService
             return;
         }
 
-        try {
-            $this->jwt->setToken($token)->invalidate();
-        } catch (\Exception $e) {
-            logger()->error('Failed to blacklist token: '.$e->getMessage());
-        }
+        rescue(
+            fn () => $this->jwt->setToken($token)->invalidate(),
+            report: fn (\Throwable $e) => Log::error('Failed to blacklist token: '.$e->getMessage()),
+        );
     }
 
     public function refreshAccessToken(string $refreshToken): array
     {
         $payload = $this->validateToken($refreshToken);
 
-        if (! isset($payload->type) || $payload->type !== 'refresh') {
-            throw new \Exception('Invalid token type');
-        }
+        throw_if(data_get($payload, 'type') !== 'refresh', \Exception::class, 'Invalid token type');
 
         $user = User::find($payload->sub);
 
-        if (! $user) {
-            throw new \Exception('User not found');
-        }
+        throw_unless($user, \Exception::class, 'User not found');
 
         $this->blacklistToken($refreshToken);
 
@@ -115,15 +111,11 @@ class JWTService
     {
         $payload = $this->validateToken($token);
 
-        if (! isset($payload->type) || $payload->type !== '2fa') {
-            throw new \Exception('Invalid token type');
-        }
+        throw_if(data_get($payload, 'type') !== '2fa', \Exception::class, 'Invalid token type');
 
         $user = User::find($payload->sub);
 
-        if (! $user) {
-            throw new \Exception('User not found');
-        }
+        throw_unless($user, \Exception::class, 'User not found');
 
         return $user;
     }
@@ -141,15 +133,11 @@ class JWTService
     {
         $payload = $this->validateToken($token);
 
-        if (! isset($payload->type) || $payload->type !== 'password_reset_challenge') {
-            throw new \Exception('Invalid token type');
-        }
+        throw_if(data_get($payload, 'type') !== 'password_reset_challenge', \Exception::class, 'Invalid token type');
 
         $user = User::find($payload->sub);
 
-        if (! $user) {
-            throw new \Exception('User not found');
-        }
+        throw_unless($user, \Exception::class, 'User not found');
 
         return $user;
     }

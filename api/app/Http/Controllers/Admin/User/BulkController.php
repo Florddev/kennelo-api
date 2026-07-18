@@ -15,7 +15,6 @@ use App\Services\Admin\AdminActionService;
 use App\Services\Admin\User\AdminUserService;
 use App\Services\Admin\User\ExportService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Carbon;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
@@ -50,7 +49,7 @@ class BulkController extends Controller
             'message' => 'Users status updated successfully',
             'affected' => $affected,
             'status' => ApiStatusEnum::SUCCESS,
-            'timestamp' => human_date(Carbon::now()),
+            'timestamp' => human_date(now()),
         ]);
     }
 
@@ -76,7 +75,7 @@ class BulkController extends Controller
             'message' => 'Users roles updated successfully',
             'affected' => $affected,
             'status' => ApiStatusEnum::SUCCESS,
-            'timestamp' => human_date(Carbon::now()),
+            'timestamp' => human_date(now()),
         ]);
     }
 

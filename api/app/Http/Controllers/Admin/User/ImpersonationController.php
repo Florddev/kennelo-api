@@ -11,7 +11,6 @@ use App\Services\Admin\User\ImpersonationService;
 use App\Services\User\UserService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
 /**
@@ -30,7 +29,7 @@ class ImpersonationController extends Controller
             return response()->json([
                 'message' => 'Invalid UUID format',
                 'status' => ApiStatusEnum::ERROR,
-                'timestamp' => human_date(Carbon::now()),
+                'timestamp' => human_date(now()),
             ], 400);
         }
 
@@ -40,7 +39,7 @@ class ImpersonationController extends Controller
             return response()->json([
                 'message' => 'User not found',
                 'status' => ApiStatusEnum::ERROR,
-                'timestamp' => human_date(Carbon::now()),
+                'timestamp' => human_date(now()),
             ], 404);
         }
 
@@ -55,7 +54,7 @@ class ImpersonationController extends Controller
                 'user' => new UserResource($target),
             ],
             'status' => ApiStatusEnum::SUCCESS,
-            'timestamp' => human_date(Carbon::now()),
+            'timestamp' => human_date(now()),
         ]);
     }
 
@@ -68,7 +67,7 @@ class ImpersonationController extends Controller
             return response()->json([
                 'message' => 'Not an impersonation session',
                 'status' => ApiStatusEnum::ERROR,
-                'timestamp' => human_date(Carbon::now()),
+                'timestamp' => human_date(now()),
             ], 400);
         }
 
@@ -77,7 +76,7 @@ class ImpersonationController extends Controller
         return response()->json([
             'message' => 'Impersonation stopped successfully',
             'status' => ApiStatusEnum::SUCCESS,
-            'timestamp' => human_date(Carbon::now()),
+            'timestamp' => human_date(now()),
         ]);
     }
 }

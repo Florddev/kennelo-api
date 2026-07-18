@@ -14,6 +14,7 @@ use App\Models\SubscriptionPlan;
 use App\Models\User;
 use App\Services\Stripe\StripeWebhookService;
 use Database\Seeders\SubscriptionPlanSeeder;
+use Illuminate\Support\Str;
 use Stripe\Event;
 use Stripe\StripeClient;
 use Tests\Support\FakeStripeClient;
@@ -39,7 +40,7 @@ function proPlan(): SubscriptionPlan
 function dispatchWebhook(string $type, array $object): void
 {
     $event = Event::constructFrom([
-        'id' => 'evt_'.uniqid(),
+        'id' => 'evt_'.Str::random(8),
         'type' => $type,
         'data' => ['object' => $object],
     ]);
