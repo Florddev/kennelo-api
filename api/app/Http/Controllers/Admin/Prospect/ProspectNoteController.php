@@ -14,7 +14,6 @@ use App\Models\ProspectNote;
 use App\Services\Admin\Prospect\ProspectNoteService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 
 /**
  * @tags Admin Prospect Notes
@@ -34,7 +33,7 @@ class ProspectNoteController extends Controller
         return ProspectNoteResource::collection($notes)
             ->additional([
                 'status' => ApiStatusEnum::SUCCESS,
-                'timestamp' => human_date(Carbon::now()),
+                'timestamp' => human_date(now()),
             ])
             ->response();
     }
@@ -49,7 +48,7 @@ class ProspectNoteController extends Controller
             ->additional([
                 'message' => 'Note created successfully',
                 'status' => ApiStatusEnum::SUCCESS,
-                'timestamp' => human_date(Carbon::now()),
+                'timestamp' => human_date(now()),
             ])
             ->response()
             ->setStatusCode(201);
@@ -69,7 +68,7 @@ class ProspectNoteController extends Controller
             ->additional([
                 'message' => 'Note updated successfully',
                 'status' => ApiStatusEnum::SUCCESS,
-                'timestamp' => human_date(Carbon::now()),
+                'timestamp' => human_date(now()),
             ])
             ->response();
     }
@@ -87,7 +86,7 @@ class ProspectNoteController extends Controller
         return response()->json([
             'message' => 'Note deleted successfully',
             'status' => ApiStatusEnum::SUCCESS,
-            'timestamp' => human_date(Carbon::now()),
+            'timestamp' => human_date(now()),
         ]);
     }
 
@@ -96,7 +95,7 @@ class ProspectNoteController extends Controller
         return response()->json([
             'message' => 'Not found',
             'status' => ApiStatusEnum::ERROR,
-            'timestamp' => human_date(Carbon::now()),
+            'timestamp' => human_date(now()),
         ], 404);
     }
 }

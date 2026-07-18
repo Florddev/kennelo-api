@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
-use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -39,8 +38,8 @@ class ConversationSeeder extends Seeder
             if ($existingConv1) {
                 $conversation1Id = $existingConv1->id;
                 DB::table('conversations')->where('id', $conversation1Id)->update([
-                    'last_message_at' => Carbon::now()->subHours(2),
-                    'updated_at' => Carbon::now()->subHours(2),
+                    'last_message_at' => now()->subHours(2),
+                    'updated_at' => now()->subHours(2),
                 ]);
             } else {
                 $conversation1Id = (string) Str::uuid();
@@ -48,9 +47,9 @@ class ConversationSeeder extends Seeder
                     'id' => $conversation1Id,
                     'user_id' => $userId,
                     'activity_id' => $activity1Id,
-                    'last_message_at' => Carbon::now()->subHours(2),
-                    'created_at' => Carbon::now()->subDays(30),
-                    'updated_at' => Carbon::now()->subHours(2),
+                    'last_message_at' => now()->subHours(2),
+                    'created_at' => now()->subDays(30),
+                    'updated_at' => now()->subHours(2),
                 ]);
             }
 
@@ -64,8 +63,8 @@ class ConversationSeeder extends Seeder
                 'sender_type' => 'user',
                 'message_type' => 'text',
                 'content' => 'Bonjour, j\'aimerais savoir si vous acceptez les chiens de grande taille ?',
-                'created_at' => Carbon::now()->subDays(30),
-                'updated_at' => Carbon::now()->subDays(30),
+                'created_at' => now()->subDays(30),
+                'updated_at' => now()->subDays(30),
             ]);
 
             $message2Id = (string) Str::uuid();
@@ -77,8 +76,8 @@ class ConversationSeeder extends Seeder
                 'sender_type' => 'activity',
                 'message_type' => 'text',
                 'content' => 'Bonjour ! Oui, nous acceptons les chiens de toutes tailles. Nous avons de l\'expérience avec les grandes races. N\'hésitez pas à me parler de votre chien !',
-                'created_at' => Carbon::now()->subDays(30)->addHours(1),
-                'updated_at' => Carbon::now()->subDays(30)->addHours(1),
+                'created_at' => now()->subDays(30)->addHours(1),
+                'updated_at' => now()->subDays(30)->addHours(1),
             ]);
 
             // === Booking 1 (Completed - Rex) ===
@@ -92,8 +91,8 @@ class ConversationSeeder extends Seeder
                     'sender_type' => 'user',
                     'message_type' => 'booking_reference',
                     'content' => 'Je souhaite réserver pour Rex.',
-                    'created_at' => Carbon::now()->subDays(26),
-                    'updated_at' => Carbon::now()->subDays(26),
+                    'created_at' => now()->subDays(26),
+                    'updated_at' => now()->subDays(26),
                 ]);
 
                 DB::table('messages')->insert([
@@ -104,8 +103,8 @@ class ConversationSeeder extends Seeder
                     'sender_type' => 'activity',
                     'message_type' => 'booking_reference',
                     'content' => 'Votre réservation pour Rex est confirmée !',
-                    'created_at' => Carbon::now()->subDays(25),
-                    'updated_at' => Carbon::now()->subDays(25),
+                    'created_at' => now()->subDays(25),
+                    'updated_at' => now()->subDays(25),
                 ]);
 
                 $existingThread1 = DB::table('booking_threads')->where('booking_id', $booking1Id)->first();
@@ -114,9 +113,9 @@ class ConversationSeeder extends Seeder
                         'conversation_id' => $conversation1Id,
                         'booking_id' => $booking1Id,
                         'is_active' => false,
-                        'archived_at' => Carbon::now()->subDays(14),
-                        'created_at' => Carbon::now()->subDays(25),
-                        'updated_at' => Carbon::now()->subDays(14),
+                        'archived_at' => now()->subDays(14),
+                        'created_at' => now()->subDays(25),
+                        'updated_at' => now()->subDays(14),
                     ]);
                 }
 
@@ -127,9 +126,9 @@ class ConversationSeeder extends Seeder
                 //     'sender_id' => null,
                 //     'sender_type' => 'system',
                 //     'message_type' => 'system',
-                //     'content' => 'Thread de réservation créé - Check-in: ' . Carbon::now()->subDays(20)->format('d/m/Y') . ', Check-out: ' . Carbon::now()->subDays(15)->format('d/m/Y'),
-                //     'created_at' => Carbon::now()->subDays(25),
-                //     'updated_at' => Carbon::now()->subDays(25),
+                //     'content' => 'Thread de réservation créé - Check-in: ' . now()->subDays(20)->format('d/m/Y') . ', Check-out: ' . now()->subDays(15)->format('d/m/Y'),
+                //     'created_at' => now()->subDays(25),
+                //     'updated_at' => now()->subDays(25),
                 // ]);
 
                 $message5Id = (string) Str::uuid();
@@ -141,8 +140,8 @@ class ConversationSeeder extends Seeder
                     'sender_type' => 'user',
                     'message_type' => 'text',
                     'content' => 'Bonjour, je vous envoie le carnet de vaccination de Rex.',
-                    'created_at' => Carbon::now()->subDays(22),
-                    'updated_at' => Carbon::now()->subDays(22),
+                    'created_at' => now()->subDays(22),
+                    'updated_at' => now()->subDays(22),
                 ]);
 
                 DB::table('message_files')->insert([
@@ -153,7 +152,7 @@ class ConversationSeeder extends Seeder
                     'file_type' => 'document',
                     'file_size' => 524288,
                     'mime_type' => 'application/pdf',
-                    'created_at' => Carbon::now()->subDays(22),
+                    'created_at' => now()->subDays(22),
                 ]);
 
                 DB::table('messages')->insert([
@@ -164,8 +163,8 @@ class ConversationSeeder extends Seeder
                     'sender_type' => 'activity',
                     'message_type' => 'text',
                     'content' => 'Parfait, tout est en ordre ! Rex sera entre de bonnes mains.',
-                    'created_at' => Carbon::now()->subDays(22)->addHours(2),
-                    'updated_at' => Carbon::now()->subDays(22)->addHours(2),
+                    'created_at' => now()->subDays(22)->addHours(2),
+                    'updated_at' => now()->subDays(22)->addHours(2),
                 ]);
 
                 $message7Id = (string) Str::uuid();
@@ -177,8 +176,8 @@ class ConversationSeeder extends Seeder
                     'sender_type' => 'activity',
                     'message_type' => 'file',
                     'content' => 'Rex s\'amuse bien au parc !',
-                    'created_at' => Carbon::now()->subDays(18),
-                    'updated_at' => Carbon::now()->subDays(18),
+                    'created_at' => now()->subDays(18),
+                    'updated_at' => now()->subDays(18),
                 ]);
 
                 DB::table('message_files')->insert([
@@ -189,7 +188,7 @@ class ConversationSeeder extends Seeder
                     'file_type' => 'image',
                     'file_size' => 2097152,
                     'mime_type' => 'image/jpeg',
-                    'created_at' => Carbon::now()->subDays(18),
+                    'created_at' => now()->subDays(18),
                 ]);
 
                 DB::table('messages')->insert([
@@ -200,8 +199,8 @@ class ConversationSeeder extends Seeder
                     'sender_type' => 'user',
                     'message_type' => 'text',
                     'content' => 'Merci beaucoup ! Il a l\'air très heureux !',
-                    'created_at' => Carbon::now()->subDays(18)->addHours(1),
-                    'updated_at' => Carbon::now()->subDays(18)->addHours(1),
+                    'created_at' => now()->subDays(18)->addHours(1),
+                    'updated_at' => now()->subDays(18)->addHours(1),
                 ]);
             }
 
@@ -216,8 +215,8 @@ class ConversationSeeder extends Seeder
                     'sender_type' => 'user',
                     'message_type' => 'booking_reference',
                     'content' => 'Je voudrais réserver Rex pour quelques jours.',
-                    'created_at' => Carbon::now()->subDays(7),
-                    'updated_at' => Carbon::now()->subDays(7),
+                    'created_at' => now()->subDays(7),
+                    'updated_at' => now()->subDays(7),
                 ]);
 
                 DB::table('messages')->insert([
@@ -228,8 +227,8 @@ class ConversationSeeder extends Seeder
                     'sender_type' => 'activity',
                     'message_type' => 'booking_reference',
                     'content' => 'Désolé, nous ne pouvons pas honorer cette réservation sur ces dates, nous sommes complets.',
-                    'created_at' => Carbon::now()->subDays(6),
-                    'updated_at' => Carbon::now()->subDays(6),
+                    'created_at' => now()->subDays(6),
+                    'updated_at' => now()->subDays(6),
                 ]);
 
                 $existingThread5 = DB::table('booking_threads')->where('booking_id', $booking5Id)->first();
@@ -238,9 +237,9 @@ class ConversationSeeder extends Seeder
                         'conversation_id' => $conversation1Id,
                         'booking_id' => $booking5Id,
                         'is_active' => false,
-                        'archived_at' => Carbon::now()->subDays(2),
-                        'created_at' => Carbon::now()->subDays(7),
-                        'updated_at' => Carbon::now()->subDays(2),
+                        'archived_at' => now()->subDays(2),
+                        'created_at' => now()->subDays(7),
+                        'updated_at' => now()->subDays(2),
                     ]);
                 }
             }
@@ -256,8 +255,8 @@ class ConversationSeeder extends Seeder
                     'sender_type' => 'user',
                     'message_type' => 'booking_reference',
                     'content' => 'Je souhaite réserver pour Rex et Minou cette fois !',
-                    'created_at' => Carbon::now()->subDays(4),
-                    'updated_at' => Carbon::now()->subDays(4),
+                    'created_at' => now()->subDays(4),
+                    'updated_at' => now()->subDays(4),
                 ]);
 
                 DB::table('messages')->insert([
@@ -268,8 +267,8 @@ class ConversationSeeder extends Seeder
                     'sender_type' => 'activity',
                     'message_type' => 'booking_reference',
                     'content' => 'C\'est avec plaisir ! La réservation est confirmée pour Rex et Minou.',
-                    'created_at' => Carbon::now()->subDays(3),
-                    'updated_at' => Carbon::now()->subDays(3),
+                    'created_at' => now()->subDays(3),
+                    'updated_at' => now()->subDays(3),
                 ]);
 
                 $existingThread2 = DB::table('booking_threads')->where('booking_id', $booking2Id)->first();
@@ -279,8 +278,8 @@ class ConversationSeeder extends Seeder
                         'booking_id' => $booking2Id,
                         'is_active' => true,
                         'archived_at' => null,
-                        'created_at' => Carbon::now()->subDays(3),
-                        'updated_at' => Carbon::now()->subDays(3),
+                        'created_at' => now()->subDays(3),
+                        'updated_at' => now()->subDays(3),
                     ]);
                 }
 
@@ -291,9 +290,9 @@ class ConversationSeeder extends Seeder
                 //     'sender_id' => null,
                 //     'sender_type' => 'system',
                 //     'message_type' => 'system',
-                //     'content' => 'Thread de réservation créé - Check-in: '.Carbon::now()->addDays(5)->format('d/m/Y').', Check-out: '.Carbon::now()->addDays(12)->format('d/m/Y'),
-                //     'created_at' => Carbon::now()->subDays(3),
-                //     'updated_at' => Carbon::now()->subDays(3),
+                //     'content' => 'Thread de réservation créé - Check-in: '.now()->addDays(5)->format('d/m/Y').', Check-out: '.now()->addDays(12)->format('d/m/Y'),
+                //     'created_at' => now()->subDays(3),
+                //     'updated_at' => now()->subDays(3),
                 // ]);
 
                 DB::table('messages')->insert([
@@ -304,8 +303,8 @@ class ConversationSeeder extends Seeder
                     'sender_type' => 'user',
                     'message_type' => 'text',
                     'content' => 'Bonjour ! Petite précision : Minou n\'aime pas trop les autres chats. Est-ce que cela pose problème ?',
-                    'created_at' => Carbon::now()->subDays(2),
-                    'updated_at' => Carbon::now()->subDays(2),
+                    'created_at' => now()->subDays(2),
+                    'updated_at' => now()->subDays(2),
                 ]);
 
                 DB::table('messages')->insert([
@@ -316,8 +315,8 @@ class ConversationSeeder extends Seeder
                     'sender_type' => 'activity',
                     'message_type' => 'text',
                     'content' => 'Pas de souci ! Nous avons des espaces séparés et nous gérons cela régulièrement. Minou aura son propre espace tranquille.',
-                    'created_at' => Carbon::now()->subHours(2),
-                    'updated_at' => Carbon::now()->subHours(2),
+                    'created_at' => now()->subHours(2),
+                    'updated_at' => now()->subHours(2),
                 ]);
             }
 
@@ -330,8 +329,8 @@ class ConversationSeeder extends Seeder
                 'sender_type' => 'user',
                 'message_type' => 'text',
                 'content' => 'Super ! J\'ai hâte. Merci pour votre professionnalisme.',
-                'created_at' => Carbon::now()->subHours(1),
-                'updated_at' => Carbon::now()->subHours(1),
+                'created_at' => now()->subHours(1),
+                'updated_at' => now()->subHours(1),
             ]);
 
             // === CONVERSATION 2: Simple conversation without bookings ===
@@ -349,9 +348,9 @@ class ConversationSeeder extends Seeder
                         'id' => $conversation2Id,
                         'user_id' => $userId,
                         'activity_id' => $activity2Id,
-                        'last_message_at' => Carbon::now()->subDays(5),
-                        'created_at' => Carbon::now()->subDays(10),
-                        'updated_at' => Carbon::now()->subDays(5),
+                        'last_message_at' => now()->subDays(5),
+                        'created_at' => now()->subDays(10),
+                        'updated_at' => now()->subDays(5),
                     ]);
                 }
 
@@ -363,8 +362,8 @@ class ConversationSeeder extends Seeder
                     'sender_type' => 'user',
                     'message_type' => 'text',
                     'content' => 'Bonjour, acceptez-vous les oiseaux ? J\'ai une perruche.',
-                    'created_at' => Carbon::now()->subDays(10),
-                    'updated_at' => Carbon::now()->subDays(10),
+                    'created_at' => now()->subDays(10),
+                    'updated_at' => now()->subDays(10),
                 ]);
 
                 DB::table('messages')->insert([
@@ -375,8 +374,8 @@ class ConversationSeeder extends Seeder
                     'sender_type' => 'activity',
                     'message_type' => 'text',
                     'content' => 'Bonjour ! Malheureusement, nous ne sommes pas équipés pour les oiseaux pour le moment. Désolé !',
-                    'created_at' => Carbon::now()->subDays(10)->addHours(3),
-                    'updated_at' => Carbon::now()->subDays(10)->addHours(3),
+                    'created_at' => now()->subDays(10)->addHours(3),
+                    'updated_at' => now()->subDays(10)->addHours(3),
                 ]);
 
                 DB::table('messages')->insert([
@@ -387,8 +386,8 @@ class ConversationSeeder extends Seeder
                     'sender_type' => 'user',
                     'message_type' => 'text',
                     'content' => 'Pas de problème, merci de votre réponse !',
-                    'created_at' => Carbon::now()->subDays(5),
-                    'updated_at' => Carbon::now()->subDays(5),
+                    'created_at' => now()->subDays(5),
+                    'updated_at' => now()->subDays(5),
                 ]);
             }
 
@@ -396,12 +395,12 @@ class ConversationSeeder extends Seeder
                 [
                     'message_id' => $message1Id,
                     'user_id' => $managerId,
-                    'read_at' => Carbon::now()->subDays(30)->addMinutes(30),
+                    'read_at' => now()->subDays(30)->addMinutes(30),
                 ],
                 [
                     'message_id' => $message2Id,
                     'user_id' => $userId,
-                    'read_at' => Carbon::now()->subDays(30)->addHours(2),
+                    'read_at' => now()->subDays(30)->addHours(2),
                 ],
             ]);
 
@@ -448,9 +447,9 @@ class ConversationSeeder extends Seeder
                 'id' => $conversationId,
                 'user_id' => $userId,
                 'activity_id' => $activity->id,
-                'last_message_at' => Carbon::now()->subDays($index + 1),
-                'created_at' => Carbon::now()->subDays($index + 8),
-                'updated_at' => Carbon::now()->subDays($index + 1),
+                'last_message_at' => now()->subDays($index + 1),
+                'created_at' => now()->subDays($index + 8),
+                'updated_at' => now()->subDays($index + 1),
             ]);
 
             DB::table('messages')->insert([
@@ -461,8 +460,8 @@ class ConversationSeeder extends Seeder
                 'sender_type' => 'user',
                 'message_type' => 'text',
                 'content' => $exchange[0],
-                'created_at' => Carbon::now()->subDays($index + 8),
-                'updated_at' => Carbon::now()->subDays($index + 8),
+                'created_at' => now()->subDays($index + 8),
+                'updated_at' => now()->subDays($index + 8),
             ]);
 
             DB::table('messages')->insert([
@@ -473,8 +472,8 @@ class ConversationSeeder extends Seeder
                 'sender_type' => 'activity',
                 'message_type' => 'text',
                 'content' => $exchange[1],
-                'created_at' => Carbon::now()->subDays($index + 1),
-                'updated_at' => Carbon::now()->subDays($index + 1),
+                'created_at' => now()->subDays($index + 1),
+                'updated_at' => now()->subDays($index + 1),
             ]);
         }
     }

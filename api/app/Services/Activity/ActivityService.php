@@ -117,7 +117,7 @@ class ActivityService
                 $user->assignRole('manager');
             }
 
-            if (! empty($data['animal_type_ids'])) {
+            if (filled($data['animal_type_ids'] ?? null)) {
                 $this->seedDefaultCycle($activity, $data['animal_type_ids']);
             }
 

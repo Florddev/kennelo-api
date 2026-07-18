@@ -19,12 +19,10 @@ class GoogleAuthService
             return null;
         }
 
-        try {
-            return $driver->stateless()->userFromToken($token);
-        } catch (\Throwable $e) {
-            Log::warning('Google token verification failed: '.$e->getMessage());
-
-            return null;
-        }
+        return rescue(
+            fn (): SocialiteUser => $driver->stateless()->userFromToken($token),
+            null,
+            fn (\Throwable $e) => Log::warning('Google token verification failed: '.$e->getMessage()),
+        );
     }
 }

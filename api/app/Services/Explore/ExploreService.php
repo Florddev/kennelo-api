@@ -117,7 +117,7 @@ class ExploreService
     {
         $roundedLat = $lat === null ? 'null' : (string) round($lat, 2);
         $roundedLng = $lng === null ? 'null' : (string) round($lng, 2);
-        $dayKey = Carbon::now()->toDateString();
+        $dayKey = today()->toDateString();
 
         return "explore:sections:{$roundedLat}:{$roundedLng}:{$dayKey}";
     }
@@ -236,8 +236,8 @@ class ExploreService
 
     private function availableWeekendSection(Builder $query, ?float $lat, ?float $lng): Builder
     {
-        $saturday = Carbon::now()->next(Carbon::SATURDAY)->toDateString();
-        $sunday = Carbon::now()->next(Carbon::SUNDAY)->toDateString();
+        $saturday = now()->next(Carbon::SATURDAY)->toDateString();
+        $sunday = now()->next(Carbon::SUNDAY)->toDateString();
 
         $query->whereHas('availabilities', function (Builder $q) use ($saturday, $sunday): void {
             $q->whereIn('date', [$saturday, $sunday])
@@ -302,7 +302,7 @@ class ExploreService
     private function newHostsSection(Builder $query): Builder
     {
         return $query
-            ->where('activities.created_at', '>=', Carbon::now()->subDays(60))
+            ->where('activities.created_at', '>=', now()->subDays(60))
             ->orderByDesc('activities.created_at');
     }
 

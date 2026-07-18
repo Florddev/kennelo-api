@@ -8,6 +8,7 @@ use App\Enums\PaginationEnum;
 use App\Models\SearchLog;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 
 class SearchLogService
 {
@@ -56,7 +57,7 @@ class SearchLogService
      */
     private function extractFilters(array $input): array
     {
-        return array_filter([
+        return collect([
             'host_type' => $input['host_type'] ?? null,
             'min_rating' => $input['min_rating'] ?? null,
             'max_price' => $input['max_price'] ?? null,
@@ -64,7 +65,7 @@ class SearchLogService
             'sort' => $input['sort'] ?? null,
             'date_from' => $input['date_from'] ?? null,
             'date_to' => $input['date_to'] ?? null,
-        ], fn ($value) => $value !== null);
+        ])->reject(fn ($value) => $value === null)->all();
     }
 
     private function departmentFromLocation(?string $location): ?string
@@ -73,21 +74,8 @@ class SearchLogService
             return null;
         }
 
-        if (preg_match('/\b(\d{5})\b/', $location, $matches) !== 1) {
-            return null;
-        }
+        $postalCode = Str::match('/\b\d{5}\b/', $location);
 
-        $postalCode = $matches[1];
-        $prefix = substr($postalCode, 0, 2);
-
-        if ($prefix === '20') {
-            return in_array(substr($postalCode, 0, 3), ['200', '201'], true) ? '2A' : '2B';
-        }
-
-        if (str_starts_with($postalCode, '97') || str_starts_with($postalCode, '98')) {
-            return substr($postalCode, 0, 3);
-        }
-
-        return $prefix;
+        return $postalCode === '' ? null : department_from_postal_code($postalCode);
     }
 }

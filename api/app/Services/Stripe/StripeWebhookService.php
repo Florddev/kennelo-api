@@ -14,7 +14,6 @@ use App\Models\User;
 use App\Services\Finance\FinancialJournalService;
 use App\Services\Notification\NotificationService;
 use App\Services\Subscription\SubscriptionWebhookService;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -122,7 +121,7 @@ class StripeWebhookService
             $updates = [
                 'stripe_payment_intent_id' => $paymentIntent->id,
                 'payment_status' => PaymentStatusEnum::SUCCEEDED,
-                'paid_at' => Carbon::now(),
+                'paid_at' => now(),
             ];
 
             if ($booking->stripe_charge_id === null && $paymentIntent->latest_charge !== null) {
@@ -261,7 +260,7 @@ class StripeWebhookService
             $booking->update([
                 'stripe_refund_id' => $refundId,
                 'refunded_amount' => bcdiv((string) $amountRefunded, '100', 2),
-                'refunded_at' => Carbon::now(),
+                'refunded_at' => now(),
                 'payment_status' => PaymentStatusEnum::REFUNDED,
             ]);
 

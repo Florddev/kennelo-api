@@ -51,7 +51,7 @@ class SetLocale
         $locale = trim(strtok($acceptLanguage, ',;'));
 
         if (strlen($locale) > 2) {
-            $locale = substr($locale, 0, 2);
+            $locale = (string) str($locale)->substr(0, 2);
         }
 
         return in_array($locale, $availableLocales, true) ? $locale : null;

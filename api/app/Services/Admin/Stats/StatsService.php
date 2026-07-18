@@ -54,7 +54,7 @@ class StatsService
                 ],
                 'searches' => [
                     'total' => SearchLog::count(),
-                    'last_30_days' => SearchLog::where('created_at', '>=', Carbon::now()->subDays(30))->count(),
+                    'last_30_days' => SearchLog::where('created_at', '>=', now()->subDays(30))->count(),
                 ],
             ];
         });
@@ -78,7 +78,7 @@ class StatsService
                 ->all();
 
             $monthly = SearchLog::query()
-                ->where('created_at', '>=', Carbon::now()->subMonths(12)->startOfMonth())
+                ->where('created_at', '>=', now()->subMonths(12)->startOfMonth())
                 ->get(['created_at'])
                 ->groupBy(fn ($log): string => $log->created_at->format('Y-m'))
                 ->map(fn ($group): int => $group->count())
@@ -203,15 +203,15 @@ class StatsService
                 'kyc_rate' => $this->percentage($verifiedId, $totalUsers),
                 'email_verified_rate' => $this->percentage($verifiedEmail, $totalUsers),
                 'active_users' => [
-                    'dau' => User::withInactive()->withTrashed()->where('last_seen_at', '>=', Carbon::now()->subDay())->count(),
-                    'wau' => User::withInactive()->withTrashed()->where('last_seen_at', '>=', Carbon::now()->subWeek())->count(),
-                    'mau' => User::withInactive()->withTrashed()->where('last_seen_at', '>=', Carbon::now()->subMonth())->count(),
+                    'dau' => User::withInactive()->withTrashed()->where('last_seen_at', '>=', now()->subDay())->count(),
+                    'wau' => User::withInactive()->withTrashed()->where('last_seen_at', '>=', now()->subWeek())->count(),
+                    'mau' => User::withInactive()->withTrashed()->where('last_seen_at', '>=', now()->subMonth())->count(),
                 ],
                 'avg_pro_rating' => $avgRating !== null ? round((float) $avgRating, 2) : null,
                 'rating_distribution' => $this->ratingDistribution(),
                 'review_response_rate' => $this->percentage($reviewsAnswered, $reviewsTotal),
-                'messages_last_30_days' => Message::query()->where('created_at', '>=', Carbon::now()->subDays(30))->count(),
-                'active_conversations' => Conversation::query()->where('last_message_at', '>=', Carbon::now()->subDays(30))->count(),
+                'messages_last_30_days' => Message::query()->where('created_at', '>=', now()->subDays(30))->count(),
+                'active_conversations' => Conversation::query()->where('last_message_at', '>=', now()->subDays(30))->count(),
             ];
         });
     }
@@ -415,13 +415,13 @@ class StatsService
     private function recentMonths(int $count): Collection
     {
         return collect(range($count - 1, 0))
-            ->map(fn (int $offset): string => Carbon::now()->subMonths($offset)->format('Y-m'));
+            ->map(fn (int $offset): string => now()->subMonths($offset)->format('Y-m'));
     }
 
     private function monthlyCounts(Builder $query, Collection $months, ?string $sumColumn = null): array
     {
         $rows = $query
-            ->where('created_at', '>=', Carbon::now()->subMonths($months->count())->startOfMonth())
+            ->where('created_at', '>=', now()->subMonths($months->count())->startOfMonth())
             ->get($sumColumn === null ? ['created_at'] : ['created_at', $sumColumn]);
 
         $buckets = $rows
@@ -442,11 +442,10 @@ class StatsService
         $previous = count($values) >= 2 ? $values[count($values) - 2] : 0;
 
         return [
-            'series' => array_map(
-                fn (string $month, float $total): array => ['month' => $month, 'total' => $total],
-                array_keys($monthly),
-                $values,
-            ),
+            'series' => collect($monthly)
+                ->map(fn (float $total, string $month): array => ['month' => $month, 'total' => $total])
+                ->values()
+                ->all(),
             'current' => $current,
             'previous' => $previous,
             'variation' => $previous > 0 ? round((($current - $previous) / $previous) * 100, 1) : null,

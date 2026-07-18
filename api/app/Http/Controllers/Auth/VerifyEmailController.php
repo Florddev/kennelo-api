@@ -23,9 +23,7 @@ class VerifyEmailController extends Controller
     {
         $user = User::findOrFail($id);
 
-        if (! hash_equals(sha1($user->getEmailForVerification()), $hash)) {
-            abort(403, 'Invalid verification link.');
-        }
+        abort_unless(hash_equals(sha1($user->getEmailForVerification()), $hash), 403, 'Invalid verification link.');
 
         if ($user->hasVerifiedEmail()) {
             return response()->json(['message' => 'Email already verified']);

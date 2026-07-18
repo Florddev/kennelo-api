@@ -6,12 +6,13 @@ use App\Models\Activity;
 use App\Models\AnimalType;
 use App\Models\Service;
 use App\Models\User;
+use Illuminate\Support\Str;
 
 function makeServiceFixtures(): array
 {
     $manager = User::factory()->create();
     $activity = Activity::factory()->create(['manager_id' => $manager->id]);
-    $animalType = AnimalType::create(['code' => 'dog_'.uniqid(), 'name' => 'Chien', 'category' => 'mammals']);
+    $animalType = AnimalType::create(['code' => 'dog_'.Str::random(8), 'name' => 'Chien', 'category' => 'mammals']);
 
     return [$manager, $activity, $animalType];
 }

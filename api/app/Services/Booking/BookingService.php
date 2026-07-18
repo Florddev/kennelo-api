@@ -88,7 +88,7 @@ class BookingService
         $checkOut = Carbon::parse($data['check_out_date']);
 
         $pets = Pet::whereIn('id', $data['pet_ids'])->get();
-        $services = ! empty($data['service_ids'])
+        $services = filled($data['service_ids'] ?? null)
             ? Service::whereIn('id', $data['service_ids'])->get()
             : collect();
 
@@ -197,7 +197,7 @@ class BookingService
         $nights = (int) $checkIn->diffInDays($checkOut);
 
         $pets = Pet::whereIn('id', $data['pet_ids'])->get();
-        $services = ! empty($data['service_ids'])
+        $services = filled($data['service_ids'] ?? null)
             ? Service::whereIn('id', $data['service_ids'])->get()
             : collect();
 
@@ -342,7 +342,7 @@ class BookingService
             $booking->update([
                 'status' => BookingStatusEnum::CONFIRMED,
                 'payment_status' => PaymentStatusEnum::SUCCEEDED,
-                'paid_at' => Carbon::now(),
+                'paid_at' => now(),
                 'stripe_charge_id' => $pi->latest_charge ?? $booking->stripe_charge_id,
             ]);
 
@@ -388,7 +388,7 @@ class BookingService
             $booking->update([
                 'stripe_refund_id' => $refund->id,
                 'refunded_amount' => bcdiv((string) $refund->amount, '100', 2),
-                'refunded_at' => Carbon::now(),
+                'refunded_at' => now(),
                 'payment_status' => PaymentStatusEnum::REFUNDED,
             ]);
 
@@ -451,7 +451,7 @@ class BookingService
 
     public function expireStalePending(): int
     {
-        $threshold = Carbon::now()->subHours((int) setting('acceptance_window_hours', config('booking.acceptance_window_hours', 72)));
+        $threshold = now()->subHours((int) setting('acceptance_window_hours', config('booking.acceptance_window_hours', 72)));
 
         $bookingIds = Booking::where('status', BookingStatusEnum::PENDING)
             ->where('created_at', '<=', $threshold)
@@ -490,8 +490,8 @@ class BookingService
 
     public function remindPendingBookings(): int
     {
-        $reminderAt = Carbon::now()->subHours((int) setting('reminder_after_hours', config('booking.reminder_after_hours', 36)));
-        $windowStart = Carbon::now()->subHours((int) setting('acceptance_window_hours', config('booking.acceptance_window_hours', 72)));
+        $reminderAt = now()->subHours((int) setting('reminder_after_hours', config('booking.reminder_after_hours', 36)));
+        $windowStart = now()->subHours((int) setting('acceptance_window_hours', config('booking.acceptance_window_hours', 72)));
 
         $bookingIds = Booking::where('status', BookingStatusEnum::PENDING)
             ->whereNull('reminded_at')
@@ -519,7 +519,7 @@ class BookingService
                 return;
             }
 
-            $booking->update(['reminded_at' => Carbon::now()]);
+            $booking->update(['reminded_at' => now()]);
 
             $booking->loadMissing('activity');
 
@@ -731,8 +731,8 @@ class BookingService
     private function occupiedOn(Collection $occupancy, string $animalTypeId, string $date): int
     {
         return $occupancy->filter(function (\stdClass $row) use ($animalTypeId, $date): bool {
-            $rowCheckIn = substr((string) $row->check_in_date, 0, 10);
-            $rowCheckOut = substr((string) $row->check_out_date, 0, 10);
+            $rowCheckIn = (string) str((string) $row->check_in_date)->substr(0, 10);
+            $rowCheckOut = (string) str((string) $row->check_out_date)->substr(0, 10);
 
             return (string) $row->animal_type_id === $animalTypeId
                 && $rowCheckIn <= $date

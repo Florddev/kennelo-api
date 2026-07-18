@@ -102,14 +102,13 @@ class ActivityDashboardService
             'previous_month' => round($previous, 2),
             'change_rate' => $previous > 0 ? round(($current - $previous) / $previous * 100, 1) : null,
             'currency' => (string) config('services.stripe.currency', 'eur'),
-            'series' => array_map(
-                static fn (string $month, float $amount): array => [
+            'series' => collect($buckets)
+                ->map(static fn (float $amount, string $month): array => [
                     'month' => $month,
                     'amount' => round($amount, 2),
-                ],
-                array_keys($buckets),
-                array_values($buckets),
-            ),
+                ])
+                ->values()
+                ->all(),
         ];
     }
 }

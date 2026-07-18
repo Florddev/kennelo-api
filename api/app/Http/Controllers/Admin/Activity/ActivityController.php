@@ -17,7 +17,6 @@ use App\Services\Admin\Activity\ActivityAdminService;
 use App\Services\Admin\Activity\ActivityGoogleService;
 use App\Services\Admin\AdminActionService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Carbon;
 
 /**
  * @tags Admin Activities
@@ -39,7 +38,7 @@ class ActivityController extends Controller
         return AdminActivityResource::collection($activities)
             ->additional([
                 'status' => ApiStatusEnum::SUCCESS,
-                'timestamp' => human_date(Carbon::now()),
+                'timestamp' => human_date(now()),
             ])
             ->response();
     }
@@ -109,7 +108,7 @@ class ActivityController extends Controller
         return response()->json([
             'data' => $candidate,
             'status' => ApiStatusEnum::SUCCESS,
-            'timestamp' => human_date(Carbon::now()),
+            'timestamp' => human_date(now()),
         ]);
     }
 
@@ -139,7 +138,7 @@ class ActivityController extends Controller
     {
         $additional = [
             'status' => ApiStatusEnum::SUCCESS,
-            'timestamp' => human_date(Carbon::now()),
+            'timestamp' => human_date(now()),
         ];
 
         if ($message !== null) {

@@ -25,7 +25,7 @@ class AuthenticateJWTOptional
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $token = $this->extractToken($request);
+        $token = $request->bearerToken();
 
         if (! $token) {
             return $next($request);
@@ -54,15 +54,5 @@ class AuthenticateJWTOptional
         }
 
         return $next($request);
-    }
-
-    protected function extractToken(Request $request): ?string
-    {
-        $header = $request->header('Authorization');
-        if ($header && preg_match('/Bearer\s+(.*)$/i', $header, $matches)) {
-            return $matches[1];
-        }
-
-        return null;
     }
 }

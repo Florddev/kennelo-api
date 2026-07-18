@@ -72,9 +72,7 @@ class ActivityRoleController extends Controller
         $this->authorize('manageCollaborators', $activity);
         $this->ensureRoleBelongsToActivity($activity, $role);
 
-        if ($role->collaborators()->exists()) {
-            abort(422, 'This role is still assigned to collaborators.');
-        }
+        abort_if($role->collaborators()->exists(), 422, 'This role is still assigned to collaborators.');
 
         $this->roleService->delete($role);
 
@@ -83,8 +81,6 @@ class ActivityRoleController extends Controller
 
     private function ensureRoleBelongsToActivity(Activity $activity, ActivityRole $role): void
     {
-        if ($role->activity_id !== $activity->id) {
-            abort(404);
-        }
+        abort_if($role->activity_id !== $activity->id, 404);
     }
 }

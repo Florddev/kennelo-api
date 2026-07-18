@@ -13,6 +13,7 @@ use App\Services\Activity\ActivityCycleService;
 use App\Services\Activity\ActivityService;
 use App\Services\Subscription\PlanLimitService;
 use Database\Seeders\SubscriptionPlanSeeder;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 beforeEach(function () {
@@ -24,8 +25,8 @@ function subscribeUser(User $user, PlanEnum $plan): Subscription
     return Subscription::create([
         'user_id' => $user->id,
         'subscription_plan_id' => SubscriptionPlan::where('slug', $plan->value)->firstOrFail()->id,
-        'stripe_subscription_id' => 'sub_'.uniqid(),
-        'stripe_customer_id' => 'cus_'.uniqid(),
+        'stripe_subscription_id' => 'sub_'.Str::random(8),
+        'stripe_customer_id' => 'cus_'.Str::random(8),
         'status' => SubscriptionStatusEnum::ACTIVE,
     ]);
 }

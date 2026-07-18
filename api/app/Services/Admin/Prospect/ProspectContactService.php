@@ -9,7 +9,6 @@ use App\Models\Prospect;
 use App\Models\ProspectContact;
 use App\Models\User;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Carbon;
 
 class ProspectContactService
 {
@@ -29,7 +28,7 @@ class ProspectContactService
             'prospect_id' => $prospect->id,
             'author_id' => $author->id,
             'type' => $data['type'],
-            'contacted_at' => $data['contacted_at'] ?? Carbon::now(),
+            'contacted_at' => $data['contacted_at'] ?? now(),
             'outcome' => $data['outcome'] ?? null,
             'notes' => $data['notes'] ?? null,
         ]);

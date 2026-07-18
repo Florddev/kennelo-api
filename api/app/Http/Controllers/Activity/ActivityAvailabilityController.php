@@ -16,7 +16,6 @@ use App\Models\Activity;
 use App\Models\ActivityAvailability;
 use App\Services\Activity\ActivityAvailabilityService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Carbon;
 
 /**
  * @tags Activities
@@ -34,7 +33,7 @@ class ActivityAvailabilityController extends Controller
         return ActivityAvailabilityResource::collection($availabilities)
             ->additional([
                 'status' => ApiStatusEnum::SUCCESS,
-                'timestamp' => human_date(Carbon::now()),
+                'timestamp' => human_date(now()),
             ])
             ->response();
     }
@@ -52,7 +51,7 @@ class ActivityAvailabilityController extends Controller
         return ActivityAvailabilityResource::collection($availabilities)
             ->additional([
                 'status' => ApiStatusEnum::SUCCESS,
-                'timestamp' => human_date(Carbon::now()),
+                'timestamp' => human_date(now()),
             ])
             ->response();
     }
@@ -66,7 +65,7 @@ class ActivityAvailabilityController extends Controller
         return ActivityAvailabilityResource::collection($availabilities)
             ->additional([
                 'status' => ApiStatusEnum::SUCCESS,
-                'timestamp' => human_date(Carbon::now()),
+                'timestamp' => human_date(now()),
             ])
             ->response()
             ->setStatusCode(201);
@@ -81,7 +80,7 @@ class ActivityAvailabilityController extends Controller
         return ActivityAvailabilityResource::collection($availabilities)
             ->additional([
                 'status' => ApiStatusEnum::SUCCESS,
-                'timestamp' => human_date(Carbon::now()),
+                'timestamp' => human_date(now()),
             ])
             ->response();
     }
@@ -96,7 +95,7 @@ class ActivityAvailabilityController extends Controller
         return (new ActivityAvailabilityResource($availability))
             ->additional([
                 'status' => ApiStatusEnum::SUCCESS,
-                'timestamp' => human_date(Carbon::now()),
+                'timestamp' => human_date(now()),
             ])
             ->response();
     }

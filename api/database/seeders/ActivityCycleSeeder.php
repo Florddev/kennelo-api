@@ -10,7 +10,6 @@ use App\Models\ActivityCycle;
 use App\Models\ActivityCycleSetting;
 use App\Models\AnimalType;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -59,7 +58,7 @@ class ActivityCycleSeeder extends Seeder
                     if ($setting->prices()->doesntExist()) {
                         $price = $this->price[$animalType->code] ?? 25.00;
 
-                        $now = Carbon::now();
+                        $now = now();
                         $priceRows = array_map(fn (int $weekday): array => [
                             'id' => (string) Str::uuid(),
                             'activity_cycle_setting_id' => $setting->id,

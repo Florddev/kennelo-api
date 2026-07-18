@@ -34,7 +34,7 @@ class FavoriteService
     {
         $result = $user->favoriteActivities()->syncWithoutDetaching([$activity->id]);
 
-        if (empty($result['attached'])) {
+        if (blank($result['attached'])) {
             return;
         }
 

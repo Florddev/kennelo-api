@@ -9,7 +9,6 @@ use App\Models\AnimalType;
 use App\Models\Pet;
 use App\Models\Service;
 use App\Models\User;
-use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -96,7 +95,7 @@ class BookingSeeder extends Seeder
 
     private function createBooking(string $userId, string $activityId, string $walkServiceId, array $pets, array $template): void
     {
-        $checkIn = Carbon::now()->addDays($template['startOffset'])->startOfDay();
+        $checkIn = now()->addDays($template['startOffset'])->startOfDay();
         $checkOut = $checkIn->copy()->addDays($template['nights']);
 
         $createdAt = $checkIn->copy()->subDays(7);

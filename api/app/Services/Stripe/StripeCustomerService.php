@@ -13,7 +13,7 @@ class StripeCustomerService
 
     public function getOrCreateCustomer(User $user): string
     {
-        if (! empty($user->stripe_customer_id)) {
+        if (filled($user->stripe_customer_id)) {
             return (string) $user->stripe_customer_id;
         }
 

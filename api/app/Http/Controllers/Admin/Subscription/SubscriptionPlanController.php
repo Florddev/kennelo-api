@@ -10,7 +10,6 @@ use App\Http\Requests\Admin\Subscription\UpdateSubscriptionPlanRequest;
 use App\Http\Resources\SubscriptionPlanResource;
 use App\Models\SubscriptionPlan;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Carbon;
 
 /**
  * @tags Admin Subscription Plans
@@ -26,7 +25,7 @@ class SubscriptionPlanController extends Controller
         return SubscriptionPlanResource::collection($plans)
             ->additional([
                 'status' => ApiStatusEnum::SUCCESS,
-                'timestamp' => human_date(Carbon::now()),
+                'timestamp' => human_date(now()),
             ])
             ->response();
     }
@@ -41,7 +40,7 @@ class SubscriptionPlanController extends Controller
             ->additional([
                 'message' => 'Subscription plan updated successfully',
                 'status' => ApiStatusEnum::SUCCESS,
-                'timestamp' => human_date(Carbon::now()),
+                'timestamp' => human_date(now()),
             ])
             ->response();
     }

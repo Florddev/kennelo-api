@@ -8,11 +8,12 @@ use App\Models\ActivityCycle;
 use App\Models\ActivityCycleSetting;
 use App\Models\AnimalType;
 use App\Models\User;
+use Illuminate\Support\Str;
 
 function makeCycleSettingFixtures(): array
 {
     $activity = Activity::factory()->create(['is_active' => true]);
-    $animalType = AnimalType::create(['code' => 'dog_'.uniqid(), 'name' => 'Chien', 'category' => 'mammals']);
+    $animalType = AnimalType::create(['code' => 'dog_'.Str::random(8), 'name' => 'Chien', 'category' => 'mammals']);
 
     $cycle = ActivityCycle::create([
         'activity_id' => $activity->id,

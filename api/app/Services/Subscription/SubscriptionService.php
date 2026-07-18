@@ -23,7 +23,7 @@ class SubscriptionService
     {
         $this->assertNoActiveSubscription($manager);
 
-        if (empty($plan->stripe_price_id)) {
+        if (blank($plan->stripe_price_id)) {
             throw ValidationException::withMessages([
                 'plan' => ['This plan is not available for subscription.'],
             ]);
@@ -83,7 +83,7 @@ class SubscriptionService
     {
         $subscription = $manager->subscription()->first();
 
-        if ($subscription === null || empty($subscription->stripe_customer_id)) {
+        if ($subscription === null || blank($subscription->stripe_customer_id)) {
             return [];
         }
 

@@ -57,9 +57,7 @@ class MagicLinkController extends Controller
             (string) $request->query('signature'),
         );
 
-        if (! $used) {
-            abort(410, 'This login link has already been used or has expired.');
-        }
+        abort_unless($used, 410, 'This login link has already been used or has expired.');
 
         $user->load('roles');
 

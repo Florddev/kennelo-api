@@ -121,7 +121,7 @@ class PetService
 
             $expectedColumn = $this->resolveValueColumn($definitions->get($definitionId)->value_type);
             $valueFields = ['value_text', 'value_integer', 'value_decimal', 'value_boolean', 'value_date'];
-            $providedColumns = array_values(array_filter($valueFields, fn (string $f) => array_key_exists($f, $item) && $item[$f] !== null));
+            $providedColumns = collect($valueFields)->filter(fn (string $f) => array_key_exists($f, $item) && $item[$f] !== null)->values()->all();
 
             if (count($providedColumns) === 1 && $providedColumns[0] !== $expectedColumn) {
                 $errors["attributes.$index.{$providedColumns[0]}"] = [
@@ -130,7 +130,7 @@ class PetService
             }
         }
 
-        throw_if(! empty($errors), ValidationException::withMessages($errors));
+        throw_if(filled($errors), ValidationException::withMessages($errors));
     }
 
     public function syncAttributes(Pet $pet, array $attributes): void
@@ -138,7 +138,7 @@ class PetService
         DB::transaction(function () use ($pet, $attributes): void {
             $allValueColumns = ['value_text', 'value_integer', 'value_decimal', 'value_boolean', 'value_date'];
 
-            $definitionIds = array_column($attributes, 'attribute_definition_id');
+            $definitionIds = collect($attributes)->pluck('attribute_definition_id')->all();
             $definitions = AttributeDefinition::whereIn('id', $definitionIds)->get()->keyBy('id');
 
             foreach ($attributes as $item) {

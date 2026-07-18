@@ -19,7 +19,6 @@ use App\Services\User\Exceptions\InvalidCurrentPasswordException;
 use App\Services\User\Exceptions\UserHasActiveBookingsException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
@@ -54,7 +53,7 @@ class UserService
 
     public function updateProfile(User $user, array $data): User
     {
-        $updateData = array_filter($data, fn ($value) => $value !== null);
+        $updateData = collect($data)->reject(fn ($value) => $value === null)->all();
 
         $user->update($updateData);
 
@@ -216,7 +215,7 @@ class UserService
             $verification->update([
                 'status' => $status,
                 'reviewer_id' => $reviewer->id,
-                'reviewed_at' => Carbon::now(),
+                'reviewed_at' => now(),
             ]);
 
             if ($status === IdentityVerificationStatusEnum::APPROVED->value) {

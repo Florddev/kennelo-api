@@ -24,7 +24,7 @@ class FinancialJournalService
             'booking_id' => $booking?->id,
             'type' => $type,
             'amount' => $amount,
-            'currency' => $amount !== null ? strtoupper((string) config('services.stripe.currency', 'eur')) : null,
+            'currency' => $amount !== null ? (string) str((string) config('services.stripe.currency', 'eur'))->upper() : null,
             'stripe_reference' => $stripeReference,
             'metadata' => $metadata === [] ? null : $metadata,
         ]);

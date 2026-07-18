@@ -10,7 +10,6 @@ use App\Http\Requests\Admin\ListAdminActionsRequest;
 use App\Http\Resources\AdminActionResource;
 use App\Services\Admin\AdminActionService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Carbon;
 
 /**
  * @tags Admin Audit
@@ -28,7 +27,7 @@ class AuditController extends Controller
         return AdminActionResource::collection($actions)
             ->additional([
                 'status' => ApiStatusEnum::SUCCESS,
-                'timestamp' => human_date(Carbon::now()),
+                'timestamp' => human_date(now()),
             ])
             ->response();
     }

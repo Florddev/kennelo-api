@@ -284,7 +284,7 @@ class ReviewService
 
     private function validateCriteria(array $criteriaScores, ReviewerTypeEnum $reviewerType): void
     {
-        if (empty($criteriaScores)) {
+        if (blank($criteriaScores)) {
             return;
         }
 

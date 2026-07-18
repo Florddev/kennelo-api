@@ -37,7 +37,7 @@ class TwoFactorService
     public function generateRecoveryCodes(int $count = 8): array
     {
         return collect(range(1, $count))
-            ->map(fn () => Str::upper(Str::random(5).'-'.Str::random(5)))
+            ->map(fn () => (string) str(Str::random(5).'-'.Str::random(5))->upper())
             ->values()
             ->all();
     }
@@ -46,10 +46,10 @@ class TwoFactorService
     {
         $codes = $user->two_factor_recovery_codes ?? [];
 
-        $remaining = array_values(array_filter(
-            $codes,
-            fn (string $stored) => ! hash_equals($stored, $code),
-        ));
+        $remaining = collect($codes)
+            ->reject(fn (string $stored) => hash_equals($stored, $code))
+            ->values()
+            ->all();
 
         if (count($remaining) === count($codes)) {
             return false;

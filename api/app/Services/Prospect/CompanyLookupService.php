@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Prospect;
 
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
@@ -40,26 +41,22 @@ class CompanyLookupService
         return is_array($result) ? $this->normalize($result) : null;
     }
 
-    private function request(array $params, int $attempt = 1): ?Response
+    private function request(array $params): ?Response
     {
         $endpoint = rtrim((string) config('services.recherche_entreprises.url'), '/').'/search';
 
         $response = Http::timeout(15)
+            ->retry(
+                self::MAX_RETRIES,
+                fn (int $attempt, RequestException $exception): int => (int) ($exception->response->header('Retry-After') ?: 1) * 1000,
+                fn (\Throwable $exception): bool => $exception instanceof RequestException
+                    && $exception->response->status() === 429,
+                throw: false,
+            )
             ->acceptJson()
             ->get($endpoint, $params);
 
-        if ($response->status() === 429 && $attempt < self::MAX_RETRIES) {
-            $retryAfter = (int) ($response->header('Retry-After') ?: 1);
-            usleep(max(1, $retryAfter) * 1_000_000);
-
-            return $this->request($params, $attempt + 1);
-        }
-
-        if ($response->failed()) {
-            return null;
-        }
-
-        return $response;
+        return $response->failed() ? null : $response;
     }
 
     /**

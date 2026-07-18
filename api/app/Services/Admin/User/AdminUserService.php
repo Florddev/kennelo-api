@@ -8,7 +8,6 @@ use App\Enums\NotificationTypeEnum;
 use App\Enums\UserStatusEnum;
 use App\Models\User;
 use App\Services\Notification\NotificationService;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Password;
 
 class AdminUserService
@@ -22,7 +21,7 @@ class AdminUserService
         $user->update([
             'status' => UserStatusEnum::BANNED,
             'ban_reason' => $data['reason'],
-            'banned_at' => Carbon::now(),
+            'banned_at' => now(),
             'banned_until' => $data['banned_until'] ?? null,
             'banned_by' => $admin->id,
         ]);

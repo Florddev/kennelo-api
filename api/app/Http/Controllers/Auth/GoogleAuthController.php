@@ -58,9 +58,7 @@ class GoogleAuthController extends Controller
     {
         $googleUser = $this->googleAuthService->userFromToken((string) $request->string('token'));
 
-        if ($googleUser === null) {
-            abort(401, 'Unable to authenticate with Google.');
-        }
+        abort_if($googleUser === null, 401, 'Unable to authenticate with Google.');
 
         $raw = $googleUser->getRaw();
 
@@ -70,9 +68,7 @@ class GoogleAuthController extends Controller
             $existingByEmail = User::where('email', $googleUser->getEmail())->first();
 
             if ($existingByEmail) {
-                if ($existingByEmail->hasVerifiedEmail()) {
-                    abort(409, 'An account with this email already exists. Please sign in with your password.');
-                }
+                abort_if($existingByEmail->hasVerifiedEmail(), 409, 'An account with this email already exists. Please sign in with your password.');
 
                 $existingByEmail->update(['google_id' => $googleUser->getId()]);
                 $existingByEmail->markEmailAsVerified();

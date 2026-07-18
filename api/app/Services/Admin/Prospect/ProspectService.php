@@ -15,7 +15,6 @@ use App\Models\User;
 use App\Services\Prospect\CompanyLookupService;
 use App\Services\Prospect\Contracts\PlaceDiscoveryService;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -227,13 +226,13 @@ class ProspectService
                 'status' => ProspectImportStatusEnum::COMPLETED->value,
                 'imported_count' => $result['imported'],
                 'skipped_count' => $result['skipped'],
-                'finished_at' => Carbon::now(),
+                'finished_at' => now(),
             ]);
         } catch (\Throwable $exception) {
             $import->update([
                 'status' => ProspectImportStatusEnum::FAILED->value,
                 'error' => $exception->getMessage(),
-                'finished_at' => Carbon::now(),
+                'finished_at' => now(),
             ]);
         }
     }
@@ -262,7 +261,7 @@ class ProspectService
 
         $prospect->fill([
             'kennelo_activity_id' => $activity?->id,
-            'reconciled_at' => Carbon::now(),
+            'reconciled_at' => now(),
         ]);
         $prospect->save();
 

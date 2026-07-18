@@ -10,7 +10,6 @@ use App\Http\Requests\Admin\ListSearchLogsRequest;
 use App\Http\Resources\SearchLogResource;
 use App\Services\Explore\SearchLogService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Carbon;
 
 /**
  * @tags Admin Search Logs
@@ -28,7 +27,7 @@ class SearchLogController extends Controller
         return SearchLogResource::collection($logs)
             ->additional([
                 'status' => ApiStatusEnum::SUCCESS,
-                'timestamp' => human_date(Carbon::now()),
+                'timestamp' => human_date(now()),
             ])
             ->response();
     }

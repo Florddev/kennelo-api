@@ -33,7 +33,7 @@ class AuthenticateJWT
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $token = $this->extractToken($request);
+        $token = $request->bearerToken();
 
         if (! $token) {
             return response()->json([
@@ -44,15 +44,11 @@ class AuthenticateJWT
         try {
             $payload = $this->jwtService->validateToken($token);
 
-            if (! isset($payload->type) || $payload->type !== 'access') {
-                throw new \Exception('Invalid token type');
-            }
+            throw_if(data_get($payload, 'type') !== 'access', \Exception::class, 'Invalid token type');
 
             $user = User::find($payload->sub);
 
-            if (! $user) {
-                throw new \Exception('User not found');
-            }
+            throw_unless($user, \Exception::class, 'User not found');
 
             $user->load('roles');
 
@@ -67,18 +63,5 @@ class AuthenticateJWT
         }
 
         return $next($request);
-    }
-
-    /**
-     * Extract the JWT token from the request.
-     */
-    protected function extractToken(Request $request): ?string
-    {
-        $header = $request->header('Authorization');
-        if ($header && preg_match('/Bearer\s+(.*)$/i', $header, $matches)) {
-            return $matches[1];
-        }
-
-        return null;
     }
 }
