@@ -54,62 +54,30 @@ if (! function_exists('is_admin')) {
 }
 
 if (! function_exists('human_date')) {
-    function human_date($date): string
+    function human_date(DateTimeInterface|string|null $date): string
     {
-        if (is_null($date)) {
+        if (blank($date)) {
             return '';
         }
 
-        $originalDate = $date;
+        $parsed = rescue(fn (): Carbon => Carbon::parse($date), report: false);
 
-        if (! $date instanceof Carbon) {
-            $date = Carbon::parse($date);
+        if ($parsed === null) {
+            return '';
         }
 
-        Carbon::setLocale('fr');
-        $date->setTimezone('Europe/Paris');
+        $timezone = (string) config('app.display_timezone', 'Europe/Paris');
+        $hasTime = $parsed->format('H:i:s') !== '00:00:00';
 
-        $now = now()->setTimezone('Europe/Paris');
+        $parsed = $parsed->setTimezone($timezone)->locale(app()->getLocale());
 
-        $hasTime = false;
+        $time = $hasTime ? (string) __('dates.at', ['time' => $parsed->format('H:i')]) : '';
 
-        if (is_string($originalDate)) {
-            $hasTime = preg_match('/\d{2}:\d{2}(:\d{2})?/', $originalDate);
-        } else {
-            $hasTime = $date->format('H:i:s') !== '00:00:00';
-        }
-
-        $timeFormat = $hasTime ? ' à '.$date->format('H:i') : '';
-
-        if ($date->isSameDay($now)) {
-            return "Aujourd'hui".$timeFormat;
-        }
-
-        if ($date->isYesterday()) {
-            return 'Hier'.$timeFormat;
-        }
-
-        $frenchMonths = [
-            '01' => 'janvier',
-            '02' => 'février',
-            '03' => 'mars',
-            '04' => 'avril',
-            '05' => 'mai',
-            '06' => 'juin',
-            '07' => 'juillet',
-            '08' => 'août',
-            '09' => 'septembre',
-            '10' => 'octobre',
-            '11' => 'novembre',
-            '12' => 'décembre',
-        ];
-
-        $month = $frenchMonths[$date->format('m')];
-
-        if ($date->isSameYear($now)) {
-            return $date->format('d').' '.$month.$timeFormat;
-        }
-
-        return $date->format('d').' '.$month.' '.$date->format('Y').$timeFormat;
+        return match (true) {
+            $parsed->isToday() => (string) __('dates.today').$time,
+            $parsed->isYesterday() => (string) __('dates.yesterday').$time,
+            $parsed->isSameYear(now($timezone)) => $parsed->isoFormat((string) __('dates.day_month')).$time,
+            default => $parsed->isoFormat((string) __('dates.day_month_year')).$time,
+        };
     }
 }

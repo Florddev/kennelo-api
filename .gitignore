@@ -52,5 +52,9 @@ pnpm-debug.log*
 .DS_Store
 *.pem
 
+# Graphify
+graph.json
+graphify-out/
+
 
 apps/scanner
