@@ -7,7 +7,6 @@ namespace App\Console\Commands;
 use App\Enums\PlanEnum;
 use App\Models\SubscriptionPlan;
 use Illuminate\Console\Command;
-use Illuminate\Support\Str;
 use Stripe\Price;
 use Stripe\Product;
 use Stripe\StripeClient;
@@ -23,7 +22,7 @@ class SyncSubscriptionStripeCommand extends Command
     public function handle(): int
     {
         $this->stripe = app(StripeClient::class);
-        $currency = Str::lower((string) config('services.stripe.currency', 'eur'));
+        $currency = (string) str((string) config('services.stripe.currency', 'eur'))->lower();
 
         foreach ([PlanEnum::STARTER, PlanEnum::PRO] as $planEnum) {
             $plan = SubscriptionPlan::where('slug', $planEnum->value)->first();

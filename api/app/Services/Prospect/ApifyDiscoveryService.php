@@ -7,7 +7,6 @@ namespace App\Services\Prospect;
 use App\Services\Prospect\Contracts\PlaceDiscoveryService;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Str;
 
 class ApifyDiscoveryService implements PlaceDiscoveryService
 {
@@ -72,7 +71,7 @@ class ApifyDiscoveryService implements PlaceDiscoveryService
             'city' => Arr::get($item, 'city'),
             'postal_code' => $postalCode,
             'department' => department_from_postal_code(is_string($postalCode) ? $postalCode : null),
-            'country' => Str::upper((string) Arr::get($item, 'countryCode', 'FR')),
+            'country' => (string) str((string) Arr::get($item, 'countryCode', 'FR'))->upper(),
             'latitude' => Arr::get($item, 'location.lat'),
             'longitude' => Arr::get($item, 'location.lng'),
             'phone' => Arr::get($item, 'phoneUnformatted') ?? Arr::get($item, 'phone'),

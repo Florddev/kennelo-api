@@ -17,7 +17,6 @@ use App\Services\Finance\FinancialJournalService;
 use App\Services\Notification\NotificationRecipientResolver;
 use App\Services\Notification\NotificationService;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Stripe\StripeClient;
 
 class BookingPayoutService
@@ -89,7 +88,7 @@ class BookingPayoutService
                 'stripe_transfer_id' => $transfer->id,
                 'activity_stripe_account_id' => $accountId,
                 'amount' => $booking->activity_amount,
-                'currency' => Str::upper($currency),
+                'currency' => (string) str($currency)->upper(),
                 'status' => PayoutStatusEnum::IN_TRANSIT,
                 'transferred_at' => now(),
             ]);

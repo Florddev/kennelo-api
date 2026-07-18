@@ -16,7 +16,6 @@ use App\Services\Notification\NotificationService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 use Stripe\Event;
 use Stripe\Invoice as StripeInvoice;
 use Stripe\Subscription as StripeSubscription;
@@ -147,7 +146,7 @@ class SubscriptionWebhookService
                     'subscription_id' => $subscription->id,
                     'stripe_payment_intent_id' => $invoice->payment_intent ?? null,
                     'amount' => $amount,
-                    'currency' => Str::upper((string) ($invoice->currency ?? config('services.stripe.currency', 'eur'))),
+                    'currency' => (string) str((string) ($invoice->currency ?? config('services.stripe.currency', 'eur')))->upper(),
                     'status' => SubscriptionPaymentStatusEnum::PAID,
                     'paid_at' => now(),
                     'invoice_pdf_url' => $invoice->invoice_pdf ?? null,
@@ -193,7 +192,7 @@ class SubscriptionWebhookService
                     'subscription_id' => $subscription->id,
                     'stripe_payment_intent_id' => $invoice->payment_intent ?? null,
                     'amount' => bcdiv((string) ($invoice->amount_due ?? 0), '100', 2),
-                    'currency' => Str::upper((string) ($invoice->currency ?? config('services.stripe.currency', 'eur'))),
+                    'currency' => (string) str((string) ($invoice->currency ?? config('services.stripe.currency', 'eur')))->upper(),
                     'status' => SubscriptionPaymentStatusEnum::FAILED,
                     'paid_at' => null,
                     'invoice_pdf_url' => $invoice->invoice_pdf ?? null,

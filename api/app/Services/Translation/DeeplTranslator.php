@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Services\Translation;
 
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Str;
 
 class DeeplTranslator
 {
@@ -48,8 +47,8 @@ class DeeplTranslator
             'Authorization' => 'DeepL-Auth-Key '.config('services.deepl.key'),
         ])->asForm()->post(config('services.deepl.url'), [
             'text' => $text,
-            'source_lang' => Str::upper($source),
-            'target_lang' => Str::upper($target),
+            'source_lang' => (string) str($source)->upper(),
+            'target_lang' => (string) str($target)->upper(),
         ])->throw();
 
         return $response->json('translations.0.text', $text);

@@ -37,7 +37,7 @@ class TwoFactorService
     public function generateRecoveryCodes(int $count = 8): array
     {
         return collect(range(1, $count))
-            ->map(fn () => Str::upper(Str::random(5).'-'.Str::random(5)))
+            ->map(fn () => (string) str(Str::random(5).'-'.Str::random(5))->upper())
             ->values()
             ->all();
     }
