@@ -40,7 +40,7 @@ class StoreActivityImageRequest extends FormRequest
             'image' => [
                 'required',
                 'image',
-                'mimetypes:image/jpeg,image/jpg,image/png,image/gif,image/webp',
+                'mimetypes:image/jpeg,image/jpg,image/png,image/webp',
                 'max:8192',
             ],
         ];

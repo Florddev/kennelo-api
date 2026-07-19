@@ -20,7 +20,7 @@ class FavoriteService
 
     public function list(User $user, array $filters = []): LengthAwarePaginator
     {
-        $perPage = $filters['per_page'] ?? PaginationEnum::DEFAULT_PAGINATION->value();
+        $perPage = max(1, min((int) ($filters['per_page'] ?? PaginationEnum::DEFAULT_PAGINATION->value()), 100));
 
         return $user->favoriteActivities()
             ->with(['address', 'media', 'manager.media', 'cycles.settings.animalType', 'cycles.settings.prices'])

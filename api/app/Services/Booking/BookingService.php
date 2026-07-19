@@ -136,8 +136,10 @@ class BookingService
                 'payment_status' => PaymentStatusEnum::FAILED,
             ]);
 
+            Log::warning('Booking payment failed: '.$e->getMessage(), ['booking_id' => $booking->id]);
+
             throw ValidationException::withMessages([
-                'payment_method_id' => ['The payment could not be processed: '.$e->getMessage()],
+                'payment_method_id' => ['The payment could not be processed.'],
             ]);
         }
 
@@ -335,7 +337,7 @@ class BookingService
                 $this->notifyBookingUser($booking, NotificationTypeEnum::PAYMENT_FAILED);
 
                 throw ValidationException::withMessages([
-                    'payment' => ['The payment could not be captured: '.$e->getMessage()],
+                    'payment' => ['The payment could not be captured.'],
                 ]);
             }
 

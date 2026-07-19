@@ -150,9 +150,13 @@ class ConversationService
             foreach ($data['files'] ?? [] as $uploadedFile) {
                 /** @var UploadedFile $uploadedFile */
                 $path = $uploadedFile->store('conversations', 'local');
+                $fileName = (string) str($uploadedFile->getClientOriginalName())
+                    ->basename()
+                    ->replaceMatches('/[\x00-\x1F\x7F]/', '')
+                    ->limit(255, '');
                 MessageFile::create([
                     'message_id' => $message->id,
-                    'file_name' => $uploadedFile->getClientOriginalName(),
+                    'file_name' => $fileName,
                     'file_path' => $path,
                     'file_type' => $uploadedFile->extension(),
                     'file_size' => $uploadedFile->getSize(),

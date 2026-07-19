@@ -31,7 +31,7 @@ class StoreMessageRequest extends FormRequest
             'files.*' => [
                 'file',
                 'max:10240',
-                'mimetypes:image/jpeg,image/jpg,image/png,image/gif,image/webp,application/pdf,text/plain,application/zip,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'mimetypes:image/jpeg,image/jpg,image/png,image/webp,application/pdf,text/plain,application/zip,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             ],
         ];
     }
