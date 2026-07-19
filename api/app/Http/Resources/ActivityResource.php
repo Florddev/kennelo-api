@@ -36,6 +36,8 @@ class ActivityResource extends JsonResource
             ? $settings->map(fn (ActivityCycleSetting $setting) => $setting->animalType->code)->filter()->unique()->values()->all()
             : [];
 
+        $isOwner = $request->user()?->id === $this->manager_id;
+
         return [
             'id' => $this->id,
             'name' => $this->name,
@@ -59,10 +61,10 @@ class ActivityResource extends JsonResource
             'avatar_url' => $this->getFirstMediaUrl(MediaService::COLLECTION_AVATAR, MediaService::CONVERSION_AVATAR_WEBP)
                 ?: $this->getFirstMediaUrl(MediaService::COLLECTION_AVATAR)
                 ?: null,
-            'stripe_account_id' => $this->resolveStripeAccountId(),
-            'stripe_onboarding_completed' => (bool) $this->stripe_onboarding_completed,
-            'stripe_charges_enabled' => $this->resolveChargesEnabled(),
-            'stripe_payouts_enabled' => $this->resolvePayoutsEnabled(),
+            'stripe_account_id' => $this->when($isOwner, fn () => $this->resolveStripeAccountId()),
+            'stripe_onboarding_completed' => $this->when($isOwner, fn (): bool => (bool) $this->stripe_onboarding_completed),
+            'stripe_charges_enabled' => $this->when($isOwner, fn (): bool => $this->resolveChargesEnabled()),
+            'stripe_payouts_enabled' => $this->when($isOwner, fn (): bool => $this->resolvePayoutsEnabled()),
             'address' => new AddressResource($this->whenLoaded('address')),
             'manager' => new UserResource($this->whenLoaded('manager')),
             'collaborators' => UserResource::collection($this->whenLoaded('collaborators')),

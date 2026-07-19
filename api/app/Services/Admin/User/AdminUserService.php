@@ -18,13 +18,13 @@ class AdminUserService
 
     public function ban(User $user, User $admin, array $data): User
     {
-        $user->update([
+        $user->forceFill([
             'status' => UserStatusEnum::BANNED,
             'ban_reason' => $data['reason'],
             'banned_at' => now(),
             'banned_until' => $data['banned_until'] ?? null,
             'banned_by' => $admin->id,
-        ]);
+        ])->save();
 
         $this->notifications->notify(
             $user,
@@ -40,13 +40,13 @@ class AdminUserService
 
     public function unban(User $user): User
     {
-        $user->update([
+        $user->forceFill([
             'status' => UserStatusEnum::ACTIVE,
             'ban_reason' => null,
             'banned_at' => null,
             'banned_until' => null,
             'banned_by' => null,
-        ]);
+        ])->save();
 
         $this->notifications->notify($user, NotificationTypeEnum::ACCOUNT_UNBANNED);
 

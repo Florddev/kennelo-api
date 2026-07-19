@@ -25,7 +25,7 @@ class StripeCustomerService
             'metadata' => ['user_id' => $user->id],
         ]);
 
-        $user->update(['stripe_customer_id' => $customer->id]);
+        $user->forceFill(['stripe_customer_id' => $customer->id])->save();
 
         return $customer->id;
     }

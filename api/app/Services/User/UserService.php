@@ -153,7 +153,7 @@ class UserService
 
     public function updateStatus(User $user, array $data): User
     {
-        $user->update(['status' => $data['status']]);
+        $user->forceFill(['status' => $data['status']])->save();
 
         $this->notifications->notify(
             $user,
@@ -224,7 +224,7 @@ class UserService
             ]);
 
             if ($status === IdentityVerificationStatusEnum::APPROVED->value) {
-                $user->update(['is_id_verified' => true]);
+                $user->forceFill(['is_id_verified' => true])->save();
             }
         });
 
