@@ -17,5 +17,9 @@ parameters:
     ignoreErrors:
         - path: tests/*
           message: '#Call to an undefined method Pest\\PendingCalls\\TestCall::#'
+        - path: tests/*
+          message: '#Call to an undefined method Pest\\PendingCalls\\TestCall\|Pest\\Support\\HigherOrderTapProxy::#'
+        - path: tests/*
+          message: '#Call to an undefined method Illuminate\\Testing\\TestResponse::(assertCanSeeTableRecords|assertCanNotSeeTableRecords|callTableAction|assertTableActionHidden|assertTableActionVisible|assertSchemaStateSet|fillForm|assertHasNoErrors)\(\)#'
         - path: database/factories/*
           message: '#Call to an undefined method Faker\\Generator::#'

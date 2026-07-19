@@ -95,6 +95,10 @@ class ActivityController extends Controller
         $this->authorize('moderate', Activity::class);
 
         $activity = $this->activities->verifyCompany($activity);
+        $this->actions->log(request()->user(), null, AdminActionTypeEnum::UPDATE_ACTIVITY, [
+            'activity_id' => $activity->id,
+            'verify_company' => true,
+        ]);
 
         return $this->respond($activity, 'Company verification completed');
     }

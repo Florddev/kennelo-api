@@ -7,6 +7,7 @@ namespace App\Services\Admin\Prospect;
 use App\Enums\PaginationEnum;
 use App\Enums\ProspectImportStatusEnum;
 use App\Enums\ProspectSourceEnum;
+use App\Enums\ProspectStatusEnum;
 use App\Jobs\ImportProspectsFromApifyJob;
 use App\Models\Activity;
 use App\Models\Prospect;
@@ -260,12 +261,62 @@ class ProspectService
         }
 
         $prospect->fill([
-            'kennelo_activity_id' => $activity?->id,
+            'kennelo_activity_id' => $activity !== null ? $activity->id : $prospect->kennelo_activity_id,
             'reconciled_at' => now(),
         ]);
+
+        if ($activity !== null && $prospect->status !== ProspectStatusEnum::REFUSE) {
+            $prospect->status = ProspectStatusEnum::INSCRIT;
+        }
+
         $prospect->save();
 
         return $prospect->fresh(['assignedTo', 'kenneloActivity']);
+    }
+
+    public function reconcileFromActivity(Activity $activity): ?Prospect
+    {
+        $prospect = $this->matchProspect($activity);
+
+        if ($prospect === null) {
+            return null;
+        }
+
+        $prospect->update([
+            'kennelo_activity_id' => $activity->id,
+            'reconciled_at' => now(),
+            'status' => ProspectStatusEnum::INSCRIT,
+        ]);
+
+        return $prospect->fresh(['assignedTo', 'kenneloActivity']);
+    }
+
+    private function matchProspect(Activity $activity): ?Prospect
+    {
+        if ($activity->siret !== null) {
+            $bySiret = Prospect::query()
+                ->whereNull('kennelo_activity_id')
+                ->where('siret', $activity->siret)
+                ->first();
+
+            if ($bySiret !== null) {
+                return $bySiret;
+            }
+        }
+
+        $city = $activity->address?->city;
+
+        if (blank($city)) {
+            return null;
+        }
+
+        return Prospect::query()
+            ->whereNull('kennelo_activity_id')
+            ->where('name', $activity->name)
+            ->where('city', $city)
+            ->where('status', '!=', ProspectStatusEnum::REFUSE->value)
+            ->where(fn ($q) => $q->whereNull('siret')->orWhere('siret', $activity->siret))
+            ->first();
     }
 
     private function matchActivity(Prospect $prospect): ?Activity

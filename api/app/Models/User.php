@@ -7,6 +7,9 @@ namespace App\Models;
 use App\Enums\PlanEnum;
 use App\Enums\UserStatusEnum;
 use App\Services\MediaService;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Models\Contracts\HasName;
+use Filament\Panel;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Contracts\Translation\HasLocalePreference;
 use Illuminate\Database\Eloquent\Builder;
@@ -33,7 +36,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property Carbon|null $two_factor_confirmed_at
  * @property Carbon|null $password_changed_at
  */
-class User extends Authenticatable implements HasLocalePreference, HasMedia, JWTSubject, MustVerifyEmail
+class User extends Authenticatable implements FilamentUser, HasLocalePreference, HasMedia, HasName, JWTSubject, MustVerifyEmail
 {
     use HasFactory, HasRoles, HasUuids, InteractsWithMedia, Notifiable, SoftDeletes;
 
@@ -93,6 +96,18 @@ class User extends Authenticatable implements HasLocalePreference, HasMedia, JWT
     public function isBanned(): bool
     {
         return $this->status === UserStatusEnum::BANNED;
+    }
+
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return $this->status === UserStatusEnum::ACTIVE && $this->hasRole('admin');
+    }
+
+    public function getFilamentName(): string
+    {
+        $name = trim($this->first_name.' '.$this->last_name);
+
+        return $name !== '' ? $name : $this->email;
     }
 
     public function preferredLocale(): string

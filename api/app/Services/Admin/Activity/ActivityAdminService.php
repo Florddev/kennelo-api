@@ -8,6 +8,7 @@ use App\Enums\ActivityStatusEnum;
 use App\Enums\PaginationEnum;
 use App\Models\Activity;
 use App\Models\User;
+use App\Services\Admin\Prospect\ProspectService;
 use App\Services\Prospect\CompanyLookupService;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -15,6 +16,7 @@ class ActivityAdminService
 {
     public function __construct(
         private CompanyLookupService $companyLookup,
+        private ProspectService $prospects,
     ) {}
 
     public function paginate(array $filters = []): LengthAwarePaginator
@@ -60,6 +62,8 @@ class ActivityAdminService
             'reviewed_by' => $admin->id,
             'reviewed_at' => now(),
         ]);
+
+        $this->prospects->reconcileFromActivity($activity);
 
         return $activity->fresh(['address', 'manager', 'reviewedBy']);
     }

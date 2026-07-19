@@ -39,13 +39,15 @@ class SearchLogService
      */
     public function record(array $input, ?float $lat, ?float $lng, int $resultsCount, ?string $userId): void
     {
+        $department = $this->departmentFromLocation($input['location'] ?? null);
+
         SearchLog::create([
             'user_id' => $userId,
             'location' => $input['location'] ?? null,
             'latitude' => $lat,
             'longitude' => $lng,
-            'department' => $this->departmentFromLocation($input['location'] ?? null),
-            'region' => null,
+            'department' => $department,
+            'region' => region_from_department($department),
             'filters' => $this->extractFilters($input),
             'results_count' => $resultsCount,
         ]);

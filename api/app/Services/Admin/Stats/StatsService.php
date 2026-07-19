@@ -175,21 +175,39 @@ class StatsService
     public function community(): array
     {
         return Cache::remember('admin:stats:community', self::CACHE_TTL, function (): array {
-            $totalUsers = User::withInactive()->withTrashed()->count();
-            $verifiedId = User::withInactive()->withTrashed()->where('is_id_verified', true)->count();
-            $verifiedEmail = User::withInactive()->withTrashed()->whereNotNull('email_verified_at')->count();
+            $userCounts = User::withInactive()->withTrashed()
+                ->selectRaw('count(*) as total')
+                ->selectRaw('sum(case when is_id_verified = 1 then 1 else 0 end) as verified_id')
+                ->selectRaw('sum(case when email_verified_at is not null then 1 else 0 end) as verified_email')
+                ->toBase()
+                ->first();
+
+            $totalUsers = (int) $userCounts->total;
+            $verifiedId = (int) $userCounts->verified_id;
+            $verifiedEmail = (int) $userCounts->verified_email;
 
             $pros = User::withInactive()->withTrashed()->role('manager')->count();
             $admins = User::withInactive()->withTrashed()->role('admin')->count();
             $owners = max($totalUsers - $pros - $admins, 0);
+
+            $activeCounts = User::withInactive()->withTrashed()
+                ->selectRaw('sum(case when last_seen_at >= ? then 1 else 0 end) as dau', [now()->subDay()])
+                ->selectRaw('sum(case when last_seen_at >= ? then 1 else 0 end) as wau', [now()->subWeek()])
+                ->selectRaw('sum(case when last_seen_at >= ? then 1 else 0 end) as mau', [now()->subMonth()])
+                ->toBase()
+                ->first();
 
             $avgRating = Review::query()
                 ->where('reviewer_type', ReviewerTypeEnum::USER->value)
                 ->where('is_published', true)
                 ->avg('overall_rating');
 
-            $reviewsTotal = Review::query()->where('is_published', true)->count();
-            $reviewsAnswered = Review::query()->whereHas('response')->count();
+            $publishedUserReviews = Review::query()
+                ->where('reviewer_type', ReviewerTypeEnum::USER->value)
+                ->where('is_published', true);
+
+            $reviewsTotal = (clone $publishedUserReviews)->count();
+            $reviewsAnswered = (clone $publishedUserReviews)->whereHas('response')->count();
 
             return [
                 'user_growth' => $this->withVariation(
@@ -203,9 +221,9 @@ class StatsService
                 'kyc_rate' => $this->percentage($verifiedId, $totalUsers),
                 'email_verified_rate' => $this->percentage($verifiedEmail, $totalUsers),
                 'active_users' => [
-                    'dau' => User::withInactive()->withTrashed()->where('last_seen_at', '>=', now()->subDay())->count(),
-                    'wau' => User::withInactive()->withTrashed()->where('last_seen_at', '>=', now()->subWeek())->count(),
-                    'mau' => User::withInactive()->withTrashed()->where('last_seen_at', '>=', now()->subMonth())->count(),
+                    'dau' => (int) $activeCounts->dau,
+                    'wau' => (int) $activeCounts->wau,
+                    'mau' => (int) $activeCounts->mau,
                 ],
                 'avg_pro_rating' => $avgRating !== null ? round((float) $avgRating, 2) : null,
                 'rating_distribution' => $this->ratingDistribution(),

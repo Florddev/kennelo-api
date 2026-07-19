@@ -49,6 +49,14 @@ return Application::configure(basePath: dirname(__DIR__))
         $schedule->call(fn () => app(BookingService::class)->remindPendingBookings())
             ->hourly()
             ->name('bookings:remind-pending');
+
+        $schedule->call(fn () => app(BookingService::class)->startInProgressStays())
+            ->hourly()
+            ->name('bookings:start-in-progress-stays');
+
+        $schedule->call(fn () => app(BookingService::class)->completeFinishedStays())
+            ->hourly()
+            ->name('bookings:complete-finished-stays');
     })
     ->withMiddleware(function (Middleware $middleware): void {
 
