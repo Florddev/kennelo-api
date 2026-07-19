@@ -44,6 +44,7 @@ class NewPasswordController extends Controller
                     'password' => Hash::make((string) $request->string('password')),
                     'password_changed_at' => now(),
                     'remember_token' => Str::random(60),
+                    'token_version' => $user->token_version + 1,
                 ])->save();
 
                 event(new PasswordReset($user));

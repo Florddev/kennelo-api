@@ -178,14 +178,12 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): Response
     {
-        $refreshToken = $request->input('refresh_token');
+        if ($bearerToken = $request->bearerToken()) {
+            $this->jwtService->blacklistToken($bearerToken);
+        }
 
-        if ($refreshToken) {
-            try {
-                $this->jwtService->blacklistToken($refreshToken);
-            } catch (\Exception $e) {
-                Log::warning('Failed to blacklist refresh token: '.$e->getMessage());
-            }
+        if ($refreshToken = $request->input('refresh_token')) {
+            $this->jwtService->blacklistToken($refreshToken);
         }
 
         return response()->noContent();
