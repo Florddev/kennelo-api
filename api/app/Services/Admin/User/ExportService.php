@@ -36,11 +36,11 @@ class ExportService
                 foreach ($users as $user) {
                     fputcsv($handle, [
                         $user->id,
-                        $user->first_name,
-                        $user->last_name,
-                        $user->email,
+                        $this->csvSafe($user->first_name),
+                        $this->csvSafe($user->last_name),
+                        $this->csvSafe($user->email),
                         $user->status->name,
-                        $user->getRoleNames()->implode('|'),
+                        $this->csvSafe($user->getRoleNames()->implode('|')),
                         $user->created_at?->toIso8601String(),
                     ]);
                 }
@@ -48,5 +48,14 @@ class ExportService
 
             fclose($handle);
         }, 'users.csv', $headers);
+    }
+
+    private function csvSafe(?string $value): string
+    {
+        $value = (string) $value;
+
+        return str($value)->startsWith(['=', '+', '-', '@', "\t", "\r"])
+            ? "'".$value
+            : $value;
     }
 }
