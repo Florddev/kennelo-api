@@ -34,6 +34,15 @@ class Address extends Model
         ];
     }
 
+    protected static function booted(): void
+    {
+        static::saving(function (Address $address): void {
+            if (filled($address->postal_code) && (blank($address->department) || $address->isDirty('postal_code'))) {
+                $address->department = department_from_postal_code($address->postal_code);
+            }
+        });
+    }
+
     public function user(): HasOne
     {
         return $this->hasOne(User::class);

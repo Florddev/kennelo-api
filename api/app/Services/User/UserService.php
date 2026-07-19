@@ -124,7 +124,7 @@ class UserService
     {
         DB::transaction(function () use ($user, $data) {
             if ($user->address_id) {
-                $user->address()->update($data);
+                $user->address->update($data);
             } else {
                 $address = Address::create($data);
                 $user->update(['address_id' => $address->id]);

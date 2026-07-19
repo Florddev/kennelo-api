@@ -79,6 +79,7 @@ class AdminUserService
         return User::withInactive()
             ->whereIn('id', $ids)
             ->where('id', '!=', $excludeId)
+            ->where('status', '!=', UserStatusEnum::BANNED->value)
             ->whereDoesntHave('roles', fn ($q) => $q->where('name', 'admin'))
             ->update(['status' => $status]);
     }
