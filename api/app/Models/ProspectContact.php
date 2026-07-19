@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @property ProspectContactTypeEnum $type
+ * @property-read User|null $author
  */
 class ProspectContact extends Model
 {

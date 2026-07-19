@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Enums\ActivityPermissionEnum;
 use App\Enums\CollaboratorStatusEnum;
+use App\Enums\UserStatusEnum;
 use App\Models\Activity;
 use App\Models\ActivityRole;
 use App\Models\User;
@@ -68,6 +69,16 @@ function adminUser(): User
 {
     $admin = User::factory()->create();
     $admin->assignRole('admin');
+
+    return $admin;
+}
+
+function actingAsFilamentAdmin(): User
+{
+    $admin = User::factory()->create(['status' => UserStatusEnum::ACTIVE]);
+    $admin->assignRole('admin');
+
+    test()->actingAs($admin, 'web');
 
     return $admin;
 }
