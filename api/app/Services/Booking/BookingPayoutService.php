@@ -32,7 +32,11 @@ class BookingPayoutService
     {
         $threshold = now()->subHours((int) setting('payout_delay_hours', config('booking.payout_delay_hours', 24)));
 
-        $bookingIds = Booking::where('status', BookingStatusEnum::CONFIRMED)
+        $bookingIds = Booking::whereIn('status', [
+            BookingStatusEnum::CONFIRMED,
+            BookingStatusEnum::IN_PROGRESS,
+            BookingStatusEnum::COMPLETED,
+        ])
             ->where('payment_status', PaymentStatusEnum::SUCCEEDED)
             ->whereNotNull('stripe_charge_id')
             ->where('activity_amount', '>', 0)
@@ -59,7 +63,13 @@ class BookingPayoutService
                 return;
             }
 
-            if ($booking->status !== BookingStatusEnum::CONFIRMED
+            $payableStatuses = [
+                BookingStatusEnum::CONFIRMED,
+                BookingStatusEnum::IN_PROGRESS,
+                BookingStatusEnum::COMPLETED,
+            ];
+
+            if (! in_array($booking->status, $payableStatuses, true)
                 || $booking->payment_status !== PaymentStatusEnum::SUCCEEDED
                 || $booking->stripe_charge_id === null
                 || (float) $booking->activity_amount <= 0) {

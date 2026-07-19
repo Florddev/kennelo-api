@@ -464,6 +464,67 @@ class BookingService
         return $bookingIds->count();
     }
 
+    public function startInProgressStays(): int
+    {
+        $bookingIds = Booking::where('status', BookingStatusEnum::CONFIRMED)
+            ->where('check_in_date', '<', today())
+            ->where('check_out_date', '>=', today())
+            ->pluck('id');
+
+        $started = 0;
+
+        foreach ($bookingIds as $bookingId) {
+            $started += (int) DB::transaction(function () use ($bookingId): bool {
+                $booking = Booking::where('id', $bookingId)
+                    ->lockForUpdate()
+                    ->first();
+
+                if ($booking === null || $booking->status !== BookingStatusEnum::CONFIRMED) {
+                    return false;
+                }
+
+                $booking->update(['status' => BookingStatusEnum::IN_PROGRESS]);
+
+                $this->journal->record(FinancialOperationTypeEnum::STATUS_CHANGE, $booking, null, null, [
+                    'status' => BookingStatusEnum::IN_PROGRESS->value,
+                ]);
+
+                return true;
+            });
+        }
+
+        return $started;
+    }
+
+    public function completeFinishedStays(): int
+    {
+        $bookingIds = Booking::whereIn('status', [BookingStatusEnum::CONFIRMED, BookingStatusEnum::IN_PROGRESS])
+            ->where('check_out_date', '<', today())
+            ->pluck('id');
+
+        $completed = 0;
+
+        foreach ($bookingIds as $bookingId) {
+            $completed += (int) DB::transaction(function () use ($bookingId): bool {
+                $booking = Booking::where('id', $bookingId)
+                    ->lockForUpdate()
+                    ->first();
+
+                $completableStatuses = [BookingStatusEnum::CONFIRMED, BookingStatusEnum::IN_PROGRESS];
+
+                if ($booking === null || ! in_array($booking->status, $completableStatuses, true)) {
+                    return false;
+                }
+
+                $this->complete($booking);
+
+                return true;
+            });
+        }
+
+        return $completed;
+    }
+
     public function expireBooking(string $bookingId): void
     {
         DB::transaction(function () use ($bookingId): void {
