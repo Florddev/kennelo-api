@@ -40,18 +40,26 @@ class StripeWebhookController extends Controller
             return response()->json(['message' => 'Invalid signature.'], 400);
         }
 
-        $record = StripeEvent::firstOrCreate(
+        StripeEvent::firstOrCreate(
             ['id' => $event->id],
             ['type' => $event->type],
         );
 
-        if ($record->processed_at !== null) {
+        $claimed = StripeEvent::where('id', $event->id)
+            ->whereNull('processed_at')
+            ->update(['processed_at' => now()]);
+
+        if ($claimed === 0) {
             return response()->json(['received' => true]);
         }
 
-        $this->webhookService->handleEvent($event);
+        try {
+            $this->webhookService->handleEvent($event);
+        } catch (\Throwable $e) {
+            StripeEvent::where('id', $event->id)->update(['processed_at' => null]);
 
-        $record->update(['processed_at' => now()]);
+            throw $e;
+        }
 
         return response()->json(['received' => true]);
     }

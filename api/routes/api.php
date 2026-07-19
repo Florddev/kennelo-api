@@ -66,7 +66,7 @@ Route::middleware('auth.jwt.optional')->group(function () {
     Route::get('/activities/{activity}/price-calendar', [ActivityCycleController::class, 'priceCalendar']);
     Route::get('/activities/{activity}/reviews', [ActivityReviewController::class, 'index']);
 });
-Route::post('/webhooks/stripe', [StripeWebhookController::class, 'handle']);
+Route::post('/webhooks/stripe', [StripeWebhookController::class, 'handle'])->middleware('throttle:120,1');
 
 Route::middleware(['auth.jwt', 'role:admin'])
     ->prefix('admin')
