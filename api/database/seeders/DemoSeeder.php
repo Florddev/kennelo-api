@@ -9,8 +9,6 @@ use App\Enums\ActivityStatusEnum;
 use App\Enums\ActivityTypeEnum;
 use App\Enums\AvailabilityStatusEnum;
 use App\Enums\CollaboratorStatusEnum;
-use App\Enums\PlanEnum;
-use App\Enums\SubscriptionStatusEnum;
 use App\Enums\WeekDayEnum;
 use App\Models\Activity;
 use App\Models\ActivityAvailability;
@@ -22,8 +20,6 @@ use App\Models\Address;
 use App\Models\AnimalType;
 use App\Models\Pet;
 use App\Models\Service;
-use App\Models\Subscription;
-use App\Models\SubscriptionPlan;
 use App\Models\User;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Seeder;
@@ -207,7 +203,6 @@ class DemoSeeder extends Seeder
     {
         $userModels = $this->seedUsers();
         $manager = $userModels['demo@kennelo.fr'];
-        $this->seedSubscription($manager);
 
         $animalTypes = AnimalType::pluck('id', 'code');
         $activities = $this->seedActivities($manager);
@@ -264,26 +259,6 @@ class DemoSeeder extends Seeder
         }
 
         return $models;
-    }
-
-    private function seedSubscription(User $manager): void
-    {
-        $proPlan = SubscriptionPlan::where('slug', PlanEnum::PRO->value)->first();
-        if (! $proPlan) {
-            return;
-        }
-
-        Subscription::firstOrCreate(
-            ['user_id' => $manager->id],
-            [
-                'subscription_plan_id' => $proPlan->id,
-                'stripe_subscription_id' => 'seed_demo_sub',
-                'stripe_customer_id' => 'seed_demo_cus',
-                'status' => SubscriptionStatusEnum::ACTIVE,
-                'current_period_start' => now(),
-                'current_period_end' => now()->addYear(),
-            ]
-        );
     }
 
     private function seedActivities(User $manager): array
