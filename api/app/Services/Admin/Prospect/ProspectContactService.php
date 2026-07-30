@@ -14,7 +14,7 @@ class ProspectContactService
 {
     public function paginate(Prospect $prospect, array $filters = []): LengthAwarePaginator
     {
-        $perPage = $filters['per_page'] ?? PaginationEnum::DEFAULT_PAGINATION->value();
+        $perPage = max(1, min((int) ($filters['per_page'] ?? PaginationEnum::DEFAULT_PAGINATION->value()), 100));
 
         return ProspectContact::with('author')
             ->where('prospect_id', $prospect->id)

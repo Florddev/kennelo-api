@@ -13,7 +13,7 @@ class NoteService
 {
     public function paginate(User $user, array $filters = []): LengthAwarePaginator
     {
-        $perPage = $filters['per_page'] ?? PaginationEnum::DEFAULT_PAGINATION->value();
+        $perPage = max(1, min((int) ($filters['per_page'] ?? PaginationEnum::DEFAULT_PAGINATION->value()), 100));
 
         return UserNote::with('author.media')
             ->where('user_id', $user->id)

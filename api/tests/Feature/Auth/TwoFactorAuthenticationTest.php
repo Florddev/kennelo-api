@@ -7,6 +7,7 @@ use App\Notifications\TwoFactorStatusNotification;
 use App\Services\TwoFactorService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\RateLimiter;
 use Laravel\Socialite\Facades\Socialite;
 use Laravel\Socialite\Two\AbstractProvider;
 use Laravel\Socialite\Two\User as SocialiteUser;
@@ -92,6 +93,30 @@ test('challenge with an invalid code is rejected', function () {
         'challenge_token' => $challenge,
         'code' => '000000',
     ])->assertUnprocessable();
+});
+
+test('too many invalid 2FA codes blocks and blacklists the challenge token', function () {
+    config(['jwt.blacklist_enabled' => true]);
+
+    $user = User::factory()->create();
+    $secret = enableTwoFactor($user);
+
+    $challenge = $this->postJson('/api/login', ['email' => $user->email, 'password' => 'password'])
+        ->json('challenge_token');
+
+    foreach (range(1, 5) as $attempt) {
+        $this->postJson('/api/login/two-factor-challenge', [
+            'challenge_token' => $challenge,
+            'code' => '000000',
+        ])->assertUnprocessable();
+    }
+
+    expect(RateLimiter::attempts('two-factor|'.$user->id))->toBeGreaterThanOrEqual(5);
+
+    $this->postJson('/api/login/two-factor-challenge', [
+        'challenge_token' => $challenge,
+        'code' => currentOtp($secret),
+    ])->assertUnauthorized();
 });
 
 test('challenge with a recovery code consumes it', function () {

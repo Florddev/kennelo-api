@@ -237,7 +237,7 @@ class StripeWebhookService
     private function onChargeRefunded(Event $event): void
     {
         $charge = $event->data->object ?? null;
-        if ($charge === null) {
+        if (! $charge instanceof Charge) {
             return;
         }
 
@@ -255,7 +255,7 @@ class StripeWebhookService
             }
 
             $refundId = $charge->refunds->data[0]->id ?? null;
-            $amountRefunded = $charge instanceof Charge ? (int) $charge->amount_refunded : 0;
+            $amountRefunded = (int) $charge->amount_refunded;
 
             $booking->update([
                 'stripe_refund_id' => $refundId,
@@ -279,7 +279,7 @@ class StripeWebhookService
     private function onTransferCreated(Event $event): void
     {
         $transfer = $event->data->object ?? null;
-        if ($transfer === null) {
+        if (! $transfer instanceof Transfer) {
             return;
         }
 

@@ -50,6 +50,12 @@ class AuthenticateJWT
 
             throw_unless($user, \Exception::class, 'User not found');
 
+            throw_if(
+                (int) data_get($payload, 'token_version') !== (int) $user->token_version,
+                \Exception::class,
+                'Token version mismatch',
+            );
+
             $user->load('roles');
 
             Auth::setUser($user);

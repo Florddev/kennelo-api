@@ -47,6 +47,15 @@ it('favorites list is paginated', function () {
         ->assertJsonStructure(['data', 'meta', 'links']);
 });
 
+it('clamps an oversized per_page to prevent unbounded pagination', function () {
+    $user = User::factory()->create();
+
+    $this->withHeaders(asUser($user))
+        ->getJson('/api/favorites?per_page=999999')
+        ->assertOk()
+        ->assertJsonPath('meta.per_page', 100);
+});
+
 it('unauthenticated user cannot list favorites', function () {
     $this->getJson('/api/favorites')
         ->assertUnauthorized();

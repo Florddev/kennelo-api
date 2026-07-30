@@ -24,13 +24,14 @@ class JWTService
             'email' => $user->email,
             'roles' => $user->roles->pluck('name')->toArray(),
             'locale' => $user->locale ?? config('app.locale', 'en'),
+            'token_version' => $user->token_version,
         ])->fromUser($user);
     }
 
     public function generateRefreshToken(User $user): string
     {
         $this->jwt->factory()->setTTL((int) config('jwt.refresh_token_ttl'));
-        $token = $this->jwt->claims(['type' => 'refresh'])->fromUser($user);
+        $token = $this->jwt->claims(['type' => 'refresh', 'token_version' => $user->token_version])->fromUser($user);
         $this->jwt->factory()->setTTL((int) config('jwt.ttl'));
 
         return $token;
@@ -73,6 +74,12 @@ class JWTService
 
         throw_unless($user, \Exception::class, 'User not found');
 
+        throw_if(
+            (int) data_get($payload, 'token_version') !== (int) $user->token_version,
+            \Exception::class,
+            'Token version mismatch',
+        );
+
         $this->blacklistToken($refreshToken);
 
         return [
@@ -91,6 +98,7 @@ class JWTService
             'roles' => $target->roles->pluck('name')->toArray(),
             'locale' => $target->locale ?? config('app.locale', 'en'),
             'impersonator_id' => $impersonator->id,
+            'token_version' => $target->token_version,
         ])->fromUser($target);
 
         $this->jwt->factory()->setTTL((int) config('jwt.ttl'));

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 use App\Models\User;
 use App\Services\JWTService;
+use App\Services\User\UserService;
+use Illuminate\Support\Facades\Password;
 
 test('users can authenticate using the login screen', function () {
     $user = User::factory()->create();
@@ -126,4 +128,77 @@ test('token refresh fails when using an access token', function () {
     ]);
 
     $response->assertUnauthorized();
+});
+
+test('logout blacklists the access token', function () {
+    config(['jwt.blacklist_enabled' => true]);
+
+    $user = User::factory()->create();
+    $user->load('roles');
+    $accessToken = app(JWTService::class)->generateAccessToken($user);
+
+    $this->withHeaders(['Authorization' => 'Bearer '.$accessToken])
+        ->get('/api/user')
+        ->assertOk();
+
+    $this->withHeaders(['Authorization' => 'Bearer '.$accessToken])
+        ->post('/api/logout')
+        ->assertNoContent();
+
+    $this->withHeaders(['Authorization' => 'Bearer '.$accessToken])
+        ->get('/api/user')
+        ->assertUnauthorized();
+});
+
+test('changing the password revokes existing access tokens', function () {
+    $user = User::factory()->create();
+    $user->load('roles');
+    $accessToken = app(JWTService::class)->generateAccessToken($user);
+
+    $this->withHeaders(['Authorization' => 'Bearer '.$accessToken])
+        ->put('/api/user/password', [
+            'current_password' => 'password',
+            'password' => 'NewPassw0rd!23',
+            'password_confirmation' => 'NewPassw0rd!23',
+        ])
+        ->assertOk();
+
+    $this->withHeaders(['Authorization' => 'Bearer '.$accessToken])
+        ->get('/api/user')
+        ->assertUnauthorized();
+});
+
+test('changing the password revokes existing refresh tokens', function () {
+    config(['jwt.blacklist_enabled' => true]);
+
+    $user = User::factory()->create();
+    $user->load('roles');
+    $refreshToken = app(JWTService::class)->generateRefreshToken($user);
+
+    app(UserService::class)->changePassword($user, [
+        'current_password' => 'password',
+        'password' => 'NewPassw0rd!23',
+    ]);
+
+    $this->post('/api/refresh', ['refresh_token' => $refreshToken])
+        ->assertUnauthorized();
+});
+
+test('resetting the password revokes existing access tokens', function () {
+    $user = User::factory()->create();
+    $user->load('roles');
+    $accessToken = app(JWTService::class)->generateAccessToken($user);
+
+    $token = Password::createToken($user);
+
+    $this->post('/api/reset-password', [
+        'token' => $token,
+        'email' => $user->email,
+        'password' => 'NewPassw0rd!23',
+        'password_confirmation' => 'NewPassw0rd!23',
+    ])->assertOk();
+
+    $this->withHeaders(['Authorization' => 'Bearer '.$accessToken])
+        ->get('/api/user')
+        ->assertUnauthorized();
 });

@@ -121,7 +121,7 @@ class StripeConnectService
                 ],
             ]));
 
-            $user->update(['stripe_account_id' => $account->id]);
+            $user->forceFill(['stripe_account_id' => $account->id])->save();
         }
 
         $session = $this->callStripe(fn () => $this->stripe->accountSessions->create([

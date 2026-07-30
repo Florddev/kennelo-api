@@ -91,7 +91,11 @@ class UserService
             throw InvalidCurrentPasswordException::wrongPassword();
         }
 
-        $user->update(['password' => $data['password'], 'password_changed_at' => now()]);
+        $user->forceFill([
+            'password' => $data['password'],
+            'password_changed_at' => now(),
+            'token_version' => $user->token_version + 1,
+        ])->save();
     }
 
     public function renewExpiredPassword(User $user, string $password): void
@@ -99,6 +103,7 @@ class UserService
         $user->forceFill([
             'password' => $password,
             'password_changed_at' => now(),
+            'token_version' => $user->token_version + 1,
         ])->save();
     }
 
@@ -148,7 +153,7 @@ class UserService
 
     public function updateStatus(User $user, array $data): User
     {
-        $user->update(['status' => $data['status']]);
+        $user->forceFill(['status' => $data['status']])->save();
 
         $this->notifications->notify(
             $user,
@@ -219,7 +224,7 @@ class UserService
             ]);
 
             if ($status === IdentityVerificationStatusEnum::APPROVED->value) {
-                $user->update(['is_id_verified' => true]);
+                $user->forceFill(['is_id_verified' => true])->save();
             }
         });
 

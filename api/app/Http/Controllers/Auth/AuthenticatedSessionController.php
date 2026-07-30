@@ -15,6 +15,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\ValidationException;
 
 /**
@@ -96,6 +97,10 @@ class AuthenticatedSessionController extends Controller
             abort(401, 'Invalid or expired challenge token.');
         }
 
+        $throttleKey = 'two-factor|'.$user->id;
+
+        abort_if(RateLimiter::tooManyAttempts($throttleKey, 5), 429, 'Too many attempts. Please try again later.');
+
         $code = trim((string) $request->validated('code'));
 
         $verified = $code !== ''
@@ -106,8 +111,16 @@ class AuthenticatedSessionController extends Controller
             );
 
         if (! $verified) {
+            RateLimiter::hit($throttleKey, 300);
+
+            if (RateLimiter::attempts($throttleKey) >= 5) {
+                $this->jwtService->blacklistToken($challengeToken);
+            }
+
             throw ValidationException::withMessages(['code' => 'The provided two-factor code is invalid.']);
         }
+
+        RateLimiter::clear($throttleKey);
 
         $rememberToken = $request->boolean('remember')
             ? $this->twoFactorService->rememberDevice($user)
@@ -178,14 +191,12 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): Response
     {
-        $refreshToken = $request->input('refresh_token');
+        if ($bearerToken = $request->bearerToken()) {
+            $this->jwtService->blacklistToken($bearerToken);
+        }
 
-        if ($refreshToken) {
-            try {
-                $this->jwtService->blacklistToken($refreshToken);
-            } catch (\Exception $e) {
-                Log::warning('Failed to blacklist refresh token: '.$e->getMessage());
-            }
+        if ($refreshToken = $request->input('refresh_token')) {
+            $this->jwtService->blacklistToken($refreshToken);
         }
 
         return response()->noContent();
