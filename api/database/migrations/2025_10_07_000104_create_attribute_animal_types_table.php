@@ -15,6 +15,7 @@ return new class extends Migration
             $table->foreignUuid('animal_type_id')->constrained()->onDelete('cascade');
 
             $table->primary(['attribute_definition_id', 'animal_type_id']);
+            $table->index('animal_type_id', 'attribute_animal_types_animal_type_id_index');
         });
     }
 

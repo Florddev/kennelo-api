@@ -20,6 +20,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->index('user_id', 'identity_verifications_user_id_index');
+            $table->index('reviewer_id', 'identity_verifications_reviewer_id_index');
         });
     }
 

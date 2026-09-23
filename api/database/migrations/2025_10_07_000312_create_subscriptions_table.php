@@ -12,7 +12,7 @@ return new class extends Migration
     {
         Schema::create('subscriptions', function (Blueprint $table): void {
             $table->uuid('id')->primary();
-            $table->foreignUuid('user_id')->constrained('users')->onDelete('cascade');
+            $table->foreignUuid('user_id')->constrained('users')->restrictOnDelete();
             $table->foreignUuid('subscription_plan_id')->constrained('subscription_plans')->onDelete('restrict');
             $table->string('stripe_subscription_id', 50)->unique();
             $table->string('stripe_customer_id', 50)->index();
@@ -23,6 +23,9 @@ return new class extends Migration
             $table->timestamp('canceled_at')->nullable();
             $table->timestamp('ends_at')->nullable();
             $table->timestamps();
+
+            $table->index(['user_id', 'status'], 'subscriptions_user_status_index');
+            $table->index('subscription_plan_id', 'subscriptions_subscription_plan_id_index');
         });
     }
 

@@ -12,7 +12,7 @@ return new class extends Migration
     {
         Schema::create('booking_payouts', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('booking_id')->unique()->constrained('bookings')->onDelete('cascade');
+            $table->foreignUuid('booking_id')->unique()->constrained('bookings')->restrictOnDelete();
             $table->string('stripe_transfer_id', 50)->unique();
             $table->string('activity_stripe_account_id', 50)->index();
             $table->decimal('amount', 10, 2);

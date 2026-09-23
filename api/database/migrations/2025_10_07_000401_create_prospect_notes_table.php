@@ -18,6 +18,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->index(['prospect_id', 'created_at']);
+            $table->index('author_id', 'prospect_notes_author_id_index');
         });
     }
 

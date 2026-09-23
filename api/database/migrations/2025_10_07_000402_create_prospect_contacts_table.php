@@ -21,6 +21,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->index(['prospect_id', 'contacted_at']);
+            $table->index('author_id', 'prospect_contacts_author_id_index');
         });
     }
 

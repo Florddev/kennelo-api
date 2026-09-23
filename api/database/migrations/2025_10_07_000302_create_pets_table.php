@@ -32,6 +32,8 @@ return new class extends Migration
 
             $table->index('microchip_number', 'pets_microchip_number_index');
             $table->index('user_id', 'pets_user_id_index');
+            $table->index('animal_type_id', 'pets_animal_type_id_index');
+            $table->index('animal_breed_id', 'pets_animal_breed_id_index');
         });
     }
 

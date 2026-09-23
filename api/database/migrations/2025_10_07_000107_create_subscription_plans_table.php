@@ -22,7 +22,7 @@ return new class extends Migration
             $table->char('currency', 3)->default('EUR');
             $table->json('features')->nullable();
             $table->json('limits')->nullable();
-            $table->boolean('is_active')->default(true)->index();
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
             $table->decimal('commission_rate', 5, 4)->default('0.0000');
         });

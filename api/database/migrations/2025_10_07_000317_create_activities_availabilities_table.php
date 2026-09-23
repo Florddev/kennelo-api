@@ -19,8 +19,6 @@ return new class extends Migration
             $table->timestamps();
 
             $table->unique(['activity_id', 'date']);
-            $table->index('activity_id', 'activities_availabilities_activity_id_index');
-            $table->index(['activity_id', 'date', 'status'], 'activities_availabilities_explore_index');
         });
     }
 

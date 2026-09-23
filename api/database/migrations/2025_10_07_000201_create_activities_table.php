@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -13,7 +14,7 @@ return new class extends Migration
         Schema::create('activities', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('name', 255);
-            $table->string('siret', 14)->nullable()->unique();
+            $table->string('siret', 14)->nullable();
             $table->text('description')->nullable();
             $table->string('phone', 20)->nullable();
             $table->string('email', 255)->nullable();
@@ -51,13 +52,16 @@ return new class extends Migration
             $table->foreign('address_id')->references('id')->on('addresses')->onDelete('restrict');
             $table->foreign('reviewed_by')->references('id')->on('users')->nullOnDelete();
 
-            $table->index('is_active', 'activities_is_active_index');
-            $table->index('siret', 'activities_siret_index');
             $table->index('created_at', 'activities_created_at_index');
-            $table->index(['stripe_onboarding_completed', 'stripe_charges_enabled', 'stripe_payouts_enabled'], 'activities_stripe_ready_index');
-            $table->index('status', 'activities_status_index');
+            $table->index(['status', 'is_active'], 'activities_status_active_index');
             $table->index('google_place_id', 'activities_google_place_id_index');
+            $table->index('manager_id', 'activities_manager_id_index');
+            $table->index('address_id', 'activities_address_id_index');
+            $table->index('reviewed_by', 'activities_reviewed_by_index');
         });
+
+        // Unicité limitée aux activités non supprimées (soft delete).
+        DB::statement('CREATE UNIQUE INDEX activities_siret_unique ON activities (siret) WHERE deleted_at IS NULL');
     }
 
     public function down(): void

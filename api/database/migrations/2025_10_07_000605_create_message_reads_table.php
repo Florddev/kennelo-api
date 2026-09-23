@@ -16,6 +16,7 @@ return new class extends Migration
             $table->timestamp('read_at');
 
             $table->primary(['message_id', 'user_id']);
+            $table->index('user_id', 'message_reads_user_id_index');
         });
     }
 

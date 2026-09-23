@@ -19,6 +19,8 @@ return new class extends Migration
             $table->bigInteger('file_size');
             $table->string('mime_type', 100);
             $table->timestamp('created_at')->nullable();
+
+            $table->index('message_id', 'message_files_message_id_index');
         });
     }
 

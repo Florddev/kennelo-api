@@ -17,6 +17,8 @@ return new class extends Migration
             $table->integer('sort_order')->default(0);
             $table->timestamps();
             $table->json('label')->nullable();
+
+            $table->index('attribute_definition_id', 'attribute_options_attribute_definition_id_index');
         });
     }
 

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedTinyInteger('sum_weekdays')->default(0);
             $table->timestamps();
 
-            $table->index('activity_cycle_id');
+            $table->unique('activity_cycle_id');
         });
     }
 

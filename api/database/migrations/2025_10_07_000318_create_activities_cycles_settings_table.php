@@ -17,7 +17,7 @@ return new class extends Migration
             $table->integer('max_capacity');
             $table->timestamps();
 
-            $table->index('activity_cycle_id');
+            $table->unique(['activity_cycle_id', 'animal_type_id']);
             $table->index('animal_type_id', 'activities_cycles_settings_animal_type_id_index');
         });
     }

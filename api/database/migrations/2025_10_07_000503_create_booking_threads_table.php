@@ -16,6 +16,8 @@ return new class extends Migration
             $table->boolean('is_active')->default(true);
             $table->timestamp('archived_at')->nullable();
             $table->timestamps();
+
+            $table->index('conversation_id', 'booking_threads_conversation_id_index');
         });
     }
 

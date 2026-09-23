@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -24,8 +25,13 @@ return new class extends Migration
             $table->timestamps();
 
             $table->unique(['booking_id', 'reviewer_type']);
-            $table->index('is_published', 'reviews_is_published_index');
+            $table->index('reviewer_id', 'reviews_reviewer_id_index');
         });
+
+        // SQLite ne permet pas d'ajouter une contrainte CHECK après coup.
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement('ALTER TABLE reviews ADD CONSTRAINT reviews_overall_rating_check CHECK (overall_rating BETWEEN 1 AND 5)');
+        }
     }
 
     public function down(): void

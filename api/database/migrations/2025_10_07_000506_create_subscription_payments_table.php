@@ -12,7 +12,7 @@ return new class extends Migration
     {
         Schema::create('subscription_payments', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('subscription_id')->constrained('subscriptions')->onDelete('cascade');
+            $table->foreignUuid('subscription_id')->constrained('subscriptions')->restrictOnDelete();
             $table->string('stripe_invoice_id', 50)->unique();
             $table->string('stripe_payment_intent_id', 50)->nullable();
             $table->decimal('amount', 10, 2);

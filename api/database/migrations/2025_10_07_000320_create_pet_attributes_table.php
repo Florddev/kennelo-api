@@ -23,6 +23,8 @@ return new class extends Migration
             $table->timestamps();
 
             $table->unique(['pet_id', 'attribute_definition_id']);
+            $table->index('attribute_definition_id', 'pet_attributes_attribute_definition_id_index');
+            $table->index('attribute_option_id', 'pet_attributes_attribute_option_id_index');
         });
     }
 

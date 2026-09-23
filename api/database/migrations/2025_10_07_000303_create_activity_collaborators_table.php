@@ -24,6 +24,7 @@ return new class extends Migration
             $table->primary(['activity_id', 'user_id']);
 
             $table->index(['user_id', 'status'], 'activity_collaborators_user_status_index');
+            $table->index('role_id', 'activity_collaborators_role_id_index');
         });
     }
 

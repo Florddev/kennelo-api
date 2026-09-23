@@ -12,7 +12,7 @@ return new class extends Migration
     {
         Schema::create('admin_actions', function (Blueprint $table): void {
             $table->uuid('id')->primary();
-            $table->foreignUuid('admin_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignUuid('admin_id')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignUuid('target_user_id')->nullable()->constrained('users')->nullOnDelete();
             $table->string('action')->index();
             $table->json('metadata')->nullable();

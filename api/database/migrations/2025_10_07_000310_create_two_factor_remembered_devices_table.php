@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('token_hash', 64)->unique();
             $table->timestamp('expires_at');
             $table->timestamps();
+
+            $table->index(['user_id', 'expires_at'], 'two_factor_remembered_devices_user_expires_index');
         });
     }
 

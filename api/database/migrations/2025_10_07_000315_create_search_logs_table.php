@@ -24,6 +24,7 @@ return new class extends Migration
 
             $table->index(['department', 'created_at']);
             $table->index('created_at');
+            $table->index('user_id', 'search_logs_user_id_index');
         });
     }
 

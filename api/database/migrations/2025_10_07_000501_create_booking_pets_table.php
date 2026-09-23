@@ -12,7 +12,7 @@ return new class extends Migration
     {
         Schema::create('booking_pets', function (Blueprint $table) {
             $table->foreignUuid('booking_id')->constrained()->onDelete('cascade');
-            $table->foreignUuid('pet_id')->constrained();
+            $table->foreignUuid('pet_id')->constrained()->restrictOnDelete();
             $table->decimal('price_per_night', 8, 2);
             $table->integer('number_of_nights');
             $table->decimal('subtotal', 10, 2);
