@@ -35,11 +35,6 @@ return new class extends Migration
             $table->text('rejection_reason')->nullable();
             $table->foreignUuid('reviewed_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamp('reviewed_at')->nullable();
-            $table->string('google_place_id')->nullable();
-            $table->decimal('google_rating', 2, 1)->nullable();
-            $table->unsignedInteger('google_reviews_count')->nullable();
-            $table->string('google_maps_url')->nullable();
-            $table->timestamp('google_synced_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
 
@@ -48,7 +43,6 @@ return new class extends Migration
             $table->index(['profession_id', 'status'], 'activities_profession_status_index');
             $table->index(['status', 'is_active'], 'activities_status_active_index');
             $table->index('created_at', 'activities_created_at_index');
-            $table->index('google_place_id', 'activities_google_place_id_index');
             $table->index('address_id', 'activities_address_id_index');
             $table->index('reviewed_by', 'activities_reviewed_by_index');
         });

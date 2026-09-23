@@ -18,7 +18,6 @@ return new class extends Migration
             $table->string('email');
             $table->string('phone')->nullable();
             $table->timestamp('email_verified_at')->nullable();
-            $table->boolean('is_id_verified')->default(false);
             $table->string('password')->nullable();
             $table->timestamp('password_changed_at')->nullable();
             $table->unsignedInteger('token_version')->default(0);
