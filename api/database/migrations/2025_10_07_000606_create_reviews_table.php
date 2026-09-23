@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('reviews', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('booking_id')->constrained();
+            // Évite la jointure par bookings pour afficher les avis d'une activité.
+            $table->foreignUuid('activity_id')->constrained('activities')->restrictOnDelete();
             $table->foreignUuid('reviewer_id')->constrained('users');
             $table->string('reviewer_type', 20);
             $table->decimal('overall_rating', 2, 1);
@@ -25,6 +27,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->unique(['booking_id', 'reviewer_type']);
+            $table->index(['activity_id', 'is_published', 'published_at'], 'reviews_activity_published_index');
             $table->index('reviewer_id', 'reviews_reviewer_id_index');
         });
 

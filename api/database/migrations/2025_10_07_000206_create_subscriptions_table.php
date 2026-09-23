@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -12,10 +13,9 @@ return new class extends Migration
     {
         Schema::create('subscriptions', function (Blueprint $table): void {
             $table->uuid('id')->primary();
-            $table->foreignUuid('user_id')->constrained('users')->restrictOnDelete();
-            $table->foreignUuid('subscription_plan_id')->constrained('subscription_plans')->onDelete('restrict');
+            $table->foreignUuid('organization_id')->constrained('organizations')->restrictOnDelete();
+            $table->foreignUuid('subscription_plan_id')->constrained('subscription_plans')->restrictOnDelete();
             $table->string('stripe_subscription_id', 50)->unique();
-            $table->string('stripe_customer_id', 50)->index();
             $table->enum('status', ['active', 'canceled', 'past_due', 'unpaid', 'trialing'])->index();
             $table->timestamp('current_period_start')->nullable();
             $table->timestamp('current_period_end')->nullable()->index();
@@ -24,9 +24,12 @@ return new class extends Migration
             $table->timestamp('ends_at')->nullable();
             $table->timestamps();
 
-            $table->index(['user_id', 'status'], 'subscriptions_user_status_index');
+            $table->index(['organization_id', 'status'], 'subscriptions_organization_status_index');
             $table->index('subscription_plan_id', 'subscriptions_subscription_plan_id_index');
         });
+
+        // Un seul abonnement actif, en essai ou impayé par entreprise.
+        DB::statement("CREATE UNIQUE INDEX subscriptions_organization_current_unique ON subscriptions (organization_id) WHERE status IN ('active', 'trialing', 'past_due')");
     }
 
     public function down(): void

@@ -20,16 +20,14 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->boolean('is_id_verified')->default(false);
             $table->string('password')->nullable();
+            $table->timestamp('password_changed_at')->nullable();
+            $table->unsignedInteger('token_version')->default(0);
             $table->rememberToken();
             $table->tinyInteger('status')->default(1)->comment('App\Enums\UserStatus');
             $table->timestamps();
             $table->string('locale', 5)->default('en')->index();
-            $table->uuid('address_id')->nullable();
             $table->softDeletes();
-            $table->string('stripe_account_id')->nullable()->unique();
-            $table->boolean('stripe_charges_enabled')->default(false);
-            $table->boolean('stripe_payouts_enabled')->default(false);
-            $table->boolean('stripe_onboarding_completed')->default(false);
+            // Compte client Stripe : sert à payer les réservations. Le compte Connect est porté par organizations.
             $table->string('stripe_customer_id')->nullable()->unique();
             $table->string('google_id')->nullable();
             $table->text('two_factor_secret')->nullable();
@@ -40,10 +38,6 @@ return new class extends Migration
             $table->timestamp('banned_until')->nullable();
             $table->uuid('banned_by')->nullable();
             $table->timestamp('last_seen_at')->nullable()->index();
-
-            $table->foreign('address_id')->references('id')->on('addresses')->nullOnDelete();
-
-            $table->index('address_id', 'users_address_id_index');
         });
 
         // Unicité limitée aux comptes non supprimés (soft delete) pour permettre la réinscription.

@@ -15,7 +15,10 @@ return new class extends Migration
             $table->foreignUuid('user_id')->constrained()->onDelete('cascade');
             $table->foreignUuid('animal_type_id')->constrained();
             $table->string('name', 255);
-            $table->string('breed', 255)->nullable();
+            $table->uuid('animal_breed_id')->nullable();
+            // Remplacent la taille déduite du poids et de la race, et le poil de la race.
+            $table->string('size_class', 10)->nullable()->comment('small | medium | large | giant');
+            $table->string('coat_type', 10)->nullable()->comment('short | medium | long | curly | wire');
             $table->date('birth_date')->nullable();
             $table->string('sex')->nullable();
             $table->decimal('weight', 5, 2)->nullable();
@@ -26,7 +29,6 @@ return new class extends Migration
             $table->text('about')->nullable();
             $table->text('health_notes')->nullable();
             $table->timestamps();
-            $table->uuid('animal_breed_id')->nullable();
 
             $table->foreign('animal_breed_id')->references('id')->on('animal_breeds')->nullOnDelete();
 

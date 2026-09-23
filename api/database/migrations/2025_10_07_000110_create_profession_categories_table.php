@@ -10,18 +10,17 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('activity_roles', function (Blueprint $table): void {
+        Schema::create('profession_categories', function (Blueprint $table): void {
             $table->uuid('id')->primary();
-            $table->foreignUuid('activity_id')->constrained('activities')->onDelete('cascade');
-            $table->string('name');
+            $table->string('code', 50)->unique();
+            $table->json('name');
+            $table->unsignedSmallInteger('sort_order')->default(0);
             $table->timestamps();
-
-            $table->unique(['activity_id', 'name']);
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('activity_roles');
+        Schema::dropIfExists('profession_categories');
     }
 };

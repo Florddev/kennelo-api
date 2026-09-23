@@ -14,7 +14,8 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->foreignUuid('booking_id')->unique()->constrained('bookings')->restrictOnDelete();
             $table->string('stripe_transfer_id', 50)->unique();
-            $table->string('activity_stripe_account_id', 50)->index();
+            // Compte Stripe de l'entreprise au moment du versement ; figé.
+            $table->string('stripe_account_id', 50)->index();
             $table->decimal('amount', 10, 2);
             $table->char('currency', 3)->default('EUR');
             $table->enum('status', ['pending', 'in_transit', 'paid', 'failed', 'canceled'])->index();
