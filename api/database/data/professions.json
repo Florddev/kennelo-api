@@ -1,0 +1,161 @@
+{
+    "categories": [
+        { "code": "accommodation", "sort_order": 1, "name": { "en": "Accommodation", "fr": "Hébergement", "ar": "الإيواء" } },
+        { "code": "care", "sort_order": 2, "name": { "en": "Care", "fr": "Soin", "ar": "العناية" } },
+        { "code": "education", "sort_order": 3, "name": { "en": "Education", "fr": "Éducation", "ar": "التربية" } },
+        { "code": "exercise", "sort_order": 4, "name": { "en": "Exercise", "fr": "Exercice", "ar": "النشاط البدني" } },
+        { "code": "services", "sort_order": 5, "name": { "en": "Services", "fr": "Services", "ar": "الخدمات" } }
+    ],
+    "professions": [
+        {
+            "code": "boarding",
+            "category": "accommodation",
+            "sort_order": 1,
+            "name": { "en": "Boarding", "fr": "Pension", "ar": "فندق الحيوانات الأليفة" },
+            "booking_mode": "stay",
+            "billing_unit": "night",
+            "locations": ["at_pro", "at_client"],
+            "pricing_dimensions": [],
+            "animal_types": ["dog", "cat", "rabbit", "rodent", "ferret", "bird", "reptile", "amphibian", "horse"],
+            "documents": [
+                { "type": "rc_pro_insurance", "required": true, "validity_months": 12 },
+                { "type": "acaced", "required": true, "validity_months": null },
+                { "type": "prefecture_declaration", "required": false, "validity_months": null }
+            ]
+        },
+        {
+            "code": "daycare",
+            "category": "accommodation",
+            "sort_order": 2,
+            "name": { "en": "Daycare", "fr": "Garderie", "ar": "رعاية نهارية" },
+            "booking_mode": "stay",
+            "billing_unit": "day",
+            "locations": ["at_pro"],
+            "pricing_dimensions": [],
+            "animal_types": ["dog"],
+            "documents": [
+                { "type": "rc_pro_insurance", "required": true, "validity_months": 12 },
+                { "type": "acaced", "required": true, "validity_months": null },
+                { "type": "prefecture_declaration", "required": true, "validity_months": null }
+            ]
+        },
+        {
+            "code": "grooming",
+            "category": "care",
+            "sort_order": 1,
+            "name": { "en": "Grooming", "fr": "Toilettage", "ar": "تجميل الحيوانات الأليفة" },
+            "booking_mode": "appointment",
+            "billing_unit": "slot",
+            "locations": ["at_pro", "at_client"],
+            "pricing_dimensions": ["size", "coat", "breed"],
+            "animal_types": ["dog", "cat", "rabbit"],
+            "documents": [
+                { "type": "rc_pro_insurance", "required": true, "validity_months": 12 }
+            ]
+        },
+        {
+            "code": "osteopathy",
+            "category": "care",
+            "sort_order": 2,
+            "name": { "en": "Animal osteopathy", "fr": "Ostéopathie animale", "ar": "العلاج بتقويم العظام للحيوانات" },
+            "booking_mode": "appointment",
+            "billing_unit": "slot",
+            "locations": ["at_pro", "at_client"],
+            "pricing_dimensions": [],
+            "animal_types": ["dog", "cat", "horse"],
+            "documents": [
+                { "type": "rc_pro_insurance", "required": true, "validity_months": 12 },
+                { "type": "osteopath_registration", "required": true, "validity_months": null }
+            ]
+        },
+        {
+            "code": "dog_training",
+            "category": "education",
+            "sort_order": 1,
+            "name": { "en": "Dog training", "fr": "Éducation canine", "ar": "تدريب الكلاب" },
+            "booking_mode": "appointment",
+            "billing_unit": "slot",
+            "locations": ["at_pro", "at_client"],
+            "pricing_dimensions": [],
+            "animal_types": ["dog"],
+            "documents": [
+                { "type": "rc_pro_insurance", "required": true, "validity_months": 12 },
+                { "type": "acaced", "required": true, "validity_months": null }
+            ]
+        },
+        {
+            "code": "behaviorist",
+            "category": "education",
+            "sort_order": 2,
+            "name": { "en": "Animal behaviourist", "fr": "Comportementaliste", "ar": "أخصائي سلوك الحيوانات" },
+            "booking_mode": "appointment",
+            "billing_unit": "slot",
+            "locations": ["at_pro", "at_client", "remote"],
+            "pricing_dimensions": [],
+            "animal_types": ["dog", "cat", "horse"],
+            "documents": [
+                { "type": "rc_pro_insurance", "required": true, "validity_months": 12 },
+                { "type": "acaced", "required": false, "validity_months": null }
+            ]
+        },
+        {
+            "code": "dog_walking",
+            "category": "exercise",
+            "sort_order": 1,
+            "name": { "en": "Dog walking", "fr": "Promenade", "ar": "تمشية الكلاب" },
+            "booking_mode": "appointment",
+            "billing_unit": "slot",
+            "locations": ["at_client"],
+            "pricing_dimensions": [],
+            "animal_types": ["dog"],
+            "documents": [
+                { "type": "rc_pro_insurance", "required": true, "validity_months": 12 },
+                { "type": "acaced", "required": false, "validity_months": null }
+            ]
+        },
+        {
+            "code": "dog_sports",
+            "category": "exercise",
+            "sort_order": 2,
+            "name": { "en": "Dog sports", "fr": "Sport canin", "ar": "رياضة الكلاب" },
+            "booking_mode": "appointment",
+            "billing_unit": "slot",
+            "locations": ["at_pro"],
+            "pricing_dimensions": [],
+            "animal_types": ["dog"],
+            "documents": [
+                { "type": "rc_pro_insurance", "required": true, "validity_months": 12 },
+                { "type": "acaced", "required": true, "validity_months": null }
+            ]
+        },
+        {
+            "code": "home_visit",
+            "category": "services",
+            "sort_order": 1,
+            "name": { "en": "Home visits", "fr": "Visites à domicile", "ar": "زيارات منزلية" },
+            "booking_mode": "appointment",
+            "billing_unit": "slot",
+            "locations": ["at_client"],
+            "pricing_dimensions": [],
+            "animal_types": ["dog", "cat", "rabbit", "rodent", "ferret", "bird", "reptile", "amphibian"],
+            "documents": [
+                { "type": "rc_pro_insurance", "required": true, "validity_months": 12 }
+            ]
+        },
+        {
+            "code": "pet_taxi",
+            "category": "services",
+            "sort_order": 2,
+            "name": { "en": "Pet taxi", "fr": "Taxi animalier", "ar": "نقل الحيوانات الأليفة" },
+            "booking_mode": "appointment",
+            "billing_unit": "slot",
+            "locations": ["at_client"],
+            "pricing_dimensions": ["size"],
+            "animal_types": ["dog", "cat", "rabbit", "rodent", "ferret", "bird", "reptile", "amphibian"],
+            "documents": [
+                { "type": "rc_pro_insurance", "required": true, "validity_months": 12 },
+                { "type": "animal_transport_certificate", "required": false, "validity_months": null }
+            ]
+        }
+    ]
+}

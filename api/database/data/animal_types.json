@@ -38,5 +38,10 @@
         "code": "amphibian",
         "category": "amphibians",
         "name": "Amphibian"
+    },
+    {
+        "code": "horse",
+        "category": "equines",
+        "name": "Horse"
     }
 ]

@@ -70,5 +70,14 @@
             "fr": "Amphibien",
             "ar": "برمائي"
         }
+    },
+    {
+        "code": "horse",
+        "category": "equines",
+        "name": {
+            "en": "Horse",
+            "fr": "Cheval",
+            "ar": "حصان"
+        }
     }
 ]
