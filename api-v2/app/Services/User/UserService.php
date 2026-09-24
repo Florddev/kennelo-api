@@ -9,7 +9,7 @@ use App\Enums\NotificationTypeEnum;
 use App\Models\User;
 use App\Services\MediaService;
 use App\Services\Notification\NotificationService;
-use App\Services\User\Exceptions\UserHasActiveBookingsException;
+use App\Services\User\Exceptions\AccountCannotBeDeletedException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -61,6 +61,11 @@ class UserService
 
     public function deleteAccount(User $user): void
     {
+        // Une entreprise ne peut pas rester sans propriétaire : il faut d'abord la céder ou la fermer.
+        if ($user->ownedOrganizations()->exists()) {
+            throw AccountCannotBeDeletedException::ownsOrganization();
+        }
+
         // Requête directe : le modèle Booking arrive avec le lot « Réservation commune et séjours ».
         $hasActiveBookings = DB::table('bookings')
             ->where('user_id', $user->id)
@@ -72,7 +77,7 @@ class UserService
             ->exists();
 
         if ($hasActiveBookings) {
-            throw UserHasActiveBookingsException::cannotDeleteAccount();
+            throw AccountCannotBeDeletedException::hasActiveBookings();
         }
 
         $user->delete();

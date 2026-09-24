@@ -80,12 +80,12 @@ class User extends Authenticatable implements HasLocalePreference, HasMedia, Mus
     }
 
     /**
-     * Accès à l'espace de gestion : réservé aux membres actifs d'au moins une entreprise.
+     * Accès à l'espace de gestion : réservé aux membres actifs d'au moins une entreprise ouverte.
      * Le propriétaire d'une entreprise en est toujours membre.
      */
     public function canAccessManagement(): bool
     {
-        return $this->organizationMemberships()->active()->exists();
+        return $this->organizationMemberships()->active()->whereHas('organization')->exists();
     }
 
     public function preferredLocale(): string
@@ -122,6 +122,14 @@ class User extends Authenticatable implements HasLocalePreference, HasMedia, Mus
     public function organizationMemberships(): HasMany
     {
         return $this->hasMany(OrganizationMember::class);
+    }
+
+    /**
+     * @return HasMany<Organization, $this>
+     */
+    public function ownedOrganizations(): HasMany
+    {
+        return $this->hasMany(Organization::class, 'owner_id');
     }
 
     /**

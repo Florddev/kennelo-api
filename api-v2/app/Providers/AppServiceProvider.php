@@ -18,6 +18,8 @@ use Stripe\StripeClient;
 
 class AppServiceProvider extends ServiceProvider
 {
+    private const string UUID_PATTERN = '[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}';
+
     public function register(): void
     {
         $this->app->singleton(StripeClient::class, function (): StripeClient {
@@ -34,8 +36,10 @@ class AppServiceProvider extends ServiceProvider
         // Espace de gestion : réservé aux membres actifs d'au moins une entreprise (plus de rôle « manager »).
         Gate::define('access-management', fn (User $user): bool => $user->canAccessManagement());
 
-        // {user} : identifiant uuid (sinon 404) ; inclut les comptes inactifs ou bannis (profil public et administration).
-        Route::pattern('user', '[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}');
+        // Identifiants uuid : une valeur mal formée donne une 404, et non une erreur SQL sous PostgreSQL.
+        Route::patterns(array_fill_keys(['user', 'organization', 'member'], self::UUID_PATTERN));
+
+        // {user} inclut les comptes inactifs ou bannis (profil public et administration).
         Route::bind('user', fn (string $value): User => User::withInactive()->findOrFail($value));
 
         Password::defaults(fn () => Password::min(12)->letters()->mixedCase()->numbers()->symbols());

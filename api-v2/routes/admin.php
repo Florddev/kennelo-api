@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Admin\AuditController;
+use App\Http\Controllers\Admin\Organization\OrganizationController;
 use App\Http\Controllers\Admin\Setting\SettingController;
 use App\Http\Controllers\Admin\Subscription\SubscriptionPlanController;
 use App\Http\Controllers\Admin\User\BulkController;
@@ -27,6 +28,14 @@ Route::delete('/users/{user}/ban', [UserController::class, 'unban']);
 Route::post('/users/{user}/force-password-reset', [UserController::class, 'forcePasswordReset']);
 Route::post('/users/{user}/verify-email', [UserController::class, 'verifyEmail']);
 Route::post('/users/{user}/resend-verification', [UserController::class, 'resendVerification']);
+
+// Organizations
+Route::get('/organizations', [OrganizationController::class, 'index']);
+Route::get('/organizations/{organization}', [OrganizationController::class, 'show']);
+Route::post('/organizations/{organization}/approve', [OrganizationController::class, 'approve']);
+Route::post('/organizations/{organization}/reject', [OrganizationController::class, 'reject']);
+Route::post('/organizations/{organization}/suspend', [OrganizationController::class, 'suspend']);
+Route::post('/organizations/{organization}/verify-company', [OrganizationController::class, 'verifyCompany'])->middleware('throttle:20,1');
 
 // Audit
 Route::get('/audit-actions', [AuditController::class, 'index']);

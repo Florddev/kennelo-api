@@ -5,6 +5,7 @@ declare(strict_types=1);
 return [
     'password_incorrect' => 'كلمة المرور غير صحيحة.',
     'has_active_bookings' => 'لا يمكن حذف حساب لديه حجوزات جارية.',
+    'owns_organization' => 'انقل ملكية شركاتك أو أغلقها قبل حذف حسابك.',
     'email_already_verified' => 'تم التحقق من بريدك الإلكتروني مسبقًا.',
     'email_verified' => 'تم التحقق من بريدك الإلكتروني.',
     'invalid_verification_link' => 'رابط التحقق هذا غير صالح.',

@@ -33,9 +33,13 @@ enum NotificationTypeEnum: string
     case ACCOUNT_BANNED = 'account_banned';
     case ACCOUNT_UNBANNED = 'account_unbanned';
 
-    case COLLABORATOR_INVITED = 'collaborator_invited';
-    case COLLABORATOR_ACCEPTED = 'collaborator_accepted';
-    case COLLABORATOR_DECLINED = 'collaborator_declined';
+    case MEMBER_INVITED = 'member_invited';
+    case MEMBER_ACCEPTED = 'member_accepted';
+    case MEMBER_DECLINED = 'member_declined';
+
+    case ORGANIZATION_APPROVED = 'organization_approved';
+    case ORGANIZATION_REJECTED = 'organization_rejected';
+    case ORGANIZATION_SUSPENDED = 'organization_suspended';
 
     case SUBSCRIPTION_ACTIVATED = 'subscription_activated';
     case SUBSCRIPTION_PAYMENT_FAILED = 'subscription_payment_failed';

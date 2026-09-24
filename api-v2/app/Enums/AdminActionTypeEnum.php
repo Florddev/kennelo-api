@@ -21,6 +21,10 @@ enum AdminActionTypeEnum: string
     case BULK_STATUS = 'bulk_status';
     case BULK_ROLES = 'bulk_roles';
     case EXPORT = 'export';
+    case APPROVE_ORGANIZATION = 'approve_organization';
+    case REJECT_ORGANIZATION = 'reject_organization';
+    case SUSPEND_ORGANIZATION = 'suspend_organization';
+    case VERIFY_ORGANIZATION_COMPANY = 'verify_organization_company';
     case APPROVE_ACTIVITY = 'approve_activity';
     case REJECT_ACTIVITY = 'reject_activity';
     case UPDATE_ACTIVITY = 'update_activity';

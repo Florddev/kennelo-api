@@ -7,11 +7,16 @@ namespace App\Services\User\Exceptions;
 use Exception;
 use Illuminate\Http\JsonResponse;
 
-class UserHasActiveBookingsException extends Exception
+class AccountCannotBeDeletedException extends Exception
 {
-    public static function cannotDeleteAccount(): self
+    public static function hasActiveBookings(): self
     {
         return new self(__('account.has_active_bookings'));
+    }
+
+    public static function ownsOrganization(): self
+    {
+        return new self(__('account.owns_organization'));
     }
 
     public function render(): JsonResponse

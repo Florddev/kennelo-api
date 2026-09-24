@@ -145,6 +145,26 @@ it('user can delete their own account', function () {
     expect(User::withTrashed()->find($user->id)->deleted_at)->not->toBeNull();
 });
 
+it('refuses to delete the account of a company owner', function () {
+    $organization = Organization::factory()->create();
+
+    $this->withHeaders(asUser($organization->owner))
+        ->deleteJson('/api/user')
+        ->assertUnprocessable()
+        ->assertJsonPath('message', __('account.owns_organization'));
+
+    expect($organization->owner->fresh()->trashed())->toBeFalse();
+});
+
+it('deletes the account of someone whose companies are all closed', function () {
+    $organization = Organization::factory()->create();
+    $organization->delete();
+
+    $this->withHeaders(asUser($organization->owner))
+        ->deleteJson('/api/user')
+        ->assertNoContent();
+});
+
 // ─── Access to the management area ───────────────────────────────────────────
 
 function organizationWithMember(User $member, OrganizationMemberStatusEnum $status): Organization

@@ -73,7 +73,7 @@ test('returning google users can authenticate', function () {
     $response = $this->post('/api/login/google', ['token' => 'google-access-token']);
 
     $response->assertOk()
-        ->assertJsonPath('user.id', $user->id);
+        ->assertJsonPath('data.id', $user->id);
 
     expect(User::where('google_id', 'google-123')->count())->toBe(1);
 });

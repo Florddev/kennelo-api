@@ -10,15 +10,21 @@ use App\Http\Controllers\Pet\AnimalTypeController;
 use App\Http\Controllers\Pet\PetAttributeController;
 use App\Http\Controllers\Pet\PetController;
 use App\Http\Controllers\Pet\PetImageController;
+use App\Http\Controllers\Stripe\StripeWebhookController;
 use App\Http\Controllers\Subscription\SubscriptionController;
 use App\Http\Controllers\User\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/animal-types', [AnimalTypeController::class, 'index']);
 
+Route::post('/webhooks/stripe', StripeWebhookController::class)->middleware('throttle:120,1');
+
 Route::middleware(['auth:sanctum', 'role:admin'])
     ->prefix('admin')
     ->group(base_path('routes/admin.php'));
+
+Route::middleware('auth:sanctum')
+    ->group(base_path('routes/management.php'));
 
 Route::middleware('auth:sanctum')->group(function () {
     // Subscriptions

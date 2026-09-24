@@ -43,6 +43,10 @@ return [
         'currency' => env('STRIPE_CURRENCY', 'eur'),
     ],
 
+    'recherche_entreprises' => [
+        'url' => env('RECHERCHE_ENTREPRISES_URL', 'https://recherche-entreprises.api.gouv.fr'),
+    ],
+
     'two_factor' => [
         'issuer' => env('APP_NAME', 'Kennelo'),
     ],

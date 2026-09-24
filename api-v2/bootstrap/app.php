@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Middleware\SetLocale;
 use App\Http\Middleware\TrackLastSeen;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -34,9 +35,12 @@ return Application::configure(basePath: dirname(__DIR__))
         // Réponses d'erreur au format JSON standard de Laravel : { message, errors? }.
         $exceptions->shouldRenderJsonWhen(fn (Request $request): bool => $request->is('api/*') || $request->expectsJson());
 
-        // Le message par défaut d'un modèle introuvable révèle le nom de la classe : on le remplace.
+        // Les messages par défaut d'un modèle introuvable (nom de la classe) ou d'une route inconnue (chemin)
+        // exposent des détails internes : on les remplace. Un abort(404, $message) garde son message.
         $exceptions->render(function (NotFoundHttpException $e, Request $request) {
-            if ($request->is('api/*')) {
+            $isFrameworkMessage = $e->getPrevious() instanceof ModelNotFoundException || $request->route() === null;
+
+            if ($request->is('api/*') && $isFrameworkMessage) {
                 return response()->json(['message' => __('errors.not_found')], 404);
             }
 
