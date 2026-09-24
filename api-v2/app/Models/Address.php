@@ -1,0 +1,43 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Address extends Model
+{
+    use HasFactory, HasUuids;
+
+    protected $fillable = [
+        'line1',
+        'line2',
+        'postal_code',
+        'city',
+        'region',
+        'department',
+        'country',
+        'latitude',
+        'longitude',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'latitude' => 'float',
+            'longitude' => 'float',
+        ];
+    }
+
+    protected static function booted(): void
+    {
+        static::saving(function (Address $address): void {
+            if (filled($address->postal_code) && (blank($address->department) || $address->isDirty('postal_code'))) {
+                $address->department = department_from_postal_code($address->postal_code);
+            }
+        });
+    }
+}

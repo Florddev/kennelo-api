@@ -1,0 +1,1158 @@
+[
+    {
+        "code": "amphibian_species",
+        "category": "info",
+        "value_type": "text",
+        "input_type": "textarea",
+        "icon_name": "Book",
+        "animal_types": [
+            "amphibian"
+        ],
+        "label": "Species",
+        "options": []
+    },
+    {
+        "code": "bath_method",
+        "category": "hygiene",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "Waterdrop",
+        "animal_types": [
+            "bird"
+        ],
+        "label": "Bathing Method",
+        "options": [
+            {
+                "value": "misting",
+                "label": "Misting"
+            },
+            {
+                "value": "shallow_dish",
+                "label": "Shallow dish"
+            },
+            {
+                "value": "both",
+                "label": "Both"
+            },
+            {
+                "value": "none_needed",
+                "label": "None needed"
+            }
+        ]
+    },
+    {
+        "code": "bird_species",
+        "category": "info",
+        "value_type": "text",
+        "input_type": "textarea",
+        "icon_name": "Book",
+        "animal_types": [
+            "bird"
+        ],
+        "label": "Species",
+        "options": []
+    },
+    {
+        "code": "biting_tendency",
+        "category": "behavior",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "DangerTriangle",
+        "animal_types": [
+            "ferret",
+            "rodent"
+        ],
+        "label": "Biting Tendency",
+        "options": [
+            {
+                "value": "never",
+                "label": "Never"
+            },
+            {
+                "value": "rarely",
+                "label": "Rarely"
+            },
+            {
+                "value": "when_stressed",
+                "label": "When stressed"
+            }
+        ]
+    },
+    {
+        "code": "can_be_handled",
+        "category": "behavior",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "HandShake",
+        "animal_types": [
+            "amphibian",
+            "bird",
+            "ferret",
+            "rabbit",
+            "reptile",
+            "rodent"
+        ],
+        "label": "Handleability",
+        "options": [
+            {
+                "value": "yes_easily",
+                "label": "Yes, easily"
+            },
+            {
+                "value": "yes_with_care",
+                "label": "Yes, with care"
+            },
+            {
+                "value": "requires_experience",
+                "label": "Requires experience"
+            },
+            {
+                "value": "no",
+                "label": "Prefer not to be handled"
+            }
+        ]
+    },
+    {
+        "code": "can_be_left_alone",
+        "category": "behavior",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "HomeSmile",
+        "animal_types": [
+            "cat",
+            "dog",
+            "ferret"
+        ],
+        "label": "Max Time Alone",
+        "options": [
+            {
+                "value": "1h",
+                "label": "1 hour"
+            },
+            {
+                "value": "4h",
+                "label": "4 hours"
+            },
+            {
+                "value": "8h",
+                "label": "8 hours"
+            },
+            {
+                "value": "never",
+                "label": "Never"
+            }
+        ]
+    },
+    {
+        "code": "can_talk",
+        "category": "behavior",
+        "value_type": "boolean",
+        "input_type": "boolean",
+        "icon_name": "ChatRound",
+        "animal_types": [
+            "bird"
+        ],
+        "label": "Can Talk",
+        "options": []
+    },
+    {
+        "code": "daily_walks",
+        "category": "care",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "Running",
+        "animal_types": [
+            "dog"
+        ],
+        "label": "Daily Walks Needed",
+        "options": [
+            {
+                "value": "one",
+                "label": "1 walk"
+            },
+            {
+                "value": "two",
+                "label": "2 walks"
+            },
+            {
+                "value": "three_plus",
+                "label": "3+ walks"
+            }
+        ]
+    },
+    {
+        "code": "declawed",
+        "category": "health",
+        "value_type": "boolean",
+        "input_type": "boolean",
+        "icon_name": "Scissors",
+        "animal_types": [
+            "cat"
+        ],
+        "label": "Declawed",
+        "options": []
+    },
+    {
+        "code": "diet_type",
+        "category": "diet",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "Leaf",
+        "animal_types": [
+            "amphibian",
+            "reptile"
+        ],
+        "label": "Diet Type",
+        "options": [
+            {
+                "value": "insects",
+                "label": "Insects"
+            },
+            {
+                "value": "rodents",
+                "label": "Rodents / Pinky mice"
+            },
+            {
+                "value": "worms",
+                "label": "Worms"
+            },
+            {
+                "value": "vegetables",
+                "label": "Vegetables / Fruit"
+            },
+            {
+                "value": "omnivore",
+                "label": "Omnivore"
+            },
+            {
+                "value": "carnivore",
+                "label": "Carnivore"
+            }
+        ]
+    },
+    {
+        "code": "energy_level",
+        "category": "behavior",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "BoltCircle",
+        "animal_types": [
+            "bird",
+            "cat",
+            "dog",
+            "ferret",
+            "rabbit",
+            "rodent"
+        ],
+        "label": "Energy Level",
+        "options": [
+            {
+                "value": "low",
+                "label": "Low"
+            },
+            {
+                "value": "medium",
+                "label": "Medium"
+            },
+            {
+                "value": "high",
+                "label": "High"
+            },
+            {
+                "value": "very_high",
+                "label": "Very High"
+            }
+        ]
+    },
+    {
+        "code": "feeding_frequency",
+        "category": "diet",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "Calendar",
+        "animal_types": [
+            "amphibian",
+            "reptile"
+        ],
+        "label": "Feeding Frequency",
+        "options": [
+            {
+                "value": "daily",
+                "label": "Once a day"
+            },
+            {
+                "value": "every_2_days",
+                "label": "Every 2 days"
+            },
+            {
+                "value": "twice_weekly",
+                "label": "Twice a week"
+            },
+            {
+                "value": "weekly",
+                "label": "Once a week"
+            }
+        ]
+    },
+    {
+        "code": "feeding_schedule",
+        "category": "diet",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "Calendar",
+        "animal_types": [
+            "bird",
+            "cat",
+            "dog",
+            "ferret",
+            "rabbit",
+            "rodent"
+        ],
+        "label": "Feeding Schedule",
+        "options": [
+            {
+                "value": "morning_only",
+                "label": "Morning only"
+            },
+            {
+                "value": "evening_only",
+                "label": "Evening only"
+            },
+            {
+                "value": "morning_and_evening",
+                "label": "Morning & Evening"
+            },
+            {
+                "value": "three_times_daily",
+                "label": "Three times a day"
+            },
+            {
+                "value": "free_feeding",
+                "label": "Free feeding (always available)"
+            }
+        ]
+    },
+    {
+        "code": "flight_status",
+        "category": "behavior",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "Plain",
+        "animal_types": [
+            "bird"
+        ],
+        "label": "Flight Status",
+        "options": [
+            {
+                "value": "fully_flighted",
+                "label": "Fully flighted"
+            },
+            {
+                "value": "wings_clipped",
+                "label": "Wings clipped"
+            },
+            {
+                "value": "limited_flight",
+                "label": "Limited flight"
+            }
+        ]
+    },
+    {
+        "code": "free_roam_time",
+        "category": "care",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "Running",
+        "animal_types": [
+            "rabbit"
+        ],
+        "label": "Daily Free Roam Time",
+        "options": [
+            {
+                "value": "less_than_1h",
+                "label": "Less than 1 hour"
+            },
+            {
+                "value": "1_to_3h",
+                "label": "1 to 3 hours"
+            },
+            {
+                "value": "3_to_6h",
+                "label": "3 to 6 hours"
+            },
+            {
+                "value": "all_day",
+                "label": "All day"
+            }
+        ]
+    },
+    {
+        "code": "friendly_with_birds",
+        "category": "social",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "UsersGroupRounded",
+        "animal_types": [
+            "bird"
+        ],
+        "label": "Friendly with Other Birds",
+        "options": [
+            {
+                "value": "yes",
+                "label": "Yes"
+            },
+            {
+                "value": "no",
+                "label": "No"
+            },
+            {
+                "value": "unknown",
+                "label": "Unknown"
+            }
+        ]
+    },
+    {
+        "code": "friendly_with_cats",
+        "category": "social",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "Cat",
+        "animal_types": [
+            "dog",
+            "ferret"
+        ],
+        "label": "Friendly with Cats",
+        "options": [
+            {
+                "value": "yes",
+                "label": "Yes"
+            },
+            {
+                "value": "no",
+                "label": "No"
+            },
+            {
+                "value": "unknown",
+                "label": "Unknown"
+            }
+        ]
+    },
+    {
+        "code": "friendly_with_children",
+        "category": "social",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "UsersGroupRounded",
+        "animal_types": [
+            "bird",
+            "cat",
+            "dog",
+            "ferret",
+            "rabbit",
+            "rodent"
+        ],
+        "label": "Friendly with Children",
+        "options": [
+            {
+                "value": "yes",
+                "label": "Yes"
+            },
+            {
+                "value": "supervised_only",
+                "label": "Supervised Only"
+            },
+            {
+                "value": "no",
+                "label": "No"
+            },
+            {
+                "value": "unknown",
+                "label": "Unknown"
+            }
+        ]
+    },
+    {
+        "code": "friendly_with_dogs",
+        "category": "social",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "Paw",
+        "animal_types": [
+            "cat",
+            "dog",
+            "ferret"
+        ],
+        "label": "Friendly with Dogs",
+        "options": [
+            {
+                "value": "yes",
+                "label": "Yes"
+            },
+            {
+                "value": "no",
+                "label": "No"
+            },
+            {
+                "value": "unknown",
+                "label": "Unknown"
+            }
+        ]
+    },
+    {
+        "code": "friendly_with_other_cats",
+        "category": "social",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "Cat",
+        "animal_types": [
+            "cat"
+        ],
+        "label": "Friendly with Other Cats",
+        "options": [
+            {
+                "value": "yes",
+                "label": "Yes"
+            },
+            {
+                "value": "no",
+                "label": "No"
+            },
+            {
+                "value": "unknown",
+                "label": "Unknown"
+            }
+        ]
+    },
+    {
+        "code": "habitat_type",
+        "category": "habitat",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "Water",
+        "animal_types": [
+            "amphibian"
+        ],
+        "label": "Habitat Type",
+        "options": [
+            {
+                "value": "aquatic",
+                "label": "Aquatic"
+            },
+            {
+                "value": "semi_aquatic",
+                "label": "Semi-aquatic"
+            },
+            {
+                "value": "terrestrial",
+                "label": "Terrestrial"
+            }
+        ]
+    },
+    {
+        "code": "handling_frequency",
+        "category": "care",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "ClockCircle",
+        "animal_types": [
+            "amphibian",
+            "reptile"
+        ],
+        "label": "Handling Frequency",
+        "options": [
+            {
+                "value": "daily",
+                "label": "Daily"
+            },
+            {
+                "value": "few_per_week",
+                "label": "A few times a week"
+            },
+            {
+                "value": "weekly",
+                "label": "Weekly"
+            },
+            {
+                "value": "rarely",
+                "label": "Rarely / Never"
+            }
+        ]
+    },
+    {
+        "code": "hay_type",
+        "category": "diet",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "Leaf",
+        "animal_types": [
+            "rabbit"
+        ],
+        "label": "Primary Hay",
+        "options": [
+            {
+                "value": "timothy",
+                "label": "Timothy"
+            },
+            {
+                "value": "orchard",
+                "label": "Orchard grass"
+            },
+            {
+                "value": "meadow",
+                "label": "Meadow hay"
+            },
+            {
+                "value": "alfalfa",
+                "label": "Alfalfa (young/ill)"
+            }
+        ]
+    },
+    {
+        "code": "housing_size",
+        "category": "habitat",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "Home2",
+        "animal_types": [
+            "bird",
+            "ferret",
+            "rabbit",
+            "rodent"
+        ],
+        "label": "Housing Size",
+        "options": [
+            {
+                "value": "small",
+                "label": "Small"
+            },
+            {
+                "value": "medium",
+                "label": "Medium"
+            },
+            {
+                "value": "large",
+                "label": "Large"
+            },
+            {
+                "value": "extra_large",
+                "label": "Extra Large / Aviary"
+            }
+        ]
+    },
+    {
+        "code": "housing_type",
+        "category": "habitat",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "HomeSmile",
+        "animal_types": [
+            "rabbit"
+        ],
+        "label": "Housing Type",
+        "options": [
+            {
+                "value": "indoor_cage",
+                "label": "Indoor cage"
+            },
+            {
+                "value": "outdoor_hutch",
+                "label": "Outdoor hutch"
+            },
+            {
+                "value": "free_roam",
+                "label": "Free roam"
+            },
+            {
+                "value": "cage_with_exercise",
+                "label": "Cage + exercise area"
+            }
+        ]
+    },
+    {
+        "code": "humidity_level",
+        "category": "habitat",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "Waterdrops",
+        "animal_types": [
+            "amphibian",
+            "reptile"
+        ],
+        "label": "Humidity Level",
+        "options": [
+            {
+                "value": "low",
+                "label": "Low (30–40%)"
+            },
+            {
+                "value": "medium",
+                "label": "Medium (50–60%)"
+            },
+            {
+                "value": "high",
+                "label": "High (70–80%)"
+            },
+            {
+                "value": "very_high",
+                "label": "Very High (80%+)"
+            }
+        ]
+    },
+    {
+        "code": "indoor_outdoor",
+        "category": "habitat",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "Home2",
+        "animal_types": [
+            "cat"
+        ],
+        "label": "Indoor / Outdoor",
+        "options": [
+            {
+                "value": "indoor_only",
+                "label": "Indoor only"
+            },
+            {
+                "value": "outdoor_access",
+                "label": "Outdoor access"
+            },
+            {
+                "value": "outdoor",
+                "label": "Outdoor"
+            }
+        ]
+    },
+    {
+        "code": "is_nocturnal",
+        "category": "behavior",
+        "value_type": "boolean",
+        "input_type": "boolean",
+        "icon_name": "Moon",
+        "animal_types": [
+            "amphibian",
+            "reptile",
+            "rodent"
+        ],
+        "label": "Nocturnal",
+        "options": []
+    },
+    {
+        "code": "is_venomous",
+        "category": "health",
+        "value_type": "boolean",
+        "input_type": "boolean",
+        "icon_name": "DangerTriangle",
+        "animal_types": [
+            "amphibian",
+            "reptile"
+        ],
+        "label": "Venomous / Toxic",
+        "options": []
+    },
+    {
+        "code": "leash_trained",
+        "category": "behavior",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "WalkingRound",
+        "animal_types": [
+            "dog"
+        ],
+        "label": "Leash Trained",
+        "options": [
+            {
+                "value": "yes",
+                "label": "Yes"
+            },
+            {
+                "value": "in_training",
+                "label": "In training"
+            },
+            {
+                "value": "no",
+                "label": "No"
+            }
+        ]
+    },
+    {
+        "code": "litter_trained",
+        "category": "hygiene",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "Waterdrop",
+        "animal_types": [
+            "cat",
+            "ferret",
+            "rabbit"
+        ],
+        "label": "Litter Trained",
+        "options": [
+            {
+                "value": "yes",
+                "label": "Yes"
+            },
+            {
+                "value": "in_training",
+                "label": "In training"
+            },
+            {
+                "value": "no",
+                "label": "No"
+            }
+        ]
+    },
+    {
+        "code": "medications",
+        "category": "health",
+        "value_type": "text",
+        "input_type": "multi-list",
+        "icon_name": "Pill",
+        "animal_types": [
+            "amphibian",
+            "bird",
+            "cat",
+            "dog",
+            "ferret",
+            "horse",
+            "rabbit",
+            "reptile",
+            "rodent"
+        ],
+        "label": "Current Medications",
+        "options": []
+    },
+    {
+        "code": "noise_level",
+        "category": "behavior",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "Speaker",
+        "animal_types": [
+            "bird"
+        ],
+        "label": "Noise Level",
+        "options": [
+            {
+                "value": "quiet",
+                "label": "Quiet"
+            },
+            {
+                "value": "moderate",
+                "label": "Moderate"
+            },
+            {
+                "value": "loud",
+                "label": "Loud"
+            },
+            {
+                "value": "very_loud",
+                "label": "Very loud"
+            }
+        ]
+    },
+    {
+        "code": "out_of_cage_time",
+        "category": "care",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "Calendar",
+        "animal_types": [
+            "bird"
+        ],
+        "label": "Daily Out-of-Cage Time",
+        "options": [
+            {
+                "value": "not_needed",
+                "label": "Not needed"
+            },
+            {
+                "value": "less_than_1h",
+                "label": "Less than 1 hour"
+            },
+            {
+                "value": "1_to_3h",
+                "label": "1 to 3 hours"
+            },
+            {
+                "value": "more_than_3h",
+                "label": "More than 3 hours"
+            }
+        ]
+    },
+    {
+        "code": "potty_break_frequency",
+        "category": "hygiene",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "ClockCircle",
+        "animal_types": [
+            "dog"
+        ],
+        "label": "Potty Break Frequency",
+        "options": [
+            {
+                "value": "every_2h",
+                "label": "Every 2 hours"
+            },
+            {
+                "value": "every_4h",
+                "label": "Every 4 hours"
+            },
+            {
+                "value": "every_6h_plus",
+                "label": "Every 6+ hours"
+            }
+        ]
+    },
+    {
+        "code": "potty_trained",
+        "category": "hygiene",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "Waterdrop",
+        "animal_types": [
+            "dog"
+        ],
+        "label": "Potty Trained",
+        "options": [
+            {
+                "value": "fully_trained",
+                "label": "Fully trained"
+            },
+            {
+                "value": "in_training",
+                "label": "In training"
+            },
+            {
+                "value": "not_trained",
+                "label": "Not trained"
+            }
+        ]
+    },
+    {
+        "code": "reptile_species",
+        "category": "info",
+        "value_type": "text",
+        "input_type": "textarea",
+        "icon_name": "Book",
+        "animal_types": [
+            "reptile"
+        ],
+        "label": "Species",
+        "options": []
+    },
+    {
+        "code": "requires_live_food",
+        "category": "diet",
+        "value_type": "boolean",
+        "input_type": "boolean",
+        "icon_name": "DangerSquare",
+        "animal_types": [
+            "amphibian",
+            "reptile"
+        ],
+        "label": "Requires Live Food",
+        "options": []
+    },
+    {
+        "code": "rodent_species",
+        "category": "info",
+        "value_type": "text",
+        "input_type": "textarea",
+        "icon_name": "Book",
+        "animal_types": [
+            "rodent"
+        ],
+        "label": "Species",
+        "options": []
+    },
+    {
+        "code": "separation_anxiety",
+        "category": "behavior",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "HeartPulse",
+        "animal_types": [
+            "dog"
+        ],
+        "label": "Separation Anxiety",
+        "options": [
+            {
+                "value": "none",
+                "label": "None"
+            },
+            {
+                "value": "mild",
+                "label": "Mild"
+            },
+            {
+                "value": "moderate",
+                "label": "Moderate"
+            },
+            {
+                "value": "severe",
+                "label": "Severe"
+            }
+        ]
+    },
+    {
+        "code": "skin_care_notes",
+        "category": "health",
+        "value_type": "text",
+        "input_type": "textarea",
+        "icon_name": "Health",
+        "animal_types": [
+            "amphibian"
+        ],
+        "label": "Skin Care Notes",
+        "options": []
+    },
+    {
+        "code": "social_living",
+        "category": "social",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "UsersGroupRounded",
+        "animal_types": [
+            "rodent"
+        ],
+        "label": "Social Living",
+        "options": [
+            {
+                "value": "alone",
+                "label": "Lives alone"
+            },
+            {
+                "value": "pair",
+                "label": "Bonded pair"
+            },
+            {
+                "value": "group",
+                "label": "Group"
+            }
+        ]
+    },
+    {
+        "code": "social_with_ferrets",
+        "category": "social",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "UsersGroupRounded",
+        "animal_types": [
+            "ferret"
+        ],
+        "label": "Social with Other Ferrets",
+        "options": [
+            {
+                "value": "yes",
+                "label": "Yes"
+            },
+            {
+                "value": "no",
+                "label": "No"
+            },
+            {
+                "value": "unknown",
+                "label": "Unknown"
+            }
+        ]
+    },
+    {
+        "code": "special_diet",
+        "category": "diet",
+        "value_type": "text",
+        "input_type": "textarea",
+        "icon_name": "Notes",
+        "animal_types": [
+            "amphibian",
+            "bird",
+            "cat",
+            "dog",
+            "ferret",
+            "horse",
+            "rabbit",
+            "reptile",
+            "rodent"
+        ],
+        "label": "Special Diet Notes",
+        "options": []
+    },
+    {
+        "code": "temperature_day",
+        "category": "habitat",
+        "value_type": "integer",
+        "input_type": "number",
+        "icon_name": "Thermometer",
+        "animal_types": [
+            "reptile"
+        ],
+        "label": "Day Temperature (°C)",
+        "options": []
+    },
+    {
+        "code": "temperature_night",
+        "category": "habitat",
+        "value_type": "integer",
+        "input_type": "number",
+        "icon_name": "Moon",
+        "animal_types": [
+            "reptile"
+        ],
+        "label": "Night Temperature (°C)",
+        "options": []
+    },
+    {
+        "code": "terrarium_type",
+        "category": "habitat",
+        "value_type": "text",
+        "input_type": "badge-list",
+        "icon_name": "Home2",
+        "animal_types": [
+            "reptile"
+        ],
+        "label": "Terrarium Type",
+        "options": [
+            {
+                "value": "desert",
+                "label": "Desert"
+            },
+            {
+                "value": "tropical",
+                "label": "Tropical"
+            },
+            {
+                "value": "woodland",
+                "label": "Woodland"
+            },
+            {
+                "value": "aqua_terrarium",
+                "label": "Aqua-terrarium"
+            }
+        ]
+    },
+    {
+        "code": "uv_light_needed",
+        "category": "care",
+        "value_type": "boolean",
+        "input_type": "boolean",
+        "icon_name": "Sun",
+        "animal_types": [
+            "reptile"
+        ],
+        "label": "UV Light Required",
+        "options": []
+    },
+    {
+        "code": "water_quality",
+        "category": "health",
+        "value_type": "text",
+        "input_type": "textarea",
+        "icon_name": "Shield",
+        "animal_types": [
+            "amphibian"
+        ],
+        "label": "Water Quality Requirements",
+        "options": []
+    }
+]

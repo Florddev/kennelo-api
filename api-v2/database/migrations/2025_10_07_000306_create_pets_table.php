@@ -1,0 +1,45 @@
+<?php
+
+declare(strict_types=1);
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('pets', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->foreignUuid('user_id')->constrained()->onDelete('cascade');
+            $table->foreignUuid('animal_type_id')->constrained();
+            $table->string('name', 255);
+            $table->uuid('animal_breed_id')->nullable();
+            // Remplacent la taille déduite du poids et de la race, et le poil de la race.
+            $table->string('size_class', 10)->nullable()->comment('small | medium | large | giant');
+            $table->string('coat_type', 10)->nullable()->comment('short | medium | long | curly | wire');
+            $table->date('birth_date')->nullable();
+            $table->string('sex')->nullable();
+            $table->decimal('weight', 5, 2)->nullable();
+            $table->boolean('is_sterilized')->nullable();
+            $table->boolean('has_microchip')->default(false);
+            $table->string('microchip_number', 50)->nullable();
+            $table->date('adoption_date')->nullable();
+            $table->text('about')->nullable();
+            $table->text('health_notes')->nullable();
+            $table->timestamps();
+
+            $table->foreign('animal_breed_id')->references('id')->on('animal_breeds')->nullOnDelete();
+
+            $table->index('user_id', 'pets_user_id_index');
+            $table->index('animal_type_id', 'pets_animal_type_id_index');
+            $table->index('animal_breed_id', 'pets_animal_breed_id_index');
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('pets');
+    }
+};

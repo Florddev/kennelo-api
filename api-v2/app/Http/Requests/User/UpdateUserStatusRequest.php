@@ -1,0 +1,24 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Http\Requests\User;
+
+use App\Enums\UserStatusEnum;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+
+class UpdateUserStatusRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    public function rules(): array
+    {
+        return [
+            'status' => ['required', Rule::in([UserStatusEnum::ACTIVE->value, UserStatusEnum::INACTIVE->value])],
+        ];
+    }
+}

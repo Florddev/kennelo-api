@@ -1,0 +1,83 @@
+[
+    {
+        "code": "dog",
+        "category": "mammals",
+        "name": {
+            "en": "Dog",
+            "fr": "Chien",
+            "ar": "كلب"
+        }
+    },
+    {
+        "code": "cat",
+        "category": "mammals",
+        "name": {
+            "en": "Cat",
+            "fr": "Chat",
+            "ar": "قط"
+        }
+    },
+    {
+        "code": "rabbit",
+        "category": "small_mammals",
+        "name": {
+            "en": "Rabbit",
+            "fr": "Lapin",
+            "ar": "أرنب"
+        }
+    },
+    {
+        "code": "rodent",
+        "category": "small_mammals",
+        "name": {
+            "en": "Rodent",
+            "fr": "Rongeur",
+            "ar": "قارض"
+        }
+    },
+    {
+        "code": "ferret",
+        "category": "small_mammals",
+        "name": {
+            "en": "Ferret",
+            "fr": "Furet",
+            "ar": "نمس"
+        }
+    },
+    {
+        "code": "bird",
+        "category": "birds",
+        "name": {
+            "en": "Bird",
+            "fr": "Oiseau",
+            "ar": "طائر"
+        }
+    },
+    {
+        "code": "reptile",
+        "category": "reptiles",
+        "name": {
+            "en": "Reptile",
+            "fr": "Reptile",
+            "ar": "زاحف"
+        }
+    },
+    {
+        "code": "amphibian",
+        "category": "amphibians",
+        "name": {
+            "en": "Amphibian",
+            "fr": "Amphibien",
+            "ar": "برمائي"
+        }
+    },
+    {
+        "code": "horse",
+        "category": "equines",
+        "name": {
+            "en": "Horse",
+            "fr": "Cheval",
+            "ar": "حصان"
+        }
+    }
+]
