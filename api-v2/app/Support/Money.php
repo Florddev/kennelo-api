@@ -67,6 +67,33 @@ final class Money
     }
 
     /**
+     * Part de $amount au prorata de $part sur $whole : les frais d'une option retirée d'une réservation, par exemple.
+     *
+     * @param  numeric-string  $amount
+     * @param  numeric-string  $part
+     * @param  numeric-string  $whole
+     * @return numeric-string
+     */
+    public static function prorate(string $amount, string $part, string $whole): string
+    {
+        if (bccomp($whole, '0', self::WORKING_SCALE) === 0) {
+            return '0.00';
+        }
+
+        return self::round(bcdiv(bcmul($amount, $part, self::WORKING_SCALE), $whole, self::WORKING_SCALE));
+    }
+
+    /**
+     * @param  numeric-string  $first
+     * @param  numeric-string  $second
+     * @return numeric-string
+     */
+    public static function min(string $first, string $second): string
+    {
+        return bccomp($first, $second, self::WORKING_SCALE) <= 0 ? $first : $second;
+    }
+
+    /**
      * @param  numeric-string  $amount
      */
     public static function toCents(string $amount): int

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Services\Activity;
 
-use App\Enums\BookingStatusEnum;
 use App\Enums\LocationModeEnum;
 use App\Models\Activity;
 use App\Models\Address;
@@ -18,9 +17,9 @@ use Illuminate\Support\Facades\DB;
 class ActivityService
 {
     /**
-     * Relations affichées avec une activité.
+     * Relations affichées avec une activité. L'offre de l'entreprise décide des photos montrées au public.
      */
-    public const array RELATIONS = ['organization', 'profession.category', 'address', 'animalTypes', 'openingHours', 'media'];
+    public const array RELATIONS = ['organization.subscription.plan', 'profession.category', 'address', 'animalTypes', 'openingHours', 'media'];
 
     public function __construct(
         private readonly PlanLimitService $planLimits,
@@ -33,6 +32,7 @@ class ActivityService
     {
         return $organization->activities()
             ->with(self::RELATIONS)
+            ->withExists(Activity::missingDocumentsCheck())
             ->orderBy('name')
             ->orderBy('id')
             ->get();
@@ -72,6 +72,11 @@ class ActivityService
     public function update(Activity $activity, array $data): Activity
     {
         DB::transaction(function () use ($activity, $data): void {
+            if (! $activity->is_active && (bool) ($data['is_active'] ?? false)) {
+                Organization::query()->whereKey($activity->organization_id)->lockForUpdate()->first();
+                $this->planLimits->assertCanReopenActivity($activity);
+            }
+
             if (isset($data['address'])) {
                 $this->saveAddress($activity, $data['address']);
             }
@@ -91,17 +96,7 @@ class ActivityService
      */
     public function delete(Activity $activity): void
     {
-        // Requête directe : le modèle Booking arrive avec le lot « Séjours ».
-        $hasActiveBookings = DB::table('bookings')
-            ->where('activity_id', $activity->id)
-            ->whereIn('status', [
-                BookingStatusEnum::PENDING->value,
-                BookingStatusEnum::CONFIRMED->value,
-                BookingStatusEnum::IN_PROGRESS->value,
-            ])
-            ->exists();
-
-        if ($hasActiveBookings) {
+        if ($activity->bookings()->occupying()->exists()) {
             throw new ActivityCannotBeDeletedException;
         }
 

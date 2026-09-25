@@ -10,6 +10,20 @@ beforeEach(function () {
     Storage::fake('public');
 });
 
+/**
+ * Activité réservable d'une entreprise en offre gratuite (5 photos), qui en a gardé 7 d'une offre supérieure.
+ */
+function activityWithSevenPhotos(): Activity
+{
+    $activity = Activity::factory()->bookable()->create();
+
+    foreach (range(1, 7) as $i) {
+        $activity->addMedia(UploadedFile::fake()->image("photo-{$i}.jpg"))->toMediaCollection('images');
+    }
+
+    return $activity;
+}
+
 it('adds photos to an activity', function () {
     $activity = Activity::factory()->create();
 
@@ -57,4 +71,26 @@ it('deletes a photo of the activity only', function () {
         ->assertNoContent();
 
     expect($other->fresh()->getMedia('images'))->toBeEmpty();
+});
+
+describe('after a downgrade', function () {
+    it('shows the public only the first photos within the quota when the option is on', function () {
+        config(['plans.downgrade.soft_disable.photos' => true]);
+        $activity = activityWithSevenPhotos();
+
+        $this->getJson("/api/activities/{$activity->id}")
+            ->assertOk()
+            ->assertJsonCount(5, 'data.images')
+            ->assertJsonPath('data.images.4.order', 5);
+
+        $this->withHeaders(asUser($activity->organization->owner))
+            ->getJson("/api/activities/{$activity->id}")
+            ->assertJsonCount(7, 'data.images');
+    });
+
+    it('keeps every photo visible when the option is off', function () {
+        $activity = activityWithSevenPhotos();
+
+        $this->getJson("/api/activities/{$activity->id}")->assertJsonCount(7, 'data.images');
+    });
 });

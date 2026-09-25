@@ -146,7 +146,7 @@ class ExploreService
         return Activity::query()
             ->select('activities.*')
             ->bookable()
-            ->with(['organization', 'profession.category', 'address', 'animalTypes', 'media'])
+            ->with(['organization.subscription.plan', 'profession.category', 'address', 'animalTypes', 'media'])
             ->when($user !== null, fn (Builder $query) => $query->withExists([
                 'favoritedBy as is_favorited' => fn (Builder $query) => $query->whereKey($user?->id),
             ]));

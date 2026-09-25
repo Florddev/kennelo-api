@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Services\Activity;
 
-use App\Enums\ActivityStatusEnum;
 use App\Enums\DocumentStatusEnum;
 use App\Enums\NotificationTypeEnum;
 use App\Enums\OrganizationPermissionEnum;
@@ -51,7 +50,8 @@ class ActivityDocumentService
     }
 
     /**
-     * Passe en expiré les justificatifs approuvés dont l'échéance est dépassée.
+     * Passe en expiré les justificatifs approuvés dont l'échéance est dépassée. L'activité n'a pas à être
+     * suspendue : faute de justificatif valable, elle sort d'elle-même de Activity::bookable().
      */
     public function expireOverdue(): int
     {
@@ -90,41 +90,6 @@ class ActivityDocumentService
             });
 
         return $notified;
-    }
-
-    /**
-     * Suspend les activités approuvées auxquelles manque désormais un justificatif obligatoire.
-     * Une fois le justificatif déposé et approuvé, Kennelo approuve de nouveau l'activité.
-     */
-    public function suspendActivitiesMissingDocuments(): int
-    {
-        $suspended = 0;
-
-        Activity::query()
-            ->where('status', ActivityStatusEnum::APPROVED)
-            ->missingRequiredDocuments()
-            ->with('organization.owner')
-            ->lazyById()
-            ->each(function (Activity $activity) use (&$suspended): void {
-                $activity->forceFill([
-                    'status' => ActivityStatusEnum::SUSPENDED,
-                    'rejection_reason' => __('activity.suspended_missing_documents', locale: $activity->organization?->owner?->preferredLocale()),
-                    'reviewed_by' => null,
-                    'reviewed_at' => now(),
-                ])->save();
-
-                if ($activity->organization !== null) {
-                    $this->notifications->notify(
-                        $this->recipients->membersAllowedTo(OrganizationPermissionEnum::ACTIVITY_MANAGE, $activity->organization, $activity->id),
-                        NotificationTypeEnum::ACTIVITY_SUSPENDED,
-                        ['activity_id' => $activity->id, 'activity_name' => $activity->name, 'reason' => 'missing_documents'],
-                    );
-                }
-
-                $suspended++;
-            });
-
-        return $suspended;
     }
 
     private function notifyTeam(ActivityDocument $document, NotificationTypeEnum $type): void

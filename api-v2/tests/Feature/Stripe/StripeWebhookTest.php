@@ -14,33 +14,6 @@ use App\Notifications\AppNotification;
 use Database\Seeders\Reference\SubscriptionPlanSeeder;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
-use Illuminate\Testing\TestResponse;
-
-const WEBHOOK_SECRET = 'whsec_test';
-
-/**
- * Envoie un événement signé comme le fait Stripe.
- *
- * @param  array<string, mixed>  $object
- */
-function postStripeEvent(string $type, array $object, ?string $id = null): TestResponse
-{
-    config(['services.stripe.webhook_secret' => WEBHOOK_SECRET]);
-
-    $payload = (string) json_encode([
-        'id' => $id ?? 'evt_'.Str::random(12),
-        'object' => 'event',
-        'type' => $type,
-        'data' => ['object' => $object],
-    ]);
-    $timestamp = time();
-    $signature = hash_hmac('sha256', "{$timestamp}.{$payload}", WEBHOOK_SECRET);
-
-    return test()->call('POST', '/api/webhooks/stripe', server: [
-        'CONTENT_TYPE' => 'application/json',
-        'HTTP_STRIPE_SIGNATURE' => "t={$timestamp},v1={$signature}",
-    ], content: $payload);
-}
 
 /**
  * Abonnement tel que Stripe le décrit depuis l'API « basil » : les dates de période sont sur les lignes.

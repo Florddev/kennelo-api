@@ -9,6 +9,7 @@ enum NotificationTypeEnum: string
     case BOOKING_CREATED = 'booking_created';
     case BOOKING_CONFIRMED = 'booking_confirmed';
     case BOOKING_CANCELLED_BY_CLIENT = 'booking_cancelled_by_client';
+    case BOOKING_CANCELLED_BY_PRO = 'booking_cancelled_by_pro';
     case BOOKING_REJECTED = 'booking_rejected';
     case BOOKING_EXPIRED = 'booking_expired';
     case BOOKING_REMINDER = 'booking_reminder';
@@ -18,6 +19,7 @@ enum NotificationTypeEnum: string
     case PAYMENT_FAILED = 'payment_failed';
     case PAYMENT_PROCESSING = 'payment_processing';
     case PAYMENT_REFUNDED = 'payment_refunded';
+    case PAYMENT_ACTION_REQUIRED = 'payment_action_required';
     case PAYOUT_SENT = 'payout_sent';
     case STRIPE_ACCOUNT_ACTIVATED = 'stripe_account_activated';
 
@@ -87,9 +89,12 @@ enum NotificationTypeEnum: string
             self::BOOKING_REJECTED,
             self::BOOKING_EXPIRED,
             self::BOOKING_REMINDER,
+            self::BOOKING_CANCELLED_BY_CLIENT,
+            self::BOOKING_CANCELLED_BY_PRO,
             self::PAYMENT_SUCCEEDED,
             self::PAYMENT_FAILED,
             self::PAYMENT_REFUNDED,
+            self::PAYMENT_ACTION_REQUIRED,
             self::PAYOUT_SENT,
         ], true);
     }

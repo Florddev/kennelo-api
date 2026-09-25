@@ -34,6 +34,35 @@ class PlanLimitService
     }
 
     /**
+     * La période de base, obligatoire, ne compte pas : le quota porte sur les périodes saisonnières.
+     */
+    public function assertCanAddPeriod(Organization $organization): void
+    {
+        $this->assertBelowLimit($organization, 'max_periods', $organization->pricingPeriods()->seasonal()->count(), 'periods');
+    }
+
+    /**
+     * Quand les activités en trop sont mises en pause au retour à une offre inférieure (réglage
+     * soft_disable_activities), le quota compte aussi les activités ouvertes : une activité en pause ne rouvre
+     * que dans la limite de l'offre. Sans ce réglage, l'entreprise garde ce qu'elle avait.
+     */
+    public function assertCanReopenActivity(Activity $activity): void
+    {
+        if (! setting('soft_disable_activities')) {
+            return;
+        }
+
+        $organization = $activity->organization()->firstOrFail();
+
+        $this->assertBelowLimit(
+            $organization,
+            'max_activities',
+            $organization->activities()->where('is_active', true)->whereKeyNot($activity->id)->count(),
+            'activities',
+        );
+    }
+
+    /**
      * Le quota de photos s'entend par activité.
      */
     public function assertCanAddPhotos(Activity $activity, int $incoming): void

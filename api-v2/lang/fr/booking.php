@@ -1,0 +1,42 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'base_period' => 'Tarif de base',
+    'base_period_locked' => 'La période de base couvre toute l\'année : elle ne se supprime pas.',
+    'unit_type_in_use' => 'Cette place a déjà été réservée : désactivez-la plutôt que de la supprimer.',
+    'stay_only' => 'Seule une activité de séjour a des places.',
+    'duplicate_price' => 'Une place a deux prix pour le même jour.',
+    'closed_on' => 'L\'activité est fermée le :date.',
+    'unpriced_on' => 'Cette place n\'a pas de prix le :date.',
+    'min_stay' => 'Le séjour doit durer au moins :count nuits ou jours.',
+    'full_on' => 'Il ne reste plus assez de places le :date.',
+    'activity_unavailable' => 'Cette activité n\'accepte pas de réservation pour le moment.',
+    'invalid_length' => 'Le séjour doit durer entre 1 et :max nuits ou jours.',
+    'too_many_animals' => 'Une place accueille au plus :max animaux.',
+    'species_not_accepted' => ':unit n\'accueille pas l\'espèce de :pet.',
+    'option_unavailable' => 'Cette option n\'est pas proposée pour :pet.',
+    'out_of_radius' => 'Cette adresse est hors de la zone d\'intervention de l\'activité.',
+    'price_changed' => 'Le prix a changé pendant la réservation. Consultez le nouveau devis.',
+    'payment_declined' => 'Le paiement a été refusé. Essayez une autre carte.',
+    'payment_not_authorized' => 'Le paiement du client n\'est pas encore autorisé.',
+    'capture_failed' => 'Le paiement du client n\'a pas pu être encaissé.',
+    'supplement_declined' => 'Le paiement complémentaire a été refusé par la banque du client.',
+    'invalid_transition' => 'Une réservation :from ne peut pas passer à :to.',
+    'not_cancellable' => 'Cette réservation ne peut plus être annulée.',
+    'reject_instead' => 'Une demande pas encore acceptée se refuse.',
+    'not_adjustable' => 'Seule une réservation acceptée, avant sa fin, peut être ajustée.',
+    'item_not_removable' => 'Cette option est déjà réalisée ou retirée.',
+    'nothing_to_confirm' => 'Ce paiement n\'attend pas de confirmation.',
+    'pet_has_bookings' => 'Cet animal a des réservations : il reste dans leur historique.',
+    'statuses' => [
+        'pending' => 'en attente',
+        'confirmed' => 'confirmée',
+        'in_progress' => 'en cours',
+        'completed' => 'terminée',
+        'cancelled' => 'annulée',
+        'rejected' => 'refusée',
+        'expired' => 'expirée',
+    ],
+];

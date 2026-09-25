@@ -60,12 +60,19 @@ class ActivityResource extends JsonResource
             'is_active' => $this->is_active,
             'animal_types' => AnimalTypeResource::collection($this->whenLoaded('animalTypes')),
             'opening_hours' => ActivityOpeningHourResource::collection($this->whenLoaded('openingHours')),
-            'images' => $this->whenLoaded('media', fn () => ImageResource::collection($this->getMedia(MediaService::COLLECTION_IMAGES))),
+            'images' => $this->whenLoaded('media', fn () => ImageResource::collection(
+                $canSeePrivate ? $this->getMedia(MediaService::COLLECTION_IMAGES) : $this->resource->publicImages(),
+            )),
             'is_favorited' => $this->when(array_key_exists('is_favorited', $attributes), fn (): bool => (bool) $this->resource->getAttribute('is_favorited')),
             'distance_km' => $this->when(isset($attributes['distance']), fn (): float => round((float) $attributes['distance'], 1)),
             'status' => $this->when($canSeePrivate, fn (): string => $this->status->value),
             'rejection_reason' => $this->when($canSeePrivate, fn (): ?string => $this->rejection_reason),
             'reviewed_at' => $this->when($canSeePrivate, fn (): ?string => $this->reviewed_at?->toISOString()),
+            // Un justificatif obligatoire manque ou a expiré : l'activité reste hors de la recherche tant qu'il n'est pas remplacé.
+            'has_missing_documents' => $this->when(
+                $canSeePrivate && array_key_exists('has_missing_documents', $attributes),
+                fn (): bool => (bool) $this->resource->getAttribute('has_missing_documents'),
+            ),
             // Droits de la personne connectée sur cette activité, pour afficher ou masquer les actions.
             'permissions' => $this->when($isTeamMember, fn (): array => array_map(
                 fn (OrganizationPermissionEnum $permission): string => $permission->value,

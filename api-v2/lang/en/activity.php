@@ -11,6 +11,5 @@ return [
     'range_too_long' => 'The period cannot exceed :days days.',
     'document_not_required' => 'This document is not expected for this profession.',
     'missing_documents' => 'A document required by the profession is missing or no longer valid.',
-    'suspended_missing_documents' => 'Suspended automatically: a document required by the profession has expired or is missing. Submit it again to have the activity reviewed.',
     'document_already_expired' => 'This document has already expired.',
 ];

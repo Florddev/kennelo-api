@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Services\Organization;
 
-use App\Enums\BookingStatusEnum;
 use App\Enums\OrganizationMemberStatusEnum;
 use App\Enums\OrganizationRoleEnum;
 use App\Enums\OrganizationStatusEnum;
@@ -14,12 +13,17 @@ use App\Models\Organization;
 use App\Models\OrganizationMember;
 use App\Models\User;
 use App\Services\Organization\Exceptions\OrganizationCannotBeClosedException;
+use App\Services\Pricing\PricingPeriodService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 
 class OrganizationService
 {
+    public function __construct(
+        private readonly PricingPeriodService $pricingPeriods,
+    ) {}
+
     /**
      * Une identité vérifiée qui change doit être vérifiée de nouveau.
      */
@@ -60,6 +64,7 @@ class OrganizationService
                 'status' => OrganizationMemberStatusEnum::ACTIVE,
                 'responded_at' => now(),
             ]);
+            $this->pricingPeriods->createBase($organization, $owner);
 
             // Rechargée pour lire les valeurs par défaut posées par la base (statut, régime de TVA…).
             return $organization->refresh()->load(['address', 'subscription.plan']);
@@ -113,17 +118,7 @@ class OrganizationService
             throw OrganizationCannotBeClosedException::subscriptionStillActive();
         }
 
-        // Requête directe : le modèle Booking arrive avec le lot « Réservation commune et séjours ».
-        $hasActiveBookings = DB::table('bookings')
-            ->where('organization_id', $organization->id)
-            ->whereIn('status', [
-                BookingStatusEnum::PENDING->value,
-                BookingStatusEnum::CONFIRMED->value,
-                BookingStatusEnum::IN_PROGRESS->value,
-            ])
-            ->exists();
-
-        if ($hasActiveBookings) {
+        if ($organization->bookings()->occupying()->exists()) {
             throw OrganizationCannotBeClosedException::hasActiveBookings();
         }
 

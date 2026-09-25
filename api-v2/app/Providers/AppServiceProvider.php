@@ -50,6 +50,7 @@ class AppServiceProvider extends ServiceProvider
         Route::patterns(array_fill_keys([
             'user', 'organization', 'member', 'activity', 'availability', 'document',
             'service', 'address', 'profession', 'category', 'media',
+            'pricingPeriod', 'unitType', 'booking', 'item', 'payment',
         ], self::UUID_PATTERN));
 
         // {user} inclut les comptes inactifs ou bannis (profil public et administration).

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Activity\ActivityController;
 use App\Http\Controllers\Auth\TwoFactorAuthenticationController;
+use App\Http\Controllers\Booking\BookingController;
+use App\Http\Controllers\Booking\BookingPaymentController;
 use App\Http\Controllers\Catalog\ActivityServiceController;
 use App\Http\Controllers\Explore\ExploreController;
 use App\Http\Controllers\Favorite\FavoriteController;
@@ -14,7 +16,9 @@ use App\Http\Controllers\Pet\AnimalTypeController;
 use App\Http\Controllers\Pet\PetAttributeController;
 use App\Http\Controllers\Pet\PetController;
 use App\Http\Controllers\Pet\PetImageController;
+use App\Http\Controllers\Pricing\ActivityPricingController;
 use App\Http\Controllers\Profession\ProfessionController;
+use App\Http\Controllers\Stay\UnitTypeController;
 use App\Http\Controllers\Stripe\StripeWebhookController;
 use App\Http\Controllers\Subscription\SubscriptionController;
 use App\Http\Controllers\User\UserAddressController;
@@ -33,6 +37,8 @@ Route::middleware('throttle:60,1')->group(function () {
 });
 Route::get('/activities/{activity}', [ActivityController::class, 'show']);
 Route::get('/activities/{activity}/services', [ActivityServiceController::class, 'index']);
+Route::get('/activities/{activity}/unit-types', [UnitTypeController::class, 'index']);
+Route::get('/activities/{activity}/price-calendar', [ActivityPricingController::class, 'calendar'])->middleware('throttle:60,1');
 
 Route::post('/webhooks/stripe', StripeWebhookController::class)->middleware('throttle:120,1');
 
@@ -56,6 +62,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/pets/{pet}/images', [PetImageController::class, 'store']);
     Route::post('/pets/{pet}/images/bulk', [PetImageController::class, 'storeBulk']);
     Route::delete('/pets/{pet}/images/{media:uuid}', [PetImageController::class, 'destroy'])->scopeBindings();
+
+    // Bookings (client)
+    Route::post('/bookings/quote', [BookingController::class, 'quote'])->middleware('throttle:60,1');
+    Route::post('/bookings', [BookingController::class, 'store'])->middleware('throttle:10,1');
+    Route::get('/bookings', [BookingController::class, 'index']);
+    Route::get('/bookings/{booking}', [BookingController::class, 'show']);
+    Route::post('/bookings/{booking}/cancel', [BookingController::class, 'cancel']);
+    Route::post('/bookings/{booking}/payments/{payment}/confirm', [BookingPaymentController::class, 'confirm'])->scopeBindings();
 
     // Favorites
     Route::get('/favorites', [FavoriteController::class, 'index']);

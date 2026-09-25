@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use Spatie\MediaLibrary\HasMedia;
@@ -27,6 +28,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property-read AnimalType|null $animalType
  * @property-read AnimalBreed|null $animalBreed
  * @property-read User|null $user
+ * @property-read BookingPet $placement place occupée, lue depuis une réservation (Booking::pets())
  */
 class Pet extends Model implements HasMedia
 {
@@ -118,6 +120,14 @@ class Pet extends Model implements HasMedia
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * @return BelongsToMany<Booking, $this>
+     */
+    public function bookings(): BelongsToMany
+    {
+        return $this->belongsToMany(Booking::class, 'booking_pets');
     }
 
     public function animalType(): BelongsTo

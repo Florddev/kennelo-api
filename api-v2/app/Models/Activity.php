@@ -8,7 +8,9 @@ use App\Enums\ActivityStatusEnum;
 use App\Enums\CancellationPolicyEnum;
 use App\Enums\LocationModeEnum;
 use App\Enums\OrganizationStatusEnum;
+use App\Enums\PlanEnum;
 use App\Services\MediaService;
+use Closure;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -20,6 +22,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 /**
@@ -99,14 +102,19 @@ class Activity extends Model implements HasMedia
     }
 
     /**
-     * Réservable par un client : activité approuvée et ouverte, entreprise vérifiée qui peut encaisser.
-     * La recherche et la réservation s'appuient toutes deux sur cette seule règle.
+     * Réservable par un client : activité approuvée et ouverte, justificatifs obligatoires valables, entreprise
+     * vérifiée qui peut encaisser. La recherche et la réservation s'appuient toutes deux sur cette seule règle.
+     *
+     * Les justificatifs sont vérifiés ici plutôt que par un changement de statut : une activité dont un
+     * justificatif expire disparaît d'elle-même, et revient dès qu'un nouveau est approuvé. Le statut
+     * « suspendue » reste une décision de Kennelo.
      */
     public function scopeBookable(Builder $query): Builder
     {
         return $query
             ->where('activities.status', ActivityStatusEnum::APPROVED)
             ->where('activities.is_active', true)
+            ->whereDoesntHave('profession.documentRequirements', self::unmetRequirement(...))
             ->whereHas('organization', fn (Builder $query) => $query
                 ->where('status', OrganizationStatusEnum::VERIFIED)
                 ->where('stripe_charges_enabled', true));
@@ -118,12 +126,53 @@ class Activity extends Model implements HasMedia
      */
     public function scopeMissingRequiredDocuments(Builder $query): Builder
     {
-        return $query->whereHas('profession.documentRequirements', fn (Builder $query) => $query
+        return $query->whereHas('profession.documentRequirements', self::unmetRequirement(...));
+    }
+
+    /**
+     * À passer à withExists() ou loadExists() : ajoute has_missing_documents, pour que l'équipe sache pourquoi
+     * une activité approuvée n'apparaît pas dans la recherche.
+     *
+     * @return array<string, Closure(Builder): Builder>
+     */
+    public static function missingDocumentsCheck(): array
+    {
+        return [
+            'profession as has_missing_documents' => fn (Builder $query): Builder => $query
+                ->whereHas('documentRequirements', self::unmetRequirement(...)),
+        ];
+    }
+
+    /**
+     * Photos présentées aux clients, dans l'ordre. Après un retour à une offre inférieure, si le réglage
+     * soft_disable_photos est actif, celles au-delà du quota de l'offre sont masquées sans être supprimées :
+     * l'équipe les voit toujours, et elles réapparaissent dès que l'offre le permet.
+     *
+     * @return MediaCollection<int, Media>
+     */
+    public function publicImages(): MediaCollection
+    {
+        $images = $this->getMedia(MediaService::COLLECTION_IMAGES);
+        $plan = $this->organization?->effectivePlan() ?? PlanEnum::FREE;
+
+        if (! setting('soft_disable_photos') || $plan->isUnlimited('max_photos')) {
+            return $images;
+        }
+
+        return $images->take((int) $plan->limit('max_photos'));
+    }
+
+    /**
+     * Exigence du métier que l'activité ne remplit pas : aucun justificatif de ce type n'est valable aujourd'hui.
+     */
+    private static function unmetRequirement(Builder $query): Builder
+    {
+        return $query
             ->where('is_required', true)
             ->whereNotExists(ActivityDocument::query()
                 ->valid()
                 ->whereColumn('activity_documents.activity_id', 'activities.id')
-                ->whereColumn('activity_documents.document_type', 'profession_document_requirements.document_type')));
+                ->whereColumn('activity_documents.document_type', 'profession_document_requirements.document_type'));
     }
 
     public function registerMediaCollections(): void
@@ -213,6 +262,30 @@ class Activity extends Model implements HasMedia
             ->as('offer')
             ->withPivot(['organization_id', 'offered_as', 'adjustment_percent', 'is_included', 'is_active'])
             ->withTimestamps();
+    }
+
+    /**
+     * @return HasMany<ActivityUnitType, $this>
+     */
+    public function unitTypes(): HasMany
+    {
+        return $this->hasMany(ActivityUnitType::class)->orderBy('sort_order')->orderBy('name')->orderBy('id');
+    }
+
+    /**
+     * @return HasMany<ActivityPeriodSetting, $this>
+     */
+    public function periodSettings(): HasMany
+    {
+        return $this->hasMany(ActivityPeriodSetting::class);
+    }
+
+    /**
+     * @return HasMany<Booking, $this>
+     */
+    public function bookings(): HasMany
+    {
+        return $this->hasMany(Booking::class);
     }
 
     /**

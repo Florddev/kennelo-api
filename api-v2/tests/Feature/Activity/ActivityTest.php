@@ -71,6 +71,33 @@ describe('store', function () {
             ->assertCreated();
     });
 
+    it('reopens a paused activity only within the plan quota when paused activities are enforced', function () {
+        config(['plans.downgrade.soft_disable.activities' => true]);
+        $organization = Organization::factory()->create();
+        Activity::factory()->for($organization)->create();
+        $paused = Activity::factory()->for($organization)->create(['is_active' => false]);
+
+        $this->withHeaders(asUser($organization->owner))
+            ->patchJson("/api/activities/{$paused->id}", ['is_active' => true])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['plan' => __('plans.limit_reached.activities', ['limit' => 1])]);
+
+        $this->withHeaders(asUser($organization->owner))
+            ->patchJson("/api/activities/{$paused->id}", ['name' => 'Toujours en pause'])
+            ->assertOk();
+    });
+
+    it('lets a company keep its activities open beyond the quota when the option is off', function () {
+        $organization = Organization::factory()->create();
+        Activity::factory()->for($organization)->create();
+        $paused = Activity::factory()->for($organization)->create(['is_active' => false]);
+
+        $this->withHeaders(asUser($organization->owner))
+            ->patchJson("/api/activities/{$paused->id}", ['is_active' => true])
+            ->assertOk()
+            ->assertJsonPath('data.is_active', true);
+    });
+
     it('forbids the manager of another activity', function () {
         $profession = dogProfession();
         $organization = Organization::factory()->create();

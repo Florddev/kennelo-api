@@ -158,6 +158,24 @@ class User extends Authenticatable implements HasLocalePreference, HasMedia, Mus
     }
 
     /**
+     * @return HasMany<Pet, $this>
+     */
+    public function pets(): HasMany
+    {
+        return $this->hasMany(Pet::class);
+    }
+
+    /**
+     * Réservations passées par le client.
+     *
+     * @return HasMany<Booking, $this>
+     */
+    public function bookings(): HasMany
+    {
+        return $this->hasMany(Booking::class);
+    }
+
+    /**
      * @return BelongsToMany<Activity, $this>
      */
     public function favoriteActivities(): BelongsToMany

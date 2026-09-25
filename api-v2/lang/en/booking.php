@@ -1,0 +1,42 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'base_period' => 'Base rate',
+    'base_period_locked' => 'The base period covers the whole year: it cannot be deleted.',
+    'unit_type_in_use' => 'This unit has already been booked: deactivate it instead of deleting it.',
+    'stay_only' => 'Only a stay activity has units.',
+    'duplicate_price' => 'A unit has two prices for the same day.',
+    'closed_on' => 'The activity is closed on :date.',
+    'unpriced_on' => 'This unit has no price on :date.',
+    'min_stay' => 'The stay must last at least :count nights or days.',
+    'full_on' => 'Not enough units are left on :date.',
+    'activity_unavailable' => 'This activity is not taking bookings at the moment.',
+    'invalid_length' => 'The stay must last between 1 and :max nights or days.',
+    'too_many_animals' => 'A unit takes in :max animals at most.',
+    'species_not_accepted' => ':unit does not take in the species of :pet.',
+    'option_unavailable' => 'This option is not offered for :pet.',
+    'out_of_radius' => 'This address is outside the area the activity serves.',
+    'price_changed' => 'The price changed during the booking. Check the new quote.',
+    'payment_declined' => 'The payment was declined. Try another card.',
+    'payment_not_authorized' => 'The payment of the client is not authorized yet.',
+    'capture_failed' => 'The payment of the client could not be collected.',
+    'supplement_declined' => 'The bank of the client declined the extra payment.',
+    'invalid_transition' => 'A :from booking cannot become :to.',
+    'not_cancellable' => 'This booking can no longer be cancelled.',
+    'reject_instead' => 'A request not accepted yet is declined, not cancelled.',
+    'not_adjustable' => 'Only an accepted booking that has not ended yet can be adjusted.',
+    'item_not_removable' => 'This option is already done or removed.',
+    'nothing_to_confirm' => 'This payment is not waiting for a confirmation.',
+    'pet_has_bookings' => 'This pet has bookings: it stays in their history.',
+    'statuses' => [
+        'pending' => 'pending',
+        'confirmed' => 'confirmed',
+        'in_progress' => 'in progress',
+        'completed' => 'completed',
+        'cancelled' => 'cancelled',
+        'rejected' => 'declined',
+        'expired' => 'expired',
+    ],
+];

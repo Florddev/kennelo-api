@@ -7,11 +7,17 @@ namespace App\Services\Subscription;
 use App\Models\Organization;
 
 /**
- * Ramène une entreprise dans les quotas de son offre quand son abonnement cesse (config plans.downgrade).
+ * Ramène une entreprise dans les quotas de son offre quand son abonnement cesse. Rien n'est jamais supprimé.
  *
- * Désactivé par défaut : rien n'est supprimé, et l'entreprise ne peut simplement plus rien ajouter au-delà
- * du quota. Activé, les activités en trop sont mises en pause, les plus anciennes restant ouvertes ;
- * le propriétaire les rouvre à son gré dans la limite de son offre. Les périodes suivront avec les tarifs.
+ * Chaque quota a son réglage dans le back-office (groupe « downgrade ») :
+ * - soft_disable_activities : les activités en trop sont mises en pause, les plus anciennes restant ouvertes.
+ *   Le propriétaire choisit ensuite lesquelles rouvrir, dans la limite de son offre (PlanLimitService).
+ * - soft_disable_photos : les photos au-delà du quota sont masquées au public (Activity::publicImages()).
+ * - soft_disable_periods : les périodes tarifaires au-delà du quota ne s'appliquent plus aux prix
+ *   (ActivityPricingService::calculator()).
+ * Ces deux-là se lisent à l'affichage et au calcul : rien à écrire ici, et tout revient si l'offre remonte.
+ *
+ * Réglage désactivé, l'entreprise garde ce qu'elle a et ne peut simplement plus rien ajouter au-delà du quota.
  */
 class SubscriptionDowngradeService
 {
@@ -20,13 +26,14 @@ class SubscriptionDowngradeService
      */
     public function apply(Organization $organization): int
     {
-        if (! config('plans.downgrade.soft_disable.activities')) {
-            return 0;
-        }
+        return $this->pauseSurplusActivities($organization);
+    }
 
+    private function pauseSurplusActivities(Organization $organization): int
+    {
         $plan = $organization->effectivePlan();
 
-        if ($plan->isUnlimited('max_activities')) {
+        if (! setting('soft_disable_activities') || $plan->isUnlimited('max_activities')) {
             return 0;
         }
 

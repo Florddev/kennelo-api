@@ -1,0 +1,42 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'base_period' => 'السعر الأساسي',
+    'base_period_locked' => 'الفترة الأساسية تغطي السنة كلها: لا يمكن حذفها.',
+    'unit_type_in_use' => 'تم حجز هذا المكان من قبل: قم بتعطيله بدلًا من حذفه.',
+    'stay_only' => 'وحده نشاط الإقامة يملك أماكن.',
+    'duplicate_price' => 'لمكان واحد سعران لنفس اليوم.',
+    'closed_on' => 'النشاط مغلق يوم :date.',
+    'unpriced_on' => 'لا يوجد سعر لهذا المكان يوم :date.',
+    'min_stay' => 'يجب أن تدوم الإقامة :count ليالٍ أو أيام على الأقل.',
+    'full_on' => 'لم تعد هناك أماكن كافية يوم :date.',
+    'activity_unavailable' => 'هذا النشاط لا يقبل الحجوزات حاليًا.',
+    'invalid_length' => 'يجب أن تدوم الإقامة بين 1 و:max ليالٍ أو أيام.',
+    'too_many_animals' => 'يستقبل المكان :max حيوانات على الأكثر.',
+    'species_not_accepted' => ':unit لا يستقبل فصيلة :pet.',
+    'option_unavailable' => 'هذا الخيار غير متوفر لـ :pet.',
+    'out_of_radius' => 'هذا العنوان خارج منطقة تدخل النشاط.',
+    'price_changed' => 'تغير السعر أثناء الحجز. راجع عرض السعر الجديد.',
+    'payment_declined' => 'تم رفض الدفع. جرّب بطاقة أخرى.',
+    'payment_not_authorized' => 'لم يتم تفويض دفع العميل بعد.',
+    'capture_failed' => 'تعذر تحصيل دفعة العميل.',
+    'supplement_declined' => 'رفض بنك العميل الدفعة الإضافية.',
+    'invalid_transition' => 'لا يمكن لحجز :from أن يصبح :to.',
+    'not_cancellable' => 'لم يعد بالإمكان إلغاء هذا الحجز.',
+    'reject_instead' => 'الطلب غير المقبول بعد يُرفض ولا يُلغى.',
+    'not_adjustable' => 'لا يمكن تعديل إلا حجز مقبول لم ينته بعد.',
+    'item_not_removable' => 'هذا الخيار منجز أو محذوف بالفعل.',
+    'nothing_to_confirm' => 'هذه الدفعة لا تنتظر تأكيدًا.',
+    'pet_has_bookings' => 'لهذا الحيوان حجوزات: يبقى في سجلها.',
+    'statuses' => [
+        'pending' => 'قيد الانتظار',
+        'confirmed' => 'مؤكد',
+        'in_progress' => 'جارٍ',
+        'completed' => 'منتهٍ',
+        'cancelled' => 'ملغى',
+        'rejected' => 'مرفوض',
+        'expired' => 'منتهي الصلاحية',
+    ],
+];

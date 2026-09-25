@@ -6,22 +6,28 @@ namespace App\Services\Stripe;
 
 use App\Enums\SubscriptionPaymentStatusEnum;
 use App\Models\StripeEvent;
+use App\Services\Booking\BookingPayoutService;
+use App\Services\Booking\BookingWebhookService;
 use App\Services\Subscription\SubscriptionWebhookService;
 use Stripe\Account;
 use Stripe\Event;
 use Stripe\Invoice;
+use Stripe\PaymentIntent;
 use Stripe\Subscription;
+use Stripe\Transfer;
 use Throwable;
 
 /**
- * Traite chaque événement Stripe une seule fois, même si Stripe le livre plusieurs fois.
- * Les paiements de réservation s'ajouteront ici avec le lot « Séjours ».
+ * Traite chaque événement Stripe une seule fois, même si Stripe le livre plusieurs fois : comptes Connect,
+ * abonnements et leurs factures, paiements de réservation et versements.
  */
 class StripeWebhookService
 {
     public function __construct(
         private readonly StripeConnectService $connect,
         private readonly SubscriptionWebhookService $subscriptions,
+        private readonly BookingWebhookService $bookings,
+        private readonly BookingPayoutService $payouts,
     ) {}
 
     public function handle(Event $event): void
@@ -54,6 +60,8 @@ class StripeWebhookService
             str_starts_with($event->type, 'customer.subscription.') && $object instanceof Subscription => $this->subscriptions->syncSubscription($object),
             $event->type === 'invoice.paid' && $object instanceof Invoice => $this->subscriptions->recordInvoice($object, SubscriptionPaymentStatusEnum::PAID),
             $event->type === 'invoice.payment_failed' && $object instanceof Invoice => $this->subscriptions->recordInvoice($object, SubscriptionPaymentStatusEnum::FAILED),
+            in_array($event->type, BookingWebhookService::PAYMENT_EVENTS, true) && $object instanceof PaymentIntent => $this->bookings->syncPaymentIntent($object),
+            $event->type === 'transfer.reversed' && $object instanceof Transfer => $this->payouts->reverse($object),
             default => null,
         };
     }

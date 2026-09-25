@@ -21,15 +21,16 @@ beforeEach(function () {
 
 /**
  * Activité d'un métier qui exige une assurance valable un an et accepte une déclaration facultative sans échéance.
+ * Réservable, elle remplit toutes les autres conditions : seul le justificatif décide.
  */
-function activityRequiringInsurance(): Activity
+function activityRequiringInsurance(bool $bookable = false): Activity
 {
     $profession = Profession::factory()
         ->requiring(DocumentTypeEnum::RC_PRO_INSURANCE, 12)
         ->requiring(DocumentTypeEnum::PREFECTURE_DECLARATION, required: false)
         ->create();
 
-    return Activity::factory()->for($profession)->create();
+    return Activity::factory()->for($profession)->when($bookable, fn ($factory) => $factory->bookable())->create();
 }
 
 describe('submission', function () {
@@ -168,30 +169,25 @@ describe('review by Kennelo', function () {
 });
 
 describe('daily expiry task', function () {
-    it('expires overdue documents and suspends the activities that miss a required one', function () {
+    it('expires overdue documents and warns the team, without touching the activity status', function () {
         Notification::fake();
-        $activity = activityRequiringInsurance();
-        $activity->forceFill(['status' => ActivityStatusEnum::APPROVED])->save();
+        $activity = activityRequiringInsurance(bookable: true);
         $document = ActivityDocument::factory()->for($activity)->approved()->expiringOn(now()->subDay())->create();
 
         $this->artisan('activities:expire-documents')->assertSuccessful();
 
-        $activity->refresh();
-
         expect($document->fresh()->status)->toBe(DocumentStatusEnum::EXPIRED)
-            ->and($activity->status)->toBe(ActivityStatusEnum::SUSPENDED)
-            ->and($activity->rejection_reason)->toBe(__('activity.suspended_missing_documents'));
-        Notification::assertSentToTimes($activity->organization->owner, AppNotification::class, 2);
+            ->and($activity->fresh()->status)->toBe(ActivityStatusEnum::APPROVED);
+        Notification::assertSentToTimes($activity->organization->owner, AppNotification::class, 1);
     });
 
-    it('keeps an activity whose document is still valid today', function () {
-        $activity = activityRequiringInsurance();
-        $activity->forceFill(['status' => ActivityStatusEnum::APPROVED])->save();
+    it('keeps an activity bookable while its document is valid, up to the expiry date included', function () {
+        $activity = activityRequiringInsurance(bookable: true);
         ActivityDocument::factory()->for($activity)->approved()->expiringOn(today())->create();
 
         $this->artisan('activities:expire-documents')->assertSuccessful();
 
-        expect($activity->fresh()->status)->toBe(ActivityStatusEnum::APPROVED);
+        expect(Activity::bookable()->whereKey($activity->id)->exists())->toBeTrue();
     });
 
     it('warns the team once, when the expiry date comes near', function () {
@@ -203,5 +199,52 @@ describe('daily expiry task', function () {
         $this->artisan('activities:expire-documents')->assertSuccessful();
 
         Notification::assertSentToTimes($activity->organization->owner, AppNotification::class, 1);
+    });
+});
+
+describe('bookability', function () {
+    it('takes an activity out of the search once a required document expires, and brings it back on approval of a new one', function () {
+        $activity = activityRequiringInsurance(bookable: true);
+        ActivityDocument::factory()->for($activity)->approved()->expiringOn(today()->subDay())->create();
+
+        $this->getJson('/api/explore/search')->assertJsonCount(0, 'data');
+
+        $renewal = ActivityDocument::factory()->for($activity)->expiringOn(today()->addYear())->create();
+
+        $this->withHeaders(asUser(adminUser()))
+            ->postJson("/api/admin/activity-documents/{$renewal->id}/approve")
+            ->assertOk();
+
+        $this->getJson('/api/explore/search')->assertJsonPath('data.*.id', [$activity->id]);
+    });
+
+    it('leaves an optional document out of the check', function () {
+        $activity = activityRequiringInsurance(bookable: true);
+        ActivityDocument::factory()->for($activity)->approved()->expiringOn(today()->addYear())->create();
+
+        expect(Activity::bookable()->whereKey($activity->id)->exists())->toBeTrue();
+    });
+
+    it('tells the team which approved activities miss a document', function () {
+        $activity = activityRequiringInsurance(bookable: true);
+
+        $this->withHeaders(asUser($activity->organization->owner))
+            ->getJson("/api/organizations/{$activity->organization_id}/activities")
+            ->assertOk()
+            ->assertJsonPath('data.0.has_missing_documents', true);
+
+        $this->withHeaders(asUser($activity->organization->owner))
+            ->getJson("/api/activities/{$activity->id}")
+            ->assertOk()
+            ->assertJsonPath('data.has_missing_documents', true);
+    });
+
+    it('hides the flag from the public', function () {
+        $activity = activityRequiringInsurance(bookable: true);
+        ActivityDocument::factory()->for($activity)->approved()->expiringOn(today()->addYear())->create();
+
+        $this->getJson("/api/activities/{$activity->id}")
+            ->assertOk()
+            ->assertJsonMissingPath('data.has_missing_documents');
     });
 });

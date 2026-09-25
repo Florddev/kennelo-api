@@ -6,6 +6,9 @@ use App\Http\Controllers\Activity\ActivityController;
 use App\Http\Controllers\Activity\ActivityDocumentController;
 use App\Http\Controllers\Activity\ActivityImageController;
 use App\Http\Controllers\Activity\ActivityScheduleController;
+use App\Http\Controllers\Booking\ActivityBookingController;
+use App\Http\Controllers\Booking\BookingItemController;
+use App\Http\Controllers\Booking\BookingOperationController;
 use App\Http\Controllers\Catalog\ActivityServiceController;
 use App\Http\Controllers\Catalog\ServiceController;
 use App\Http\Controllers\Catalog\ServicePackageItemController;
@@ -16,6 +19,9 @@ use App\Http\Controllers\Organization\OrganizationController;
 use App\Http\Controllers\Organization\OrganizationMemberController;
 use App\Http\Controllers\Organization\OrganizationMemberRoleController;
 use App\Http\Controllers\Organization\OrganizationOwnerController;
+use App\Http\Controllers\Pricing\ActivityPricingController;
+use App\Http\Controllers\Pricing\PricingPeriodController;
+use App\Http\Controllers\Stay\UnitTypeController;
 use App\Http\Controllers\Stripe\StripeAccountController;
 use App\Http\Controllers\Subscription\SubscriptionController;
 use Illuminate\Support\Facades\Route;
@@ -88,3 +94,35 @@ Route::scopeBindings()->group(function () {
 // Offer of an activity (the service must belong to the same organization, checked by ActivityPolicy::offer)
 Route::put('/activities/{activity}/services/{service}', [ActivityServiceController::class, 'update']);
 Route::delete('/activities/{activity}/services/{service}', [ActivityServiceController::class, 'destroy']);
+
+// Pricing periods of the organization
+Route::get('/organizations/{organization}/pricing-periods', [PricingPeriodController::class, 'index']);
+Route::post('/organizations/{organization}/pricing-periods', [PricingPeriodController::class, 'store']);
+Route::scopeBindings()->group(function () {
+    Route::patch('/organizations/{organization}/pricing-periods/{pricingPeriod}', [PricingPeriodController::class, 'update']);
+    Route::delete('/organizations/{organization}/pricing-periods/{pricingPeriod}', [PricingPeriodController::class, 'destroy']);
+});
+
+// Units of a stay
+Route::post('/activities/{activity}/unit-types', [UnitTypeController::class, 'store']);
+Route::scopeBindings()->group(function () {
+    Route::patch('/activities/{activity}/unit-types/{unitType}', [UnitTypeController::class, 'update']);
+    Route::delete('/activities/{activity}/unit-types/{unitType}', [UnitTypeController::class, 'destroy']);
+});
+
+// Pricing of an activity (the period must belong to the same organization, checked by ActivityPolicy::price)
+Route::get('/activities/{activity}/pricing-periods', [ActivityPricingController::class, 'index']);
+Route::put('/activities/{activity}/pricing-periods/{pricingPeriod}', [ActivityPricingController::class, 'updateSetting']);
+Route::put('/activities/{activity}/pricing-periods/{pricingPeriod}/prices', [ActivityPricingController::class, 'updatePrices']);
+
+// Bookings of an activity
+Route::get('/activities/{activity}/bookings', [ActivityBookingController::class, 'index']);
+Route::scopeBindings()->group(function () {
+    Route::get('/activities/{activity}/bookings/{booking}', [ActivityBookingController::class, 'show']);
+    Route::post('/activities/{activity}/bookings/{booking}/confirm', [ActivityBookingController::class, 'confirm']);
+    Route::post('/activities/{activity}/bookings/{booking}/reject', [ActivityBookingController::class, 'reject']);
+    Route::post('/activities/{activity}/bookings/{booking}/cancel', [ActivityBookingController::class, 'cancel']);
+    Route::post('/activities/{activity}/bookings/{booking}/items', [BookingItemController::class, 'store']);
+    Route::delete('/activities/{activity}/bookings/{booking}/items/{item}', [BookingItemController::class, 'destroy']);
+    Route::get('/activities/{activity}/bookings/{booking}/operations', [BookingOperationController::class, 'index']);
+});

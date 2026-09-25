@@ -37,7 +37,7 @@ class ActivityController extends Controller
     {
         $this->authorize('review', $activity);
 
-        return new ActivityResource($activity->load(ActivityService::RELATIONS));
+        return new ActivityResource($activity->load(ActivityService::RELATIONS)->loadExists(Activity::missingDocumentsCheck()));
     }
 
     /**

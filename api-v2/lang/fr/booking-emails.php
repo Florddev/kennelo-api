@@ -26,6 +26,18 @@ return [
         'subject' => 'Demande en attente de réponse',
         'line' => 'Une demande de réservation pour :activity attend votre réponse.',
     ],
+    'booking_cancelled_by_client' => [
+        'subject' => 'Réservation annulée par le client',
+        'line' => 'Le client a annulé sa réservation pour :activity.',
+    ],
+    'booking_cancelled_by_pro' => [
+        'subject' => 'Réservation annulée',
+        'line' => 'Votre réservation pour :activity a été annulée par le professionnel. Vous êtes remboursé en totalité.',
+    ],
+    'payment_action_required' => [
+        'subject' => 'Confirmez votre paiement',
+        'line' => 'Un paiement complémentaire de :amount € pour :activity attend votre confirmation.',
+    ],
     'payment_succeeded' => [
         'subject' => 'Paiement confirmé',
         'line' => 'Votre paiement de :amount € a été confirmé.',

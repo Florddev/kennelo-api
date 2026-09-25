@@ -10,9 +10,23 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-// Justificatifs des activités : expiration, avertissement avant échéance, suspension si un justificatif obligatoire manque.
+// Justificatifs des activités : expiration et avertissement avant échéance.
 Schedule::command('activities:expire-documents')
     ->dailyAt('03:00')
+    ->timezone('Europe/Paris')
+    ->withoutOverlapping()
+    ->onOneServer();
+
+// Réservations : demandes sans réponse, rappels à l'équipe, début et fin des séjours, versements aux entreprises.
+Schedule::command('bookings:expire')->everyFifteenMinutes()->withoutOverlapping()->onOneServer();
+Schedule::command('bookings:remind')->hourly()->withoutOverlapping()->onOneServer();
+Schedule::command('bookings:advance-stays')
+    ->dailyAt('00:15')
+    ->timezone('Europe/Paris')
+    ->withoutOverlapping()
+    ->onOneServer();
+Schedule::command('bookings:release-payouts')
+    ->dailyAt('06:00')
     ->timezone('Europe/Paris')
     ->withoutOverlapping()
     ->onOneServer();

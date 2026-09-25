@@ -7,6 +7,7 @@ namespace App\Policies;
 use App\Enums\OrganizationPermissionEnum;
 use App\Models\Activity;
 use App\Models\Organization;
+use App\Models\PricingPeriod;
 use App\Models\Service;
 use App\Models\User;
 use App\Services\Organization\OrganizationPermissions;
@@ -61,6 +62,34 @@ class ActivityPolicy
         }
 
         return $this->update($user, $activity);
+    }
+
+    /**
+     * Une activité n'applique que les périodes tarifaires de son entreprise.
+     */
+    public function price(User $user, Activity $activity, PricingPeriod $period): Response
+    {
+        if ($period->organization_id !== $activity->organization_id) {
+            return Response::denyAsNotFound(__('errors.not_found'));
+        }
+
+        return $this->update($user, $activity);
+    }
+
+    /**
+     * Voir les réservations de l'activité : bookings.view sur elle.
+     */
+    public function viewBookings(User $user, Activity $activity): Response
+    {
+        $organization = $activity->organization;
+
+        if ($organization === null || ! $this->permissions->isMember($user, $organization)) {
+            return Response::denyAsNotFound(__('errors.not_found'));
+        }
+
+        return $this->permissions->allows($user, OrganizationPermissionEnum::BOOKINGS_VIEW, $organization, $activity->id)
+            ? Response::allow()
+            : Response::deny();
     }
 
     public function viewAny(User $user): bool

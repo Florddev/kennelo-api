@@ -27,7 +27,7 @@ class FavoriteService
     {
         return $user->favoriteActivities()
             ->bookable()
-            ->with(['organization', 'profession.category', 'address', 'animalTypes', 'media'])
+            ->with(['organization.subscription.plan', 'profession.category', 'address', 'animalTypes', 'media'])
             ->withExists(['favoritedBy as is_favorited' => fn (Builder $query) => $query->whereKey($user->id)])
             ->orderByPivot('created_at', 'desc')
             ->orderBy('activities.id')

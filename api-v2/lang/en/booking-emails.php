@@ -26,6 +26,18 @@ return [
         'subject' => 'A request is waiting for your answer',
         'line' => 'A booking request for :activity is waiting for your answer.',
     ],
+    'booking_cancelled_by_client' => [
+        'subject' => 'Booking cancelled by the client',
+        'line' => 'The client cancelled their booking for :activity.',
+    ],
+    'booking_cancelled_by_pro' => [
+        'subject' => 'Booking cancelled',
+        'line' => 'Your booking for :activity was cancelled by the professional. You will be refunded in full.',
+    ],
+    'payment_action_required' => [
+        'subject' => 'Confirm your payment',
+        'line' => 'An extra payment of :amount € for :activity needs your confirmation.',
+    ],
     'payment_succeeded' => [
         'subject' => 'Payment confirmed',
         'line' => 'Your payment of :amount € has been confirmed.',

@@ -46,8 +46,15 @@ class PetService
         return tap($pet, fn (Pet $p) => $p->update($data))->fresh(['animalType', 'animalBreed']);
     }
 
+    /**
+     * Un animal qui a été réservé reste dans l'historique de ses réservations.
+     */
     public function delete(Pet $pet): void
     {
+        if ($pet->bookings()->exists()) {
+            throw ValidationException::withMessages(['pet' => __('booking.pet_has_bookings')]);
+        }
+
         $pet->delete();
     }
 

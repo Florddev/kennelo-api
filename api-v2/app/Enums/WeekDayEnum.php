@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
+use Carbon\CarbonInterface;
+
 /**
  * Jours de la semaine en puissances de deux : une valeur seule désigne un jour, leur somme un ensemble
  * de jours (masque de bits, comme activity_period_settings.closed_weekdays).
@@ -48,6 +50,11 @@ enum WeekDayEnum: int
             static fn (int $mask, self $day): int => $mask | $day->value,
             self::NONE,
         );
+    }
+
+    public static function fromDate(CarbonInterface $date): self
+    {
+        return self::from(1 << ($date->dayOfWeekIso - 1));
     }
 
     public static function contains(int $mask, self $day): bool

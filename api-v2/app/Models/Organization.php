@@ -140,6 +140,24 @@ class Organization extends Model
     }
 
     /**
+     * Périodes tarifaires, partagées par les activités : la période de base d'abord, puis les autres dans leur ordre de création.
+     *
+     * @return HasMany<PricingPeriod, $this>
+     */
+    public function pricingPeriods(): HasMany
+    {
+        return $this->hasMany(PricingPeriod::class)->orderByRaw('start_date is not null')->orderBy('created_at')->orderBy('id');
+    }
+
+    /**
+     * @return HasMany<Booking, $this>
+     */
+    public function bookings(): HasMany
+    {
+        return $this->hasMany(Booking::class);
+    }
+
+    /**
      * @return HasMany<Subscription, $this>
      */
     public function subscriptions(): HasMany

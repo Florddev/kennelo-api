@@ -13,7 +13,8 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * Une entreprise créée par la factory a toujours la ligne membre de son propriétaire, comme en vrai.
+ * Une entreprise créée par la factory a toujours la ligne membre de son propriétaire et sa période tarifaire
+ * de base, comme en vrai.
  *
  * @extends Factory<Organization>
  */
@@ -41,6 +42,7 @@ class OrganizationFactory extends Factory
                 'status' => OrganizationMemberStatusEnum::ACTIVE,
                 'responded_at' => now(),
             ]);
+            $organization->pricingPeriods()->create(['name' => __('booking.base_period')]);
         });
     }
 

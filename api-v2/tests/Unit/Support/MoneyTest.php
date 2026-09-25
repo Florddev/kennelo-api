@@ -40,3 +40,14 @@ it('converts to and from Stripe cents', function () {
         ->and(Money::toCents('0.015'))->toBe(2)
         ->and(Money::fromCents(1999))->toBe('19.99');
 });
+
+it('prorates an amount', function () {
+    expect(Money::prorate('10.00', '25.00', '100.00'))->toBe('2.50')
+        ->and(Money::prorate('10.00', '1.00', '3.00'))->toBe('3.33')
+        ->and(Money::prorate('10.00', '5.00', '0.00'))->toBe('0.00');
+});
+
+it('keeps the smaller amount', function () {
+    expect(Money::min('12.50', '8.00'))->toBe('8.00')
+        ->and(Money::min('3.00', '3.00'))->toBe('3.00');
+});
