@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Services\Booking;
 
-use App\Enums\BookingItemStatusEnum;
 use App\Enums\BookingStatusEnum;
 use App\Enums\CancelledByRoleEnum;
 use App\Enums\FinancialOperationTypeEnum;
@@ -112,7 +111,7 @@ class BookingWebhookService
         $this->record($booking, $payment, $status);
 
         if ($payment->kind === PaymentKindEnum::SUPPLEMENT) {
-            $payment->items()->update(['status' => BookingItemStatusEnum::CANCELLED]);
+            $this->bookings->cancelItems($payment->items());
             $this->journal->record(FinancialOperationTypeEnum::CHARGE_FAILED, $booking, $payment->amount, $payment->stripe_payment_intent_id);
 
             return null;
@@ -122,7 +121,7 @@ class BookingWebhookService
             return null;
         }
 
-        $booking->items()->update(['status' => BookingItemStatusEnum::CANCELLED]);
+        $this->bookings->cancelItems($booking->items());
         $this->bookings->transition($booking, BookingStatusEnum::CANCELLED, [
             'cancelled_at' => now(),
             'cancelled_by_role' => CancelledByRoleEnum::PLATFORM,

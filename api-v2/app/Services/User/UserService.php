@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Services\User;
 
-use App\Enums\BookingStatusEnum;
 use App\Enums\NotificationTypeEnum;
 use App\Models\User;
 use App\Services\MediaService;
@@ -12,7 +11,6 @@ use App\Services\Notification\NotificationService;
 use App\Services\User\Exceptions\AccountCannotBeDeletedException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
@@ -66,17 +64,7 @@ class UserService
             throw AccountCannotBeDeletedException::ownsOrganization();
         }
 
-        // Requête directe : le modèle Booking arrive avec le lot « Réservation commune et séjours ».
-        $hasActiveBookings = DB::table('bookings')
-            ->where('user_id', $user->id)
-            ->whereIn('status', [
-                BookingStatusEnum::PENDING->value,
-                BookingStatusEnum::CONFIRMED->value,
-                BookingStatusEnum::IN_PROGRESS->value,
-            ])
-            ->exists();
-
-        if ($hasActiveBookings) {
+        if ($user->bookings()->occupying()->exists()) {
             throw AccountCannotBeDeletedException::hasActiveBookings();
         }
 

@@ -11,7 +11,6 @@ use App\Models\Booking;
 use App\Models\BookingRefund;
 use App\Notifications\AppNotification;
 use Illuminate\Support\Facades\Notification;
-use Tests\Support\FakeStripe;
 
 /**
  * Réservation confirmée de 60 € de prestations (64,80 € payés), qui commence dans $days jours.
@@ -21,16 +20,6 @@ function confirmedStay(CancellationPolicyEnum $policy, int $days): Booking
     return Booking::factory()->confirmed()
         ->between(today()->addDays($days)->toDateString(), today()->addDays($days + 2)->toDateString())
         ->create(['cancellation_policy' => $policy]);
-}
-
-function stripeRefunds(FakeStripe $stripe): FakeStripe
-{
-    return $stripe->fake('post', '/v1/refunds', fn (array $params): array => [
-        'object' => 'refund',
-        'id' => 're_'.$params['amount'],
-        'amount' => $params['amount'],
-        'status' => 'succeeded',
-    ]);
 }
 
 describe('by the client', function () {

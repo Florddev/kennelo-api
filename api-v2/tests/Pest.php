@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 use App\Enums\OrganizationRoleEnum;
 use App\Enums\ServiceOfferEnum;
+use App\Enums\WeekDayEnum;
 use App\Models\Activity;
 use App\Models\ActivityUnitType;
+use App\Models\AgendaResource;
 use App\Models\AnimalType;
 use App\Models\Organization;
 use App\Models\OrganizationMember;
@@ -139,6 +141,19 @@ function stripeAuthorizes(FakeStripe $stripe, string $status = 'requires_capture
 }
 
 /**
+ * Stripe accepte chaque remboursement demandé.
+ */
+function stripeRefunds(FakeStripe $stripe): FakeStripe
+{
+    return $stripe->fake('post', '/v1/refunds', fn (array $params): array => [
+        'object' => 'refund',
+        'id' => 're_'.$params['amount'],
+        'amount' => $params['amount'],
+        'status' => 'succeeded',
+    ]);
+}
+
+/**
  * Option de séjour du catalogue de l'entreprise, vendue par l'activité avec son ajustement.
  */
 function stayOption(ActivityUnitType $unitType, string $price, string $adjustment = '0', bool $included = false): Service
@@ -155,6 +170,73 @@ function stayOption(ActivityUnitType $unitType, string $price, string $adjustmen
     ]);
 
     return $service;
+}
+
+/**
+ * Salon de toilettage réservable sur rendez-vous, ouvert tous les jours de 9 h à 18 h (Europe/Paris) : un
+ * toilettage pour chien vendu seul, à $price pour $duration minutes, et Léa, toiletteuse de l'équipe, planifiée
+ * aux mêmes heures.
+ *
+ * @return array{activity: Activity, service: Service, resource: AgendaResource}
+ */
+function appointmentSalon(string $price = '40.00', int $duration = 60): array
+{
+    $dog = AnimalType::query()->where('code', 'dog')->first() ?? AnimalType::factory()->dog()->create();
+
+    $activity = Activity::factory()
+        ->bookable()
+        ->for(Profession::factory()->forSpecies($dog))
+        ->forSpecies($dog)
+        ->create();
+    $activity->openingHours()->createMany(array_map(
+        fn (WeekDayEnum $day): array => ['weekday' => $day, 'opens_at' => '09:00', 'closes_at' => '18:00'],
+        WeekDayEnum::cases(),
+    ));
+
+    $service = Service::factory()->for($activity->organization)->create(['name' => 'Toilettage', 'requires_scheduling' => true]);
+    ServicePrice::factory()->for($service)->create(['animal_type_id' => $dog->id, 'price' => $price, 'duration_minutes' => $duration]);
+    $activity->services()->attach($service->id, [
+        'organization_id' => $activity->organization_id,
+        'offered_as' => ServiceOfferEnum::STANDALONE,
+        'adjustment_percent' => '0',
+        'is_included' => false,
+        'is_active' => true,
+    ]);
+
+    $lea = AgendaResource::factory()
+        ->staff(OrganizationMember::factory()->for($activity->organization)->create())
+        ->scheduledIn($activity)
+        ->create(['name' => 'Léa']);
+
+    return ['activity' => $activity, 'service' => $service, 'resource' => $lea];
+}
+
+/**
+ * Un chien du client, d'une espèce que l'activité accueille.
+ */
+function petFor(User $client, Activity $activity): Pet
+{
+    return Pet::factory()->for($client)->create(['animal_type_id' => $activity->animalTypes()->firstOrFail()->id]);
+}
+
+/**
+ * Demande de rendez-vous au salon, les animaux passant dans l'ordre donné.
+ *
+ * @param  array{activity: Activity, service: Service, resource: AgendaResource}  $salon
+ * @param  list<Pet>  $pets
+ * @param  array<string, mixed>  $overrides
+ * @return array<string, mixed>
+ */
+function appointmentRequest(array $salon, array $pets, string $startsAt, array $overrides = []): array
+{
+    return [
+        'activity_id' => $salon['activity']->id,
+        'service_id' => $salon['service']->id,
+        'pet_ids' => array_map(fn (Pet $pet): string => $pet->id, $pets),
+        'starts_at' => $startsAt,
+        'payment_method_id' => 'pm_card_visa',
+        ...$overrides,
+    ];
 }
 
 const WEBHOOK_SECRET = 'whsec_test';

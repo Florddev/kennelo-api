@@ -55,6 +55,15 @@ class OrganizationPolicy
         return $this->can($user, $organization, OrganizationPermissionEnum::CATALOG_MANAGE);
     }
 
+    /**
+     * Agenda de toute l'entreprise : bookings.view sur toute l'entreprise. Sinon, l'agenda d'une activité
+     * (ActivityPolicy::viewBookings).
+     */
+    public function viewAgenda(User $user, Organization $organization): Response
+    {
+        return $this->can($user, $organization, OrganizationPermissionEnum::BOOKINGS_VIEW);
+    }
+
     public function viewAny(User $user): bool
     {
         return $user->hasRole('admin');

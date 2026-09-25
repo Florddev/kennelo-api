@@ -9,15 +9,19 @@ use App\Enums\BookingStatusEnum;
 use App\Enums\PaymentKindEnum;
 use App\Enums\PaymentStatusEnum;
 use App\Enums\RefundReasonEnum;
+use App\Enums\ResourceBookingKindEnum;
 use App\Events\Booking\BookingPaymentActionRequired;
 use App\Events\Booking\BookingPaymentCaptured;
 use App\Events\Booking\BookingRefunded;
+use App\Models\AgendaResource;
 use App\Models\Booking;
 use App\Models\BookingItem;
 use App\Models\BookingPayment;
 use App\Models\BookingUnit;
 use App\Models\User;
+use App\Services\Agenda\AgendaService;
 use App\Support\Money;
+use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -27,6 +31,8 @@ use Illuminate\Validation\ValidationException;
  * - Ajouter une option : elle est débitée aussitôt, hors session, avec la carte du paiement initial et les frais
  *   Kennelo en vigueur. Si la banque exige que le client s'authentifie, il est prévenu et confirme le paiement.
  * - Retirer une option : elle est remboursée, avec sa part des frais Kennelo, sur le paiement qui l'a couverte.
+ *   Sa place dans l'agenda est libérée.
+ * - Placer une option de séjour dans l'agenda, ou la déplacer.
  *
  * Les montants de la réservation ne suivent que l'argent réellement encaissé ou rendu.
  */
@@ -36,44 +42,37 @@ class BookingAdjustmentService
         private readonly BookingService $bookings,
         private readonly QuoteService $quotes,
         private readonly BookingPaymentService $payments,
+        private readonly AgendaService $agenda,
     ) {}
 
     /**
      * @param  array{service_id: string, pet_id: string, quantity?: int}  $data
+     * @return list<BookingItem> une ligne, ou une par passage pour une prestation qui se place dans l'agenda
      */
-    public function addItem(Booking $booking, array $data): BookingItem
+    public function addItem(Booking $booking, array $data): array
     {
-        [$item, $payment] = DB::transaction(function () use ($booking, $data): array {
+        [$items, $payment] = DB::transaction(function () use ($booking, $data): array {
             $this->bookings->lock($booking);
             $this->assertAdjustable($booking);
 
             $pet = $booking->pets()->findOrFail($data['pet_id']);
             $option = $this->quotes->priceOption($booking->activity()->firstOrFail(), $data['service_id'], $pet, (int) ($data['quantity'] ?? 1));
-
-            $item = $booking->items()->create([
-                'service_id' => $option['service']->id,
-                'pet_id' => $pet->id,
-                'status' => BookingItemStatusEnum::TO_SCHEDULE,
-                'quantity' => $option['quantity'],
-                'unit_price' => $option['unit_price'],
-                'subtotal' => $option['subtotal'],
-                'duration_minutes' => $option['duration_minutes'],
-            ]);
+            $items = $this->bookings->addOptionItems($booking, $option);
 
             // Une option incluse dans le séjour ne se paie pas.
-            if (bccomp($item->subtotal, '0', 2) === 0) {
-                return [$item, null];
+            if (bccomp($option['subtotal'], '0', 2) === 0) {
+                return [$items, null];
             }
 
-            $serviceFee = Money::multiply($item->subtotal, (string) setting('user_service_fee_rate'));
-            $payment = $this->payments->chargeSupplement($booking, Money::sum($item->subtotal, $serviceFee));
-            $item->forceFill(['booking_payment_id' => $payment->id])->save();
+            $serviceFee = Money::multiply($option['subtotal'], (string) setting('user_service_fee_rate'));
+            $payment = $this->payments->chargeSupplement($booking, Money::sum($option['subtotal'], $serviceFee));
+            BookingItem::query()->whereKey(array_map(fn (BookingItem $item): string => $item->id, $items))->update(['booking_payment_id' => $payment->id]);
 
             if ($payment->status === PaymentStatusEnum::SUCCEEDED) {
                 $this->applySupplement($booking, $payment);
             }
 
-            return [$item, $payment];
+            return [$items, $payment];
         });
 
         match ($payment?->status) {
@@ -82,7 +81,7 @@ class BookingAdjustmentService
             default => null,
         };
 
-        return $item->load(['service', 'pet']);
+        return $items;
     }
 
     /**
@@ -122,7 +121,7 @@ class BookingAdjustmentService
                 $refund = $this->refundItem($booking, $item, $payment, $actor);
             }
 
-            $item->forceFill(['status' => BookingItemStatusEnum::CANCELLED])->save();
+            $this->bookings->cancelItems(BookingItem::query()->whereKey($item->id));
 
             return $refund;
         });
@@ -130,6 +129,60 @@ class BookingAdjustmentService
         if (bccomp($refunded, '0', 2) > 0) {
             BookingRefunded::dispatch($booking, $refunded);
         }
+
+        return $booking->load(BookingService::RELATIONS);
+    }
+
+    /**
+     * Place une option de séjour dans l'agenda, ou la déplace : sur une ressource active qui travaille dans
+     * l'activité, un jour du séjour, sur une plage libre. Le pro choisit l'heure : ni les horaires d'ouverture ni
+     * les plannings ne la limitent.
+     */
+    public function scheduleItem(Booking $booking, BookingItem $item, AgendaResource $resource, CarbonImmutable $startsAt, User $actor): Booking
+    {
+        DB::transaction(function () use ($booking, $item, $resource, $startsAt, $actor): void {
+            $this->bookings->lock($booking);
+            $this->assertAdjustable($booking);
+            $item->refresh()->loadMissing('service');
+
+            $schedulable = ! $booking->isAppointment()
+                && in_array($item->status, [BookingItemStatusEnum::TO_SCHEDULE, BookingItemStatusEnum::SCHEDULED], true)
+                && $item->service?->requires_scheduling
+                && $item->duration_minutes !== null;
+
+            if (! $schedulable) {
+                throw ValidationException::withMessages(['item' => __('agenda.item_not_schedulable')]);
+            }
+
+            $activity = $booking->activity()->firstOrFail();
+
+            if (! AgendaResource::query()->whereKey($resource->id)->where('is_active', true)->presentIn($activity)->exists()) {
+                throw ValidationException::withMessages(['resource_id' => __('agenda.resource_not_in_activity')]);
+            }
+
+            $day = $startsAt->setTimezone($activity->timezone)->toDateString();
+
+            if ($day < $booking->start_date->toDateString() || $day > $booking->end_date->toDateString()) {
+                throw ValidationException::withMessages(['starts_at' => __('agenda.outside_stay', [
+                    'start' => $booking->start_date->toDateString(),
+                    'end' => $booking->end_date->toDateString(),
+                ])]);
+            }
+
+            $endsAt = $startsAt->addMinutes($item->duration_minutes);
+
+            $this->agenda->lock($resource);
+            $item->resourceBooking()->delete();
+            $this->agenda->occupy($resource, $startsAt, $endsAt, ResourceBookingKindEnum::BOOKING, [
+                'booking_item_id' => $item->id,
+                'created_by' => $actor->id,
+            ]);
+            $item->forceFill([
+                'status' => BookingItemStatusEnum::SCHEDULED,
+                'starts_at' => $startsAt->utc(),
+                'ends_at' => $endsAt->utc(),
+            ])->save();
+        });
 
         return $booking->load(BookingService::RELATIONS);
     }

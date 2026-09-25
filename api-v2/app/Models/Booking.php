@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\BookingModeEnum;
 use App\Enums\BookingStatusEnum;
 use App\Enums\CancellationPolicyEnum;
 use App\Enums\CancelledByRoleEnum;
@@ -109,11 +110,43 @@ class Booking extends Model
     }
 
     /**
-     * Début du séjour, dans le fuseau de l'activité : c'est de là que se compte la politique d'annulation.
+     * Un rendez-vous occupe des créneaux de l'agenda ; un séjour, des places sur des dates. Le mode du métier ne
+     * change plus une fois qu'il a des activités (ProfessionService).
+     */
+    public function isAppointment(): bool
+    {
+        return $this->loadMissing('activity.profession')->activity?->profession?->booking_mode === BookingModeEnum::APPOINTMENT;
+    }
+
+    /**
+     * Début de la réservation, dans le fuseau de l'activité : le premier créneau d'un rendez-vous, minuit le jour
+     * de l'arrivée pour un séjour. La politique d'annulation se compte à partir de là.
      */
     public function startsAt(): CarbonImmutable
     {
-        return CarbonImmutable::parse($this->start_date->toDateString(), $this->activity->timezone ?? config('activities.default_timezone'));
+        $first = $this->isAppointment() ? $this->loadMissing('items')->items->min('starts_at') : null;
+
+        return $first !== null
+            ? CarbonImmutable::instance($first)->setTimezone($this->timezone())
+            : CarbonImmutable::parse($this->start_date->toDateString(), $this->timezone());
+    }
+
+    /**
+     * Fin de la réservation : la fin du dernier créneau d'un rendez-vous, minuit après le jour du départ pour un séjour.
+     * Un rendez-vous sans ligne planifiée, qui ne devrait pas exister, se lit comme un séjour, par ses dates.
+     */
+    public function endsAt(): CarbonImmutable
+    {
+        $last = $this->isAppointment() ? $this->loadMissing('items')->items->max('ends_at') : null;
+
+        return $last !== null
+            ? CarbonImmutable::instance($last)->setTimezone($this->timezone())
+            : CarbonImmutable::parse($this->end_date->toDateString(), $this->timezone())->addDay();
+    }
+
+    private function timezone(): string
+    {
+        return $this->activity->timezone ?? (string) config('activities.default_timezone');
     }
 
     /**

@@ -137,6 +137,7 @@ class SendBookingNotifications
             'activity_name' => $booking->activity?->name,
             'start_date' => $booking->start_date->toDateString(),
             'end_date' => $booking->end_date->toDateString(),
+            'starts_at' => $booking->isAppointment() ? $booking->startsAt()->toISOString() : null,
         ];
     }
 }

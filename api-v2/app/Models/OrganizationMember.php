@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 
 /**
@@ -94,5 +95,16 @@ class OrganizationMember extends Model
     public function roles(): HasMany
     {
         return $this->hasMany(OrganizationMemberRole::class);
+    }
+
+    /**
+     * Sa fiche dans l'agenda, s'il réalise des prestations. Pas « resource » : une JsonResource réserve déjà
+     * $this->resource au modèle qu'elle présente.
+     *
+     * @return HasOne<AgendaResource, $this>
+     */
+    public function agendaResource(): HasOne
+    {
+        return $this->hasOne(AgendaResource::class, 'organization_member_id');
     }
 }

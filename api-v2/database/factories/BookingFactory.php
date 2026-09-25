@@ -4,15 +4,21 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Enums\BookingItemStatusEnum;
 use App\Enums\BookingStatusEnum;
 use App\Enums\CancellationPolicyEnum;
 use App\Enums\LocationModeEnum;
 use App\Enums\PaymentKindEnum;
 use App\Enums\PaymentStatusEnum;
+use App\Enums\ResourceBookingKindEnum;
 use App\Models\Activity;
 use App\Models\ActivityUnitType;
+use App\Models\AgendaResource;
 use App\Models\Booking;
+use App\Models\Profession;
+use App\Models\Service;
 use App\Models\User;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -26,7 +32,7 @@ class BookingFactory extends Factory
     public function definition(): array
     {
         return [
-            'activity_id' => Activity::factory()->bookable(),
+            'activity_id' => Activity::factory()->bookable()->for(Profession::factory()->stay()),
             'organization_id' => fn (array $attributes): string => Activity::query()->whereKey($attributes['activity_id'])->value('organization_id'),
             'user_id' => User::factory(),
             'start_date' => today()->addDays(10)->toDateString(),
@@ -81,6 +87,39 @@ class BookingFactory extends Factory
     public function between(string $start, string $end): static
     {
         return $this->state(fn (): array => ['start_date' => $start, 'end_date' => $end]);
+    }
+
+    /**
+     * Rendez-vous au salon de appointmentSalon() : une ligne de 60 € et de $minutes minutes, qui occupe sa ressource
+     * à partir de $startsAt (ISO 8601, avec son fuseau).
+     *
+     * @param  array{activity: Activity, service: Service, resource: AgendaResource}  $salon
+     */
+    public function appointment(array $salon, string $startsAt, int $minutes = 60): static
+    {
+        $start = CarbonImmutable::parse($startsAt)->utc();
+        $day = $start->setTimezone($salon['activity']->timezone)->toDateString();
+
+        return $this->state(fn (): array => ['activity_id' => $salon['activity']->id, 'start_date' => $day, 'end_date' => $day])
+            ->afterCreating(function (Booking $booking) use ($salon, $start, $minutes): void {
+                $item = $booking->items()->create([
+                    'service_id' => $salon['service']->id,
+                    'status' => BookingItemStatusEnum::SCHEDULED,
+                    'quantity' => 1,
+                    'unit_price' => '60.00',
+                    'subtotal' => '60.00',
+                    'duration_minutes' => $minutes,
+                    'starts_at' => $start,
+                    'ends_at' => $start->addMinutes($minutes),
+                ]);
+
+                $salon['resource']->resourceBookings()->create([
+                    'booking_item_id' => $item->id,
+                    'kind' => ResourceBookingKindEnum::BOOKING,
+                    'starts_at' => $start,
+                    'ends_at' => $start->addMinutes($minutes),
+                ]);
+            });
     }
 
     /**

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Services\Booking;
 
-use App\Enums\BookingItemStatusEnum;
 use App\Enums\BookingStatusEnum;
 use App\Enums\CancellationPolicyEnum;
 use App\Enums\CancelledByRoleEnum;
@@ -24,11 +23,13 @@ use Illuminate\Validation\ValidationException;
  * Annulation d'une réservation par le client ou par le pro.
  *
  * - Demande pas encore acceptée : le client l'annule sans frais, l'autorisation est libérée. Le pro, lui, la refuse.
- * - Réservation confirmée, annulée par le client avant le début du séjour : remboursement selon la politique
- *   figée à la réservation (CancellationPolicyEnum). Les frais Kennelo ne sont rendus que si tout est remboursé.
+ * - Réservation confirmée, annulée par le client avant son début (minuit le jour de l'arrivée, ou l'heure du
+ *   rendez-vous) : remboursement selon la politique figée à la réservation (CancellationPolicyEnum). Les frais
+ *   Kennelo ne sont rendus que si tout est remboursé.
  * - Réservation confirmée ou en cours, annulée par le pro : tout est remboursé, frais Kennelo compris.
  *
  * Après un remboursement partiel, la commission et le versement de l'entreprise diminuent dans la même proportion.
+ * Un rendez-vous annulé libère son créneau.
  */
 class CancellationService
 {
@@ -131,7 +132,7 @@ class CancellationService
             ->get()
             ->each(fn (BookingPayment $payment) => $this->payments->release($booking, $payment));
 
-        $booking->items()->whereNot('status', BookingItemStatusEnum::DONE)->update(['status' => BookingItemStatusEnum::CANCELLED]);
+        $this->bookings->cancelItems($booking->items());
 
         $this->bookings->transition($booking, BookingStatusEnum::CANCELLED, [
             'cancelled_at' => now(),

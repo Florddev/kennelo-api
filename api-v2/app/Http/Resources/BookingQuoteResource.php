@@ -11,6 +11,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * Devis montré au client : le détail de ce qu'il paiera. La commission de l'entreprise n'y figure pas.
+ * Un rendez-vous (appointment) donne sa ressource, son horaire et une ligne par animal.
  *
  * @property BookingQuote $resource
  */
@@ -41,6 +42,20 @@ class BookingQuoteResource extends JsonResource
                 'subtotal' => $option['subtotal'],
                 'is_included' => $option['is_included'],
             ], $quote->options),
+            'appointment' => $this->when($quote->appointment !== null, fn (): array => [
+                'resource' => ['id' => $quote->appointment['resource']->id, 'name' => $quote->appointment['resource']->name],
+                'starts_at' => $quote->appointment['starts_at']->toISOString(),
+                'ends_at' => $quote->appointment['ends_at']->toISOString(),
+                'lines' => array_map(fn (array $line): array => [
+                    'service' => ['id' => $line['service']->id, 'name' => $line['service']->name],
+                    'pet_id' => $line['pet']->id,
+                    'unit_price' => $line['unit_price'],
+                    'subtotal' => $line['subtotal'],
+                    'duration_minutes' => $line['duration_minutes'],
+                    'starts_at' => $line['starts_at']->toISOString(),
+                    'ends_at' => $line['ends_at']->toISOString(),
+                ], $quote->appointment['lines']),
+            ]),
             'currency' => $quote->currency,
             'items_amount' => $quote->itemsAmount,
             'travel_fee' => $quote->travelFee,

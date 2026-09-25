@@ -6,6 +6,10 @@ use App\Http\Controllers\Activity\ActivityController;
 use App\Http\Controllers\Activity\ActivityDocumentController;
 use App\Http\Controllers\Activity\ActivityImageController;
 use App\Http\Controllers\Activity\ActivityScheduleController;
+use App\Http\Controllers\Agenda\AgendaController;
+use App\Http\Controllers\Agenda\ResourceController;
+use App\Http\Controllers\Agenda\ResourceScheduleController;
+use App\Http\Controllers\Agenda\ResourceUnavailabilityController;
 use App\Http\Controllers\Booking\ActivityBookingController;
 use App\Http\Controllers\Booking\BookingItemController;
 use App\Http\Controllers\Booking\BookingOperationController;
@@ -124,5 +128,20 @@ Route::scopeBindings()->group(function () {
     Route::post('/activities/{activity}/bookings/{booking}/cancel', [ActivityBookingController::class, 'cancel']);
     Route::post('/activities/{activity}/bookings/{booking}/items', [BookingItemController::class, 'store']);
     Route::delete('/activities/{activity}/bookings/{booking}/items/{item}', [BookingItemController::class, 'destroy']);
+    Route::post('/activities/{activity}/bookings/{booking}/items/{item}/schedule', [BookingItemController::class, 'schedule']);
     Route::get('/activities/{activity}/bookings/{booking}/operations', [BookingOperationController::class, 'index']);
 });
+
+// Agenda: resources of the organization, their absences and blocks
+Route::get('/organizations/{organization}/resources', [ResourceController::class, 'index']);
+Route::post('/organizations/{organization}/resources', [ResourceController::class, 'store']);
+Route::scopeBindings()->group(function () {
+    Route::patch('/organizations/{organization}/resources/{resource}', [ResourceController::class, 'update']);
+    Route::delete('/organizations/{organization}/resources/{resource}', [ResourceController::class, 'destroy']);
+    Route::post('/organizations/{organization}/resources/{resource}/absences', [ResourceUnavailabilityController::class, 'store']);
+    Route::delete('/organizations/{organization}/resources/{resource}/absences/{resourceBooking}', [ResourceUnavailabilityController::class, 'destroy']);
+});
+Route::get('/organizations/{organization}/agenda', [AgendaController::class, 'show']);
+
+// Schedule of a resource in an activity (the resource must belong to the same organization, checked by ActivityPolicy::schedule)
+Route::put('/activities/{activity}/resources/{resource}/schedules', [ResourceScheduleController::class, 'update']);

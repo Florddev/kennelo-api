@@ -28,6 +28,8 @@ class OrganizationMemberResource extends JsonResource
                 'role' => $role->role->value,
                 'activity_id' => $role->activity_id,
             ])),
+            // Sa fiche dans l'agenda : à proposer quand il réalise des prestations et n'en a pas encore.
+            'resource_id' => $this->whenLoaded('agendaResource', fn (): ?string => $this->agendaResource?->id),
             'invited_at' => $this->invited_at?->toISOString(),
             'responded_at' => $this->responded_at?->toISOString(),
         ];

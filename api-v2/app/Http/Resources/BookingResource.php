@@ -22,7 +22,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
  *
  * Le client voit ce qu'il paie ; l'équipe voit en plus la commission, ce qui lui sera versé et le client.
  * L'équipe ne voit l'adresse exacte d'un séjour chez le client qu'une fois le paiement capturé : avant,
- * seulement la ville.
+ * seulement la ville. Un rendez-vous porte en plus son début et sa fin ; chacune de ses lignes, son horaire
+ * et sa ressource.
  *
  * @mixin Booking
  */
@@ -35,6 +36,7 @@ class BookingResource extends JsonResource
             fn (BookingPayment $payment): bool => $payment->kind === PaymentKindEnum::INITIAL && $payment->status === PaymentStatusEnum::SUCCEEDED,
         );
         $refunds = $this->relationLoaded('payments') ? $this->payments->flatMap->refunds : collect();
+        $isAppointment = $this->relationLoaded('activity') && $this->relationLoaded('items') && $this->isAppointment();
 
         return [
             'id' => $this->id,
@@ -44,6 +46,7 @@ class BookingResource extends JsonResource
                 'id' => $this->activity?->id,
                 'name' => $this->activity?->name,
                 'timezone' => $this->activity?->timezone,
+                'booking_mode' => $this->activity?->relationLoaded('profession') ? $this->activity->profession?->booking_mode->value : null,
                 'image' => $this->activity?->relationLoaded('media')
                     ? $this->activity->getFirstMediaUrl(MediaService::COLLECTION_IMAGES) ?: null
                     : null,
@@ -59,6 +62,8 @@ class BookingResource extends JsonResource
             ]),
             'start_date' => $this->start_date->toDateString(),
             'end_date' => $this->end_date->toDateString(),
+            'starts_at' => $this->when($isAppointment, fn (): string => $this->startsAt()->toISOString()),
+            'ends_at' => $this->when($isAppointment, fn (): string => $this->endsAt()->toISOString()),
             'location_mode' => $this->location_mode->value,
             'service_address' => $this->whenLoaded('serviceAddress', fn () => $this->serviceAddress === null ? null : ($isClient || $isCaptured
                 ? AddressResource::make($this->serviceAddress)
@@ -107,6 +112,9 @@ class BookingResource extends JsonResource
                 'duration_minutes' => $item->duration_minutes,
                 'starts_at' => $item->starts_at?->toISOString(),
                 'ends_at' => $item->ends_at?->toISOString(),
+                'resource' => $item->relationLoaded('resourceBooking') && $item->resourceBooking?->resource !== null
+                    ? ['id' => $item->resourceBooking->resource->id, 'name' => $item->resourceBooking->resource->name]
+                    : null,
                 'payment_id' => $item->booking_payment_id,
             ])->all()),
             'payments' => $this->whenLoaded('payments', fn (): array => $this->payments->map(fn (BookingPayment $payment): array => [

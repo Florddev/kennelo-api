@@ -17,14 +17,11 @@ Schedule::command('activities:expire-documents')
     ->withoutOverlapping()
     ->onOneServer();
 
-// Réservations : demandes sans réponse, rappels à l'équipe, début et fin des séjours, versements aux entreprises.
+// Réservations : demandes sans réponse, rappels à l'équipe, début et fin des séjours et des rendez-vous,
+// versements aux entreprises.
 Schedule::command('bookings:expire')->everyFifteenMinutes()->withoutOverlapping()->onOneServer();
 Schedule::command('bookings:remind')->hourly()->withoutOverlapping()->onOneServer();
-Schedule::command('bookings:advance-stays')
-    ->dailyAt('00:15')
-    ->timezone('Europe/Paris')
-    ->withoutOverlapping()
-    ->onOneServer();
+Schedule::command('bookings:advance')->everyFifteenMinutes()->withoutOverlapping()->onOneServer();
 Schedule::command('bookings:release-payouts')
     ->dailyAt('06:00')
     ->timezone('Europe/Paris')

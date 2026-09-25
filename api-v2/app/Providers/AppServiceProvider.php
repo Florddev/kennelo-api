@@ -51,6 +51,7 @@ class AppServiceProvider extends ServiceProvider
             'user', 'organization', 'member', 'activity', 'availability', 'document',
             'service', 'address', 'profession', 'category', 'media',
             'pricingPeriod', 'unitType', 'booking', 'item', 'payment',
+            'resource', 'resourceBooking',
         ], self::UUID_PATTERN));
 
         // {user} inclut les comptes inactifs ou bannis (profil public et administration).

@@ -9,11 +9,13 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 
 /**
- * Prestation vendue dans une réservation, pour un animal. Une option de séjour est « à placer » : le pro
- * la place ensuite dans son agenda. booking_payment_id désigne le paiement qui l'a couverte.
+ * Prestation vendue dans une réservation, pour un animal. Un rendez-vous a son horaire dès la réservation ;
+ * une option de séjour est « à placer » : le pro la place ensuite dans son agenda. booking_payment_id désigne
+ * le paiement qui l'a couverte.
  *
  * @property string $id
  * @property string $booking_id
@@ -27,9 +29,11 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $starts_at
  * @property Carbon|null $ends_at
  * @property string|null $booking_payment_id
+ * @property-read Booking|null $booking
  * @property-read Service|null $service
  * @property-read Pet|null $pet
  * @property-read BookingPayment|null $payment
+ * @property-read ResourceBooking|null $resourceBooking
  */
 class BookingItem extends Model
 {
@@ -93,5 +97,15 @@ class BookingItem extends Model
     public function payment(): BelongsTo
     {
         return $this->belongsTo(BookingPayment::class, 'booking_payment_id');
+    }
+
+    /**
+     * Sa place dans l'agenda, une fois placée.
+     *
+     * @return HasOne<ResourceBooking, $this>
+     */
+    public function resourceBooking(): HasOne
+    {
+        return $this->hasOne(ResourceBooking::class);
     }
 }

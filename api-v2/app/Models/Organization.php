@@ -150,6 +150,16 @@ class Organization extends Model
     }
 
     /**
+     * Personnes, équipements et espaces réservables dans l'agenda.
+     *
+     * @return HasMany<AgendaResource, $this>
+     */
+    public function resources(): HasMany
+    {
+        return $this->hasMany(AgendaResource::class)->orderBy('name')->orderBy('id');
+    }
+
+    /**
      * @return HasMany<Booking, $this>
      */
     public function bookings(): HasMany

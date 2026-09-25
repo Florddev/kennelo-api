@@ -125,7 +125,7 @@ describe('scheduled tasks', function () {
         $starting = Booking::factory()->confirmed()->between(today()->toDateString(), today()->addDays(2)->toDateString())->create();
         $finished = Booking::factory()->confirmed()->status(BookingStatusEnum::IN_PROGRESS)->between(today()->subDays(3)->toDateString(), today()->subDay()->toDateString())->create();
 
-        $this->artisan('bookings:advance-stays')->assertSuccessful();
+        $this->artisan('bookings:advance')->assertSuccessful();
 
         expect($starting->fresh()->status)->toBe(BookingStatusEnum::IN_PROGRESS)
             ->and($finished->fresh()->status)->toBe(BookingStatusEnum::COMPLETED);

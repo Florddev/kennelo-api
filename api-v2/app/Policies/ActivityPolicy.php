@@ -6,6 +6,7 @@ namespace App\Policies;
 
 use App\Enums\OrganizationPermissionEnum;
 use App\Models\Activity;
+use App\Models\AgendaResource;
 use App\Models\Organization;
 use App\Models\PricingPeriod;
 use App\Models\Service;
@@ -77,7 +78,19 @@ class ActivityPolicy
     }
 
     /**
-     * Voir les réservations de l'activité : bookings.view sur elle.
+     * Une activité ne planifie que les ressources de son entreprise.
+     */
+    public function schedule(User $user, Activity $activity, AgendaResource $resource): Response
+    {
+        if ($resource->organization_id !== $activity->organization_id) {
+            return Response::denyAsNotFound(__('errors.not_found'));
+        }
+
+        return $this->update($user, $activity);
+    }
+
+    /**
+     * Voir les réservations de l'activité, et son agenda : bookings.view sur elle.
      */
     public function viewBookings(User $user, Activity $activity): Response
     {

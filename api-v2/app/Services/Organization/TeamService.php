@@ -10,6 +10,7 @@ use App\Enums\OrganizationRoleEnum;
 use App\Models\Organization;
 use App\Models\OrganizationMember;
 use App\Models\User;
+use App\Services\Agenda\ResourceService;
 use App\Services\Notification\NotificationService;
 use App\Services\Subscription\PlanLimitService;
 use Illuminate\Database\Eloquent\Collection;
@@ -21,6 +22,7 @@ class TeamService
     public function __construct(
         private readonly NotificationService $notifications,
         private readonly PlanLimitService $planLimits,
+        private readonly ResourceService $resources,
     ) {}
 
     /**
@@ -30,7 +32,7 @@ class TeamService
     {
         return $organization->members()
             ->where('status', '!=', OrganizationMemberStatusEnum::DECLINED)
-            ->with(['user.media', 'roles'])
+            ->with(['user.media', 'roles', 'agendaResource'])
             ->oldest()
             ->orderBy('id')
             ->get();
@@ -130,7 +132,8 @@ class TeamService
     }
 
     /**
-     * Retire un membre de l'équipe, ou annule son invitation. Ses rôles disparaissent avec lui.
+     * Retire un membre de l'équipe, ou annule son invitation. Ses rôles disparaissent avec lui ; sa fiche dans
+     * l'agenda aussi, ou elle reste désactivée si elle a des rendez-vous passés (ResourceService::detachMember()).
      */
     public function remove(OrganizationMember $member): void
     {
@@ -138,7 +141,10 @@ class TeamService
             throw ValidationException::withMessages(['member' => __('team.owner_cannot_leave')]);
         }
 
-        $member->delete();
+        DB::transaction(function () use ($member): void {
+            $this->resources->detachMember($member);
+            $member->delete();
+        });
     }
 
     private function respond(OrganizationMember $member, OrganizationMemberStatusEnum $status, NotificationTypeEnum $notification): OrganizationMember

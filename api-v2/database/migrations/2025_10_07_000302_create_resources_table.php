@@ -31,9 +31,11 @@ return new class extends Migration
                 ->cascadeOnDelete();
         });
 
+        // Seule une personne est liée à un membre. Le lien tombe quand le membre quitte l'équipe : sa ressource
+        // reste, désactivée, pour l'historique de ses rendez-vous.
         // SQLite ne permet pas d'ajouter une contrainte CHECK après coup.
         if (DB::getDriverName() === 'pgsql') {
-            DB::statement("ALTER TABLE resources ADD CONSTRAINT resources_staff_member_check CHECK ((type = 'staff') = (organization_member_id IS NOT NULL))");
+            DB::statement("ALTER TABLE resources ADD CONSTRAINT resources_staff_member_check CHECK (type = 'staff' OR organization_member_id IS NULL)");
         }
     }
 

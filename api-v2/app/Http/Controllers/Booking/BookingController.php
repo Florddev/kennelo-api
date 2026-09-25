@@ -31,9 +31,10 @@ class BookingController extends Controller
     ) {}
 
     /**
-     * Quote a stay
+     * Quote a booking
      *
-     * Même calcul que la réservation : dates, places et animaux, options. Rien n'est enregistré.
+     * Même calcul que la réservation. Séjour : dates, places et animaux, options. Rendez-vous : prestation, animaux
+     * dans l'ordre où ils passent, début et, au choix, ressource. Rien n'est enregistré.
      */
     public function quote(QuoteBookingRequest $request): BookingQuoteResource
     {
@@ -41,7 +42,7 @@ class BookingController extends Controller
     }
 
     /**
-     * Book a stay
+     * Book a stay or an appointment
      *
      * Le paiement est autorisé, puis capturé quand le pro accepte. Si la banque exige 3-D Secure, la réponse
      * porte le client_secret à confirmer dans le front ; la demande n'est présentée au pro qu'après.
@@ -75,7 +76,8 @@ class BookingController extends Controller
      * Cancel my booking
      *
      * Sans frais tant que le pro n'a pas accepté. Ensuite, remboursement selon la politique d'annulation, comptée
-     * depuis le début du séjour ; un séjour commencé ne s'annule plus.
+     * depuis le début de la réservation (le jour de l'arrivée, ou l'heure du rendez-vous) ; une réservation
+     * commencée ne s'annule plus.
      */
     public function cancel(Request $request, Booking $booking): BookingResource
     {

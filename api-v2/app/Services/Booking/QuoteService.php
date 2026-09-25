@@ -11,9 +11,11 @@ use App\Enums\VatRegimeEnum;
 use App\Models\Activity;
 use App\Models\ActivityUnitType;
 use App\Models\Address;
+use App\Models\AgendaResource;
 use App\Models\Pet;
 use App\Models\Service;
 use App\Models\User;
+use App\Services\Agenda\Exceptions\SlotUnavailableException;
 use App\Services\Catalog\ServicePriceResolver;
 use App\Services\Pricing\ActivityPricingService;
 use App\Services\Pricing\Exceptions\StayUnavailableException;
@@ -25,7 +27,8 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Validation\ValidationException;
 
 /**
- * Calcule le devis d'un séjour. La création d'une réservation le recalcule sous verrou, avec les mêmes règles.
+ * Calcule le devis d'un séjour ou d'un rendez-vous. La création d'une réservation le recalcule sous verrou, avec les
+ * mêmes règles.
  *
  * Les frais Kennelo (réglage user_service_fee_rate) s'ajoutent au prix payé par le client ; la commission de
  * l'offre de l'entreprise se retire de ce qui lui est versé. Frais de déplacement : aucun barème n'existe
@@ -37,25 +40,33 @@ class QuoteService
         private readonly ActivityPricingService $pricing,
         private readonly UnitTypeService $unitTypes,
         private readonly ServicePriceResolver $prices,
+        private readonly AppointmentService $appointments,
     ) {}
 
     /**
      * @param  array<string, mixed>  $data  demande validée (StoreBookingRequest)
      *
-     * @throws ValidationException|StayUnavailableException
+     * @throws ValidationException|StayUnavailableException|SlotUnavailableException
      */
     public function quote(User $client, array $data): BookingQuote
     {
         $activity = $this->bookableActivity((string) $data['activity_id']);
-        $profession = $activity->profession;
+        $pets = $client->pets()->with(['animalType', 'animalBreed'])->get()->keyBy('id');
 
-        if ($profession?->booking_mode !== BookingModeEnum::STAY) {
-            throw ValidationException::withMessages(['activity_id' => __('booking.stay_only')]);
-        }
+        return $activity->profession?->booking_mode === BookingModeEnum::APPOINTMENT
+            ? $this->appointment($client, $activity, $data, $pets)
+            : $this->stay($client, $activity, $data, $pets);
+    }
 
+    /**
+     * @param  array<string, mixed>  $data
+     * @param  Collection<string, Pet>  $pets
+     */
+    private function stay(User $client, Activity $activity, array $data, Collection $pets): BookingQuote
+    {
         $start = CarbonImmutable::parse((string) $data['start_date']);
         $end = CarbonImmutable::parse((string) $data['end_date']);
-        $dates = $profession->billing_unit->stayDates($start, $end);
+        $dates = $activity->profession->billing_unit->stayDates($start, $end);
 
         if ($dates === [] || count($dates) > (int) config('booking.max_stay_days')) {
             throw ValidationException::withMessages(['end_date' => __('booking.invalid_length', ['max' => config('booking.max_stay_days')])]);
@@ -67,17 +78,51 @@ class QuoteService
             throw StayUnavailableException::belowMinStay($minStay);
         }
 
-        $pets = $client->pets()->with(['animalType', 'animalBreed'])->get()->keyBy('id');
         $units = $this->priceUnits($activity, $data['units'], $pets, $calculator, $dates);
         $this->assertCapacity($activity, $units, $dates);
         $options = $this->priceOptions($activity, $data['options'] ?? [], $pets);
-        [$location, $serviceAddress] = $this->location($activity, $client, $data);
+
+        return $this->build($client, $activity, $data, $start, $end, count($dates), units: $units, options: $options);
+    }
+
+    /**
+     * Le rendez-vous se tient le jour local de son début : start_date et end_date valent ce jour.
+     *
+     * @param  array<string, mixed>  $data
+     * @param  Collection<string, Pet>  $pets
+     */
+    private function appointment(User $client, Activity $activity, array $data, Collection $pets): BookingQuote
+    {
+        $appointment = $this->appointments->plan(
+            $activity,
+            (string) $data['service_id'],
+            array_map(fn (string $petId): Pet => $pets[$petId], $data['pet_ids']),
+            CarbonImmutable::parse((string) $data['starts_at']),
+            $data['resource_id'] ?? null,
+        );
+        $day = $appointment['starts_at']->setTimezone($activity->timezone)->startOfDay();
+
+        return $this->build($client, $activity, $data, $day, $day, 0, appointment: $appointment);
+    }
+
+    /**
+     * Ajoute le lieu et les frais aux prestations chiffrées.
+     *
+     * @param  array<string, mixed>  $data
+     * @param  list<array{unit_type: ActivityUnitType, pets: list<Pet>, nights: int, subtotal: numeric-string, breakdown: list<array{date: string, pricing_period_id: string, price: numeric-string, extra_animals_price: numeric-string}>}>  $units
+     * @param  list<array{service: Service, pet: Pet, quantity: int, unit_price: numeric-string, subtotal: numeric-string, duration_minutes: int|null, is_included: bool}>  $options
+     * @param  array{resource: AgendaResource, starts_at: CarbonImmutable, ends_at: CarbonImmutable, lines: list<array{service: Service, pet: Pet, unit_price: numeric-string, subtotal: numeric-string, duration_minutes: int, starts_at: CarbonImmutable, ends_at: CarbonImmutable}>}|null  $appointment
+     */
+    private function build(User $client, Activity $activity, array $data, CarbonImmutable $start, CarbonImmutable $end, int $nights, array $units = [], array $options = [], ?array $appointment = null): BookingQuote
+    {
+        [$location, $serviceAddress] = $this->location($activity, $client, $data, allowRemote: $appointment !== null);
 
         $travelFee = '0.00';
         $itemsAmount = Money::sum(
             $travelFee,
             ...array_column($units, 'subtotal'),
             ...array_column($options, 'subtotal'),
+            ...array_column($appointment['lines'] ?? [], 'subtotal'),
         );
         $organization = $activity->organization()->firstOrFail();
         $serviceFee = Money::multiply($itemsAmount, (string) setting('user_service_fee_rate'));
@@ -87,11 +132,12 @@ class QuoteService
             activity: $activity,
             startDate: $start,
             endDate: $end,
-            nights: count($dates),
+            nights: $nights,
             location: $location,
             serviceAddress: $serviceAddress,
             units: $units,
             options: $options,
+            appointment: $appointment,
             travelFee: $travelFee,
             itemsAmount: $itemsAmount,
             serviceFee: $serviceFee,
@@ -235,19 +281,19 @@ class QuoteService
     }
 
     /**
-     * Chez le pro par défaut quand il reçoit. Chez le client, l'adresse vient de son carnet et doit se trouver
-     * dans le rayon d'intervention de l'activité.
+     * Chez le pro par défaut quand il reçoit, sinon chez le client, sinon à distance (rendez-vous seulement). Chez
+     * le client, l'adresse vient de son carnet et doit se trouver dans le rayon d'intervention de l'activité.
      *
      * @param  array<string, mixed>  $data
      * @return array{LocationModeEnum, Address|null}
      */
-    private function location(Activity $activity, User $client, array $data): array
+    private function location(Activity $activity, User $client, array $data, bool $allowRemote): array
     {
         $location = isset($data['location'])
             ? LocationModeEnum::from((string) $data['location'])
-            : ($activity->serves_at_pro ? LocationModeEnum::AT_PRO : LocationModeEnum::AT_CLIENT);
+            : ($activity->locations()[0] ?? LocationModeEnum::AT_PRO);
 
-        if (! $activity->servesAt($location) || $location === LocationModeEnum::REMOTE) {
+        if (! $activity->servesAt($location) || ($location === LocationModeEnum::REMOTE && ! $allowRemote)) {
             throw ValidationException::withMessages(['location' => __('activity.location_not_allowed')]);
         }
 
