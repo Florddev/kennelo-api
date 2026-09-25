@@ -26,7 +26,10 @@ use Stripe\Subscription as StripeSubscription;
  */
 class SubscriptionWebhookService
 {
-    public function __construct(private readonly NotificationService $notifications) {}
+    public function __construct(
+        private readonly NotificationService $notifications,
+        private readonly SubscriptionDowngradeService $downgrade,
+    ) {}
 
     public function syncSubscription(StripeSubscription $object): void
     {
@@ -61,6 +64,10 @@ class SubscriptionWebhookService
             ])->save();
 
             $isEffective = $subscription->isEffective();
+
+            if ($wasEffective && ! $isEffective && $subscription->organization !== null) {
+                $this->downgrade->apply($subscription->organization);
+            }
 
             if ($wasEffective !== $isEffective) {
                 $this->notifyOwner(

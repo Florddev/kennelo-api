@@ -50,6 +50,11 @@ class OrganizationPolicy
         return $this->can($user, $organization, OrganizationPermissionEnum::BILLING_MANAGE);
     }
 
+    public function manageCatalog(User $user, Organization $organization): Response
+    {
+        return $this->can($user, $organization, OrganizationPermissionEnum::CATALOG_MANAGE);
+    }
+
     public function viewAny(User $user): bool
     {
         return $user->hasRole('admin');

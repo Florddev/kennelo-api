@@ -7,8 +7,6 @@ use App\Models\Organization;
 use App\Models\OrganizationMember;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Tests\TestCase;
 
 /*
@@ -61,33 +59,4 @@ function memberOf(Organization $organization, ?OrganizationRoleEnum $role = null
     }
 
     return $factory->create()->user;
-}
-
-/**
- * Insère une activité minimale et retourne son identifiant.
- * À remplacer par la factory Activity quand le modèle arrivera (lot « Métiers, activités et catalogue »).
- */
-function activityFor(Organization $organization): string
-{
-    $categoryId = (string) Str::uuid();
-    $professionId = (string) Str::uuid();
-    $activityId = (string) Str::uuid();
-
-    DB::table('profession_categories')->insert(['id' => $categoryId, 'code' => 'category_'.$categoryId, 'name' => '{"fr":"Soin"}']);
-    DB::table('professions')->insert([
-        'id' => $professionId,
-        'profession_category_id' => $categoryId,
-        'code' => 'profession_'.$professionId,
-        'name' => '{"fr":"Toilettage"}',
-        'booking_mode' => 'appointment',
-        'billing_unit' => 'slot',
-    ]);
-    DB::table('activities')->insert([
-        'id' => $activityId,
-        'organization_id' => $organization->id,
-        'profession_id' => $professionId,
-        'name' => 'Salon des Lilas',
-    ]);
-
-    return $activityId;
 }

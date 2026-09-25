@@ -8,7 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Pet\StorePetImageRequest;
 use App\Http\Requests\Pet\StorePetImagesRequest;
 use App\Http\Requests\Pet\UploadPetAvatarRequest;
-use App\Http\Resources\PetImageResource;
+use App\Http\Resources\ImageResource;
 use App\Http\Resources\PetResource;
 use App\Models\Pet;
 use App\Services\MediaService;
@@ -38,14 +38,14 @@ class PetImageController extends Controller
     {
         $this->authorize('view', $pet);
 
-        return PetImageResource::collection($pet->getMedia(MediaService::COLLECTION_IMAGES));
+        return ImageResource::collection($pet->getMedia(MediaService::COLLECTION_IMAGES));
     }
 
-    public function store(StorePetImageRequest $request, Pet $pet): PetImageResource
+    public function store(StorePetImageRequest $request, Pet $pet): ImageResource
     {
         $this->authorize('update', $pet);
 
-        return new PetImageResource($this->petService->addImage($pet, $request->file('image')));
+        return new ImageResource($this->petService->addImage($pet, $request->file('image')));
     }
 
     public function storeBulk(StorePetImagesRequest $request, Pet $pet): JsonResponse
@@ -54,7 +54,7 @@ class PetImageController extends Controller
 
         $mediaItems = $this->petService->addImages($pet, $request->file('images', []));
 
-        return PetImageResource::collection($mediaItems)->response()->setStatusCode(201);
+        return ImageResource::collection($mediaItems)->response()->setStatusCode(201);
     }
 
     /**

@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Services\Subscription;
 
 use App\Enums\OrganizationMemberStatusEnum;
+use App\Models\Activity;
 use App\Models\Organization;
+use App\Services\MediaService;
 use Illuminate\Validation\ValidationException;
 
 /**
@@ -26,7 +28,26 @@ class PlanLimitService
         );
     }
 
-    private function assertBelowLimit(Organization $organization, string $limitKey, int $current, string $messageKey): void
+    public function assertCanAddActivity(Organization $organization): void
+    {
+        $this->assertBelowLimit($organization, 'max_activities', $organization->activities()->count(), 'activities');
+    }
+
+    /**
+     * Le quota de photos s'entend par activité.
+     */
+    public function assertCanAddPhotos(Activity $activity, int $incoming): void
+    {
+        $this->assertBelowLimit(
+            $activity->organization()->firstOrFail(),
+            'max_photos',
+            $activity->media()->where('collection_name', MediaService::COLLECTION_IMAGES)->count(),
+            'photos',
+            $incoming,
+        );
+    }
+
+    private function assertBelowLimit(Organization $organization, string $limitKey, int $current, string $messageKey, int $incoming = 1): void
     {
         $plan = $organization->effectivePlan();
 
@@ -36,7 +57,7 @@ class PlanLimitService
 
         $limit = (int) $plan->limit($limitKey);
 
-        if ($current >= $limit) {
+        if ($current + $incoming > $limit) {
             throw ValidationException::withMessages([
                 'plan' => __('plans.limit_reached.'.$messageKey, ['limit' => $limit]),
             ]);

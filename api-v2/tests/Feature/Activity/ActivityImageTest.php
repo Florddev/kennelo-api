@@ -1,0 +1,60 @@
+<?php
+
+declare(strict_types=1);
+
+use App\Models\Activity;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
+
+beforeEach(function () {
+    Storage::fake('public');
+});
+
+it('adds photos to an activity', function () {
+    $activity = Activity::factory()->create();
+
+    $this->withHeaders(asUser($activity->organization->owner))
+        ->post("/api/activities/{$activity->id}/images", [
+            'images' => [UploadedFile::fake()->image('salon.jpg'), UploadedFile::fake()->image('bac.png')],
+        ], ['Accept' => 'application/json'])
+        ->assertCreated()
+        ->assertJsonCount(2, 'data');
+
+    expect($activity->getMedia('images'))->toHaveCount(2);
+});
+
+it('stops at the photo quota of the plan', function () {
+    $activity = Activity::factory()->create();
+    $headers = asUser($activity->organization->owner);
+
+    $this->withHeaders($headers)
+        ->post("/api/activities/{$activity->id}/images", [
+            'images' => array_map(fn (int $i): UploadedFile => UploadedFile::fake()->image("photo-{$i}.jpg"), range(1, 4)),
+        ], ['Accept' => 'application/json'])
+        ->assertCreated();
+
+    $this->withHeaders($headers)
+        ->post("/api/activities/{$activity->id}/images", [
+            'images' => [UploadedFile::fake()->image('photo-5.jpg'), UploadedFile::fake()->image('photo-6.jpg')],
+        ], ['Accept' => 'application/json'])
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors(['plan' => __('plans.limit_reached.photos', ['limit' => 5])]);
+
+    expect($activity->getMedia('images'))->toHaveCount(4);
+});
+
+it('deletes a photo of the activity only', function () {
+    $activity = Activity::factory()->create();
+    $other = Activity::factory()->create();
+    $photo = $other->addMedia(UploadedFile::fake()->image('other.jpg'))->toMediaCollection('images');
+
+    $this->withHeaders(asUser($activity->organization->owner))
+        ->deleteJson("/api/activities/{$activity->id}/images/{$photo->uuid}")
+        ->assertNotFound();
+
+    $this->withHeaders(asUser($other->organization->owner))
+        ->deleteJson("/api/activities/{$other->id}/images/{$photo->uuid}")
+        ->assertNoContent();
+
+    expect($other->fresh()->getMedia('images'))->toBeEmpty();
+});

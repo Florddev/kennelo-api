@@ -6,9 +6,12 @@ namespace App\Providers;
 
 use App\Models\User;
 use App\Notifications\MagicLinkNotification;
+use App\Support\Database\SqliteMathFunctions;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Events\ConnectionEstablished;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
@@ -31,13 +34,23 @@ class AppServiceProvider extends ServiceProvider
     {
         Model::shouldBeStrict(! $this->app->isProduction());
 
+        // SQLite (développement, tests) n'a pas les fonctions mathématiques de PostgreSQL utilisées par la recherche.
+        Event::listen(function (ConnectionEstablished $event): void {
+            if ($event->connection->getDriverName() === 'sqlite') {
+                SqliteMathFunctions::register($event->connection->getPdo());
+            }
+        });
+
         // Les policies sont découvertes automatiquement (App\Models\X → App\Policies\XPolicy).
 
         // Espace de gestion : réservé aux membres actifs d'au moins une entreprise (plus de rôle « manager »).
         Gate::define('access-management', fn (User $user): bool => $user->canAccessManagement());
 
         // Identifiants uuid : une valeur mal formée donne une 404, et non une erreur SQL sous PostgreSQL.
-        Route::patterns(array_fill_keys(['user', 'organization', 'member'], self::UUID_PATTERN));
+        Route::patterns(array_fill_keys([
+            'user', 'organization', 'member', 'activity', 'availability', 'document',
+            'service', 'address', 'profession', 'category', 'media',
+        ], self::UUID_PATTERN));
 
         // {user} inclut les comptes inactifs ou bannis (profil public et administration).
         Route::bind('user', fn (string $value): User => User::withInactive()->findOrFail($value));

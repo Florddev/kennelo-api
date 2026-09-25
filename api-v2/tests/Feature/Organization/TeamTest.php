@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Enums\OrganizationMemberStatusEnum;
 use App\Enums\OrganizationRoleEnum;
 use App\Enums\PlanEnum;
+use App\Models\Activity;
 use App\Models\Organization;
 use App\Models\OrganizationMember;
 use App\Models\Subscription;
@@ -209,7 +210,7 @@ describe('invitations', function () {
 describe('roles', function () {
     it('replaces the roles of a member', function () {
         $organization = Organization::factory()->create();
-        $activityId = activityFor($organization);
+        $activityId = Activity::factory()->for($organization)->create()->id;
         $member = OrganizationMember::factory()->for($organization)->withRole(OrganizationRoleEnum::MANAGER)->create();
 
         $this->withHeaders(asUser($organization->owner))
@@ -252,7 +253,7 @@ describe('roles', function () {
 
         $this->withHeaders(asUser($organization->owner))
             ->putJson("/api/organizations/{$organization->id}/members/{$member->id}/roles", ['roles' => [
-                ['role' => 'manager', 'activity_id' => activityFor($organization)],
+                ['role' => 'manager', 'activity_id' => Activity::factory()->for($organization)->create()->id],
             ]])
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['roles.0.activity_id' => __('team.role_forbids_activity')]);
@@ -264,7 +265,7 @@ describe('roles', function () {
 
         $this->withHeaders(asUser($organization->owner))
             ->putJson("/api/organizations/{$organization->id}/members/{$member->id}/roles", ['roles' => [
-                ['role' => 'employee', 'activity_id' => activityFor(Organization::factory()->create())],
+                ['role' => 'employee', 'activity_id' => Activity::factory()->create()->id],
             ]])
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['roles.0.activity_id']);

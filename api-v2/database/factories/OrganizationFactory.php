@@ -63,4 +63,19 @@ class OrganizationFactory extends Factory
             ]);
         });
     }
+
+    /**
+     * Compte Stripe Connect activé : l'entreprise peut encaisser et recevoir ses versements.
+     */
+    public function withStripe(): static
+    {
+        return $this->afterMaking(function (Organization $organization): void {
+            $organization->forceFill([
+                'stripe_account_id' => 'acct_'.fake()->unique()->bothify('????????????'),
+                'stripe_charges_enabled' => true,
+                'stripe_payouts_enabled' => true,
+                'stripe_onboarding_completed' => true,
+            ]);
+        });
+    }
 }

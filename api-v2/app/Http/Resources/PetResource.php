@@ -37,7 +37,7 @@ class PetResource extends JsonResource
             'animal_type' => new AnimalTypeResource($this->whenLoaded('animalType')),
             'animal_breed' => new AnimalBreedResource($this->whenLoaded('animalBreed')),
             'attributes' => PetAttributeResource::collection($this->whenLoaded('petAttributes')),
-            'images' => PetImageResource::collection($this->getMedia(MediaService::COLLECTION_IMAGES)),
+            'images' => ImageResource::collection($this->getMedia(MediaService::COLLECTION_IMAGES)),
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),
         ];

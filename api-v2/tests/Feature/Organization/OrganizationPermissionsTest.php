@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Enums\OrganizationPermissionEnum as Permission;
 use App\Enums\OrganizationRoleEnum;
+use App\Models\Activity;
 use App\Models\Organization;
 use App\Models\OrganizationMember;
 use App\Services\Organization\OrganizationPermissions;
@@ -27,7 +28,7 @@ test('each company-wide role grants exactly its permissions on the whole company
 
 test('each activity role grants exactly its permissions on its activity', function (OrganizationRoleEnum $role, array $expected) {
     $organization = Organization::factory()->create();
-    $activityId = activityFor($organization);
+    $activityId = Activity::factory()->for($organization)->create()->id;
     $member = memberOf($organization, $role, $activityId);
 
     $permissions = app(OrganizationPermissions::class)->permissionsFor($member, $organization, $activityId);
@@ -48,8 +49,8 @@ it('grants every permission to the owner without any role', function () {
 
 it('limits an activity role to its own activity', function () {
     $organization = Organization::factory()->create();
-    $salon = activityFor($organization);
-    $boarding = activityFor($organization);
+    $salon = Activity::factory()->for($organization)->create()->id;
+    $boarding = Activity::factory()->for($organization)->create()->id;
     $member = memberOf($organization, OrganizationRoleEnum::ACTIVITY_MANAGER, $salon);
     $permissions = app(OrganizationPermissions::class);
 
@@ -60,7 +61,7 @@ it('limits an activity role to its own activity', function () {
 
 it('applies a company-wide role to every activity', function () {
     $organization = Organization::factory()->create();
-    $activityId = activityFor($organization);
+    $activityId = Activity::factory()->for($organization)->create()->id;
     $member = memberOf($organization, OrganizationRoleEnum::MANAGER);
 
     expect(app(OrganizationPermissions::class)->allows($member, Permission::BOOKINGS_MANAGE, $organization, $activityId))->toBeTrue();

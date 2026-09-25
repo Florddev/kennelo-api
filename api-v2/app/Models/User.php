@@ -146,4 +146,22 @@ class User extends Authenticatable implements HasLocalePreference, HasMedia, Mus
     {
         return $this->hasMany(TwoFactorRememberedDevice::class);
     }
+
+    /**
+     * Carnet d'adresses du client.
+     *
+     * @return HasMany<UserAddress, $this>
+     */
+    public function addresses(): HasMany
+    {
+        return $this->hasMany(UserAddress::class);
+    }
+
+    /**
+     * @return BelongsToMany<Activity, $this>
+     */
+    public function favoriteActivities(): BelongsToMany
+    {
+        return $this->belongsToMany(Activity::class, 'favorites')->withPivot('created_at');
+    }
 }

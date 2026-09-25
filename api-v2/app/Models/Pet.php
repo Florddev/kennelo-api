@@ -9,6 +9,7 @@ use App\Enums\PetSizeClassEnum;
 use App\Services\MediaService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -22,13 +23,14 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property Carbon|null $adoption_date
  * @property PetSizeClassEnum|null $size_class
  * @property PetCoatTypeEnum|null $coat_type
+ * @property numeric-string|null $weight
  * @property-read AnimalType|null $animalType
  * @property-read AnimalBreed|null $animalBreed
  * @property-read User|null $user
  */
 class Pet extends Model implements HasMedia
 {
-    use HasUuids, InteractsWithMedia;
+    use HasFactory, HasUuids, InteractsWithMedia;
 
     protected $fillable = [
         'user_id',
@@ -59,6 +61,43 @@ class Pet extends Model implements HasMedia
             'size_class' => PetSizeClassEnum::class,
             'coat_type' => PetCoatTypeEnum::class,
         ];
+    }
+
+    /**
+     * Taille retenue par la grille de prix : celle de la fiche, sinon déduite du poids selon les seuils
+     * de l'espèce (config/pets.php), sinon celle de la race. L'espèce et la race doivent être chargées.
+     */
+    public function effectiveSizeClass(): ?PetSizeClassEnum
+    {
+        return $this->size_class
+            ?? $this->sizeClassFromWeight()
+            ?? $this->animalBreed?->default_size_class;
+    }
+
+    /**
+     * Poil retenu par la grille de prix : celui de la fiche, sinon celui de la race.
+     */
+    public function effectiveCoatType(): ?PetCoatTypeEnum
+    {
+        return $this->coat_type ?? $this->animalBreed?->default_coat_type;
+    }
+
+    private function sizeClassFromWeight(): ?PetSizeClassEnum
+    {
+        $thresholds = config('pets.size_thresholds.'.$this->animalType?->code);
+
+        if ($this->weight === null || ! is_array($thresholds)) {
+            return null;
+        }
+
+        // Seuils rangés de la plus petite taille à la plus grande ; null = sans limite supérieure.
+        foreach ($thresholds as $size => $maxWeight) {
+            if ($maxWeight === null || bccomp((string) $this->weight, (string) $maxWeight, 2) <= 0) {
+                return PetSizeClassEnum::from($size);
+            }
+        }
+
+        return null;
     }
 
     public function registerMediaCollections(): void

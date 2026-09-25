@@ -27,6 +27,9 @@ enum AdminActionTypeEnum: string
     case VERIFY_ORGANIZATION_COMPANY = 'verify_organization_company';
     case APPROVE_ACTIVITY = 'approve_activity';
     case REJECT_ACTIVITY = 'reject_activity';
+    case SUSPEND_ACTIVITY = 'suspend_activity';
+    case APPROVE_ACTIVITY_DOCUMENT = 'approve_activity_document';
+    case REJECT_ACTIVITY_DOCUMENT = 'reject_activity_document';
     case UPDATE_ACTIVITY = 'update_activity';
 
     public static function values(): array

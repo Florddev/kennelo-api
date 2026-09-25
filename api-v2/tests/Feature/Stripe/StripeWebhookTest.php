@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Enums\PlanEnum;
 use App\Enums\SubscriptionPaymentStatusEnum;
 use App\Enums\SubscriptionStatusEnum;
+use App\Models\Activity;
 use App\Models\Organization;
 use App\Models\StripeEvent;
 use App\Models\Subscription;
@@ -150,6 +151,33 @@ describe('subscriptions', function () {
         expect($organization->fresh()->effectivePlan())->toBe(PlanEnum::FREE)
             ->and($organization->subscription()->firstOrFail()->ends_at)->not->toBeNull();
         Notification::assertSentTo($organization->owner, AppNotification::class);
+    });
+
+    it('pauses the activities beyond the free quota when the option is on, keeping the oldest', function () {
+        config(['plans.downgrade.soft_disable.activities' => true]);
+        $organization = Organization::factory()->create();
+        Subscription::factory()->for($organization)->onPlan(PlanEnum::PRO)->create(['stripe_subscription_id' => 'sub_org']);
+        $oldest = Activity::factory()->for($organization)->create(['created_at' => now()->subYear()]);
+        $newer = Activity::factory()->for($organization)->count(2)->create();
+
+        postStripeEvent('customer.subscription.deleted', stripeSubscription($organization, 'canceled', [
+            'ended_at' => now()->timestamp,
+        ]))->assertNoContent();
+
+        expect($oldest->fresh()->is_active)->toBeTrue()
+            ->and($newer->map->fresh()->pluck('is_active')->all())->toBe([false, false]);
+    });
+
+    it('keeps every activity open when the option is off', function () {
+        $organization = Organization::factory()->create();
+        Subscription::factory()->for($organization)->onPlan(PlanEnum::PRO)->create(['stripe_subscription_id' => 'sub_org']);
+        Activity::factory()->for($organization)->count(3)->create();
+
+        postStripeEvent('customer.subscription.deleted', stripeSubscription($organization, 'canceled', [
+            'ended_at' => now()->timestamp,
+        ]))->assertNoContent();
+
+        expect($organization->activities()->where('is_active', true)->count())->toBe(3);
     });
 
     it('ignores a subscription whose company is unknown', function () {

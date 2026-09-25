@@ -41,6 +41,14 @@ enum NotificationTypeEnum: string
     case ORGANIZATION_REJECTED = 'organization_rejected';
     case ORGANIZATION_SUSPENDED = 'organization_suspended';
 
+    case ACTIVITY_APPROVED = 'activity_approved';
+    case ACTIVITY_REJECTED = 'activity_rejected';
+    case ACTIVITY_SUSPENDED = 'activity_suspended';
+    case ACTIVITY_DOCUMENT_APPROVED = 'activity_document_approved';
+    case ACTIVITY_DOCUMENT_REJECTED = 'activity_document_rejected';
+    case ACTIVITY_DOCUMENT_EXPIRING = 'activity_document_expiring';
+    case ACTIVITY_DOCUMENT_EXPIRED = 'activity_document_expired';
+
     case SUBSCRIPTION_ACTIVATED = 'subscription_activated';
     case SUBSCRIPTION_PAYMENT_FAILED = 'subscription_payment_failed';
     case SUBSCRIPTION_DOWNGRADED = 'subscription_downgraded';
