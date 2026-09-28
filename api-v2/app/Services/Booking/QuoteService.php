@@ -15,6 +15,7 @@ use App\Models\AgendaResource;
 use App\Models\Pet;
 use App\Models\Service;
 use App\Models\User;
+use App\Services\Activity\TravelFeeService;
 use App\Services\Agenda\Exceptions\SlotUnavailableException;
 use App\Services\Catalog\ServicePriceResolver;
 use App\Services\Pricing\ActivityPricingService;
@@ -31,8 +32,7 @@ use Illuminate\Validation\ValidationException;
  * mêmes règles.
  *
  * Les frais Kennelo (réglage user_service_fee_rate) s'ajoutent au prix payé par le client ; la commission de
- * l'offre de l'entreprise se retire de ce qui lui est versé. Frais de déplacement : aucun barème n'existe
- * encore, ils valent 0.
+ * l'offre de l'entreprise se retire de ce qui lui est versé.
  */
 class QuoteService
 {
@@ -41,6 +41,7 @@ class QuoteService
         private readonly UnitTypeService $unitTypes,
         private readonly ServicePriceResolver $prices,
         private readonly AppointmentService $appointments,
+        private readonly TravelFeeService $travelFees,
     ) {}
 
     /**
@@ -115,9 +116,9 @@ class QuoteService
      */
     private function build(User $client, Activity $activity, array $data, CarbonImmutable $start, CarbonImmutable $end, int $nights, array $units = [], array $options = [], ?array $appointment = null): BookingQuote
     {
-        [$location, $serviceAddress] = $this->location($activity, $client, $data, allowRemote: $appointment !== null);
+        [$location, $serviceAddress, $distanceKm] = $this->location($activity, $client, $data, allowRemote: $appointment !== null);
 
-        $travelFee = '0.00';
+        $travelFee = $distanceKm === null ? '0.00' : $this->travelFees->feeFor($activity, $distanceKm);
         $itemsAmount = Money::sum(
             $travelFee,
             ...array_column($units, 'subtotal'),
@@ -285,7 +286,7 @@ class QuoteService
      * le client, l'adresse vient de son carnet et doit se trouver dans le rayon d'intervention de l'activité.
      *
      * @param  array<string, mixed>  $data
-     * @return array{LocationModeEnum, Address|null}
+     * @return array{LocationModeEnum, Address|null, float|null}
      */
     private function location(Activity $activity, User $client, array $data, bool $allowRemote): array
     {
@@ -298,7 +299,7 @@ class QuoteService
         }
 
         if ($location !== LocationModeEnum::AT_CLIENT) {
-            return [$location, null];
+            return [$location, null, null];
         }
 
         $address = $client->addresses()->with('address')->find($data['address_id'] ?? null)?->address;
@@ -308,15 +309,15 @@ class QuoteService
             throw ValidationException::withMessages(['address_id' => __('validation.required', ['attribute' => 'address_id'])]);
         }
 
-        $reachable = $address->latitude !== null && $address->longitude !== null
-            && $origin?->latitude !== null && $origin->longitude !== null
-            && $this->distanceKm((float) $origin->latitude, (float) $origin->longitude, (float) $address->latitude, (float) $address->longitude) <= (float) $activity->service_radius_km;
+        $distanceKm = $address->latitude !== null && $address->longitude !== null && $origin?->latitude !== null && $origin->longitude !== null
+            ? $this->distanceKm((float) $origin->latitude, (float) $origin->longitude, (float) $address->latitude, (float) $address->longitude)
+            : null;
 
-        if (! $reachable) {
+        if ($distanceKm === null || $distanceKm > (float) $activity->service_radius_km) {
             throw ValidationException::withMessages(['address_id' => __('booking.out_of_radius')]);
         }
 
-        return [$location, $address];
+        return [$location, $address, $distanceKm];
     }
 
     /**

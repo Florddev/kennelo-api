@@ -28,6 +28,10 @@ return [
     'reject_instead' => 'Une demande pas encore acceptée se refuse.',
     'not_adjustable' => 'Seule une réservation acceptée, avant sa fin, peut être ajustée.',
     'item_not_removable' => 'Cette option est déjà réalisée ou retirée.',
+    'not_refundable' => 'Seule une réservation payée dont le versement n\'est pas encore parti peut être remboursée.',
+    'refund_too_high' => 'Le remboursement ne peut pas dépasser :max € de prestations.',
+    'nothing_to_refund' => 'Il n\'y a rien à rembourser.',
+    'disputed' => 'Un litige est en cours sur cette réservation : attendez sa clôture.',
     'nothing_to_confirm' => 'Ce paiement n\'attend pas de confirmation.',
     'pet_has_bookings' => 'Cet animal a des réservations : il reste dans leur historique.',
     'statuses' => [

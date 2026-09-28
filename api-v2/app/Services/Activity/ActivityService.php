@@ -19,7 +19,7 @@ class ActivityService
     /**
      * Relations affichées avec une activité. L'offre de l'entreprise décide des photos montrées au public.
      */
-    public const array RELATIONS = ['organization.subscription.plan', 'profession.category', 'address', 'animalTypes', 'openingHours', 'media'];
+    public const array RELATIONS = ['organization.subscription.plan', 'profession.category', 'address', 'animalTypes', 'openingHours', 'travelFeeTiers', 'media'];
 
     public function __construct(
         private readonly PlanLimitService $planLimits,

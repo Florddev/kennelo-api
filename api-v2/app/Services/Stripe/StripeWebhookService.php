@@ -6,10 +6,12 @@ namespace App\Services\Stripe;
 
 use App\Enums\SubscriptionPaymentStatusEnum;
 use App\Models\StripeEvent;
+use App\Services\Booking\BookingDisputeService;
 use App\Services\Booking\BookingPayoutService;
 use App\Services\Booking\BookingWebhookService;
 use App\Services\Subscription\SubscriptionWebhookService;
 use Stripe\Account;
+use Stripe\Dispute;
 use Stripe\Event;
 use Stripe\Invoice;
 use Stripe\PaymentIntent;
@@ -28,6 +30,7 @@ class StripeWebhookService
         private readonly SubscriptionWebhookService $subscriptions,
         private readonly BookingWebhookService $bookings,
         private readonly BookingPayoutService $payouts,
+        private readonly BookingDisputeService $disputes,
     ) {}
 
     public function handle(Event $event): void
@@ -62,6 +65,7 @@ class StripeWebhookService
             $event->type === 'invoice.payment_failed' && $object instanceof Invoice => $this->subscriptions->recordInvoice($object, SubscriptionPaymentStatusEnum::FAILED),
             in_array($event->type, BookingWebhookService::PAYMENT_EVENTS, true) && $object instanceof PaymentIntent => $this->bookings->syncPaymentIntent($object),
             $event->type === 'transfer.reversed' && $object instanceof Transfer => $this->payouts->reverse($object),
+            in_array($event->type, BookingDisputeService::EVENTS, true) && $object instanceof Dispute => $this->disputes->sync($object),
             default => null,
         };
     }

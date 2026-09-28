@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Listeners;
 
 use App\Enums\CancelledByRoleEnum;
+use App\Enums\DisputeStatusEnum;
 use App\Enums\NotificationTypeEnum;
 use App\Enums\OrganizationPermissionEnum;
 use App\Enums\PaymentKindEnum;
@@ -12,6 +13,8 @@ use App\Events\Booking\BookingCancelled;
 use App\Events\Booking\BookingCompleted;
 use App\Events\Booking\BookingConfirmed;
 use App\Events\Booking\BookingCreated;
+use App\Events\Booking\BookingDisputeClosed;
+use App\Events\Booking\BookingDisputeOpened;
 use App\Events\Booking\BookingExpired;
 use App\Events\Booking\BookingPaidOut;
 use App\Events\Booking\BookingPaymentActionRequired;
@@ -55,11 +58,13 @@ class SendBookingNotifications
 
     public function handleCancelled(BookingCancelled $event): void
     {
-        match ($event->booking->cancelled_by_role) {
-            CancelledByRoleEnum::CLIENT => $this->notifyTeam($event->booking, NotificationTypeEnum::BOOKING_CANCELLED_BY_CLIENT, OrganizationPermissionEnum::BOOKINGS_VIEW),
-            CancelledByRoleEnum::PRO => $this->notifyClient($event->booking, NotificationTypeEnum::BOOKING_CANCELLED_BY_PRO),
-            // Annulée par Kennelo : le paiement initial n'a pas abouti.
-            CancelledByRoleEnum::PLATFORM, null => $this->notifyClient($event->booking, NotificationTypeEnum::PAYMENT_FAILED, ['amount' => $event->booking->total_price]),
+        $booking = $event->booking;
+
+        match (true) {
+            $booking->cancelled_by_role === CancelledByRoleEnum::CLIENT => $this->notifyTeam($booking, NotificationTypeEnum::BOOKING_CANCELLED_BY_CLIENT, OrganizationPermissionEnum::BOOKINGS_VIEW),
+            $booking->cancelled_by_role === CancelledByRoleEnum::PRO => $this->notifyClient($booking, NotificationTypeEnum::BOOKING_CANCELLED_BY_PRO),
+            $booking->cancelled_by !== null => $this->notifyPlatformCancellation($booking),
+            default => $this->notifyClient($booking, NotificationTypeEnum::PAYMENT_FAILED, ['amount' => $booking->total_price]),
         };
     }
 
@@ -100,6 +105,44 @@ class SendBookingNotifications
                 'amount' => $event->payout->amount,
             ]);
         }
+    }
+
+    public function handleDisputeOpened(BookingDisputeOpened $event): void
+    {
+        $dispute = $event->dispute->loadMissing('booking.activity');
+
+        if ($dispute->booking === null) {
+            return;
+        }
+
+        $this->notifications->notify($this->recipients->admins(), NotificationTypeEnum::DISPUTE_OPENED, [
+            ...$this->payload($dispute->booking),
+            'amount' => $dispute->amount,
+            'due_by' => $dispute->evidence_due_by?->toDateString(),
+        ]);
+        $this->notifyTeam($dispute->booking, NotificationTypeEnum::BOOKING_DISPUTED, OrganizationPermissionEnum::FINANCE_VIEW, ['amount' => $dispute->amount]);
+    }
+
+    public function handleDisputeClosed(BookingDisputeClosed $event): void
+    {
+        $dispute = $event->dispute->loadMissing('booking');
+
+        if ($dispute->booking === null) {
+            return;
+        }
+
+        $this->notifyTeam(
+            $dispute->booking,
+            $dispute->status === DisputeStatusEnum::LOST ? NotificationTypeEnum::BOOKING_DISPUTE_LOST : NotificationTypeEnum::BOOKING_DISPUTE_WON,
+            OrganizationPermissionEnum::FINANCE_VIEW,
+            ['amount' => $dispute->recovered_amount],
+        );
+    }
+
+    private function notifyPlatformCancellation(Booking $booking): void
+    {
+        $this->notifyClient($booking, NotificationTypeEnum::BOOKING_CANCELLED_BY_PLATFORM);
+        $this->notifyTeam($booking, NotificationTypeEnum::TEAM_BOOKING_CANCELLED_BY_PLATFORM, OrganizationPermissionEnum::BOOKINGS_VIEW);
     }
 
     /**

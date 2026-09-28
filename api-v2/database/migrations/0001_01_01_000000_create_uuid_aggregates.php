@@ -5,13 +5,6 @@ declare(strict_types=1);
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-/**
- * PostgreSQL n'a pas d'agrégat max() ni min() pour le type uuid, dont Laravel a besoin : latestOfMany() départage
- * deux lignes de même date par MAX(id) (Conversation::latestMessage, Organization::subscription). SQLite compare
- * les uuid comme du texte et n'en a pas besoin.
- *
- * CREATE OR REPLACE : migrate:fresh supprime les tables mais garde les fonctions.
- */
 return new class extends Migration
 {
     public function up(): void

@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Enums\DisputeStatusEnum;
 use App\Enums\OrganizationRoleEnum;
 use App\Enums\RefundReasonEnum;
 use App\Enums\ResourceBookingKindEnum;
@@ -25,16 +26,11 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
 
-// Garde-fous que seule PostgreSQL applique : SQLite n'ajoute pas de CHECK après coup, ignore NULLS NOT DISTINCT
-// et ne connaît pas les contraintes d'exclusion.
-
 pest()->group('pgsql');
 
 beforeEach(fn () => requiresPostgres());
 
 /**
- * Écrit directement en base des valeurs que l'application n'écrirait jamais.
- *
  * @param  array<string, mixed>  $values
  */
 function rewriteRow(Model $row, array $values): int
@@ -98,6 +94,18 @@ it('refuses what a check constraint forbids', function (string $constraint, Clos
     'resource_bookings_kind_check' => ['resource_bookings_kind_check', fn () => rewriteRow(ResourceBooking::factory()->create(), ['kind' => 'booking'])],
     'invoices_recipient_check' => ['invoices_recipient_check', fn () => rewriteRow(bookingInvoices(invoicedStay())[0], ['recipient_user_id' => null])],
     'invoices_credit_note_check' => ['invoices_credit_note_check', fn () => rewriteRow(bookingInvoices(invoicedStay())[0], ['type' => 'credit_note'])],
+    'activity_travel_fee_tiers_values_check' => ['activity_travel_fee_tiers_values_check', fn () => Activity::factory()->create()->travelFeeTiers()->create(['up_to_km' => 0, 'fee' => '5.00'])],
+    'booking_disputes_amounts_check' => ['booking_disputes_amounts_check', function () {
+        $booking = Booking::factory()->confirmed()->create();
+        $booking->disputes()->create([
+            'booking_payment_id' => $booking->payments()->sole()->id,
+            'stripe_dispute_id' => 'dp_check',
+            'amount' => '10.00',
+            'reason' => 'fraudulent',
+            'status' => DisputeStatusEnum::LOST,
+            'recovered_amount' => '20.00',
+        ]);
+    }],
 ]);
 
 describe('unique even where a column is empty (NULLS NOT DISTINCT)', function () {
@@ -138,7 +146,6 @@ describe('a resource is never booked twice at once', function () {
     it('refuses two entries of the same resource that overlap', function () {
         $absence = ResourceBooking::factory()->between('2030-03-11T10:00:00+01:00', '2030-03-11T12:00:00+01:00')->create();
 
-        // Bout à bout, ou sur une autre ressource : accepté.
         ResourceBooking::factory()->for($absence->resource, 'resource')->between('2030-03-11T12:00:00+01:00', '2030-03-11T13:00:00+01:00')->create();
         ResourceBooking::factory()->between('2030-03-11T10:00:00+01:00', '2030-03-11T12:00:00+01:00')->create();
 
@@ -156,7 +163,6 @@ describe('a resource is never booked twice at once', function () {
         $resource = AgendaResource::factory()->create();
         $start = CarbonImmutable::parse('2030-03-11T10:00:00+01:00')->utc();
 
-        // La demande concurrente s'intercale entre la vérification du créneau et l'écriture.
         Event::listen('eloquent.creating: '.ResourceBooking::class, fn () => DB::table('resource_bookings')->insert([
             'id' => (string) Str::uuid7(),
             'resource_id' => $resource->id,

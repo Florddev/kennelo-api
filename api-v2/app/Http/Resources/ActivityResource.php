@@ -60,6 +60,7 @@ class ActivityResource extends JsonResource
             'is_active' => $this->is_active,
             'animal_types' => AnimalTypeResource::collection($this->whenLoaded('animalTypes')),
             'opening_hours' => ActivityOpeningHourResource::collection($this->whenLoaded('openingHours')),
+            'travel_fees' => ActivityTravelFeeTierResource::collection($this->whenLoaded('travelFeeTiers')),
             'images' => $this->whenLoaded('media', fn () => ImageResource::collection(
                 $canSeePrivate ? $this->getMedia(MediaService::COLLECTION_IMAGES) : $this->resource->publicImages(),
             )),

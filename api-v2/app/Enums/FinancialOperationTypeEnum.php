@@ -18,6 +18,10 @@ enum FinancialOperationTypeEnum: string
     case REFUND = 'refund';
     case PAYOUT = 'payout';
     case PAYOUT_REVERSED = 'payout_reversed';
+    case DISPUTE_OPENED = 'dispute_opened';
+    case DISPUTE_WON = 'dispute_won';
+    case DISPUTE_LOST = 'dispute_lost';
+    case DISPUTE_RECOVERY = 'dispute_recovery';
     case STATUS_CHANGE = 'status_change';
 
     public static function values(): array

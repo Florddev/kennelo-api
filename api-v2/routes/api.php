@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Activity\ActivityController;
+use App\Http\Controllers\Activity\ActivityTravelFeeController;
 use App\Http\Controllers\Agenda\SlotController;
 use App\Http\Controllers\Auth\TwoFactorAuthenticationController;
 use App\Http\Controllers\Billing\InvoiceController;
@@ -45,6 +46,7 @@ Route::middleware('throttle:60,1')->group(function () {
 Route::get('/activities/{activity}', [ActivityController::class, 'show']);
 Route::get('/activities/{activity}/services', [ActivityServiceController::class, 'index']);
 Route::get('/activities/{activity}/unit-types', [UnitTypeController::class, 'index']);
+Route::get('/activities/{activity}/travel-fees', [ActivityTravelFeeController::class, 'index']);
 Route::get('/activities/{activity}/price-calendar', [ActivityPricingController::class, 'calendar'])->middleware('throttle:60,1');
 Route::get('/activities/{activity}/slots', [SlotController::class, 'index'])->middleware('throttle:60,1');
 Route::get('/activities/{activity}/reviews', [ReviewController::class, 'forActivity'])->middleware('throttle:60,1');

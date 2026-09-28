@@ -1,9 +1,5 @@
 name: api-v2 - CI
 
-# Pint, PHPStan, puis la suite de tests sur SQLite et sur PostgreSQL 16 (la base de production).
-# Les tests du groupe pgsql, ignorés sous SQLite, vérifient ce que seule PostgreSQL garantit :
-# contraintes CHECK, NULLS NOT DISTINCT, exclusion des créneaux, verrous sous concurrence.
-
 on:
   push:
     paths:
@@ -33,7 +29,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: shivammathur/setup-php@v2
         with:
@@ -41,7 +37,7 @@ jobs:
           extensions: ${{ env.PHP_EXTENSIONS }}
           coverage: none
 
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: api-v2/vendor
           key: ${{ runner.os }}-php-${{ env.PHP_VERSION }}-${{ hashFiles('api-v2/composer.lock') }}
@@ -55,7 +51,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: shivammathur/setup-php@v2
         with:
@@ -63,7 +59,7 @@ jobs:
           extensions: ${{ env.PHP_EXTENSIONS }}
           coverage: none
 
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: api-v2/vendor
           key: ${{ runner.os }}-php-${{ env.PHP_VERSION }}-${{ hashFiles('api-v2/composer.lock') }}
@@ -77,7 +73,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: shivammathur/setup-php@v2
         with:
@@ -85,7 +81,7 @@ jobs:
           extensions: ${{ env.PHP_EXTENSIONS }}
           coverage: none
 
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: api-v2/vendor
           key: ${{ runner.os }}-php-${{ env.PHP_VERSION }}-${{ hashFiles('api-v2/composer.lock') }}
@@ -97,7 +93,6 @@ jobs:
           cp .env.example .env
           php artisan key:generate
 
-      # Le .env.example vise Redis, S3 et Reverb, absents ici : l'amorçage de la base s'en passe.
       - name: Migrations and seeders
         env:
           DB_CONNECTION: sqlite
@@ -134,7 +129,6 @@ jobs:
           --health-timeout 5s
           --health-retries 10
 
-    # Les variables de la CI priment sur phpunit.xml (SQLite en mémoire) et sur le .env.
     env:
       DB_CONNECTION: pgsql
       DB_HOST: 127.0.0.1
@@ -144,7 +138,7 @@ jobs:
       DB_PASSWORD: kennelo
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: shivammathur/setup-php@v2
         with:
@@ -152,7 +146,7 @@ jobs:
           extensions: ${{ env.PHP_EXTENSIONS }}
           coverage: none
 
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: api-v2/vendor
           key: ${{ runner.os }}-php-${{ env.PHP_VERSION }}-${{ hashFiles('api-v2/composer.lock') }}
@@ -164,7 +158,6 @@ jobs:
           cp .env.example .env
           php artisan key:generate
 
-      # Le .env.example vise Redis, S3 et Reverb, absents ici : l'amorçage de la base s'en passe.
       - name: Migrations and seeders
         env:
           CACHE_STORE: array

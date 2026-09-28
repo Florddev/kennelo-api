@@ -84,7 +84,6 @@ return [
                     'scheme' => env('REVERB_SCHEME', 'https'),
                     'useTLS' => env('REVERB_SCHEME', 'https') === 'https',
                 ],
-                // Les fronts autorisés par CORS, et eux seuls, ouvrent une connexion (Reverb compare le nom d'hôte).
                 'allowed_origins' => array_values(array_unique(array_filter(array_map(
                     fn (string $origin): ?string => parse_url(trim($origin), PHP_URL_HOST) ?: null,
                     explode(',', (string) env('CORS_ALLOWED_ORIGINS', env('FRONTEND_URL', 'http://localhost:3000'))),

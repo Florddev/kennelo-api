@@ -43,8 +43,6 @@ return new class extends Migration
             $table->index('banned_by', 'users_banned_by_index');
         });
 
-        // Unicité limitée aux comptes non supprimés (soft delete) pour permettre la réinscription. Créée après
-        // la clé étrangère : pour l'ajouter, SQLite reconstruit la table et recréerait ces index sans leur WHERE.
         DB::statement('CREATE UNIQUE INDEX users_email_unique ON users (email) WHERE deleted_at IS NULL');
         DB::statement('CREATE UNIQUE INDEX users_google_id_unique ON users (google_id) WHERE deleted_at IS NULL');
 

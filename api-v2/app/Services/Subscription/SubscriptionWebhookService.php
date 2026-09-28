@@ -144,7 +144,10 @@ class SubscriptionWebhookService
         $owner = $subscription->organization?->owner;
 
         if ($owner !== null) {
-            $this->notifications->notify($owner, $type, ['organization_id' => $subscription->organization_id]);
+            $this->notifications->notify($owner, $type, [
+                'organization_id' => $subscription->organization_id,
+                'organization_name' => $subscription->organization->legal_name,
+            ]);
         }
     }
 

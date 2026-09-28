@@ -7,7 +7,9 @@ namespace App\Services\Explore;
 use App\Enums\LocationModeEnum;
 use App\Enums\OrganizationLegalFormEnum;
 use App\Models\Activity;
+use App\Models\AnimalType;
 use App\Models\User;
+use Carbon\CarbonImmutable;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -24,7 +26,7 @@ class ExploreService
     public const int PER_PAGE = 10;
 
     /** @var list<string> */
-    public const array SECTIONS = ['nearby', 'top_rated', 'verified_pros', 'new_hosts'];
+    public const array SECTIONS = ['nearby', 'available_this_weekend', 'top_rated', 'verified_pros', 'new_hosts'];
 
     /** Une section de la page d'accueil qui a moins de résultats est omise. */
     private const int MIN_SECTION_RESULTS = 3;
@@ -41,6 +43,10 @@ class ExploreService
     private const string DISTANCE_SQL = '(case when activity_address.latitude is null or activity_address.longitude is null then null'
         .' else 6371 * acos(least(1.0, cos(radians(?)) * cos(radians(activity_address.latitude))'
         .' * cos(radians(activity_address.longitude) - radians(?)) + sin(radians(?)) * sin(radians(activity_address.latitude)))) end)';
+
+    public function __construct(
+        private readonly AvailabilityService $availability,
+    ) {}
 
     /**
      * @param  array{lat?: float|string|null, lng?: float|string|null}  $position
@@ -91,6 +97,7 @@ class ExploreService
         $query = $this->baseQuery($user);
         $mode = isset($filters['location_mode']) ? LocationModeEnum::from($filters['location_mode']) : null;
         $point = $this->point($filters);
+        $animals = $this->animalCounts($filters['animals'] ?? []);
 
         $query
             ->when(isset($filters['profession']), fn (Builder $query) => $query->whereHas('profession', fn (Builder $query) => $query->where('code', $filters['profession'])))
@@ -98,12 +105,22 @@ class ExploreService
             ->when(isset($filters['animal_type']), fn (Builder $query) => $query->whereHas('animalTypes', fn (Builder $query) => $query->where('code', $filters['animal_type'])))
             ->when($mode !== null, fn (Builder $query) => $query->where('activities.serves_'.$mode?->value, true))
             ->when(isset($filters['host_type']), fn (Builder $query) => $this->whereHostType($query, $filters['host_type']))
-            ->when(isset($filters['location']), fn (Builder $query) => $this->whereLocation($query, $filters['location']));
+            ->when(isset($filters['location']), fn (Builder $query) => $this->whereLocation($query, $filters['location']))
+            ->when($animals !== [], fn (Builder $query) => $this->whereAcceptsAll($query, array_keys($animals)));
 
         $withDistance = $point !== null && $mode !== LocationModeEnum::REMOTE;
 
         if ($withDistance) {
             $this->whereReachable($query, $point, $mode, (float) ($filters['radius'] ?? config('activities.default_search_radius_km')));
+        }
+
+        if (isset($filters['start_date'])) {
+            $this->whereAvailable(
+                $query,
+                CarbonImmutable::parse($filters['start_date']),
+                CarbonImmutable::parse($filters['end_date'] ?? $filters['start_date']),
+                $animals,
+            );
         }
 
         $sort = $filters['sort'] ?? ($withDistance ? 'distance' : 'newest');
@@ -127,6 +144,12 @@ class ExploreService
 
         return match ($section) {
             'nearby' => $point === null ? null : $this->whereReachable($query, $point, null, (float) config('activities.default_search_radius_km'))
+                ->orderBy('distance')
+                ->orderBy('activities.id'),
+            'available_this_weekend' => $point === null ? null : $this->whereAvailable(
+                $this->whereReachable($query, $point, null, (float) config('activities.default_search_radius_km')),
+                ...$this->weekend(),
+            )
                 ->orderBy('distance')
                 ->orderBy('activities.id'),
             // Les mieux notées, à partir d'un minimum d'avis publiés ; à note égale, les plus notées d'abord.
@@ -227,6 +250,59 @@ class ExploreService
             ->orderByRaw('case when activity_address.latitude is null then 1 else 0 end')
             ->orderBy('distance')
             ->orderBy('activities.id');
+    }
+
+    /**
+     * @param  array<string, int>  $animals
+     */
+    private function whereAvailable(Builder $query, CarbonImmutable $start, CarbonImmutable $end, array $animals = []): Builder
+    {
+        return $query->whereIn('activities.id', $this->availability->availableIds(clone $query, $start, $end, $animals));
+    }
+
+    /**
+     * @return array{0: CarbonImmutable, 1: CarbonImmutable}
+     */
+    private function weekend(): array
+    {
+        $today = CarbonImmutable::today();
+
+        if ($today->isSunday()) {
+            return [$today, $today];
+        }
+
+        $saturday = $today->isSaturday() ? $today : $today->next(CarbonImmutable::SATURDAY);
+
+        return [$saturday, $saturday->addDay()];
+    }
+
+    /**
+     * @param  list<string>  $animalTypeIds
+     */
+    private function whereAcceptsAll(Builder $query, array $animalTypeIds): Builder
+    {
+        foreach ($animalTypeIds as $animalTypeId) {
+            $query->whereHas('animalTypes', fn (Builder $query) => $query->whereKey($animalTypeId));
+        }
+
+        return $query;
+    }
+
+    /**
+     * @param  array<string, int|string>  $counts
+     * @return array<string, int>
+     */
+    private function animalCounts(array $counts): array
+    {
+        if ($counts === []) {
+            return [];
+        }
+
+        return AnimalType::query()
+            ->whereIn('code', array_keys($counts))
+            ->pluck('id', 'code')
+            ->mapWithKeys(fn (string $id, string $code): array => [$id => (int) $counts[$code]])
+            ->all();
     }
 
     private function whereHostType(Builder $query, string $hostType): Builder

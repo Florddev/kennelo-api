@@ -11,14 +11,6 @@ use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
-// Deux demandes simultanées. Le test tient la première ouverte (transaction non validée) et joue la seconde sur une
-// autre connexion : elle doit attendre la première au lieu de lire un état qui va changer. Pour ne pas bloquer le
-// test, la seconde abandonne au bout de 200 ms (lock_timeout) ; c'est cet abandon que le test attend.
-// La base de ces tests est décrite par Tests\ConcurrencyTestCase.
-
-/**
- * Joue la demande concurrente sur une seconde connexion, dans sa propre transaction.
- */
 function concurrently(Closure $query): mixed
 {
     config(['database.connections.concurrent' => config('database.connections.'.config('database.default'))]);
@@ -33,9 +25,6 @@ function concurrently(Closure $query): mixed
     }
 }
 
-/**
- * La demande concurrente a dû attendre un verrou tenu par la première (SQLSTATE 55P03 : lock_not_available).
- */
 function expectToWait(Closure $query): void
 {
     $code = null;
@@ -61,12 +50,10 @@ it('lets only one of two simultaneous requests book the last place', function ()
         ->postJson('/api/bookings', stayRequest($unitType, [dogOf($first, $unitType)]))
         ->assertCreated();
 
-    // La seconde demande verrouille les mêmes places avant de compter celles qui restent : elle attend la première.
     expectToWait(fn (ConnectionInterface $db) => $db->table('activity_unit_types')->where('id', $unitType->id)->lockForUpdate()->get());
 
     DB::commit();
 
-    // La première validée, la seconde trouve la place prise.
     $this->withHeaders(asUser($second))
         ->postJson('/api/bookings', $secondRequest)
         ->assertUnprocessable()
@@ -84,10 +71,8 @@ it('numbers the invoices of one issuer one after the other, and gives back the n
     DB::beginTransaction();
     expect($numbers->next(null, $year))->toEndWith('-2030-000002');
 
-    // Une émission simultanée attend la fin de celle-ci au lieu de lire le même compteur.
     expectToWait(fn (ConnectionInterface $db) => $db->table('invoice_sequences')->whereNull('issuer_organization_id')->where('year', $year)->lockForUpdate()->first());
 
-    // L'émission échoue : son numéro est rendu.
     DB::rollBack();
 
     expect(DB::transaction(fn () => $numbers->next(null, $year)))->toEndWith('-2030-000002');
@@ -100,18 +85,15 @@ it('creates the counter of a new year once when two issues start it together', f
     DB::beginTransaction();
     expect($numbers->next(null, 2031))->toEndWith('-2031-000001');
 
-    // La seconde émission veut créer le même compteur : elle attend de savoir si la première le garde.
     expectToWait(fn (ConnectionInterface $db) => $db->table('invoice_sequences')->insertOrIgnore($counter()));
 
     DB::commit();
 
-    // Il existe : sa création devient sans effet, et la numérotation continue.
     expect(concurrently(fn (ConnectionInterface $db) => $db->table('invoice_sequences')->insertOrIgnore($counter())))->toBe(0)
         ->and(DB::transaction(fn () => $numbers->next(null, 2031)))->toEndWith('-2031-000002');
 });
 
 it('lets only one of two simultaneous requests book the same slot of a resource', function () {
-    // Lundi 5 octobre 2026, 8 h à Paris : le rendez-vous du lendemain à 10 h respecte le délai de prévenance.
     $this->travelTo(CarbonImmutable::parse('2026-10-05 08:00', 'Europe/Paris'));
     $salon = appointmentSalon();
     stripeAuthorizes($this->stripe());
@@ -124,7 +106,6 @@ it('lets only one of two simultaneous requests book the same slot of a resource'
         ->postJson('/api/bookings', appointmentRequest($salon, [petFor($first, $salon['activity'])], '2026-10-06T10:00:00+02:00'))
         ->assertCreated();
 
-    // La seconde demande verrouille la ressource avant de chercher le créneau : elle attend la première.
     expectToWait(fn (ConnectionInterface $db) => $db->table('resources')->where('id', $salon['resource']->id)->lockForUpdate()->first());
 
     DB::commit();

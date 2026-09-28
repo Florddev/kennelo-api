@@ -15,9 +15,6 @@ use App\Models\User;
 use App\Models\UserAddress;
 use Database\Seeders\Reference\SubscriptionPlanSeeder;
 
-// Garde-fous de la base appliqués par SQLite comme par PostgreSQL. Ceux que seule PostgreSQL applique sont dans
-// PostgresConstraintsTest.
-
 describe('unique among the rows that count', function () {
     it('keeps a SIREN to one organization, closed ones aside', function () {
         Organization::factory()->create(['siren' => '123456789'])->delete();
@@ -43,7 +40,6 @@ describe('unique among the rows that count', function () {
     });
 
     it('keeps one base period per organization', function () {
-        // Créée avec l'entreprise.
         $organization = Organization::factory()->create();
 
         expect($organization->pricingPeriods()->whereNull('start_date')->count())->toBe(1);

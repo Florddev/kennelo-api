@@ -9,6 +9,8 @@ enum RefundReasonEnum: string
     case CLIENT_CANCELLATION = 'client_cancellation';
     case PRO_CANCELLATION = 'pro_cancellation';
     case ADJUSTMENT = 'adjustment';
+    case PLATFORM_CANCELLATION = 'platform_cancellation';
+    case GOODWILL = 'goodwill';
 
     public static function values(): array
     {

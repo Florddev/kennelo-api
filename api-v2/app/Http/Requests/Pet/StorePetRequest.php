@@ -19,7 +19,6 @@ class StorePetRequest extends FormRequest
 
     public function rules(): array
     {
-        // Un identifiant d'espèce malformé ne va pas jusqu'à la base, qui refuse de le comparer à un UUID.
         $animalTypeId = Str::isUuid($this->input('animal_type_id')) ? $this->input('animal_type_id') : null;
 
         return [

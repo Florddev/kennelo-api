@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\Activity\ActivityController;
 use App\Http\Controllers\Admin\Activity\ActivityDocumentController;
 use App\Http\Controllers\Admin\AuditController;
 use App\Http\Controllers\Admin\Billing\InvoiceController;
+use App\Http\Controllers\Admin\Booking\BookingController;
 use App\Http\Controllers\Admin\Organization\OrganizationController;
 use App\Http\Controllers\Admin\Profession\ProfessionCategoryController;
 use App\Http\Controllers\Admin\Profession\ProfessionController;
@@ -68,6 +69,11 @@ Route::post('/activity-documents/{document}/reject', [ActivityDocumentController
 
 // Invoices
 Route::get('/invoices', [InvoiceController::class, 'index']);
+
+Route::get('/bookings', [BookingController::class, 'index']);
+Route::get('/bookings/{booking}', [BookingController::class, 'show']);
+Route::post('/bookings/{booking}/cancel', [BookingController::class, 'cancel']);
+Route::post('/bookings/{booking}/refunds', [BookingController::class, 'refund']);
 
 // Review moderation
 Route::get('/review-reports', [ReviewReportController::class, 'index']);

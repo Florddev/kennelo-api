@@ -308,6 +308,14 @@ class Activity extends Model implements HasMedia
     }
 
     /**
+     * @return HasMany<ActivityTravelFeeTier, $this>
+     */
+    public function travelFeeTiers(): HasMany
+    {
+        return $this->hasMany(ActivityTravelFeeTier::class)->orderBy('up_to_km');
+    }
+
+    /**
      * @return HasMany<ActivityUnitType, $this>
      */
     public function unitTypes(): HasMany

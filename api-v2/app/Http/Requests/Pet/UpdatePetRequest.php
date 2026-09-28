@@ -22,7 +22,6 @@ class UpdatePetRequest extends FormRequest
     {
         $pet = $this->route('pet');
         $animalTypeId = $this->input('animal_type_id', $pet instanceof Pet ? $pet->animal_type_id : null);
-        // Un identifiant d'espèce malformé ne va pas jusqu'à la base, qui refuse de le comparer à un UUID.
         $animalTypeId = Str::isUuid($animalTypeId) ? $animalTypeId : null;
 
         return [

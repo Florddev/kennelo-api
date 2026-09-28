@@ -36,15 +36,6 @@ use Carbon\CarbonImmutable;
 use Database\Factories\BookingFactory;
 use Illuminate\Database\Seeder;
 
-/**
- * Démonstration : une entreprise vérifiée avec une pension et un salon de toilettage réservables, son équipe, une
- * pet-sitter à Lyon, deux clients et leurs animaux, des réservations dans chaque état utile aux écrans (demande,
- * à venir, en cours, terminée et notée), une conversation et des factures.
- *
- * Comptes, tous avec le mot de passe « password » : admin@kennelo.test (back-office), pro@kennelo.test
- * (propriétaire de l'entreprise), lea@kennelo.test (toiletteuse), julie@kennelo.test (pet-sitter),
- * camille@kennelo.test et hugo@kennelo.test (clients).
- */
 class DemoSeeder extends Seeder
 {
     private const array ANNECY = ['line1' => '12 rue du Lac', 'postal_code' => '74000', 'city' => 'Annecy', 'latitude' => 45.8992, 'longitude' => 6.1294];
@@ -64,7 +55,6 @@ class DemoSeeder extends Seeder
 
         User::factory()->create(['first_name' => 'Ada', 'last_name' => 'Admin', 'email' => 'admin@kennelo.test'])->assignRole('admin');
 
-        // L'entreprise, sa pension et son salon.
         $owner = User::factory()->create(['first_name' => 'Marc', 'last_name' => 'Rolland', 'email' => 'pro@kennelo.test']);
         $organization = Organization::factory()->verified()->withStripe()->withBillingMandate()->create([
             'owner_id' => $owner->id,
@@ -89,12 +79,10 @@ class DemoSeeder extends Seeder
             'is_active' => true,
         ]);
 
-        // Léa, toiletteuse : employée du salon, et sa ressource dans l'agenda.
         $lea = User::factory()->create(['first_name' => 'Léa', 'last_name' => 'Garnier', 'email' => 'lea@kennelo.test']);
         $member = OrganizationMember::factory()->for($organization)->withRole(OrganizationRoleEnum::EMPLOYEE, $salon->id)->create(['user_id' => $lea->id]);
         $groomer = AgendaResource::factory()->staff($member)->scheduledIn($salon)->create(['name' => 'Léa']);
 
-        // Une pet-sitter à Lyon, pour une recherche qui ne renvoie pas qu'une entreprise.
         $julie = User::factory()->create(['first_name' => 'Julie', 'last_name' => 'Martin', 'email' => 'julie@kennelo.test']);
         $sitter = Organization::factory()->individual()->verified()->withStripe()->withBillingMandate()->create([
             'owner_id' => $julie->id,
@@ -103,7 +91,6 @@ class DemoSeeder extends Seeder
         $home = $this->activity($sitter, 'boarding', 'Chez Julie', [$dog], self::LYON);
         ActivityUnitType::factory()->for($home)->forSpecies($dog)->priced('22.00')->create(['name' => 'Chambre', 'quantity' => 2, 'max_animals_per_unit' => 1]);
 
-        // Les clients et leurs animaux.
         $camille = User::factory()->create(['first_name' => 'Camille', 'last_name' => 'Durand', 'email' => 'camille@kennelo.test']);
         UserAddress::factory()->for($camille)->create([
             'label' => 'Maison',
@@ -124,7 +111,6 @@ class DemoSeeder extends Seeder
         $hugo = User::factory()->create(['first_name' => 'Hugo', 'last_name' => 'Petit', 'email' => 'hugo@kennelo.test']);
         $oslo = Pet::factory()->for($hugo)->create(['animal_type_id' => $dog->id, 'name' => 'Oslo', 'sex' => 'male', 'birth_date' => '2023-01-20', 'weight' => 12]);
 
-        // Les réservations : terminée et notée, en cours, à venir, demande à accepter, rendez-vous.
         $today = CarbonImmutable::today();
         $past = $this->stay($camille, $box, '28.00', [$rex], $today->subDays(40), 5, BookingStatusEnum::COMPLETED);
         $current = $this->stay($camille, $catRoom, '16.00', [$mina], $today->subDays(2), 6, BookingStatusEnum::IN_PROGRESS);
@@ -141,12 +127,10 @@ class DemoSeeder extends Seeder
         );
         $appointment->pets()->attach($rex->id);
 
-        // Chaque paiement encaissé a ses factures, comme après une vraie capture.
         foreach ([$past, $current, $upcoming, $appointment] as $booking) {
             app(InvoiceService::class)->invoicePayment($booking->payments()->sole());
         }
 
-        // Le séjour terminé est noté des deux côtés, et l'entreprise a répondu.
         $review = Review::factory()->for($past)->published()->rating('5.0')->create([
             'comment' => 'Rex est revenu ravi, et nous avons eu des photos chaque jour. Merci à toute l\'équipe !',
         ]);
@@ -155,7 +139,6 @@ class DemoSeeder extends Seeder
             'comment' => 'Cliente ponctuelle, carnet de santé à jour. Rex est un amour.',
         ]);
 
-        // Une conversation au sujet du prochain séjour.
         $conversation = Conversation::factory()->for($camille)->for($pension)->create();
         BookingThread::query()->create(['booking_id' => $upcoming->id, 'conversation_id' => $conversation->id]);
         Message::factory()->for($conversation)->create([
@@ -174,9 +157,6 @@ class DemoSeeder extends Seeder
     }
 
     /**
-     * Activité validée et réservable, avec les justificatifs obligatoires de son métier et ouverte du lundi au
-     * samedi de 9 h à 18 h.
-     *
      * @param  list<AnimalType>  $species
      * @param  array<string, mixed>  $address
      */
@@ -190,7 +170,6 @@ class DemoSeeder extends Seeder
             'address_id' => Address::factory()->create([...$address, 'line2' => null, 'region' => 'Auvergne-Rhône-Alpes', 'country' => 'FR'])->id,
         ]);
 
-        // Sans eux, l'activité n'apparaît pas dans la recherche.
         foreach ($profession->documentRequirements->where('is_required', true) as $requirement) {
             ActivityDocument::factory()->approved()->for($activity)->create([
                 'document_type' => $requirement->document_type,
@@ -203,13 +182,10 @@ class DemoSeeder extends Seeder
             array_filter(WeekDayEnum::cases(), fn (WeekDayEnum $day): bool => $day !== WeekDayEnum::SUNDAY),
         ));
 
-        // Relue pour ses valeurs par défaut en base (politique d'annulation).
         return $activity->refresh();
     }
 
     /**
-     * Séjour d'une place par animal, au prix de base de la place.
-     *
      * @param  list<Pet>  $pets
      */
     private function stay(User $client, ActivityUnitType $unitType, string $nightlyPrice, array $pets, CarbonImmutable $start, int $nights, BookingStatusEnum $status): Booking
@@ -237,10 +213,6 @@ class DemoSeeder extends Seeder
         return $booking;
     }
 
-    /**
-     * Réservation du client, frais Kennelo et commission calculés comme au devis. Hors demande en attente, le
-     * paiement est encaissé.
-     */
     private function booking(BookingFactory $factory, User $client, Activity $activity, string $itemsAmount, BookingStatusEnum $status): Booking
     {
         $organization = $activity->organization()->firstOrFail();

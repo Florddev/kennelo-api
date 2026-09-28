@@ -148,6 +148,23 @@ class ConversationService
             ->count();
     }
 
+    public function isLatestUnread(string $messageId, User $reader): bool
+    {
+        $message = Message::query()->find($messageId);
+
+        if ($message === null || $message->reads()->where('user_id', $reader->id)->exists()) {
+            return false;
+        }
+
+        return Message::query()
+            ->where('conversation_id', $message->conversation_id)
+            ->where('sender_type', $message->sender_type)
+            ->where(fn (Builder $newer) => $newer
+                ->where('created_at', '>', $message->created_at)
+                ->orWhere(fn (Builder $sameTime) => $sameTime->where('created_at', $message->created_at)->where('id', '>', $message->id)))
+            ->doesntExist();
+    }
+
     /**
      * @param  Builder<Conversation>  $query
      * @return Builder<Conversation>

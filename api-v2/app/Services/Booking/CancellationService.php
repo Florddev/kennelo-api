@@ -86,6 +86,75 @@ class CancellationService
         return $this->announce($booking, $refunded);
     }
 
+    public function cancelByPlatform(Booking $booking, User $admin, bool $applyPolicy = false): Booking
+    {
+        $refunded = DB::transaction(function () use ($booking, $admin, $applyPolicy): string {
+            $this->bookings->lock($booking);
+
+            if ($booking->status === BookingStatusEnum::PENDING) {
+                $this->bookings->releaseInitial($booking);
+                $this->markCancelled($booking, $admin, CancelledByRoleEnum::PLATFORM);
+
+                return '0.00';
+            }
+
+            if (! $booking->status->canTransitionTo(BookingStatusEnum::CANCELLED)) {
+                throw ValidationException::withMessages(['status' => __('booking.not_cancellable')]);
+            }
+
+            $this->assertNotDisputed($booking);
+
+            $rate = $applyPolicy
+                ? $booking->cancellation_policy->refundRate(now(), $booking->startsAt())
+                : CancellationPolicyEnum::FULL_REFUND;
+            $refunded = $this->refundShare($booking, $rate, RefundReasonEnum::PLATFORM_CANCELLATION, $admin);
+            $this->markCancelled($booking, $admin, CancelledByRoleEnum::PLATFORM);
+
+            return $refunded;
+        });
+
+        return $this->announce($booking, $refunded);
+    }
+
+    /**
+     * @param  numeric-string  $amount
+     */
+    public function refundGoodwill(Booking $booking, User $admin, string $amount, bool $withServiceFee): Booking
+    {
+        $refunded = DB::transaction(function () use ($booking, $admin, $amount, $withServiceFee): string {
+            $this->bookings->lock($booking);
+
+            $refundable = in_array($booking->status, [BookingStatusEnum::CONFIRMED, BookingStatusEnum::IN_PROGRESS, BookingStatusEnum::COMPLETED, BookingStatusEnum::CANCELLED], true)
+                && $booking->payments()->where('status', PaymentStatusEnum::SUCCEEDED)->exists()
+                && ! $booking->payout()->exists();
+
+            if (! $refundable) {
+                throw ValidationException::withMessages(['booking' => __('booking.not_refundable')]);
+            }
+
+            $this->assertNotDisputed($booking);
+
+            if (bccomp($amount, $booking->itemsAmount(), 2) > 0) {
+                throw ValidationException::withMessages(['amount' => __('booking.refund_too_high', ['max' => $booking->itemsAmount()])]);
+            }
+
+            $feeRefund = $withServiceFee ? $booking->service_fee : '0.00';
+
+            if (bccomp(Money::sum($amount, $feeRefund), '0', 2) <= 0) {
+                throw ValidationException::withMessages(['amount' => __('booking.nothing_to_refund')]);
+            }
+
+            $refunded = $this->refundAmounts($booking, $amount, $feeRefund, RefundReasonEnum::GOODWILL, $admin);
+            $booking->save();
+
+            return $refunded;
+        });
+
+        BookingRefunded::dispatch($booking, $refunded);
+
+        return $booking->load(BookingService::RELATIONS);
+    }
+
     /**
      * Rembourse la part $rate des prestations, et les frais Kennelo si tout est remboursé, puis recalcule les
      * montants nets de la réservation.
@@ -95,9 +164,20 @@ class CancellationService
      */
     private function refundShare(Booking $booking, string $rate, RefundReasonEnum $reason, User $actor): string
     {
-        $itemsAmount = $booking->itemsAmount();
-        $itemsRefund = Money::multiply($itemsAmount, $rate);
+        $itemsRefund = Money::multiply($booking->itemsAmount(), $rate);
         $feeRefund = bccomp($rate, CancellationPolicyEnum::FULL_REFUND, 2) === 0 ? $booking->service_fee : '0.00';
+
+        return $this->refundAmounts($booking, $itemsRefund, $feeRefund, $reason, $actor);
+    }
+
+    /**
+     * @param  numeric-string  $itemsRefund
+     * @param  numeric-string  $feeRefund
+     * @return numeric-string
+     */
+    private function refundAmounts(Booking $booking, string $itemsRefund, string $feeRefund, RefundReasonEnum $reason, User $actor): string
+    {
+        $itemsAmount = $booking->itemsAmount();
         $refund = Money::sum($itemsRefund, $feeRefund);
 
         if (bccomp($refund, '0', 2) > 0) {
@@ -121,6 +201,13 @@ class CancellationService
         ]);
 
         return $refund;
+    }
+
+    private function assertNotDisputed(Booking $booking): void
+    {
+        if ($booking->disputes()->open()->exists()) {
+            throw ValidationException::withMessages(['booking' => __('booking.disputed')]);
+        }
     }
 
     private function markCancelled(Booking $booking, User $actor, CancelledByRoleEnum $role): void

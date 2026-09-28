@@ -6,6 +6,7 @@ use App\Http\Controllers\Activity\ActivityController;
 use App\Http\Controllers\Activity\ActivityDocumentController;
 use App\Http\Controllers\Activity\ActivityImageController;
 use App\Http\Controllers\Activity\ActivityScheduleController;
+use App\Http\Controllers\Activity\ActivityTravelFeeController;
 use App\Http\Controllers\Agenda\AgendaController;
 use App\Http\Controllers\Agenda\ResourceController;
 use App\Http\Controllers\Agenda\ResourceScheduleController;
@@ -83,6 +84,7 @@ Route::post('/activities/{activity}/images', [ActivityImageController::class, 's
 Route::put('/activities/{activity}/opening-hours', [ActivityScheduleController::class, 'updateOpeningHours']);
 Route::get('/activities/{activity}/availabilities', [ActivityScheduleController::class, 'indexAvailabilities']);
 Route::post('/activities/{activity}/availabilities', [ActivityScheduleController::class, 'storeAvailabilities']);
+Route::put('/activities/{activity}/travel-fees', [ActivityTravelFeeController::class, 'update']);
 
 // Documents
 Route::get('/activities/{activity}/documents', [ActivityDocumentController::class, 'index']);

@@ -10,6 +10,8 @@ enum NotificationTypeEnum: string
     case BOOKING_CONFIRMED = 'booking_confirmed';
     case BOOKING_CANCELLED_BY_CLIENT = 'booking_cancelled_by_client';
     case BOOKING_CANCELLED_BY_PRO = 'booking_cancelled_by_pro';
+    case BOOKING_CANCELLED_BY_PLATFORM = 'booking_cancelled_by_platform';
+    case TEAM_BOOKING_CANCELLED_BY_PLATFORM = 'team_booking_cancelled_by_platform';
     case BOOKING_REJECTED = 'booking_rejected';
     case BOOKING_EXPIRED = 'booking_expired';
     case BOOKING_REMINDER = 'booking_reminder';
@@ -22,6 +24,11 @@ enum NotificationTypeEnum: string
     case PAYMENT_ACTION_REQUIRED = 'payment_action_required';
     case PAYOUT_SENT = 'payout_sent';
     case STRIPE_ACCOUNT_ACTIVATED = 'stripe_account_activated';
+
+    case DISPUTE_OPENED = 'dispute_opened';
+    case BOOKING_DISPUTED = 'booking_disputed';
+    case BOOKING_DISPUTE_WON = 'booking_dispute_won';
+    case BOOKING_DISPUTE_LOST = 'booking_dispute_lost';
 
     case NEW_MESSAGE = 'new_message';
 
@@ -83,19 +90,47 @@ enum NotificationTypeEnum: string
 
     public function sendsEmail(): bool
     {
-        return in_array($this, [
+        return $this->mailLink() !== null || in_array($this, [self::ACCOUNT_BANNED, self::ACCOUNT_UNBANNED], true);
+    }
+
+    public function mailLink(): ?string
+    {
+        return match ($this) {
             self::BOOKING_CREATED,
+            self::BOOKING_REMINDER,
+            self::BOOKING_CANCELLED_BY_CLIENT,
+            self::TEAM_BOOKING_CANCELLED_BY_PLATFORM,
+            self::PAYOUT_SENT,
+            self::BOOKING_DISPUTED,
+            self::BOOKING_DISPUTE_WON,
+            self::BOOKING_DISPUTE_LOST => 'hosting_booking',
             self::BOOKING_CONFIRMED,
             self::BOOKING_REJECTED,
             self::BOOKING_EXPIRED,
-            self::BOOKING_REMINDER,
-            self::BOOKING_CANCELLED_BY_CLIENT,
             self::BOOKING_CANCELLED_BY_PRO,
+            self::BOOKING_CANCELLED_BY_PLATFORM,
             self::PAYMENT_SUCCEEDED,
             self::PAYMENT_FAILED,
             self::PAYMENT_REFUNDED,
-            self::PAYMENT_ACTION_REQUIRED,
-            self::PAYOUT_SENT,
-        ], true);
+            self::PAYMENT_ACTION_REQUIRED => 'booking',
+            self::BOOKING_COMPLETED => 'review',
+            self::NEW_MESSAGE => 'conversation',
+            self::DISPUTE_OPENED => 'admin_booking',
+            self::ORGANIZATION_APPROVED,
+            self::ORGANIZATION_REJECTED,
+            self::ORGANIZATION_SUSPENDED,
+            self::STRIPE_ACCOUNT_ACTIVATED => 'organization',
+            self::ACTIVITY_APPROVED,
+            self::ACTIVITY_REJECTED,
+            self::ACTIVITY_SUSPENDED,
+            self::ACTIVITY_DOCUMENT_REJECTED,
+            self::ACTIVITY_DOCUMENT_EXPIRING,
+            self::ACTIVITY_DOCUMENT_EXPIRED => 'activity',
+            self::MEMBER_INVITED => 'invitations',
+            self::SUBSCRIPTION_ACTIVATED,
+            self::SUBSCRIPTION_PAYMENT_FAILED,
+            self::SUBSCRIPTION_DOWNGRADED => 'subscription',
+            default => null,
+        };
     }
 }

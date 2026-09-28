@@ -54,10 +54,11 @@ class PostBookingSystemMessages implements ShouldQueue
 
     public function handleCancelled(BookingCancelled $event): void
     {
-        $this->close($event->booking, match ($event->booking->cancelled_by_role) {
-            CancelledByRoleEnum::CLIENT => 'booking_cancelled_by_client',
-            CancelledByRoleEnum::PRO => 'booking_cancelled_by_pro',
-            CancelledByRoleEnum::PLATFORM, null => 'booking_cancelled',
+        $this->close($event->booking, match (true) {
+            $event->booking->cancelled_by_role === CancelledByRoleEnum::CLIENT => 'booking_cancelled_by_client',
+            $event->booking->cancelled_by_role === CancelledByRoleEnum::PRO => 'booking_cancelled_by_pro',
+            $event->booking->cancelled_by !== null => 'booking_cancelled_by_platform',
+            default => 'booking_cancelled',
         });
     }
 

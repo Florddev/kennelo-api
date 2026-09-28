@@ -43,6 +43,16 @@ class BookingPolicy
         return $this->team($user, $booking, OrganizationPermissionEnum::BOOKINGS_MANAGE);
     }
 
+    public function viewAny(User $user): bool
+    {
+        return $user->hasRole('admin');
+    }
+
+    public function administer(User $user, Booking $booking): bool
+    {
+        return $user->hasRole('admin');
+    }
+
     private function team(User $user, Booking $booking, OrganizationPermissionEnum $permission): Response
     {
         $organization = $booking->organization;

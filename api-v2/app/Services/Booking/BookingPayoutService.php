@@ -44,6 +44,7 @@ class BookingPayoutService
             ->where('activity_amount', '>', 0)
             ->whereDate('end_date', '<=', now()->subHours((int) setting('payout_delay_hours'))->subDay())
             ->whereDoesntHave('payout')
+            ->whereDoesntHave('disputes', fn (Builder $query) => $query->open())
             ->whereHas('payments', fn (Builder $query) => $query->where('status', PaymentStatusEnum::SUCCEEDED))
             ->whereHas('organization', fn (Builder $query) => $query->whereNotNull('stripe_account_id')->where('stripe_payouts_enabled', true))
             ->lazyById()
@@ -59,7 +60,7 @@ class BookingPayoutService
         $payout = DB::transaction(function () use ($booking): ?BookingPayout {
             $booking = Booking::query()->with(['organization', 'payments.refunds'])->lockForUpdate()->find($booking->id);
 
-            if ($booking === null || $booking->payout()->exists() || bccomp($booking->activity_amount, '0', 2) <= 0) {
+            if ($booking === null || $booking->payout()->exists() || $booking->disputes()->open()->exists() || bccomp($booking->activity_amount, '0', 2) <= 0) {
                 return null;
             }
 
@@ -99,7 +100,7 @@ class BookingPayoutService
     {
         $payout = BookingPayout::query()->where('stripe_transfer_id', $transfer->id)->with('booking')->first();
 
-        if ($payout === null || $payout->status === PayoutStatusEnum::CANCELED || $payout->booking === null) {
+        if ($payout === null || $payout->status === PayoutStatusEnum::CANCELED || $payout->booking === null || ! $transfer->reversed) {
             return;
         }
 

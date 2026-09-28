@@ -7,6 +7,7 @@ namespace App\Http\Resources;
 use App\Enums\PaymentKindEnum;
 use App\Enums\PaymentStatusEnum;
 use App\Models\Booking;
+use App\Models\BookingDispute;
 use App\Models\BookingItem;
 use App\Models\BookingPayment;
 use App\Models\BookingRefund;
@@ -15,6 +16,7 @@ use App\Models\Pet;
 use App\Services\MediaService;
 use App\Support\Money;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
@@ -32,6 +34,7 @@ class BookingResource extends JsonResource
     public function toArray(Request $request): array
     {
         $isClient = $request->user()?->id === $this->user_id;
+        $isAdmin = (bool) $request->user()?->hasRole('admin');
         $isCaptured = $this->relationLoaded('payments') && $this->payments->contains(
             fn (BookingPayment $payment): bool => $payment->kind === PaymentKindEnum::INITIAL && $payment->status === PaymentStatusEnum::SUCCEEDED,
         );
@@ -59,6 +62,7 @@ class BookingResource extends JsonResource
                 'id' => $this->user?->id,
                 'first_name' => $this->user?->first_name,
                 'last_name' => $this->user?->last_name,
+                ...($isAdmin ? ['email' => $this->user?->email] : []),
             ]),
             'start_date' => $this->start_date->toDateString(),
             'end_date' => $this->end_date->toDateString(),
@@ -127,6 +131,31 @@ class BookingResource extends JsonResource
                 'paid_at' => $payment->paid_at?->toISOString(),
                 'refunded_amount' => bcsub($payment->amount, $payment->refundableAmount(), 2),
             ])->all()),
+            'refunds' => $this->whenLoaded('payments', fn (): array => $refunds->map(fn (BookingRefund $refund): array => [
+                'id' => $refund->id,
+                'payment_id' => $refund->booking_payment_id,
+                'amount' => $refund->amount,
+                'service_fee' => $refund->service_fee_amount,
+                'reason' => $refund->reason->value,
+                'refunded_at' => $refund->refunded_at?->toISOString(),
+                'created_at' => $refund->created_at?->toISOString(),
+            ])->values()->all()),
+            'payout' => $this->when(! $isClient && $this->relationLoaded('payout'), fn (): ?array => $this->payout === null ? null : [
+                'amount' => $this->payout->amount,
+                'status' => $this->payout->status->value,
+                'transferred_at' => $this->payout->transferred_at?->toISOString(),
+            ]),
+            'disputes' => $this->when(! $isClient && $this->relationLoaded('disputes'), fn (): array => $this->disputes->map(fn (BookingDispute $dispute): array => [
+                'id' => $dispute->id,
+                'status' => $dispute->status->value,
+                'reason' => $dispute->reason,
+                'amount' => $dispute->amount,
+                'recovered_amount' => $dispute->recovered_amount,
+                'evidence_due_by' => $dispute->evidence_due_by?->toISOString(),
+                'closed_at' => $dispute->closed_at?->toISOString(),
+                'created_at' => $dispute->created_at?->toISOString(),
+            ])->all()),
+            'operations' => $this->when($isAdmin && $this->relationLoaded('operations'), fn (): AnonymousResourceCollection => FinancialOperationResource::collection($this->operations)),
             // Présent quand le client doit confirmer le paiement initial (3-D Secure).
             'client_secret' => $this->when(
                 $isClient && array_key_exists('client_secret', $this->resource->getAttributes()),

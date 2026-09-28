@@ -19,6 +19,8 @@ return [
             'client_cancellation' => 'استرداد بعد إلغاء العميل (الفاتورة :number)',
             'pro_cancellation' => 'استرداد بعد إلغاء المهني (الفاتورة :number)',
             'adjustment' => 'استرداد خدمة محذوفة (الفاتورة :number)',
+            'platform_cancellation' => 'استرداد بعد إلغاء Kennelo (الفاتورة :number)',
+            'goodwill' => 'بادرة تجارية (الفاتورة :number)',
         ],
     ],
     'pdf' => [

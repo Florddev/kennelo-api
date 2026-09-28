@@ -26,7 +26,7 @@ class ExploreController extends Controller
     /**
      * Home page sections
      *
-     * « Près de chez vous » (avec lat et lng), « Mieux notés », « Professionnels », « Nouveaux ». Une section de moins de trois activités est omise.
+     * « Près de chez vous » et « Disponibles ce week-end » (avec lat et lng), « Mieux notés », « Professionnels », « Nouveaux ». Une section de moins de trois activités est omise.
      */
     public function activities(ExploreRequest $request): JsonResponse
     {
@@ -56,6 +56,8 @@ class ExploreController extends Controller
      *
      * Filtres par métier, catégorie, espèce, lieu d'exercice et position. Avec une position, le tri par défaut
      * est la distance ; à domicile, l'activité doit couvrir la position avec son rayon de déplacement.
+     * Avec start_date (et end_date, jour du départ), seules restent les activités qui ont de la place chaque nuit
+     * ou un créneau libre ; animals[code]=nombre limite aux activités qui accueillent ces animaux.
      */
     public function search(SearchActivitiesRequest $request): AnonymousResourceCollection
     {

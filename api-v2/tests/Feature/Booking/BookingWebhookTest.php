@@ -97,7 +97,7 @@ it('records a payout Stripe reversed', function () {
         'status' => PayoutStatusEnum::PAID,
     ]);
 
-    postStripeEvent('transfer.reversed', ['object' => 'transfer', 'id' => 'tr_1', 'amount' => 5520])->assertNoContent();
+    postStripeEvent('transfer.reversed', ['object' => 'transfer', 'id' => 'tr_1', 'amount' => 5520, 'amount_reversed' => 5520, 'reversed' => true])->assertNoContent();
 
     expect($payout->fresh()->status)->toBe(PayoutStatusEnum::CANCELED);
 });

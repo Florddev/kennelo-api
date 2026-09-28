@@ -256,6 +256,14 @@ class Booking extends Model
     }
 
     /**
+     * @return HasMany<BookingDispute, $this>
+     */
+    public function disputes(): HasMany
+    {
+        return $this->hasMany(BookingDispute::class)->orderBy('created_at')->orderBy('id');
+    }
+
+    /**
      * Factures et avoirs de la réservation, de l'entreprise comme de Kennelo.
      *
      * @return HasMany<Invoice, $this>

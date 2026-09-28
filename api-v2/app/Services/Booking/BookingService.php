@@ -57,6 +57,7 @@ class BookingService
         'items.resourceBooking.resource',
         'payments.refunds',
         'payout',
+        'disputes',
     ];
 
     public function __construct(
@@ -289,7 +290,6 @@ class BookingService
             return;
         }
 
-        // Toujours dans le même ordre : deux demandes qui verrouillent les mêmes types de place ne s'interbloquent pas.
         ActivityUnitType::query()->whereKey($quote->unitTypeIds())->orderBy('id')->lockForUpdate()->get();
     }
 

@@ -37,9 +37,6 @@ class AppServiceProvider extends ServiceProvider
         Model::shouldBeStrict(! $this->app->isProduction());
 
         // SQLite (développement, tests) n'a pas les fonctions mathématiques de PostgreSQL utilisées par la recherche.
-        // Elles s'ajoutent à l'ouverture de la base, sans l'ouvrir plus tôt : l'événement part dès la création de la
-        // connexion (au démarrage, pour le cache des permissions), et démarrer l'application (composer install,
-        // config:cache) ne doit pas exiger de base de données.
         Event::listen(function (ConnectionEstablished $event): void {
             $connection = $event->connection;
 

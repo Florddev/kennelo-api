@@ -19,6 +19,8 @@ return [
             'client_cancellation' => 'Refund after cancellation by the client (invoice :number)',
             'pro_cancellation' => 'Refund after cancellation by the professional (invoice :number)',
             'adjustment' => 'Refund of a removed service (invoice :number)',
+            'platform_cancellation' => 'Refund after cancellation by Kennelo (invoice :number)',
+            'goodwill' => 'Goodwill gesture (invoice :number)',
         ],
     ],
     'pdf' => [

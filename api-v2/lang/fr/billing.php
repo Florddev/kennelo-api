@@ -19,6 +19,8 @@ return [
             'client_cancellation' => 'Remboursement après annulation par le client (facture :number)',
             'pro_cancellation' => 'Remboursement après annulation par le professionnel (facture :number)',
             'adjustment' => 'Remboursement d\'une prestation retirée (facture :number)',
+            'platform_cancellation' => 'Remboursement après annulation par Kennelo (facture :number)',
+            'goodwill' => 'Geste commercial (facture :number)',
         ],
     ],
     'pdf' => [

@@ -58,6 +58,8 @@ return [
 
     'frontend_url' => env('FRONTEND_URL', 'http://localhost:3000'),
 
+    'back_office_url' => env('BACK_OFFICE_URL', 'http://localhost:3001'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone
