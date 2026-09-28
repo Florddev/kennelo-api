@@ -73,6 +73,6 @@ class ActivityPeriodSetting extends Model
      */
     public function prices(): HasMany
     {
-        return $this->hasMany(ActivityPeriodPrice::class)->orderBy('activity_unit_type_id')->orderBy('weekday');
+        return $this->hasMany(ActivityPeriodPrice::class)->orderBy('activity_unit_type_id')->orderByRaw('weekday is not null')->orderBy('weekday');
     }
 }

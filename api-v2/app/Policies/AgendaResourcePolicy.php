@@ -34,7 +34,7 @@ class AgendaResourcePolicy
             return Response::allow();
         }
 
-        $activityIds = [null, ...$resource->schedules()->distinct()->pluck('activity_id')->all()];
+        $activityIds = [null, ...$resource->schedules()->reorder()->distinct()->pluck('activity_id')->all()];
 
         foreach ($activityIds as $activityId) {
             if ($this->permissions->allows($user, OrganizationPermissionEnum::AGENDA_MANAGE, $organization, $activityId)) {

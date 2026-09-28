@@ -11,6 +11,8 @@ node_modules
 vendor/
 !/api/resources/views/vendor/
 !/api/resources/views/vendor/**
+!/api-v2/resources/views/vendor/
+!/api-v2/resources/views/vendor/**
 
 # Local env files
 .env
@@ -44,6 +46,7 @@ dist
 database/database.sqlite
 
 # Debug
+.debug
 npm-debug.log*
 npm-debug.log.*
 pnpm-debug.log*
@@ -55,6 +58,3 @@ pnpm-debug.log*
 # Graphify
 graph.json
 graphify-out/
-
-
-apps/scanner
