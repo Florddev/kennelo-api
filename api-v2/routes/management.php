@@ -10,6 +10,8 @@ use App\Http\Controllers\Agenda\AgendaController;
 use App\Http\Controllers\Agenda\ResourceController;
 use App\Http\Controllers\Agenda\ResourceScheduleController;
 use App\Http\Controllers\Agenda\ResourceUnavailabilityController;
+use App\Http\Controllers\Billing\BillingMandateController;
+use App\Http\Controllers\Billing\OrganizationInvoiceController;
 use App\Http\Controllers\Booking\ActivityBookingController;
 use App\Http\Controllers\Booking\BookingItemController;
 use App\Http\Controllers\Booking\BookingOperationController;
@@ -17,6 +19,9 @@ use App\Http\Controllers\Catalog\ActivityServiceController;
 use App\Http\Controllers\Catalog\ServiceController;
 use App\Http\Controllers\Catalog\ServicePackageItemController;
 use App\Http\Controllers\Catalog\ServicePriceController;
+use App\Http\Controllers\Conversation\ActivityConversationController;
+use App\Http\Controllers\Dashboard\DashboardController;
+use App\Http\Controllers\Hosting\InCarePetController;
 use App\Http\Controllers\Organization\CompanyLookupController;
 use App\Http\Controllers\Organization\InvitationController;
 use App\Http\Controllers\Organization\OrganizationController;
@@ -58,6 +63,10 @@ Route::get('/organizations/{organization}/subscription', [SubscriptionController
 Route::post('/organizations/{organization}/subscription/checkout', [SubscriptionController::class, 'checkout']);
 Route::delete('/organizations/{organization}/subscription', [SubscriptionController::class, 'destroy']);
 Route::get('/organizations/{organization}/subscription/invoices', [SubscriptionController::class, 'invoices']);
+
+// Billing: mandate given to Kennelo, invoices issued and received
+Route::post('/organizations/{organization}/billing-mandate', [BillingMandateController::class, 'store']);
+Route::get('/organizations/{organization}/invoices', [OrganizationInvoiceController::class, 'index']);
 
 // Stripe Connect
 Route::post('/organizations/{organization}/stripe/account-session', [StripeAccountController::class, 'store']);
@@ -131,6 +140,14 @@ Route::scopeBindings()->group(function () {
     Route::post('/activities/{activity}/bookings/{booking}/items/{item}/schedule', [BookingItemController::class, 'schedule']);
     Route::get('/activities/{activity}/bookings/{booking}/operations', [BookingOperationController::class, 'index']);
 });
+
+// Conversations of an activity (messages.reply)
+Route::get('/activities/{activity}/conversations', [ActivityConversationController::class, 'index']);
+
+// Dashboards and pets in care
+Route::get('/activities/{activity}/dashboard', [DashboardController::class, 'activity']);
+Route::get('/organizations/{organization}/dashboard', [DashboardController::class, 'organization']);
+Route::get('/organizations/{organization}/in-care-pets', [InCarePetController::class, 'index']);
 
 // Agenda: resources of the organization, their absences and blocks
 Route::get('/organizations/{organization}/resources', [ResourceController::class, 'index']);

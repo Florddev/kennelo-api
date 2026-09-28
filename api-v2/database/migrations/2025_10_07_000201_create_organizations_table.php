@@ -37,7 +37,9 @@ return new class extends Migration
             $table->foreignUuid('reviewed_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamp('reviewed_at')->nullable();
             $table->text('rejection_reason')->nullable();
+            // Mandat de facturation : Kennelo émet les factures des réservations au nom et pour le compte de l'entreprise.
             $table->timestamp('billing_mandate_accepted_at')->nullable();
+            $table->foreignUuid('billing_mandate_accepted_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
             $table->softDeletes();
 
@@ -45,6 +47,7 @@ return new class extends Migration
             $table->index('status', 'organizations_status_index');
             $table->index('address_id', 'organizations_address_id_index');
             $table->index('reviewed_by', 'organizations_reviewed_by_index');
+            $table->index('billing_mandate_accepted_by', 'organizations_billing_mandate_accepted_by_index');
         });
 
         // Unicité limitée aux entreprises non supprimées (soft delete).

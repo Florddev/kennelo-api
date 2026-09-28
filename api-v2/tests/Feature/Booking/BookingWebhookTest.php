@@ -53,6 +53,7 @@ it('adds a supplement to the booking once the client confirmed it', function () 
     $payment = $booking->payments()->create([
         'kind' => PaymentKindEnum::SUPPLEMENT,
         'amount' => '21.60',
+        'service_fee' => '1.60',
         'currency' => 'EUR',
         'status' => PaymentStatusEnum::REQUIRES_ACTION,
         'stripe_payment_intent_id' => 'pi_supplement',

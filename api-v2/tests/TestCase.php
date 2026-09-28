@@ -6,6 +6,7 @@ namespace Tests;
 
 use Database\Seeders\Reference\RoleSeeder;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use Illuminate\Support\Facades\Storage;
 use Tests\Support\FakeStripe;
 
 abstract class TestCase extends BaseTestCase
@@ -17,6 +18,9 @@ abstract class TestCase extends BaseTestCase
         parent::setUp();
 
         $this->fakeStripe = FakeStripe::install();
+
+        // Chaque paiement encaissé produit des PDF de factures : ils restent dans un disque jetable.
+        Storage::fake((string) config('billing.pdf_disk'));
 
         $this->seed(RoleSeeder::class);
 

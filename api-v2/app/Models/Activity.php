@@ -7,8 +7,11 @@ namespace App\Models;
 use App\Enums\ActivityStatusEnum;
 use App\Enums\CancellationPolicyEnum;
 use App\Enums\LocationModeEnum;
+use App\Enums\OrganizationPermissionEnum;
+use App\Enums\OrganizationRoleEnum;
 use App\Enums\OrganizationStatusEnum;
 use App\Enums\PlanEnum;
+use App\Enums\ReviewerTypeEnum;
 use App\Services\MediaService;
 use Closure;
 use Illuminate\Database\Eloquent\Builder;
@@ -103,7 +106,8 @@ class Activity extends Model implements HasMedia
 
     /**
      * Réservable par un client : activité approuvée et ouverte, justificatifs obligatoires valables, entreprise
-     * vérifiée qui peut encaisser. La recherche et la réservation s'appuient toutes deux sur cette seule règle.
+     * vérifiée qui peut encaisser et qui a donné son mandat de facturation (chaque paiement doit produire sa
+     * facture). La recherche et la réservation s'appuient toutes deux sur cette seule règle.
      *
      * Les justificatifs sont vérifiés ici plutôt que par un changement de statut : une activité dont un
      * justificatif expire disparaît d'elle-même, et revient dès qu'un nouveau est approuvé. Le statut
@@ -117,7 +121,46 @@ class Activity extends Model implements HasMedia
             ->whereDoesntHave('profession.documentRequirements', self::unmetRequirement(...))
             ->whereHas('organization', fn (Builder $query) => $query
                 ->where('status', OrganizationStatusEnum::VERIFIED)
-                ->where('stripe_charges_enabled', true));
+                ->where('stripe_charges_enabled', true)
+                ->whereNotNull('billing_mandate_accepted_at'));
+    }
+
+    /**
+     * Activités sur lesquelles l'utilisateur a ce droit, comme OrganizationPermissions::allows() mais en une
+     * requête : celles des entreprises qu'il possède, celles des entreprises où l'un de ses rôles d'entreprise le
+     * porte, et celles auxquelles est lié l'un de ses rôles qui le porte.
+     */
+    public function scopeAllowing(Builder $query, User $user, OrganizationPermissionEnum $permission): Builder
+    {
+        $grants = fn () => OrganizationMemberRole::query()
+            ->whereIn('role', OrganizationRoleEnum::granting($permission))
+            ->whereHas('member', fn (Builder $member) => $member->active()->where('user_id', $user->id));
+
+        return $query->where(fn (Builder $query) => $query
+            ->whereIn('activities.organization_id', Organization::query()->select('id')->where('owner_id', $user->id))
+            ->orWhereIn('activities.organization_id', $grants()->whereNull('activity_id')->select('organization_id'))
+            ->orWhereIn('activities.id', $grants()->whereNotNull('activity_id')->select('activity_id')));
+    }
+
+    /**
+     * Ajoute rating_average et rating_count : la note moyenne et le nombre des avis publiés des clients, calculés
+     * par la requête (index activity_id, is_published, published_at).
+     */
+    public function scopeWithRating(Builder $query): Builder
+    {
+        return $query
+            ->withAvg(['reviews as rating_average' => fn (Builder $reviews) => $reviews->where('is_published', true)], 'overall_rating')
+            ->withCount(['reviews as rating_count' => fn (Builder $reviews) => $reviews->where('is_published', true)]);
+    }
+
+    /**
+     * rating_average et rating_count d'une activité déjà chargée.
+     */
+    public function loadRating(): static
+    {
+        return $this
+            ->loadAvg(['reviews as rating_average' => fn (Builder $reviews) => $reviews->where('is_published', true)], 'overall_rating')
+            ->loadCount(['reviews as rating_count' => fn (Builder $reviews) => $reviews->where('is_published', true)]);
     }
 
     /**
@@ -286,6 +329,16 @@ class Activity extends Model implements HasMedia
     public function bookings(): HasMany
     {
         return $this->hasMany(Booking::class);
+    }
+
+    /**
+     * Avis des clients sur l'activité, publiés ou non.
+     *
+     * @return HasMany<Review, $this>
+     */
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(Review::class)->where('reviewer_type', ReviewerTypeEnum::USER);
     }
 
     /**

@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('invoice_lines', function (Blueprint $table): void {
             $table->uuid('id')->primary();
             $table->foreignUuid('invoice_id')->constrained('invoices')->cascadeOnDelete();
+            $table->unsignedSmallInteger('position')->comment('Ordre des lignes dans la facture');
             $table->string('description');
             $table->decimal('quantity', 8, 2)->default(1);
             $table->decimal('unit_price_ttc', 10, 2);
@@ -22,7 +23,7 @@ return new class extends Migration
             $table->decimal('total_vat', 10, 2);
             $table->decimal('total_ttc', 10, 2);
 
-            $table->index('invoice_id', 'invoice_lines_invoice_id_index');
+            $table->unique(['invoice_id', 'position'], 'invoice_lines_invoice_position_unique');
         });
     }
 

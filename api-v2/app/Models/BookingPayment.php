@@ -15,12 +15,14 @@ use Illuminate\Support\Carbon;
 
 /**
  * Un PaymentIntent Stripe d'une réservation. Son montant ne change jamais : un ajustement ajoute un
- * paiement complémentaire ou un remboursement.
+ * paiement complémentaire ou un remboursement. service_fee est la part des frais Kennelo dans le montant ; le
+ * reste paie les prestations qu'il couvre.
  *
  * @property string $id
  * @property string $booking_id
  * @property PaymentKindEnum $kind
  * @property numeric-string $amount
+ * @property numeric-string $service_fee
  * @property string $currency
  * @property PaymentStatusEnum $status
  * @property string $stripe_payment_intent_id
@@ -35,6 +37,7 @@ class BookingPayment extends Model
     protected $fillable = [
         'kind',
         'amount',
+        'service_fee',
         'currency',
         'status',
         'stripe_payment_intent_id',
@@ -47,6 +50,7 @@ class BookingPayment extends Model
         return [
             'kind' => PaymentKindEnum::class,
             'amount' => 'decimal:2',
+            'service_fee' => 'decimal:2',
             'status' => PaymentStatusEnum::class,
             'paid_at' => 'datetime',
         ];
@@ -62,6 +66,40 @@ class BookingPayment extends Model
         $refunded = $this->refunds->reduce(fn (string $sum, BookingRefund $refund): string => bcadd($sum, $refund->amount, 2), '0.00');
 
         return bcsub($this->amount, $refunded, 2);
+    }
+
+    /**
+     * Montant des prestations couvertes : le paiement, frais Kennelo déduits.
+     *
+     * @return numeric-string
+     */
+    public function itemsAmount(): string
+    {
+        return bcsub($this->amount, $this->service_fee, 2);
+    }
+
+    /**
+     * Part des prestations encore remboursable.
+     *
+     * @return numeric-string
+     */
+    public function refundableItems(): string
+    {
+        $refunded = $this->refunds->reduce(fn (string $sum, BookingRefund $refund): string => bcadd($sum, $refund->itemsAmount(), 2), '0.00');
+
+        return bcsub($this->itemsAmount(), $refunded, 2);
+    }
+
+    /**
+     * Part des frais Kennelo encore remboursable.
+     *
+     * @return numeric-string
+     */
+    public function refundableServiceFee(): string
+    {
+        $refunded = $this->refunds->reduce(fn (string $sum, BookingRefund $refund): string => bcadd($sum, $refund->service_fee_amount, 2), '0.00');
+
+        return bcsub($this->service_fee, $refunded, 2);
     }
 
     /**
@@ -86,5 +124,15 @@ class BookingPayment extends Model
     public function items(): HasMany
     {
         return $this->hasMany(BookingItem::class);
+    }
+
+    /**
+     * Ses deux factures (entreprise et frais Kennelo) et les avoirs de ses remboursements.
+     *
+     * @return HasMany<Invoice, $this>
+     */
+    public function invoices(): HasMany
+    {
+        return $this->hasMany(Invoice::class);
     }
 }

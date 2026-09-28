@@ -24,7 +24,7 @@ class ExploreService
     public const int PER_PAGE = 10;
 
     /** @var list<string> */
-    public const array SECTIONS = ['nearby', 'verified_pros', 'new_hosts'];
+    public const array SECTIONS = ['nearby', 'top_rated', 'verified_pros', 'new_hosts'];
 
     /** Une section de la page d'accueil qui a moins de résultats est omise. */
     private const int MIN_SECTION_RESULTS = 3;
@@ -129,6 +129,12 @@ class ExploreService
             'nearby' => $point === null ? null : $this->whereReachable($query, $point, null, (float) config('activities.default_search_radius_km'))
                 ->orderBy('distance')
                 ->orderBy('activities.id'),
+            // Les mieux notées, à partir d'un minimum d'avis publiés ; à note égale, les plus notées d'abord.
+            'top_rated' => $query
+                ->whereHas('reviews', fn (Builder $reviews) => $reviews->where('is_published', true), '>=', (int) config('reviews.top_rated_min_reviews'))
+                ->orderByDesc('rating_average')
+                ->orderByDesc('rating_count')
+                ->orderBy('activities.id'),
             'verified_pros' => $this->orderByDistanceOrNewest(
                 $this->whereHostType($query, 'pro'),
                 $point,
@@ -146,6 +152,7 @@ class ExploreService
         return Activity::query()
             ->select('activities.*')
             ->bookable()
+            ->withRating()
             ->with(['organization.subscription.plan', 'profession.category', 'address', 'animalTypes', 'media'])
             ->when($user !== null, fn (Builder $query) => $query->withExists([
                 'favoritedBy as is_favorited' => fn (Builder $query) => $query->whereKey($user?->id),

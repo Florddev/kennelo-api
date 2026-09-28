@@ -65,6 +65,11 @@ class ActivityResource extends JsonResource
             )),
             'is_favorited' => $this->when(array_key_exists('is_favorited', $attributes), fn (): bool => (bool) $this->resource->getAttribute('is_favorited')),
             'distance_km' => $this->when(isset($attributes['distance']), fn (): float => round((float) $attributes['distance'], 1)),
+            // Note moyenne des avis publiés des clients, sur 5 ; null sans avis.
+            'rating' => $this->when(array_key_exists('rating_count', $attributes), fn (): array => [
+                'average' => (int) $attributes['rating_count'] > 0 ? round((float) $attributes['rating_average'], 1) : null,
+                'count' => (int) $attributes['rating_count'],
+            ]),
             'status' => $this->when($canSeePrivate, fn (): string => $this->status->value),
             'rejection_reason' => $this->when($canSeePrivate, fn (): ?string => $this->rejection_reason),
             'reviewed_at' => $this->when($canSeePrivate, fn (): ?string => $this->reviewed_at?->toISOString()),

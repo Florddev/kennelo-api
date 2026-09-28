@@ -32,10 +32,7 @@ class NotificationRecipientResolver
      */
     public function membersAllowedTo(OrganizationPermissionEnum $permission, Organization $organization, ?string $activityId = null): Collection
     {
-        $roles = array_filter(
-            OrganizationRoleEnum::cases(),
-            fn (OrganizationRoleEnum $role): bool => in_array($permission, $role->permissions(), true),
-        );
+        $roles = OrganizationRoleEnum::granting($permission);
 
         return User::query()
             ->whereKey($organization->owner_id)

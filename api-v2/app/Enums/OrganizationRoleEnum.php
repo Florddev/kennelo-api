@@ -19,6 +19,19 @@ enum OrganizationRoleEnum: string
     }
 
     /**
+     * Rôles qui portent ce droit.
+     *
+     * @return list<self>
+     */
+    public static function granting(Permission $permission): array
+    {
+        return array_values(array_filter(
+            self::cases(),
+            fn (self $role): bool => in_array($permission, $role->permissions(), true),
+        ));
+    }
+
+    /**
      * Un rôle lié à une activité ne s'exerce que sur celle-ci ; les autres portent sur toute l'entreprise.
      */
     public function isActivityScoped(): bool

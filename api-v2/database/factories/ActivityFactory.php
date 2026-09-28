@@ -41,12 +41,13 @@ class ActivityFactory extends Factory
     }
 
     /**
-     * Réservable par un client : approuvée, dans une entreprise vérifiée qui peut encaisser.
+     * Réservable par un client : approuvée, dans une entreprise vérifiée qui peut encaisser et a donné son mandat
+     * de facturation.
      */
     public function bookable(): static
     {
         return $this->approved()->state(fn (): array => [
-            'organization_id' => Organization::factory()->verified()->withStripe(),
+            'organization_id' => Organization::factory()->verified()->withStripe()->withBillingMandate(),
         ]);
     }
 

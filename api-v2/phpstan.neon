@@ -12,6 +12,10 @@ parameters:
 
     level: 5
 
+    # Fonctions et constantes communes des tests : connues de chaque fichier, quel que soit le processus qui l'analyse.
+    scanFiles:
+        - tests/Pest.php
+
     ignoreErrors:
         - path: tests/*
           message: '#Call to an undefined method Pest\\PendingCalls\\TestCall::#'

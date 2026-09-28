@@ -51,3 +51,22 @@ it('keeps the smaller amount', function () {
     expect(Money::min('12.50', '8.00'))->toBe('8.00')
         ->and(Money::min('3.00', '3.00'))->toBe('3.00');
 });
+
+it('takes the VAT out of an amount including it', function (string $amount, string $rate, string $expected) {
+    expect(Money::excludingVat($amount, $rate))->toBe($expected);
+})->with([
+    'standard rate' => ['12.00', '20.00', '10.00'],
+    'rounded down' => ['10.00', '20.00', '8.33'],
+    'rounded up' => ['19.99', '5.50', '18.95'],
+    'a few cents' => ['0.05', '20.00', '0.04'],
+    'VAT exemption' => ['30.00', '0.00', '30.00'],
+]);
+
+it('writes an amount the French way', function (string $amount, string $expected) {
+    expect(Money::format($amount))->toBe($expected);
+})->with([
+    'cents' => ['0.5', '0,50'],
+    'thousands' => ['1234.5', "1\u{A0}234,50"],
+    'millions' => ['1234567.891', "1\u{A0}234\u{A0}567,89"],
+    'negative' => ['-1500', "-1\u{A0}500,00"],
+]);

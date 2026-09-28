@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Policies;
 
 use App\Enums\OrganizationPermissionEnum;
+use App\Models\Activity;
 use App\Models\Organization;
 use App\Models\User;
 use App\Services\Organization\OrganizationPermissions;
@@ -50,6 +51,14 @@ class OrganizationPolicy
         return $this->can($user, $organization, OrganizationPermissionEnum::BILLING_MANAGE);
     }
 
+    /**
+     * Versements et factures, émises comme reçues.
+     */
+    public function viewFinance(User $user, Organization $organization): Response
+    {
+        return $this->can($user, $organization, OrganizationPermissionEnum::FINANCE_VIEW);
+    }
+
     public function manageCatalog(User $user, Organization $organization): Response
     {
         return $this->can($user, $organization, OrganizationPermissionEnum::CATALOG_MANAGE);
@@ -62,6 +71,30 @@ class OrganizationPolicy
     public function viewAgenda(User $user, Organization $organization): Response
     {
         return $this->can($user, $organization, OrganizationPermissionEnum::BOOKINGS_VIEW);
+    }
+
+    /**
+     * Tableau de bord de toute l'entreprise : bookings.view sur toute l'entreprise, comme l'agenda. Sinon, celui
+     * d'une activité (ActivityPolicy::viewBookings).
+     */
+    public function viewDashboard(User $user, Organization $organization): Response
+    {
+        return $this->can($user, $organization, OrganizationPermissionEnum::BOOKINGS_VIEW);
+    }
+
+    /**
+     * Animaux confiés : bookings.view sur au moins une activité. Chacun ne voit que ceux de ses activités : un
+     * employé retrouve l'animal qu'il garde.
+     */
+    public function viewInCarePets(User $user, Organization $organization): Response
+    {
+        if (! $this->permissions->isMember($user, $organization)) {
+            return Response::denyAsNotFound(__('errors.not_found'));
+        }
+
+        return Activity::query()->where('organization_id', $organization->id)->allowing($user, OrganizationPermissionEnum::BOOKINGS_VIEW)->exists()
+            ? Response::allow()
+            : Response::deny();
     }
 
     public function viewAny(User $user): bool

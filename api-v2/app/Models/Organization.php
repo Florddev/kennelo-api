@@ -36,6 +36,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $verified_at
  * @property Carbon|null $reviewed_at
  * @property Carbon|null $billing_mandate_accepted_at
+ * @property string|null $billing_mandate_accepted_by
  */
 class Organization extends Model
 {
@@ -73,6 +74,15 @@ class Organization extends Model
     public function isOwnedBy(User $user): bool
     {
         return $this->owner_id === $user->id;
+    }
+
+    /**
+     * Kennelo peut émettre les factures des réservations au nom et pour le compte de l'entreprise. Sans ce mandat,
+     * ses activités ne sont pas réservables.
+     */
+    public function hasBillingMandate(): bool
+    {
+        return $this->billing_mandate_accepted_at !== null;
     }
 
     /**

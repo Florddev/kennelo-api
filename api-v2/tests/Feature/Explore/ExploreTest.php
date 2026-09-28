@@ -49,7 +49,7 @@ describe('search', function () {
     it('separates professionals from individuals', function () {
         $pro = Activity::factory()->bookable()->create();
         $individual = Activity::factory()->approved()->state([
-            'organization_id' => Organization::factory()->individual()->verified()->withStripe(),
+            'organization_id' => Organization::factory()->individual()->verified()->withStripe()->withBillingMandate(),
         ])->create();
 
         expect(searchIds(['host_type' => 'pro']))->toBe([$pro->id])

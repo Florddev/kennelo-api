@@ -18,6 +18,8 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
+    // Temps réel : POST /api/broadcasting/auth autorise l'accès aux canaux privés, avec la session du front.
+    ->withBroadcasting(__DIR__.'/../routes/channels.php', ['prefix' => 'api', 'middleware' => ['api', 'auth:sanctum']])
     ->withMiddleware(function (Middleware $middleware): void {
         // Authentification des fronts Kennelo par cookie de session (Sanctum, mode SPA).
         $middleware->statefulApi();

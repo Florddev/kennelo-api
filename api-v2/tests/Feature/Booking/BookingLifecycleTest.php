@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Notification;
 describe('answer of the team', function () {
     it('accepts a request and captures the payment', function () {
         Notification::fake();
-        $booking = Booking::factory()->create();
+        $booking = Booking::factory()->occupying(dogBoarding())->create();
         $this->stripe()->fake('post', '/v1/payment_intents/*/capture', ['object' => 'payment_intent', 'id' => 'pi_x', 'status' => 'succeeded', 'latest_charge' => 'ch_initial']);
 
         $this->withHeaders(asUser($booking->organization->owner))

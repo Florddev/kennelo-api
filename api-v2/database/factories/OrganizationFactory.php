@@ -67,6 +67,19 @@ class OrganizationFactory extends Factory
     }
 
     /**
+     * Mandat de facturation accepté : Kennelo peut facturer les réservations de l'entreprise.
+     */
+    public function withBillingMandate(): static
+    {
+        return $this->afterMaking(function (Organization $organization): void {
+            $organization->forceFill([
+                'billing_mandate_accepted_at' => now(),
+                'billing_mandate_accepted_by' => $organization->owner_id,
+            ]);
+        });
+    }
+
+    /**
      * Compte Stripe Connect activé : l'entreprise peut encaisser et recevoir ses versements.
      */
     public function withStripe(): static

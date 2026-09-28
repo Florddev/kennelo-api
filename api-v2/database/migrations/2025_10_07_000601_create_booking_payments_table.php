@@ -17,6 +17,8 @@ return new class extends Migration
             $table->foreignUuid('booking_id')->constrained('bookings')->restrictOnDelete();
             $table->string('kind', 20)->default('initial')->comment('initial | supplement');
             $table->decimal('amount', 10, 2);
+            // Part des frais Kennelo dans le montant, figée : elle donne la facture des frais et borne leur remboursement.
+            $table->decimal('service_fee', 10, 2)->default(0);
             $table->char('currency', 3)->default('EUR');
             $table->string('status', 20)->default('pending');
             $table->string('stripe_payment_intent_id', 50)->unique();
@@ -29,7 +31,7 @@ return new class extends Migration
 
         // SQLite ne permet pas d'ajouter une contrainte CHECK après coup.
         if (DB::getDriverName() === 'pgsql') {
-            DB::statement('ALTER TABLE booking_payments ADD CONSTRAINT booking_payments_amount_check CHECK (amount > 0)');
+            DB::statement('ALTER TABLE booking_payments ADD CONSTRAINT booking_payments_amount_check CHECK (amount > 0 AND service_fee >= 0 AND service_fee <= amount)');
         }
     }
 

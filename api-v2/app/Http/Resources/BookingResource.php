@@ -121,6 +121,8 @@ class BookingResource extends JsonResource
                 'id' => $payment->id,
                 'kind' => $payment->kind->value,
                 'amount' => $payment->amount,
+                // Part des frais Kennelo dans le montant.
+                'service_fee' => $payment->service_fee,
                 'status' => $payment->status->value,
                 'paid_at' => $payment->paid_at?->toISOString(),
                 'refunded_amount' => bcsub($payment->amount, $payment->refundableAmount(), 2),

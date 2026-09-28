@@ -10,6 +10,7 @@ return new class extends Migration
 {
     public function up(): void
     {
+        // Une conversation par client et par activité ; chaque réservation y a son fil (booking_threads).
         Schema::create('conversations', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('user_id')->constrained()->onDelete('cascade');
@@ -18,7 +19,8 @@ return new class extends Migration
             $table->timestamps();
 
             $table->unique(['user_id', 'activity_id']);
-            $table->index('activity_id', 'conversations_activity_id_index');
+            // Boîte de réception de l'équipe : les conversations de l'activité, les plus récentes d'abord.
+            $table->index(['activity_id', 'last_message_at'], 'conversations_activity_last_message_index');
         });
     }
 

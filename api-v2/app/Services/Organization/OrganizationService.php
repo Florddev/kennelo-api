@@ -126,6 +126,22 @@ class OrganizationService
     }
 
     /**
+     * Mandat de facturation : Kennelo émet désormais les factures des réservations au nom et pour le compte de
+     * l'entreprise. La première acceptation fait foi ; une nouvelle ne change rien.
+     */
+    public function acceptBillingMandate(Organization $organization, User $user): Organization
+    {
+        if (! $organization->hasBillingMandate()) {
+            $organization->forceFill([
+                'billing_mandate_accepted_at' => now(),
+                'billing_mandate_accepted_by' => $user->id,
+            ])->save();
+        }
+
+        return $organization->load(['address', 'subscription.plan']);
+    }
+
+    /**
      * Cède l'entreprise à un membre actif. L'ancien propriétaire reste dans l'équipe comme gérant ;
      * le nouveau n'a plus besoin de rôle puisqu'il a désormais tous les droits.
      */

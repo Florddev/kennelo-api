@@ -6,7 +6,6 @@ namespace App\Services\Booking;
 
 use App\Enums\BookingItemStatusEnum;
 use App\Enums\BookingStatusEnum;
-use App\Enums\PaymentKindEnum;
 use App\Enums\PaymentStatusEnum;
 use App\Enums\RefundReasonEnum;
 use App\Enums\ResourceBookingKindEnum;
@@ -17,7 +16,6 @@ use App\Models\AgendaResource;
 use App\Models\Booking;
 use App\Models\BookingItem;
 use App\Models\BookingPayment;
-use App\Models\BookingUnit;
 use App\Models\User;
 use App\Services\Agenda\AgendaService;
 use App\Support\Money;
@@ -65,7 +63,7 @@ class BookingAdjustmentService
             }
 
             $serviceFee = Money::multiply($option['subtotal'], (string) setting('user_service_fee_rate'));
-            $payment = $this->payments->chargeSupplement($booking, Money::sum($option['subtotal'], $serviceFee));
+            $payment = $this->payments->chargeSupplement($booking, Money::sum($option['subtotal'], $serviceFee), $serviceFee);
             BookingItem::query()->whereKey(array_map(fn (BookingItem $item): string => $item->id, $items))->update(['booking_payment_id' => $payment->id]);
 
             if ($payment->status === PaymentStatusEnum::SUCCEEDED) {
@@ -90,12 +88,12 @@ class BookingAdjustmentService
      */
     public function applySupplement(Booking $booking, BookingPayment $payment): void
     {
-        $itemsAmount = Money::sum('0', ...$payment->items()->pluck('subtotal')->all());
+        $itemsAmount = $payment->itemsAmount();
         $platformFee = Money::multiply($itemsAmount, $booking->organization()->firstOrFail()->effectivePlan()->commissionRate());
 
         $booking->forceFill([
             'total_price' => Money::sum($booking->total_price, $payment->amount),
-            'service_fee' => Money::sum($booking->service_fee, bcsub($payment->amount, $itemsAmount, 2)),
+            'service_fee' => Money::sum($booking->service_fee, $payment->service_fee),
             'platform_fee' => Money::sum($booking->platform_fee, $platformFee),
             'activity_amount' => Money::sum($booking->activity_amount, bcsub($itemsAmount, $platformFee, 2)),
         ])->save();
@@ -192,7 +190,8 @@ class BookingAdjustmentService
      */
     private function refundItem(Booking $booking, BookingItem $item, BookingPayment $payment, User $actor): string
     {
-        $serviceFee = $this->serviceFeeOf($item, $payment, $booking);
+        // Frais Kennelo payés pour l'option : sa part des frais du paiement qui l'a couverte.
+        $serviceFee = Money::prorate($payment->service_fee, $item->subtotal, $payment->itemsAmount());
         $refund = Money::sum($item->subtotal, $serviceFee);
         $platformFee = Money::prorate($booking->platform_fee, $item->subtotal, $booking->itemsAmount());
 
@@ -207,23 +206,6 @@ class BookingAdjustmentService
         ])->save();
 
         return $refund;
-    }
-
-    /**
-     * Frais Kennelo payés pour une option : la part de l'option dans les frais du paiement qui l'a couverte.
-     *
-     * @return numeric-string
-     */
-    private function serviceFeeOf(BookingItem $item, BookingPayment $payment, Booking $booking): string
-    {
-        $covered = Money::sum('0', ...$payment->items()->pluck('subtotal')->all());
-
-        // Le paiement initial couvre aussi les places et les frais de déplacement.
-        if ($payment->kind === PaymentKindEnum::INITIAL) {
-            $covered = Money::sum($covered, $booking->travel_fee, ...$booking->units()->get()->map(fn (BookingUnit $unit): string => $unit->subtotal)->all());
-        }
-
-        return Money::prorate(bcsub($payment->amount, $covered, 2), $item->subtotal, $covered);
     }
 
     private function assertAdjustable(Booking $booking): void

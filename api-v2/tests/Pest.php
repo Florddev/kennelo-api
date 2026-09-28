@@ -3,12 +3,15 @@
 declare(strict_types=1);
 
 use App\Enums\OrganizationRoleEnum;
+use App\Enums\PayoutStatusEnum;
 use App\Enums\ServiceOfferEnum;
 use App\Enums\WeekDayEnum;
 use App\Models\Activity;
 use App\Models\ActivityUnitType;
 use App\Models\AgendaResource;
 use App\Models\AnimalType;
+use App\Models\Booking;
+use App\Models\Invoice;
 use App\Models\Organization;
 use App\Models\OrganizationMember;
 use App\Models\Pet;
@@ -16,6 +19,9 @@ use App\Models\Profession;
 use App\Models\Service;
 use App\Models\ServicePrice;
 use App\Models\User;
+use App\Services\Billing\CommissionStatementService;
+use App\Services\Billing\InvoiceService;
+use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use Illuminate\Testing\TestResponse;
@@ -170,6 +176,50 @@ function stayOption(ActivityUnitType $unitType, string $price, string $adjustmen
     ]);
 
     return $service;
+}
+
+/**
+ * Séjour confirmé d'une place à 60 € (64,80 € payés dont 4,80 € de frais Kennelo), dont le paiement initial est
+ * facturé : la facture de l'entreprise et celle des frais Kennelo.
+ *
+ * @param  array<string, mixed>  $attributes
+ */
+function invoicedStay(?ActivityUnitType $unitType = null, array $attributes = []): Booking
+{
+    $booking = Booking::factory()->confirmed()->occupying($unitType ?? dogBoarding())->create($attributes);
+    app(InvoiceService::class)->invoicePayment($booking->payments()->sole());
+
+    return $booking;
+}
+
+/**
+ * La réservation est versée à l'entreprise ce mois-ci, puis son récapitulatif de commission est émis.
+ */
+function withCommissionStatement(Booking $booking): Invoice
+{
+    $booking->payout()->create([
+        'stripe_transfer_id' => 'tr_'.fake()->unique()->bothify('????????????'),
+        'stripe_account_id' => 'acct_test',
+        'amount' => $booking->activity_amount,
+        'currency' => 'EUR',
+        'status' => PayoutStatusEnum::PAID,
+        'transferred_at' => now(),
+    ]);
+
+    return app(CommissionStatementService::class)->issue($booking->organization()->firstOrFail(), CarbonImmutable::now('Europe/Paris'))
+        ?? throw new LogicException('No statement issued.');
+}
+
+/**
+ * La facture de l'entreprise, puis celle des frais Kennelo, du paiement initial.
+ *
+ * @return array{Invoice, Invoice}
+ */
+function bookingInvoices(Booking $booking): array
+{
+    $invoices = $booking->invoices()->orderByRaw('issuer_organization_id is null')->get();
+
+    return [$invoices[0], $invoices[1]];
 }
 
 /**

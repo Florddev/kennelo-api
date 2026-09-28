@@ -70,6 +70,7 @@ class BookingPaymentService
         $payment = $booking->payments()->create([
             'kind' => PaymentKindEnum::INITIAL,
             'amount' => $booking->total_price,
+            'service_fee' => $booking->service_fee,
             'currency' => $booking->currency,
             'status' => PaymentStatusEnum::fromStripe((string) $intent->status),
             'stripe_payment_intent_id' => $intent->id,
@@ -127,7 +128,8 @@ class BookingPaymentService
 
     /**
      * Rembourse $amount, dont $serviceFee de frais Kennelo, en partant du paiement le plus récent (ou sur le seul
-     * paiement donné).
+     * paiement donné). Un paiement ne rend que ce qu'il a couvert, prestations d'un côté et frais Kennelo de
+     * l'autre : chaque remboursement tombe ainsi sur les factures de son paiement.
      *
      * @param  numeric-string  $amount
      * @param  numeric-string  $serviceFee
@@ -138,15 +140,17 @@ class BookingPaymentService
         $payments = $from !== null
             ? collect([$from->load('refunds')])
             : $booking->payments()->where('status', PaymentStatusEnum::SUCCEEDED)->with('refunds')->get()->reverse();
+        $items = bcsub($amount, $serviceFee, 2);
         $refunds = collect();
 
         foreach ($payments as $payment) {
-            if (bccomp($amount, '0', 2) <= 0) {
+            if (bccomp($items, '0', 2) <= 0 && bccomp($serviceFee, '0', 2) <= 0) {
                 break;
             }
 
-            $part = Money::min($amount, $payment->refundableAmount());
-            $feePart = Money::min($serviceFee, $part);
+            $itemsPart = Money::min($items, $payment->refundableItems());
+            $feePart = Money::min($serviceFee, $payment->refundableServiceFee());
+            $part = Money::sum($itemsPart, $feePart);
 
             if (bccomp($part, '0', 2) <= 0) {
                 continue;
@@ -173,7 +177,7 @@ class BookingPaymentService
             $this->journal->record(FinancialOperationTypeEnum::REFUND, $booking, $part, $stripeRefund->id, ['reason' => $reason->value]);
 
             $refunds->push($refund);
-            $amount = bcsub($amount, $part, 2);
+            $items = bcsub($items, $itemsPart, 2);
             $serviceFee = bcsub($serviceFee, $feePart, 2);
         }
 
@@ -184,11 +188,12 @@ class BookingPaymentService
      * Débite un complément hors session, avec la carte du paiement initial. Si la banque exige que le client
      * s'authentifie, le paiement reste en attente de son action.
      *
-     * @param  numeric-string  $amount
+     * @param  numeric-string  $amount  frais Kennelo compris
+     * @param  numeric-string  $serviceFee
      *
      * @throws ValidationException carte refusée
      */
-    public function chargeSupplement(Booking $booking, string $amount): BookingPayment
+    public function chargeSupplement(Booking $booking, string $amount, string $serviceFee): BookingPayment
     {
         $initial = $booking->payments()->where('kind', PaymentKindEnum::INITIAL)->firstOrFail();
         $paymentMethod = $this->stripe->paymentIntents->retrieve($initial->stripe_payment_intent_id)->payment_method;
@@ -220,6 +225,7 @@ class BookingPaymentService
         $payment = new BookingPayment([
             'kind' => PaymentKindEnum::SUPPLEMENT,
             'amount' => $amount,
+            'service_fee' => $serviceFee,
             'currency' => $booking->currency,
             'status' => $status,
             'stripe_payment_intent_id' => $intent->id,

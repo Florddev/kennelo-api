@@ -5,10 +5,13 @@ declare(strict_types=1);
 use App\Http\Controllers\Admin\Activity\ActivityController;
 use App\Http\Controllers\Admin\Activity\ActivityDocumentController;
 use App\Http\Controllers\Admin\AuditController;
+use App\Http\Controllers\Admin\Billing\InvoiceController;
 use App\Http\Controllers\Admin\Organization\OrganizationController;
 use App\Http\Controllers\Admin\Profession\ProfessionCategoryController;
 use App\Http\Controllers\Admin\Profession\ProfessionController;
+use App\Http\Controllers\Admin\Review\ReviewReportController;
 use App\Http\Controllers\Admin\Setting\SettingController;
+use App\Http\Controllers\Admin\StatsController;
 use App\Http\Controllers\Admin\Subscription\SubscriptionPlanController;
 use App\Http\Controllers\Admin\User\BulkController;
 use App\Http\Controllers\Admin\User\UserController;
@@ -62,6 +65,19 @@ Route::get('/activity-documents', [ActivityDocumentController::class, 'index']);
 Route::get('/activity-documents/{document}/file', [ActivityDocumentController::class, 'file']);
 Route::post('/activity-documents/{document}/approve', [ActivityDocumentController::class, 'approve']);
 Route::post('/activity-documents/{document}/reject', [ActivityDocumentController::class, 'reject']);
+
+// Invoices
+Route::get('/invoices', [InvoiceController::class, 'index']);
+
+// Review moderation
+Route::get('/review-reports', [ReviewReportController::class, 'index']);
+Route::put('/review-reports/{report}', [ReviewReportController::class, 'update']);
+
+// Stats
+Route::get('/stats/overview', [StatsController::class, 'overview']);
+Route::get('/stats/finance', [StatsController::class, 'finance']);
+Route::get('/stats/bookings', [StatsController::class, 'bookings']);
+Route::get('/stats/community', [StatsController::class, 'community']);
 
 // Audit
 Route::get('/audit-actions', [AuditController::class, 'index']);

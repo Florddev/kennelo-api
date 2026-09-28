@@ -256,10 +256,40 @@ class Booking extends Model
     }
 
     /**
+     * Factures et avoirs de la réservation, de l'entreprise comme de Kennelo.
+     *
+     * @return HasMany<Invoice, $this>
+     */
+    public function invoices(): HasMany
+    {
+        return $this->hasMany(Invoice::class);
+    }
+
+    /**
      * @return HasMany<FinancialOperation, $this>
      */
     public function operations(): HasMany
     {
         return $this->hasMany(FinancialOperation::class)->orderBy('created_at')->orderBy('id');
+    }
+
+    /**
+     * Fil de la réservation dans la conversation de son client avec l'activité.
+     *
+     * @return HasOne<BookingThread, $this>
+     */
+    public function thread(): HasOne
+    {
+        return $this->hasOne(BookingThread::class);
+    }
+
+    /**
+     * Avis du client et de l'équipe sur la réservation, un par sens.
+     *
+     * @return HasMany<Review, $this>
+     */
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(Review::class);
     }
 }

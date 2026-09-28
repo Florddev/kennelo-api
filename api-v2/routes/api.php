@@ -5,9 +5,14 @@ declare(strict_types=1);
 use App\Http\Controllers\Activity\ActivityController;
 use App\Http\Controllers\Agenda\SlotController;
 use App\Http\Controllers\Auth\TwoFactorAuthenticationController;
+use App\Http\Controllers\Billing\InvoiceController;
 use App\Http\Controllers\Booking\BookingController;
 use App\Http\Controllers\Booking\BookingPaymentController;
 use App\Http\Controllers\Catalog\ActivityServiceController;
+use App\Http\Controllers\Conversation\ActivityConversationController;
+use App\Http\Controllers\Conversation\BookingConversationController;
+use App\Http\Controllers\Conversation\ConversationController;
+use App\Http\Controllers\Conversation\MessageController;
 use App\Http\Controllers\Explore\ExploreController;
 use App\Http\Controllers\Favorite\FavoriteController;
 use App\Http\Controllers\Notification\NotificationController;
@@ -19,6 +24,7 @@ use App\Http\Controllers\Pet\PetController;
 use App\Http\Controllers\Pet\PetImageController;
 use App\Http\Controllers\Pricing\ActivityPricingController;
 use App\Http\Controllers\Profession\ProfessionController;
+use App\Http\Controllers\Review\ReviewController;
 use App\Http\Controllers\Stay\UnitTypeController;
 use App\Http\Controllers\Stripe\StripeWebhookController;
 use App\Http\Controllers\Subscription\SubscriptionController;
@@ -41,6 +47,7 @@ Route::get('/activities/{activity}/services', [ActivityServiceController::class,
 Route::get('/activities/{activity}/unit-types', [UnitTypeController::class, 'index']);
 Route::get('/activities/{activity}/price-calendar', [ActivityPricingController::class, 'calendar'])->middleware('throttle:60,1');
 Route::get('/activities/{activity}/slots', [SlotController::class, 'index'])->middleware('throttle:60,1');
+Route::get('/activities/{activity}/reviews', [ReviewController::class, 'forActivity'])->middleware('throttle:60,1');
 
 Route::post('/webhooks/stripe', StripeWebhookController::class)->middleware('throttle:120,1');
 
@@ -72,6 +79,33 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/bookings/{booking}', [BookingController::class, 'show']);
     Route::post('/bookings/{booking}/cancel', [BookingController::class, 'cancel']);
     Route::post('/bookings/{booking}/payments/{payment}/confirm', [BookingPaymentController::class, 'confirm'])->scopeBindings();
+
+    // Invoices (received as a client; one invoice for anyone allowed to read it)
+    Route::get('/user/invoices', [InvoiceController::class, 'index']);
+    Route::get('/invoices/{invoice}', [InvoiceController::class, 'show']);
+    Route::get('/invoices/{invoice}/pdf', [InvoiceController::class, 'pdf']);
+
+    // Conversations (client side; the team reads its inbox by /activities/{activity}/conversations)
+    Route::get('/conversations', [ConversationController::class, 'index']);
+    Route::get('/conversations/unread-count', [ConversationController::class, 'unreadCount']);
+    Route::get('/conversations/{conversation}', [ConversationController::class, 'show']);
+    Route::put('/conversations/{conversation}/read', [ConversationController::class, 'read']);
+    Route::get('/conversations/{conversation}/messages', [MessageController::class, 'index']);
+    Route::post('/conversations/{conversation}/messages', [MessageController::class, 'store'])->middleware('throttle:30,1');
+    Route::get('/conversations/{conversation}/files/{file}', [MessageController::class, 'file'])
+        ->scopeBindings()
+        ->name('conversations.files.show');
+    Route::post('/activities/{activity}/conversations', [ActivityConversationController::class, 'store'])->middleware('throttle:20,1');
+    Route::post('/bookings/{booking}/conversation', [BookingConversationController::class, 'store']);
+
+    // Reviews (both ways: the client reviews the activity, the team reviews the client)
+    Route::post('/bookings/{booking}/reviews', [ReviewController::class, 'store']);
+    Route::get('/user/reviews/given', [ReviewController::class, 'given']);
+    Route::get('/user/reviews/received', [ReviewController::class, 'received']);
+    Route::get('/users/{user}/reviews', [ReviewController::class, 'aboutClient']);
+    Route::get('/reviews/{review}', [ReviewController::class, 'show']);
+    Route::post('/reviews/{review}/response', [ReviewController::class, 'respond']);
+    Route::post('/reviews/{review}/reports', [ReviewController::class, 'report'])->middleware('throttle:20,1');
 
     // Favorites
     Route::get('/favorites', [FavoriteController::class, 'index']);

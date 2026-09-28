@@ -84,6 +84,21 @@ final class Money
     }
 
     /**
+     * Montant hors taxes d'un montant TTC : 12,00 € à 20 % donnent 10,00 €. La TVA est la différence, ce qui garde
+     * HT + TVA = TTC au centime près.
+     *
+     * @param  numeric-string  $amountIncludingVat
+     * @param  numeric-string  $vatRate  en pourcentage (20.00)
+     * @return numeric-string
+     */
+    public static function excludingVat(string $amountIncludingVat, string $vatRate): string
+    {
+        $divisor = bcadd('1', bcdiv($vatRate, '100', self::WORKING_SCALE), self::WORKING_SCALE);
+
+        return self::round(bcdiv($amountIncludingVat, $divisor, self::WORKING_SCALE));
+    }
+
+    /**
      * @param  numeric-string  $first
      * @param  numeric-string  $second
      * @return numeric-string
@@ -107,5 +122,20 @@ final class Money
     public static function fromCents(int $cents): string
     {
         return bcdiv((string) $cents, '100', self::SCALE);
+    }
+
+    /**
+     * Montant écrit à la française (« 1 234,50 », espace insécable), sans passer par un flottant ni par intl.
+     *
+     * @param  numeric-string  $amount
+     */
+    public static function format(string $amount): string
+    {
+        $rounded = self::round($amount);
+        [$units, $cents] = explode('.', ltrim($rounded, '-'));
+        // Groupes de trois chiffres comptés depuis la droite : 1234567 → 1, 234, 567.
+        $groups = array_reverse(array_map(strrev(...), str_split(strrev($units), 3)));
+
+        return (str_starts_with($rounded, '-') ? '-' : '').implode("\u{A0}", $groups).','.$cents;
     }
 }

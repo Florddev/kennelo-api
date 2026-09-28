@@ -31,6 +31,7 @@ enum AdminActionTypeEnum: string
     case APPROVE_ACTIVITY_DOCUMENT = 'approve_activity_document';
     case REJECT_ACTIVITY_DOCUMENT = 'reject_activity_document';
     case UPDATE_ACTIVITY = 'update_activity';
+    case DECIDE_REVIEW_REPORT = 'decide_review_report';
 
     public static function values(): array
     {

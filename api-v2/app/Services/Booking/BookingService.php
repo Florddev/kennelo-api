@@ -12,6 +12,7 @@ use App\Enums\PaymentStatusEnum;
 use App\Enums\ResourceBookingKindEnum;
 use App\Events\Booking\BookingConfirmed;
 use App\Events\Booking\BookingCreated;
+use App\Events\Booking\BookingPaymentCaptured;
 use App\Events\Booking\BookingRejected;
 use App\Models\Activity;
 use App\Models\ActivityUnitType;
@@ -151,7 +152,7 @@ class BookingService
      */
     public function confirm(Booking $booking): Booking
     {
-        $captured = DB::transaction(function () use ($booking): bool {
+        $captured = DB::transaction(function () use ($booking): ?BookingPayment {
             $booking = $this->lock($booking);
             $this->assertCanTransition($booking, BookingStatusEnum::CONFIRMED);
             $payment = $this->initialPayment($booking);
@@ -163,20 +164,21 @@ class BookingService
             if (! $this->payments->capture($booking, $payment)) {
                 $booking->forceFill(['payment_status' => PaymentStatusEnum::FAILED])->save();
 
-                return false;
+                return null;
             }
 
             $booking->forceFill(['payment_status' => PaymentStatusEnum::SUCCEEDED]);
             $this->transition($booking, BookingStatusEnum::CONFIRMED);
 
-            return true;
+            return $payment;
         });
 
-        if (! $captured) {
+        if ($captured === null) {
             throw ValidationException::withMessages(['payment' => __('booking.capture_failed')]);
         }
 
         BookingConfirmed::dispatch($booking->refresh());
+        BookingPaymentCaptured::dispatch($captured);
 
         return $booking->load(self::RELATIONS);
     }

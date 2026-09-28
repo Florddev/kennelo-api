@@ -26,7 +26,7 @@ class ExploreController extends Controller
     /**
      * Home page sections
      *
-     * « Près de chez vous » (avec lat et lng), « Professionnels », « Nouveaux ». Une section de moins de trois activités est omise.
+     * « Près de chez vous » (avec lat et lng), « Mieux notés », « Professionnels », « Nouveaux ». Une section de moins de trois activités est omise.
      */
     public function activities(ExploreRequest $request): JsonResponse
     {

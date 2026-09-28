@@ -25,6 +25,9 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  * Par défaut, une demande de deux nuits dans dix jours, dont le paiement est autorisé (60 € de prestations,
  * 4,80 € de frais Kennelo, 4,80 € de commission). Le paiement initial est créé avec elle.
  *
+ * Les 60 € de prestations n'ont pas de lignes : une réservation encaissée ou remboursée, donc facturée, se crée
+ * avec occupying() ou appointment(), qui les portent.
+ *
  * @extends Factory<Booking>
  */
 class BookingFactory extends Factory
@@ -59,6 +62,7 @@ class BookingFactory extends Factory
             $booking->payments()->create([
                 'kind' => PaymentKindEnum::INITIAL,
                 'amount' => $booking->total_price,
+                'service_fee' => $booking->service_fee,
                 'currency' => $booking->currency,
                 'status' => $captured ? PaymentStatusEnum::SUCCEEDED : $booking->payment_status,
                 'stripe_payment_intent_id' => 'pi_'.fake()->unique()->bothify('????????????'),
@@ -104,6 +108,7 @@ class BookingFactory extends Factory
             ->afterCreating(function (Booking $booking) use ($salon, $start, $minutes): void {
                 $item = $booking->items()->create([
                     'service_id' => $salon['service']->id,
+                    'booking_payment_id' => $booking->payments()->value('id'),
                     'status' => BookingItemStatusEnum::SCHEDULED,
                     'quantity' => 1,
                     'unit_price' => '60.00',

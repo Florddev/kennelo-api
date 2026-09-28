@@ -58,7 +58,7 @@ class ActivityController extends Controller
     {
         $this->authorize('view', $activity);
 
-        $activity->load(ActivityService::RELATIONS)->loadExists(Activity::missingDocumentsCheck());
+        $activity->load(ActivityService::RELATIONS)->loadExists(Activity::missingDocumentsCheck())->loadRating();
 
         if ($request->user() !== null) {
             $activity->loadExists(['favoritedBy as is_favorited' => fn (Builder $query) => $query->whereKey($request->user()->id)]);

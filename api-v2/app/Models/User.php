@@ -176,6 +176,26 @@ class User extends Authenticatable implements HasLocalePreference, HasMedia, Mus
     }
 
     /**
+     * Factures et avoirs reçus en tant que client : réservations et frais de service.
+     *
+     * @return HasMany<Invoice, $this>
+     */
+    public function invoices(): HasMany
+    {
+        return $this->hasMany(Invoice::class, 'recipient_user_id');
+    }
+
+    /**
+     * Conversations en tant que client, une par activité contactée.
+     *
+     * @return HasMany<Conversation, $this>
+     */
+    public function conversations(): HasMany
+    {
+        return $this->hasMany(Conversation::class);
+    }
+
+    /**
      * @return BelongsToMany<Activity, $this>
      */
     public function favoriteActivities(): BelongsToMany

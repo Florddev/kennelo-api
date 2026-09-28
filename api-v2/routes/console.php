@@ -27,3 +27,17 @@ Schedule::command('bookings:release-payouts')
     ->timezone('Europe/Paris')
     ->withoutOverlapping()
     ->onOneServer();
+
+// Facturation : récapitulatif de commission du mois écoulé, le 1er, après les derniers versements du mois.
+Schedule::command('billing:issue-commission-statements')
+    ->monthlyOn(1, '04:00')
+    ->timezone('Europe/Paris')
+    ->withoutOverlapping()
+    ->onOneServer();
+
+// Avis : ceux restés seuls à la fin du délai pour en donner un sont publiés.
+Schedule::command('reviews:publish-due')
+    ->dailyAt('03:30')
+    ->timezone('Europe/Paris')
+    ->withoutOverlapping()
+    ->onOneServer();

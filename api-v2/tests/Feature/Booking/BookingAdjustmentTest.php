@@ -187,7 +187,7 @@ describe('removing an option', function () {
 });
 
 it('keeps the financial journal of the booking for the team', function () {
-    $booking = Booking::factory()->create();
+    $booking = Booking::factory()->occupying(dogBoarding())->create();
     $this->stripe()->fake('post', '/v1/payment_intents/*/capture', ['object' => 'payment_intent', 'id' => 'pi_x', 'status' => 'succeeded', 'latest_charge' => 'ch_1']);
     $headers = asUser($booking->organization->owner);
 
