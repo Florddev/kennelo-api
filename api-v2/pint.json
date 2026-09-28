@@ -1,5 +1,8 @@
 {
     "rules": {
         "declare_strict_types": true
-    }
+    },
+    "notPath": [
+        "#^lang/(ar|fr)/(actions|auth|http-statuses|pagination|passwords|validation)\\.php$#"
+    ]
 }

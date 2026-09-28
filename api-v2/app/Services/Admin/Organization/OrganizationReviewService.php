@@ -33,7 +33,7 @@ class OrganizationReviewService
             ->when(isset($filters['status']), fn ($query) => $query->where('status', $filters['status']))
             ->when(isset($filters['search']), function ($query) use ($filters): void {
                 $query->where(fn ($query) => $query
-                    ->where('legal_name', 'like', "%{$filters['search']}%")
+                    ->whereLike('legal_name', "%{$filters['search']}%")
                     ->orWhere('siren', $filters['search']));
             })
             ->latest()

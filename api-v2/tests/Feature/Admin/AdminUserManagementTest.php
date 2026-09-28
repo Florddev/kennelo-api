@@ -31,6 +31,17 @@ it('admin can list users', function () {
         ->assertJsonStructure(['data', 'meta']);
 });
 
+it('admin finds users by name or email whatever the case', function () {
+    $lea = User::factory()->create(['first_name' => 'Léa', 'last_name' => 'Dupont', 'email' => 'lea.dupont@example.com']);
+    User::factory()->create(['last_name' => 'Martin', 'email' => 'martin@example.com']);
+
+    $this->withHeaders(asUser(adminUser()))
+        ->getJson('/api/admin/users?search=DUPONT')
+        ->assertOk()
+        ->assertJsonPath('data.*.id', [$lea->id]);
+    $this->getJson('/api/admin/users?search=Lea.Dupont@')->assertJsonPath('data.*.id', [$lea->id]);
+});
+
 // ─── Show ──────────────────────────────────────────────────────────────────────
 
 it('admin can view any user detail', function () {

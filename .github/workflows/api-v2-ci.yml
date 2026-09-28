@@ -1,0 +1,179 @@
+name: api-v2 - CI
+
+# Pint, PHPStan, puis la suite de tests sur SQLite et sur PostgreSQL 16 (la base de production).
+# Les tests du groupe pgsql, ignorés sous SQLite, vérifient ce que seule PostgreSQL garantit :
+# contraintes CHECK, NULLS NOT DISTINCT, exclusion des créneaux, verrous sous concurrence.
+
+on:
+  push:
+    paths:
+      - 'api-v2/**'
+      - '.github/workflows/api-v2-ci.yml'
+  pull_request:
+    paths:
+      - 'api-v2/**'
+      - '.github/workflows/api-v2-ci.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: api-v2-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    working-directory: api-v2
+
+env:
+  PHP_VERSION: '8.3'
+  PHP_EXTENSIONS: mbstring, xml, ctype, iconv, intl, dom, filter, gd, json, pdo, pdo_sqlite, pdo_pgsql, exif, sodium, bcmath, zip
+
+jobs:
+  pint:
+    name: Pint
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: ${{ env.PHP_EXTENSIONS }}
+          coverage: none
+
+      - uses: actions/cache@v4
+        with:
+          path: api-v2/vendor
+          key: ${{ runner.os }}-php-${{ env.PHP_VERSION }}-${{ hashFiles('api-v2/composer.lock') }}
+
+      - run: composer install --prefer-dist --no-progress --no-interaction
+
+      - run: vendor/bin/pint --test
+
+  larastan:
+    name: PHPStan
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: ${{ env.PHP_EXTENSIONS }}
+          coverage: none
+
+      - uses: actions/cache@v4
+        with:
+          path: api-v2/vendor
+          key: ${{ runner.os }}-php-${{ env.PHP_VERSION }}-${{ hashFiles('api-v2/composer.lock') }}
+
+      - run: composer install --prefer-dist --no-progress --no-interaction
+
+      - run: vendor/bin/phpstan analyse --memory-limit=2G --no-progress
+
+  tests-sqlite:
+    name: Tests (SQLite)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: ${{ env.PHP_EXTENSIONS }}
+          coverage: none
+
+      - uses: actions/cache@v4
+        with:
+          path: api-v2/vendor
+          key: ${{ runner.os }}-php-${{ env.PHP_VERSION }}-${{ hashFiles('api-v2/composer.lock') }}
+
+      - run: composer install --prefer-dist --no-progress --no-interaction
+
+      - name: Environment
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      # Le .env.example vise Redis, S3 et Reverb, absents ici : l'amorçage de la base s'en passe.
+      - name: Migrations and seeders
+        env:
+          DB_CONNECTION: sqlite
+          DB_DATABASE: ${{ github.workspace }}/api-v2/database/database.sqlite
+          CACHE_STORE: array
+          SESSION_DRIVER: array
+          QUEUE_CONNECTION: sync
+          BROADCAST_CONNECTION: log
+          FILESYSTEM_DISK: local
+          MEDIA_DISK: local
+        run: |
+          touch database/database.sqlite
+          php artisan migrate:fresh --seed --force
+
+      - name: Tests
+        run: php artisan test --parallel
+
+  tests-pgsql:
+    name: Tests (PostgreSQL 16)
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: kennelo_test
+          POSTGRES_USER: kennelo
+          POSTGRES_PASSWORD: kennelo
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U kennelo -d kennelo_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    # Les variables de la CI priment sur phpunit.xml (SQLite en mémoire) et sur le .env.
+    env:
+      DB_CONNECTION: pgsql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 5432
+      DB_DATABASE: kennelo_test
+      DB_USERNAME: kennelo
+      DB_PASSWORD: kennelo
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: ${{ env.PHP_EXTENSIONS }}
+          coverage: none
+
+      - uses: actions/cache@v4
+        with:
+          path: api-v2/vendor
+          key: ${{ runner.os }}-php-${{ env.PHP_VERSION }}-${{ hashFiles('api-v2/composer.lock') }}
+
+      - run: composer install --prefer-dist --no-progress --no-interaction
+
+      - name: Environment
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      # Le .env.example vise Redis, S3 et Reverb, absents ici : l'amorçage de la base s'en passe.
+      - name: Migrations and seeders
+        env:
+          CACHE_STORE: array
+          SESSION_DRIVER: array
+          QUEUE_CONNECTION: sync
+          BROADCAST_CONNECTION: log
+          FILESYSTEM_DISK: local
+          MEDIA_DISK: local
+        run: php artisan migrate:fresh --seed --force
+
+      - name: Tests
+        run: php artisan test

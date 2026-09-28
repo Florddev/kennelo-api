@@ -12,7 +12,6 @@ use App\Events\Conversation\MessageSent;
 use App\Models\Booking;
 use App\Models\Conversation;
 use App\Models\Message;
-use App\Models\MessageFile;
 use App\Models\User;
 use App\Services\Notification\NotificationRecipientResolver;
 use App\Services\Notification\NotificationService;
@@ -57,7 +56,7 @@ class MessageService
                 'content' => $data['content'] ?? null,
             ], $files));
         } catch (Throwable $exception) {
-            Storage::disk(MessageFile::DISK)->delete(array_column($files, 'file_path'));
+            Storage::disk((string) config('conversations.attachments_disk'))->delete(array_column($files, 'file_path'));
 
             throw $exception;
         }
@@ -116,7 +115,7 @@ class MessageService
         return array_map(fn (UploadedFile $file): array => [
             // Le nom d'origine n'est qu'un libellé : ni chemin, ni caractère de contrôle.
             'file_name' => Str::of($file->getClientOriginalName())->basename()->replaceMatches('/[\x00-\x1F\x7F]/', '')->limit(255, '')->toString(),
-            'file_path' => (string) $file->store("conversations/{$conversation->id}", MessageFile::DISK),
+            'file_path' => (string) $file->store("conversations/{$conversation->id}", (string) config('conversations.attachments_disk')),
             'file_type' => (string) ($file->extension() ?: $file->getClientOriginalExtension()),
             'file_size' => (int) $file->getSize(),
             'mime_type' => (string) ($file->getMimeType() ?? $file->getClientMimeType()),

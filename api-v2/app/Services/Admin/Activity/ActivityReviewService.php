@@ -38,7 +38,7 @@ class ActivityReviewService
             ->withExists(Activity::missingDocumentsCheck())
             ->when(isset($filters['status']), fn (Builder $query) => $query->where('status', $filters['status']))
             ->when(isset($filters['profession_id']), fn (Builder $query) => $query->where('profession_id', $filters['profession_id']))
-            ->when(isset($filters['search']), fn (Builder $query) => $query->where('name', 'like', "%{$filters['search']}%"))
+            ->when(isset($filters['search']), fn (Builder $query) => $query->whereLike('name', "%{$filters['search']}%"))
             ->latest()
             ->orderByDesc('id')
             ->paginate($filters['per_page'] ?? null);

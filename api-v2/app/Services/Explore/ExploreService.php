@@ -241,8 +241,8 @@ class ExploreService
     private function whereLocation(Builder $query, string $location): Builder
     {
         return $query->whereHas('address', fn (Builder $query) => $query
-            ->where('city', 'like', "%{$location}%")
-            ->orWhere('postal_code', 'like', "{$location}%"));
+            ->whereLike('city', "%{$location}%")
+            ->orWhereLike('postal_code', "{$location}%"));
     }
 
     /**

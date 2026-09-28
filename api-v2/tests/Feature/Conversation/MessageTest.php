@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 
 beforeEach(function () {
-    Storage::fake(MessageFile::DISK);
+    Storage::fake((string) config('conversations.attachments_disk'));
 });
 
 describe('sending', function () {
@@ -116,7 +116,7 @@ describe('attachments', function () {
             ->json('data');
 
         $file = MessageFile::query()->where('file_name', 'vaccins.jpg')->sole();
-        Storage::disk(MessageFile::DISK)->assertExists($file->file_path);
+        Storage::disk((string) config('conversations.attachments_disk'))->assertExists($file->file_path);
         expect($file->file_path)->toStartWith("conversations/{$conversation->id}/");
 
         $this->withHeaders(asUser($conversation->activity->organization->owner))
@@ -143,7 +143,7 @@ describe('attachments', function () {
             ->assertUnprocessable()
             ->assertJsonValidationErrors('files.0');
 
-        expect(Storage::disk(MessageFile::DISK)->allFiles())->toBe([]);
+        expect(Storage::disk((string) config('conversations.attachments_disk'))->allFiles())->toBe([]);
     });
 });
 

@@ -10,8 +10,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
- * Pièce jointe d'un message, sur le disque privé : elle ne se télécharge que par l'API, qui vérifie l'accès à la
- * conversation.
+ * Pièce jointe d'un message, sur le disque privé de config('conversations.attachments_disk') : elle ne se
+ * télécharge que par l'API, qui vérifie l'accès à la conversation.
  *
  * @property string $id
  * @property string $message_id
@@ -28,8 +28,6 @@ class MessageFile extends Model
     use HasUuids;
 
     public const UPDATED_AT = null;
-
-    public const DISK = 'local';
 
     protected $fillable = [
         'message_id',

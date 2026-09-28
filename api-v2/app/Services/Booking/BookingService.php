@@ -289,7 +289,8 @@ class BookingService
             return;
         }
 
-        ActivityUnitType::query()->whereKey($quote->unitTypeIds())->lockForUpdate()->get();
+        // Toujours dans le même ordre : deux demandes qui verrouillent les mêmes types de place ne s'interbloquent pas.
+        ActivityUnitType::query()->whereKey($quote->unitTypeIds())->orderBy('id')->lockForUpdate()->get();
     }
 
     private function assertCanTransition(Booking $booking, BookingStatusEnum $status): void

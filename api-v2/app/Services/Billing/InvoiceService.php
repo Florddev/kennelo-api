@@ -77,7 +77,7 @@ class InvoiceService
             ->when($filters['issuer'] ?? null, fn (Builder $query, string $issuer) => $issuer === 'kennelo'
                 ? $query->whereNull('issuer_organization_id')
                 : $query->whereNotNull('issuer_organization_id'))
-            ->when($filters['search'] ?? null, fn (Builder $query, string $search) => $query->where('number', 'like', '%'.$search.'%'));
+            ->when($filters['search'] ?? null, fn (Builder $query, string $search) => $query->whereLike('number', '%'.$search.'%'));
 
         return $this->filtered($query, $filters)->paginate($filters['per_page'] ?? null);
     }

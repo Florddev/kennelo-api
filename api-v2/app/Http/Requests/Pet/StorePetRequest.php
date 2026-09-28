@@ -7,6 +7,7 @@ namespace App\Http\Requests\Pet;
 use App\Enums\PetCoatTypeEnum;
 use App\Enums\PetSizeClassEnum;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class StorePetRequest extends FormRequest
@@ -18,13 +19,16 @@ class StorePetRequest extends FormRequest
 
     public function rules(): array
     {
+        // Un identifiant d'espèce malformé ne va pas jusqu'à la base, qui refuse de le comparer à un UUID.
+        $animalTypeId = Str::isUuid($this->input('animal_type_id')) ? $this->input('animal_type_id') : null;
+
         return [
             'animal_type_id' => ['required', 'uuid', 'exists:animal_types,id'],
             'animal_breed_id' => [
                 'sometimes',
                 'nullable',
                 'uuid',
-                Rule::exists('animal_breeds', 'id')->where('animal_type_id', $this->input('animal_type_id')),
+                Rule::exists('animal_breeds', 'id')->where('animal_type_id', $animalTypeId),
             ],
             'name' => ['required', 'string', 'max:255'],
             'size_class' => ['sometimes', 'nullable', Rule::enum(PetSizeClassEnum::class)],

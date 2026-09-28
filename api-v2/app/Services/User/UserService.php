@@ -25,9 +25,9 @@ class UserService
         return User::withInactive()->with(['media', 'roles'])
             ->when(isset($filters['search']), function ($q) use ($filters) {
                 $q->where(function ($q) use ($filters) {
-                    $q->where('first_name', 'like', "%{$filters['search']}%")
-                        ->orWhere('last_name', 'like', "%{$filters['search']}%")
-                        ->orWhere('email', 'like', "%{$filters['search']}%");
+                    $q->whereLike('first_name', "%{$filters['search']}%")
+                        ->orWhereLike('last_name', "%{$filters['search']}%")
+                        ->orWhereLike('email', "%{$filters['search']}%");
                 });
             })
             ->when(isset($filters['role']), fn ($q) => $q->role($filters['role']))

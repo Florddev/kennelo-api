@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
 
     /*
@@ -82,7 +84,11 @@ return [
                     'scheme' => env('REVERB_SCHEME', 'https'),
                     'useTLS' => env('REVERB_SCHEME', 'https') === 'https',
                 ],
-                'allowed_origins' => ['*'],
+                // Les fronts autorisés par CORS, et eux seuls, ouvrent une connexion (Reverb compare le nom d'hôte).
+                'allowed_origins' => array_values(array_unique(array_filter(array_map(
+                    fn (string $origin): ?string => parse_url(trim($origin), PHP_URL_HOST) ?: null,
+                    explode(',', (string) env('CORS_ALLOWED_ORIGINS', env('FRONTEND_URL', 'http://localhost:3000'))),
+                )))),
                 'ping_interval' => env('REVERB_APP_PING_INTERVAL', 60),
                 'activity_timeout' => env('REVERB_APP_ACTIVITY_TIMEOUT', 30),
                 'max_connections' => env('REVERB_APP_MAX_CONNECTIONS'),

@@ -22,9 +22,12 @@ use App\Models\User;
 use App\Services\Billing\CommissionStatementService;
 use App\Services\Billing\InvoiceService;
 use Carbon\CarbonImmutable;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Testing\TestResponse;
+use Tests\ConcurrencyTestCase;
 use Tests\Support\FakeStripe;
 use Tests\TestCase;
 
@@ -37,6 +40,10 @@ use Tests\TestCase;
 pest()->extend(TestCase::class)
     ->use(RefreshDatabase::class)
     ->in('Feature');
+
+pest()->extend(ConcurrencyTestCase::class)
+    ->group('pgsql')
+    ->in('Concurrency');
 
 /*
 |--------------------------------------------------------------------------
@@ -56,6 +63,28 @@ function asUser(User $user): array
     test()->actingAs($user->refresh());
 
     return [];
+}
+
+/**
+ * Garde-fou que seule PostgreSQL applique (CHECK, NULLS NOT DISTINCT, exclusion, verrous) : le test est ignoré
+ * sous SQLite. Il tourne dans le job PostgreSQL de la CI, ou en local avec composer test:pgsql.
+ */
+function requiresPostgres(): void
+{
+    if (DB::connection()->getDriverName() !== 'pgsql') {
+        test()->markTestSkipped('PostgreSQL only.');
+    }
+}
+
+/**
+ * La base refuse l'écriture : sous PostgreSQL, par la contrainte nommée (SQLite ne donne pas toujours son nom).
+ * L'écriture passe dans un point de sauvegarde, pour que son échec n'interrompe pas la transaction du test.
+ */
+function expectViolation(string $constraint, Closure $write): void
+{
+    $message = DB::connection()->getDriverName() === 'pgsql' ? "\"{$constraint}\"" : null;
+
+    expect(fn () => DB::transaction($write))->toThrow(QueryException::class, $message);
 }
 
 function adminUser(): User

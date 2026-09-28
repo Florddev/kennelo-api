@@ -61,7 +61,7 @@ class MessageController extends Controller
     {
         $this->authorize('view', $conversation);
 
-        $disk = Storage::disk(MessageFile::DISK);
+        $disk = Storage::disk((string) config('conversations.attachments_disk'));
         abort_unless($disk->exists($file->file_path), 404, __('errors.not_found'));
 
         return $disk->download($file->file_path, $file->file_name);
