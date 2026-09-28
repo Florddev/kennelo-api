@@ -20,7 +20,7 @@ return [
         'name' => 'Starter',
         'commission_rate' => env('PLAN_STARTER_COMMISSION_RATE', '0.03'),
         'price_monthly' => env('PLAN_STARTER_PRICE_MONTHLY', '15.00'),
-        'stripe_price_id' => env('STRIPE_PRICE_STARTER'),
+        'stripe_price_id' => env('STRIPE_PRICE_STARTER') ?: null,
         'limits' => [
             'max_activities' => (int) env('PLAN_STARTER_MAX_ACTIVITIES', 3),
             'max_periods' => (int) env('PLAN_STARTER_MAX_PERIODS', 10),
@@ -33,7 +33,7 @@ return [
         'name' => 'Pro',
         'commission_rate' => env('PLAN_PRO_COMMISSION_RATE', '0.00'),
         'price_monthly' => env('PLAN_PRO_PRICE_MONTHLY', '59.00'),
-        'stripe_price_id' => env('STRIPE_PRICE_PRO'),
+        'stripe_price_id' => env('STRIPE_PRICE_PRO') ?: null,
         'limits' => [
             'max_activities' => (int) env('PLAN_PRO_MAX_ACTIVITIES', -1),
             'max_periods' => (int) env('PLAN_PRO_MAX_PERIODS', -1),
