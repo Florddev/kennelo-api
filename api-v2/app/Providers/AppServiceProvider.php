@@ -7,6 +7,7 @@ namespace App\Providers;
 use App\Models\User;
 use App\Notifications\MagicLinkNotification;
 use App\Support\Database\SqliteMathFunctions;
+use Closure;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Database\Eloquent\Model;
@@ -17,6 +18,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
+use PDO;
 use Stripe\StripeClient;
 
 class AppServiceProvider extends ServiceProvider
@@ -35,9 +37,22 @@ class AppServiceProvider extends ServiceProvider
         Model::shouldBeStrict(! $this->app->isProduction());
 
         // SQLite (développement, tests) n'a pas les fonctions mathématiques de PostgreSQL utilisées par la recherche.
+        // Elles s'ajoutent à l'ouverture de la base, sans l'ouvrir plus tôt : l'événement part dès la création de la
+        // connexion (au démarrage, pour le cache des permissions), et démarrer l'application (composer install,
+        // config:cache) ne doit pas exiger de base de données.
         Event::listen(function (ConnectionEstablished $event): void {
-            if ($event->connection->getDriverName() === 'sqlite') {
-                SqliteMathFunctions::register($event->connection->getPdo());
+            $connection = $event->connection;
+
+            if ($connection->getDriverName() !== 'sqlite') {
+                return;
+            }
+
+            $pdo = $connection->getRawPdo();
+
+            if ($pdo instanceof Closure) {
+                $connection->setPdo(fn (): PDO => tap($pdo(), SqliteMathFunctions::register(...)));
+            } elseif ($pdo instanceof PDO) {
+                SqliteMathFunctions::register($pdo);
             }
         });
 

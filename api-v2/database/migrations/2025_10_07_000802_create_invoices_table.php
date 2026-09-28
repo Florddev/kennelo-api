@@ -13,7 +13,10 @@ return new class extends Migration
     {
         // Factures et avoirs. Une facture ne se modifie jamais : un remboursement produit un avoir.
         Schema::create('invoices', function (Blueprint $table): void {
-            $table->uuid('id')->primary();
+            // Clé primaire déclarée d'abord : credited_invoice_id y fait référence, et PostgreSQL exige que la clé
+            // existe avant la contrainte (->primary() ne l'ajouterait qu'après les clés étrangères).
+            $table->uuid('id');
+            $table->primary('id');
             $table->foreignUuid('issuer_organization_id')->nullable()->comment('NULL = Kennelo')->constrained('organizations')->restrictOnDelete();
             $table->string('number', 30);
             $table->string('type', 20)->default('invoice')->comment('invoice | credit_note');
