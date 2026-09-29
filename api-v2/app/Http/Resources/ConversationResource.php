@@ -43,7 +43,7 @@ class ConversationResource extends JsonResource
             'unread_count' => $this->when(array_key_exists('unread_count', $this->resource->getAttributes()), fn (): int => (int) $this->resource->getAttribute('unread_count')),
             'bookings' => $this->whenLoaded('threads', fn (): array => $this->threads->map(fn (BookingThread $thread): array => [
                 'id' => $thread->booking_id,
-                'status' => $thread->booking?->status->value,
+                'status' => $thread->booking?->status,
                 'start_date' => $thread->booking?->start_date->toDateString(),
                 'end_date' => $thread->booking?->end_date->toDateString(),
                 'is_active' => $thread->isActive(),

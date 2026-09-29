@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Http\Resources;
 
-use App\Enums\LocationModeEnum;
 use App\Models\Profession;
 use App\Models\ProfessionDocumentRequirement;
 use Illuminate\Http\Request;
@@ -21,14 +20,14 @@ class ProfessionResource extends JsonResource
             'name' => $this->name,
             'description' => $this->description,
             'category' => ProfessionCategoryResource::make($this->whenLoaded('category')),
-            'booking_mode' => $this->booking_mode->value,
-            'billing_unit' => $this->billing_unit->value,
-            'locations' => array_map(fn (LocationModeEnum $location): string => $location->value, $this->allowedLocations()),
+            'booking_mode' => $this->booking_mode,
+            'billing_unit' => $this->billing_unit,
+            'locations' => $this->allowedLocations(),
             'pricing_dimensions' => $this->pricing_dimensions ?? [],
             'animal_types' => AnimalTypeResource::collection($this->whenLoaded('animalTypes')),
             'document_requirements' => $this->whenLoaded('documentRequirements', fn () => $this->documentRequirements->map(
                 fn (ProfessionDocumentRequirement $requirement): array => [
-                    'type' => $requirement->document_type->value,
+                    'type' => $requirement->document_type,
                     'is_required' => $requirement->is_required,
                     'validity_months' => $requirement->validity_months,
                 ],

@@ -25,17 +25,7 @@ class AgendaViewResource extends JsonResource
             'timezone' => $this->resource['timezone'],
             'resources' => AgendaResourceResource::collection($this->resource['resources']),
             'entries' => ResourceBookingResource::collection($this->resource['entries']),
-            'to_schedule' => $this->resource['to_schedule']->map(fn (BookingItem $item): array => [
-                'id' => $item->id,
-                'booking_id' => $item->booking_id,
-                'activity_id' => $item->booking?->activity_id,
-                'start_date' => $item->booking?->start_date->toDateString(),
-                'end_date' => $item->booking?->end_date->toDateString(),
-                'client' => ['first_name' => $item->booking?->user?->first_name, 'last_name' => $item->booking?->user?->last_name],
-                'service' => ['id' => $item->service_id, 'name' => $item->service?->name],
-                'pet' => ['id' => $item->pet_id, 'name' => $item->pet?->name],
-                'duration_minutes' => $item->duration_minutes,
-            ])->all(),
+            'to_schedule' => ItemToScheduleResource::collection($this->resource['to_schedule']),
         ];
     }
 }

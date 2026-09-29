@@ -28,7 +28,7 @@ class UpdateOrganizationRequest extends FormRequest
     public function rules(): array
     {
         $organization = $this->organization();
-        $hasSiren = $this->legalForm()->hasSiren();
+        $hasSiren = (bool) $this->legalForm()?->hasSiren();
         $individual = Rule::excludeIf(! $hasSiren);
 
         return [
@@ -36,9 +36,9 @@ class UpdateOrganizationRequest extends FormRequest
             'legal_form' => ['sometimes', Rule::enum(OrganizationLegalFormEnum::class)],
             'siren' => [
                 $individual,
-                $hasSiren && blank($organization->siren) ? 'required' : 'sometimes',
+                $hasSiren && blank($organization?->siren) ? 'required' : 'sometimes',
                 'digits:9',
-                Rule::unique('organizations', 'siren')->ignore($organization->id)->withoutTrashed(),
+                Rule::unique('organizations', 'siren')->ignore($organization?->id)->withoutTrashed(),
             ],
             'siret' => [$individual, 'sometimes', 'nullable', 'digits:14'],
             'ape_code' => [$individual, 'sometimes', 'nullable', 'string', 'max:6'],
@@ -56,9 +56,9 @@ class UpdateOrganizationRequest extends FormRequest
         return [
             function (Validator $validator): void {
                 $siret = $this->input('siret');
-                $siren = $this->input('siren', $this->organization()->siren);
+                $siren = $this->input('siren', $this->organization()?->siren);
 
-                if ($validator->errors()->hasAny(['siren', 'siret']) || blank($siret) || ! $this->legalForm()->hasSiren()) {
+                if ($validator->errors()->hasAny(['siren', 'siret']) || blank($siret) || ! $this->legalForm()?->hasSiren()) {
                     return;
                 }
 
@@ -69,14 +69,14 @@ class UpdateOrganizationRequest extends FormRequest
         ];
     }
 
-    private function organization(): Organization
+    private function organization(): ?Organization
     {
-        /** @var Organization */
+        /** @var Organization|null */
         return $this->route('organization');
     }
 
-    private function legalForm(): OrganizationLegalFormEnum
+    private function legalForm(): ?OrganizationLegalFormEnum
     {
-        return OrganizationLegalFormEnum::tryFrom((string) $this->input('legal_form')) ?? $this->organization()->legal_form;
+        return OrganizationLegalFormEnum::tryFrom((string) $this->input('legal_form')) ?? $this->organization()?->legal_form;
     }
 }

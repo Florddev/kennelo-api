@@ -16,7 +16,7 @@ class ActivityAvailabilityResource extends JsonResource
         return [
             'id' => $this->id,
             'date' => $this->date->toDateString(),
-            'status' => $this->status->value,
+            'status' => $this->status,
             'note' => $this->note,
         ];
     }

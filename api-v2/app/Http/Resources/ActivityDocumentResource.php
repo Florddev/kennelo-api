@@ -19,8 +19,8 @@ class ActivityDocumentResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'document_type' => $this->document_type->value,
-            'status' => $this->status->value,
+            'document_type' => $this->document_type,
+            'status' => $this->status,
             'expires_at' => $this->expires_at?->toDateString(),
             'rejection_reason' => $this->rejection_reason,
             'reviewed_at' => $this->reviewed_at?->toISOString(),

@@ -22,8 +22,6 @@ use Illuminate\Http\Response;
 
 /**
  * @tags Admin Users
- *
- * {user} inclut les comptes inactifs ou bannis (liaison déclarée dans AppServiceProvider).
  */
 class UserController extends Controller
 {

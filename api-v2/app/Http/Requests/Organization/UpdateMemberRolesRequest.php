@@ -23,7 +23,7 @@ class UpdateMemberRolesRequest extends FormRequest
 
     public function rules(): array
     {
-        /** @var Organization $organization */
+        /** @var Organization|null $organization */
         $organization = $this->route('organization');
 
         [$activityScoped, $organizationWide] = collect(OrganizationRoleEnum::cases())
@@ -37,7 +37,7 @@ class UpdateMemberRolesRequest extends FormRequest
                 'required_if:roles.*.role,'.$activityScoped->pluck('value')->implode(','),
                 'prohibited_if:roles.*.role,'.$organizationWide->pluck('value')->implode(','),
                 'uuid',
-                Rule::exists('activities', 'id')->where('organization_id', $organization->id)->whereNull('deleted_at'),
+                Rule::exists('activities', 'id')->where('organization_id', $organization?->id)->whereNull('deleted_at'),
             ],
         ];
     }

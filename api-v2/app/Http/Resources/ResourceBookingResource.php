@@ -24,14 +24,14 @@ class ResourceBookingResource extends JsonResource
         return [
             'id' => $this->id,
             'resource_id' => $this->resource_id,
-            'kind' => $this->kind->value,
+            'kind' => $this->kind,
             'starts_at' => $this->starts_at->toISOString(),
             'ends_at' => $this->ends_at->toISOString(),
             'note' => $this->note,
             'booking' => $booking === null ? null : [
                 'id' => $booking->id,
                 'activity_id' => $booking->activity_id,
-                'status' => $booking->status->value,
+                'status' => $booking->status,
                 'item_id' => $item->id,
                 'client' => ['first_name' => $booking->user?->first_name, 'last_name' => $booking->user?->last_name],
                 'service' => ['id' => $item->service_id, 'name' => $item->service?->name],

@@ -30,7 +30,7 @@ class OfferedServiceResource extends JsonResource
             'requires_scheduling' => $this->requires_scheduling,
             'is_active' => $this->is_active,
             'offer' => [
-                'offered_as' => $this->offer->offered_as->value,
+                'offered_as' => $this->offer->offered_as,
                 'adjustment_percent' => $adjustment,
                 'is_included' => $this->offer->is_included,
                 'is_active' => $this->offer->is_active,

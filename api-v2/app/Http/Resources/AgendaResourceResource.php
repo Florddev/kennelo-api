@@ -20,7 +20,7 @@ class AgendaResourceResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'type' => $this->type->value,
+            'type' => $this->type,
             'name' => $this->name,
             'is_active' => $this->is_active,
             'member' => $this->whenLoaded('member', fn (): ?array => $this->member === null ? null : [
@@ -31,7 +31,7 @@ class AgendaResourceResource extends JsonResource
             ]),
             'schedules' => $this->whenLoaded('schedules', fn (): array => $this->schedules->map(fn (ResourceSchedule $schedule): array => [
                 'activity_id' => $schedule->activity_id,
-                'weekday' => $schedule->weekday->value,
+                'weekday' => $schedule->weekday,
                 'start_time' => substr($schedule->start_time, 0, 5),
                 'end_time' => substr($schedule->end_time, 0, 5),
             ])->all()),

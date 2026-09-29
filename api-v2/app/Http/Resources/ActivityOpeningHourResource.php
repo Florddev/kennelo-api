@@ -15,7 +15,7 @@ class ActivityOpeningHourResource extends JsonResource
     {
         // PostgreSQL renvoie les heures avec les secondes (09:00:00) : on répond toujours en HH:MM.
         return [
-            'weekday' => $this->weekday->value,
+            'weekday' => $this->weekday,
             'opens_at' => substr($this->opens_at, 0, 5),
             'closes_at' => substr($this->closes_at, 0, 5),
         ];

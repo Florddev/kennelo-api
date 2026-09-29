@@ -15,7 +15,7 @@ class AdminActionResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'action' => $this->action->value,
+            'action' => $this->action,
             'admin_id' => $this->admin_id,
             'target_user_id' => $this->target_user_id,
             'metadata' => $this->metadata,

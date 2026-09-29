@@ -24,24 +24,11 @@ class UpsertActivityOfferRequest extends FormRequest
 
     public function rules(): array
     {
-        /** @var Activity $activity */
-        $activity = $this->route('activity');
-        $isStay = $activity->profession()->firstOrFail()->booking_mode === BookingModeEnum::STAY;
-
         return [
-            'offered_as' => ['sometimes', Rule::enum(ServiceOfferEnum::class)->only(
-                $isStay ? ServiceOfferEnum::cases() : [ServiceOfferEnum::STANDALONE],
-            )],
+            'offered_as' => ['sometimes', Rule::enum(ServiceOfferEnum::class)],
             'adjustment_percent' => ['sometimes', 'numeric', 'decimal:0,2', 'between:-100,100'],
             'is_included' => ['sometimes', 'boolean'],
             'is_active' => ['sometimes', 'boolean'],
-        ];
-    }
-
-    public function messages(): array
-    {
-        return [
-            'offered_as.enum' => __('catalog.stay_option_requires_stay'),
         ];
     }
 
@@ -52,7 +39,13 @@ class UpsertActivityOfferRequest extends FormRequest
     {
         return [
             function (Validator $validator): void {
+                /** @var Activity $activity */
+                $activity = $this->route('activity');
                 $offeredAs = ServiceOfferEnum::tryFrom((string) $this->input('offered_as', ServiceOfferEnum::STANDALONE->value));
+
+                if ($offeredAs?->isStayOption() === true && $activity->profession()->firstOrFail()->booking_mode !== BookingModeEnum::STAY) {
+                    $validator->errors()->add('offered_as', __('catalog.stay_option_requires_stay'));
+                }
 
                 if ($this->boolean('is_included') && $offeredAs?->isStayOption() !== true) {
                     $validator->errors()->add('is_included', __('catalog.included_requires_stay_option'));

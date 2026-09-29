@@ -16,11 +16,11 @@ class UpdateProfessionRequest extends StoreProfessionRequest
 {
     public function rules(): array
     {
-        /** @var Profession $profession */
+        /** @var Profession|null $profession */
         $profession = $this->route('profession');
         $mode = $this->has('booking_mode')
             ? BookingModeEnum::tryFrom((string) $this->input('booking_mode'))
-            : $profession->booking_mode;
+            : $profession?->booking_mode;
 
         return [
             'profession_category_id' => ['sometimes', 'uuid', Rule::exists('profession_categories', 'id')],

@@ -17,7 +17,7 @@ class FinancialOperationResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'type' => $this->type->value,
+            'type' => $this->type,
             'amount' => $this->amount,
             'currency' => $this->currency,
             'stripe_reference' => $this->stripe_reference,

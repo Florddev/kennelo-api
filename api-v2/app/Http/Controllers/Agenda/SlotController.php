@@ -56,7 +56,7 @@ class SlotController extends Controller
                 'duration_minutes' => $result['duration_minutes'],
                 'resources' => $result['resources']->map(fn (AgendaResource $resource): array => [
                     'id' => $resource->id,
-                    'type' => $resource->type->value,
+                    'type' => $resource->type,
                     'name' => $resource->name,
                 ])->all(),
             ],

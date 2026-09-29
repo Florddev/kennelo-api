@@ -21,7 +21,7 @@ class InvoiceResource extends JsonResource
         return [
             'id' => $this->id,
             'number' => $this->number,
-            'type' => $this->type->value,
+            'type' => $this->type,
             'issuer' => $this->isIssuedByKennelo() ? 'kennelo' : 'organization',
             'issuer_organization_id' => $this->issuer_organization_id,
             'issuer_details' => $this->issuer_details,

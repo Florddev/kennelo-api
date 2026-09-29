@@ -20,9 +20,9 @@ class ReviewReportResource extends JsonResource
         return [
             'id' => $this->id,
             'review_id' => $this->review_id,
-            'reason' => $this->reason->value,
+            'reason' => $this->reason,
             'description' => $this->description,
-            'status' => $this->status->value,
+            'status' => $this->status,
             'reviewed_at' => $this->reviewed_at?->toISOString(),
             'reporter' => $this->whenLoaded('reporter', fn (): ?array => $this->reporter === null ? null : [
                 'id' => $this->reporter->id,
@@ -31,7 +31,7 @@ class ReviewReportResource extends JsonResource
             ]),
             'review' => $this->whenLoaded('review', fn (): ?array => $this->review === null ? null : [
                 'id' => $this->review->id,
-                'reviewer_type' => $this->review->reviewer_type->value,
+                'reviewer_type' => $this->review->reviewer_type,
                 'reviewer' => $this->review->reviewer === null ? null : [
                     'id' => $this->review->reviewer->id,
                     'first_name' => $this->review->reviewer->first_name,

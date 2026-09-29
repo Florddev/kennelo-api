@@ -17,7 +17,7 @@ class ChangeEmailRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($this->user()->id)],
+            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($this->user()?->id)],
             'password' => ['required', 'string'],
         ];
     }

@@ -22,10 +22,10 @@ class ActivityPeriodSettingResource extends JsonResource
             'is_active' => $this->is_active,
             'min_stay' => $this->min_stay,
             'price_modifier_percent' => $this->price_modifier_percent,
-            'closed_weekdays' => array_map(fn (WeekDayEnum $day): int => $day->value, WeekDayEnum::fromMask($this->closed_weekdays)),
+            'closed_weekdays' => WeekDayEnum::fromMask($this->closed_weekdays),
             'prices' => $this->whenLoaded('prices', fn (): array => $this->prices->map(fn (ActivityPeriodPrice $price): array => [
                 'unit_type_id' => $price->activity_unit_type_id,
-                'weekday' => $price->weekday?->value,
+                'weekday' => $price->weekday,
                 'price' => $price->price,
                 'extra_animal_price' => $price->extra_animal_price,
             ])->all()),

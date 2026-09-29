@@ -23,12 +23,12 @@ class ReplacePeriodPricesRequest extends FormRequest
 
     public function rules(): array
     {
-        /** @var Activity $activity */
+        /** @var Activity|null $activity */
         $activity = $this->route('activity');
 
         return [
             'prices' => ['present', 'array', 'max:500'],
-            'prices.*.unit_type_id' => ['required', 'uuid', Rule::exists('activity_unit_types', 'id')->where('activity_id', $activity->id)],
+            'prices.*.unit_type_id' => ['required', 'uuid', Rule::exists('activity_unit_types', 'id')->where('activity_id', $activity?->id)],
             'prices.*.weekday' => ['nullable', 'integer', Rule::enum(WeekDayEnum::class)],
             'prices.*.price' => ['required', 'numeric', 'min:0', 'max:99999999.99', 'decimal:0,2'],
             'prices.*.extra_animal_price' => ['nullable', 'numeric', 'min:0', 'max:99999999.99', 'decimal:0,2'],

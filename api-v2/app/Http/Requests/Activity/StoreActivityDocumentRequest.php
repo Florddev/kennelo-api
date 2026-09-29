@@ -9,6 +9,7 @@ use App\Models\Activity;
 use App\Models\ProfessionDocumentRequirement;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator;
 
 /**
  * Seuls les justificatifs prévus par le métier de l'activité se déposent. Un justificatif à durée de validité
@@ -23,26 +24,37 @@ class StoreActivityDocumentRequest extends FormRequest
 
     public function rules(): array
     {
-        /** @var Activity $activity */
-        $activity = $this->route('activity');
-        $requirements = ProfessionDocumentRequirement::query()->where('profession_id', $activity->profession_id)->get();
-        $requirement = $requirements->first(
-            fn (ProfessionDocumentRequirement $requirement): bool => $requirement->document_type->value === $this->input('document_type'),
-        );
-
         return [
-            'document_type' => ['required', Rule::in($requirements->map(
-                fn (ProfessionDocumentRequirement $requirement): string => $requirement->document_type->value,
-            )->all()), Rule::enum(DocumentTypeEnum::class)],
-            'expires_at' => [Rule::requiredIf($requirement?->validity_months !== null), 'nullable', 'date_format:Y-m-d', 'after:today'],
+            'document_type' => ['required', Rule::enum(DocumentTypeEnum::class)],
+            'expires_at' => [Rule::requiredIf(fn (): bool => $this->requirement()?->validity_months !== null), 'nullable', 'date_format:Y-m-d', 'after:today'],
             'file' => ['required', 'file', 'mimes:pdf,jpg,jpeg,png,webp', 'max:10240'],
         ];
     }
 
-    public function messages(): array
+    /**
+     * @return array<int, callable>
+     */
+    public function after(): array
     {
         return [
-            'document_type.in' => __('activity.document_not_required'),
+            function (Validator $validator): void {
+                if (! $validator->errors()->has('document_type') && $this->requirement() === null) {
+                    $validator->errors()->add('document_type', __('activity.document_not_required'));
+                }
+            },
         ];
+    }
+
+    private function requirement(): ?ProfessionDocumentRequirement
+    {
+        return once(function (): ?ProfessionDocumentRequirement {
+            /** @var Activity $activity */
+            $activity = $this->route('activity');
+
+            return ProfessionDocumentRequirement::query()
+                ->where('profession_id', $activity->profession_id)
+                ->get()
+                ->first(fn (ProfessionDocumentRequirement $requirement): bool => $requirement->document_type->value === $this->input('document_type'));
+        });
     }
 }

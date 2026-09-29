@@ -22,10 +22,10 @@ class OrganizationMemberResource extends JsonResource
                 'legal_name' => $this->organization->legal_name,
             ]),
             'user' => UserResource::make($this->whenLoaded('user')),
-            'status' => $this->status->value,
+            'status' => $this->status,
             'is_owner' => $this->whenLoaded('organization', fn () => $this->isOwner()),
             'roles' => $this->whenLoaded('roles', fn () => $this->roles->map(fn (OrganizationMemberRole $role): array => [
-                'role' => $role->role->value,
+                'role' => $role->role,
                 'activity_id' => $role->activity_id,
             ])),
             // Sa fiche dans l'agenda : à proposer quand il réalise des prestations et n'en a pas encore.

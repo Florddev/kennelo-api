@@ -16,7 +16,7 @@ class UpdateUnitTypeRequest extends FormRequest
 
     public function rules(): array
     {
-        /** @var Activity $activity */
+        /** @var Activity|null $activity */
         $activity = $this->route('activity');
 
         return [

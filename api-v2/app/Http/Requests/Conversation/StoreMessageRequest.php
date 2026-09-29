@@ -36,7 +36,7 @@ class StoreMessageRequest extends FormRequest
 
     public function rules(): array
     {
-        /** @var Conversation $conversation */
+        /** @var Conversation|null $conversation */
         $conversation = $this->route('conversation');
 
         return [
@@ -46,8 +46,8 @@ class StoreMessageRequest extends FormRequest
                 'nullable',
                 'uuid',
                 Rule::exists('bookings', 'id')
-                    ->where('user_id', $conversation->user_id)
-                    ->where('activity_id', $conversation->activity_id),
+                    ->where('user_id', $conversation?->user_id)
+                    ->where('activity_id', $conversation?->activity_id),
             ],
             'files' => ['sometimes', 'array', 'max:10'],
             'files.*' => ['file', 'max:10240', 'mimetypes:'.implode(',', self::MIME_TYPES)],

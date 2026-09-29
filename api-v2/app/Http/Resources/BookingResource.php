@@ -43,13 +43,13 @@ class BookingResource extends JsonResource
 
         return [
             'id' => $this->id,
-            'status' => $this->status->value,
-            'payment_status' => $this->payment_status->value,
+            'status' => $this->status,
+            'payment_status' => $this->payment_status,
             'activity' => $this->whenLoaded('activity', fn (): array => [
                 'id' => $this->activity?->id,
                 'name' => $this->activity?->name,
                 'timezone' => $this->activity?->timezone,
-                'booking_mode' => $this->activity?->relationLoaded('profession') ? $this->activity->profession?->booking_mode->value : null,
+                'booking_mode' => $this->activity?->relationLoaded('profession') ? $this->activity->profession?->booking_mode : null,
                 'image' => $this->activity?->relationLoaded('media')
                     ? $this->activity->getFirstMediaUrl(MediaService::COLLECTION_IMAGES) ?: null
                     : null,
@@ -62,13 +62,13 @@ class BookingResource extends JsonResource
                 'id' => $this->user?->id,
                 'first_name' => $this->user?->first_name,
                 'last_name' => $this->user?->last_name,
-                ...($isAdmin ? ['email' => $this->user?->email] : []),
+                'email' => $this->when($isAdmin, fn (): ?string => $this->user?->email),
             ]),
             'start_date' => $this->start_date->toDateString(),
             'end_date' => $this->end_date->toDateString(),
             'starts_at' => $this->when($isAppointment, fn (): string => $this->startsAt()->toISOString()),
             'ends_at' => $this->when($isAppointment, fn (): string => $this->endsAt()->toISOString()),
-            'location_mode' => $this->location_mode->value,
+            'location_mode' => $this->location_mode,
             'service_address' => $this->whenLoaded('serviceAddress', fn () => $this->serviceAddress === null ? null : ($isClient || $isCaptured
                 ? AddressResource::make($this->serviceAddress)
                 : [
@@ -87,9 +87,9 @@ class BookingResource extends JsonResource
             'platform_fee' => $this->when(! $isClient, $this->platform_fee),
             'activity_amount' => $this->when(! $isClient, $this->activity_amount),
             'vat_rate' => $this->when(! $isClient, $this->vat_rate),
-            'cancellation_policy' => $this->cancellation_policy->value,
+            'cancellation_policy' => $this->cancellation_policy,
             'cancelled_at' => $this->cancelled_at?->toISOString(),
-            'cancelled_by_role' => $this->cancelled_by_role?->value,
+            'cancelled_by_role' => $this->cancelled_by_role,
             'units' => $this->whenLoaded('units', fn (): array => $this->units->map(fn (BookingUnit $unit): array => [
                 'id' => $unit->id,
                 'unit_type' => ['id' => $unit->activity_unit_type_id, 'name' => $unit->unitType?->name],
@@ -109,7 +109,7 @@ class BookingResource extends JsonResource
                 'id' => $item->id,
                 'service' => ['id' => $item->service_id, 'name' => $item->service?->name],
                 'pet_id' => $item->pet_id,
-                'status' => $item->status->value,
+                'status' => $item->status,
                 'quantity' => $item->quantity,
                 'unit_price' => $item->unit_price,
                 'subtotal' => $item->subtotal,
@@ -123,11 +123,11 @@ class BookingResource extends JsonResource
             ])->all()),
             'payments' => $this->whenLoaded('payments', fn (): array => $this->payments->map(fn (BookingPayment $payment): array => [
                 'id' => $payment->id,
-                'kind' => $payment->kind->value,
+                'kind' => $payment->kind,
                 'amount' => $payment->amount,
                 // Part des frais Kennelo dans le montant.
                 'service_fee' => $payment->service_fee,
-                'status' => $payment->status->value,
+                'status' => $payment->status,
                 'paid_at' => $payment->paid_at?->toISOString(),
                 'refunded_amount' => bcsub($payment->amount, $payment->refundableAmount(), 2),
             ])->all()),
@@ -136,18 +136,18 @@ class BookingResource extends JsonResource
                 'payment_id' => $refund->booking_payment_id,
                 'amount' => $refund->amount,
                 'service_fee' => $refund->service_fee_amount,
-                'reason' => $refund->reason->value,
+                'reason' => $refund->reason,
                 'refunded_at' => $refund->refunded_at?->toISOString(),
                 'created_at' => $refund->created_at?->toISOString(),
             ])->values()->all()),
             'payout' => $this->when(! $isClient && $this->relationLoaded('payout'), fn (): ?array => $this->payout === null ? null : [
                 'amount' => $this->payout->amount,
-                'status' => $this->payout->status->value,
+                'status' => $this->payout->status,
                 'transferred_at' => $this->payout->transferred_at?->toISOString(),
             ]),
             'disputes' => $this->when(! $isClient && $this->relationLoaded('disputes'), fn (): array => $this->disputes->map(fn (BookingDispute $dispute): array => [
                 'id' => $dispute->id,
-                'status' => $dispute->status->value,
+                'status' => $dispute->status,
                 'reason' => $dispute->reason,
                 'amount' => $dispute->amount,
                 'recovered_amount' => $dispute->recovered_amount,

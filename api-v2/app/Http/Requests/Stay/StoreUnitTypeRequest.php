@@ -22,17 +22,20 @@ class StoreUnitTypeRequest extends FormRequest
 
     public function rules(): array
     {
+        /** @var Activity|null $activity */
+        $activity = $this->route('activity');
+
         return [
             'name' => ['required', 'string', 'max:100'],
             'animal_type_ids' => ['required', 'array', 'min:1'],
-            ...self::unitRules($this->activity()),
+            ...self::unitRules($activity),
         ];
     }
 
     /**
      * @return array<string, list<mixed>>
      */
-    public static function unitRules(Activity $activity): array
+    public static function unitRules(?Activity $activity): array
     {
         return [
             'description' => ['nullable', 'string', 'max:2000'],
@@ -43,7 +46,7 @@ class StoreUnitTypeRequest extends FormRequest
             'animal_type_ids.*' => [
                 'distinct',
                 'uuid',
-                Rule::exists('activity_animal_types', 'animal_type_id')->where('activity_id', $activity->id),
+                Rule::exists('activity_animal_types', 'animal_type_id')->where('activity_id', $activity?->id),
             ],
         ];
     }

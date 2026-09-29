@@ -26,7 +26,7 @@ class ReplaceServicePricesRequest extends FormRequest
 
     public function rules(): array
     {
-        /** @var Service $service */
+        /** @var Service|null $service */
         $service = $this->route('service');
 
         return [
@@ -37,7 +37,7 @@ class ReplaceServicePricesRequest extends FormRequest
             'prices.*.animal_breed_id' => ['nullable', 'uuid', Rule::exists('animal_breeds', 'id')],
             'prices.*.price' => ['required', 'numeric', 'decimal:0,2', 'min:0', 'max:99999999.99'],
             'prices.*.duration_minutes' => [
-                Rule::requiredIf($service->requires_scheduling),
+                Rule::requiredIf((bool) $service?->requires_scheduling),
                 'nullable',
                 'integer',
                 'min:1',

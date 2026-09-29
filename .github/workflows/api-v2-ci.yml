@@ -68,6 +68,33 @@ jobs:
 
       - run: vendor/bin/phpstan analyse --memory-limit=2G --no-progress
 
+  openapi:
+    name: OpenAPI
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: ${{ env.PHP_EXTENSIONS }}
+          coverage: none
+
+      - uses: actions/cache@v6
+        with:
+          path: api-v2/vendor
+          key: ${{ runner.os }}-php-${{ env.PHP_VERSION }}-${{ hashFiles('api-v2/composer.lock') }}
+
+      - run: composer install --prefer-dist --no-progress --no-interaction
+
+      - name: Environment
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      - run: php artisan openapi:export --check
+
   tests-sqlite:
     name: Tests (SQLite)
     runs-on: ubuntu-latest

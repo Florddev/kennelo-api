@@ -23,7 +23,7 @@ class StoreResourceRequest extends FormRequest
 
     public function rules(): array
     {
-        /** @var Organization $organization */
+        /** @var Organization|null $organization */
         $organization = $this->route('organization');
         $isStaff = $this->input('type') === ResourceTypeEnum::STAFF->value;
 
@@ -36,7 +36,7 @@ class StoreResourceRequest extends FormRequest
                 'nullable',
                 'uuid',
                 Rule::exists('organization_members', 'id')
-                    ->where('organization_id', $organization->id)
+                    ->where('organization_id', $organization?->id)
                     ->where('status', OrganizationMemberStatusEnum::ACTIVE->value),
                 Rule::unique('resources', 'organization_member_id'),
             ],

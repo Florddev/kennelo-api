@@ -20,7 +20,7 @@ return [
     /*
      * The path where your OpenAPI specification will be exported.
      */
-    'export_path' => 'api.json',
+    'export_path' => 'openapi.json',
 
     'info' => [
         /*
@@ -31,7 +31,13 @@ return [
         /*
          * Description rendered on the home page of the API documentation (`/docs/api`).
          */
-        'description' => 'Documentation de l\'API Kennelo',
+        'description' => implode("\n\n", [
+            'API des applications Kennelo : site, espace pro et back-office.',
+            'Authentification : session Sanctum par cookie. Le front appelle GET /sanctum/csrf-cookie, puis POST /api/login, et envoie ensuite ses requêtes avec les cookies et l\'en-tête X-XSRF-TOKEN.',
+            'Langue des messages : celle du compte connecté, sinon l\'en-tête Accept-Language (fr, en, ar).',
+            'Erreurs : { message }. Une erreur de validation (422) ajoute errors, les messages par champ.',
+            'Montants : chaînes décimales en euros, par exemple "12.50". Listes paginées : data, links et meta, avec le paramètre per_page.',
+        ]),
     ],
 
     /*
@@ -41,7 +47,7 @@ return [
         /*
          * Define the title of the documentation's website. App name is used when this config is `null`.
          */
-        'title' => null,
+        'title' => 'Kennelo API',
 
         /*
          * Define the theme of the documentation. Available options are `light`, `dark`, and `system`.

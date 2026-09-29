@@ -26,7 +26,7 @@ class BookingQuoteResource extends JsonResource
             'start_date' => $quote->startDate->toDateString(),
             'end_date' => $quote->endDate->toDateString(),
             'nights' => $quote->nights,
-            'location' => $quote->location->value,
+            'location' => $quote->location,
             'units' => array_map(fn (array $unit): array => [
                 'unit_type' => ['id' => $unit['unit_type']->id, 'name' => $unit['unit_type']->name],
                 'pet_ids' => array_map(fn (Pet $pet): string => $pet->id, $unit['pets']),
@@ -61,7 +61,7 @@ class BookingQuoteResource extends JsonResource
             'travel_fee' => $quote->travelFee,
             'service_fee' => $quote->serviceFee,
             'total_price' => $quote->totalPrice,
-            'cancellation_policy' => $quote->cancellationPolicy->value,
+            'cancellation_policy' => $quote->cancellationPolicy,
         ];
     }
 }

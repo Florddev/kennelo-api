@@ -27,7 +27,7 @@ class ReviewResource extends JsonResource
             'id' => $this->id,
             'booking_id' => $this->booking_id,
             'activity' => $this->whenLoaded('activity', fn (): array => ['id' => $this->activity_id, 'name' => $this->activity?->name]),
-            'reviewer_type' => $this->reviewer_type->value,
+            'reviewer_type' => $this->reviewer_type,
             'reviewer' => $this->whenLoaded('reviewer', fn (): ?array => $this->reviewer_type !== ReviewerTypeEnum::USER || $this->reviewer === null ? null : [
                 'id' => $this->reviewer->id,
                 'first_name' => $this->reviewer->first_name,

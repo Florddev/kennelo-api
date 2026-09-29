@@ -20,12 +20,12 @@ class StoreBookingItemRequest extends FormRequest
 
     public function rules(): array
     {
-        /** @var Booking $booking */
+        /** @var Booking|null $booking */
         $booking = $this->route('booking');
 
         return [
             'service_id' => ['required', 'uuid'],
-            'pet_id' => ['required', 'uuid', Rule::exists('booking_pets', 'pet_id')->where('booking_id', $booking->id)],
+            'pet_id' => ['required', 'uuid', Rule::exists('booking_pets', 'pet_id')->where('booking_id', $booking?->id)],
             'quantity' => ['sometimes', 'integer', 'min:1', 'max:20'],
         ];
     }

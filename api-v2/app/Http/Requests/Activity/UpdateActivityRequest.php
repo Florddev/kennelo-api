@@ -27,14 +27,14 @@ class UpdateActivityRequest extends FormRequest
 
     public function rules(): array
     {
-        /** @var Activity $activity */
+        /** @var Activity|null $activity */
         $activity = $this->route('activity');
-        $organization = $activity->organization;
-        $profession = $activity->profession()->firstOrFail();
+        $organization = $activity?->organization;
+        $profession = $activity?->profession()->firstOrFail();
 
         $locations = $this->has('locations')
             ? (array) $this->input('locations')
-            : array_map(fn (LocationModeEnum $location): string => $location->value, $activity->locations());
+            : array_map(fn (LocationModeEnum $location): string => $location->value, $activity?->locations() ?? []);
         $servesAtClient = in_array(LocationModeEnum::AT_CLIENT->value, $locations, true);
         $needsAddress = array_diff($locations, [LocationModeEnum::REMOTE->value]) !== [];
 
@@ -50,10 +50,10 @@ class UpdateActivityRequest extends FormRequest
             'locations' => ['sometimes', 'array', 'min:1'],
             'locations.*' => ['distinct', Rule::in(array_map(
                 fn (LocationModeEnum $location): string => $location->value,
-                $profession->allowedLocations(),
+                $profession?->allowedLocations() ?? LocationModeEnum::cases(),
             ))],
             'service_radius_km' => [
-                Rule::requiredIf($servesAtClient && $activity->service_radius_km === null),
+                Rule::requiredIf($servesAtClient && $activity?->service_radius_km === null),
                 // Tant que l'activité se déplace, son rayon ne peut pas être effacé.
                 Rule::when(! $servesAtClient, 'nullable'),
                 'integer',
@@ -66,10 +66,10 @@ class UpdateActivityRequest extends FormRequest
             'animal_type_ids.*' => [
                 'distinct',
                 'uuid',
-                Rule::exists('profession_animal_types', 'animal_type_id')->where('profession_id', $profession->id),
+                Rule::exists('profession_animal_types', 'animal_type_id')->where('profession_id', $profession?->id),
             ],
             ...$this->addressRules(
-                required: Rule::requiredIf($needsAddress && $activity->address_id === null),
+                required: Rule::requiredIf($needsAddress && $activity?->address_id === null),
                 withCoordinates: true,
             ),
         ];

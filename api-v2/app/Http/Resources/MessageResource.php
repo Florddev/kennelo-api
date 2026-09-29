@@ -28,7 +28,7 @@ class MessageResource extends JsonResource
             'id' => $this->id,
             'conversation_id' => $this->conversation_id,
             'booking_id' => $this->booking_id,
-            'sender_type' => $this->sender_type->value,
+            'sender_type' => $this->sender_type,
             'sender' => $this->whenLoaded('sender', fn (): ?array => $this->sender === null ? null : [
                 'id' => $this->sender->id,
                 'first_name' => $this->sender->first_name,
@@ -37,7 +37,7 @@ class MessageResource extends JsonResource
                     ? $this->sender->getFirstMediaUrl(MediaService::COLLECTION_AVATAR, MediaService::CONVERSION_AVATAR_WEBP) ?: null
                     : null,
             ]),
-            'type' => $this->message_type->value,
+            'type' => $this->message_type,
             'content' => $isSystem ? __('conversations.system.'.$this->content) : $this->content,
             'system_event' => $this->when($isSystem, fn (): ?string => $this->content),
             'files' => $this->whenLoaded('files', fn (): array => $this->files->map(fn (MessageFile $file): array => [

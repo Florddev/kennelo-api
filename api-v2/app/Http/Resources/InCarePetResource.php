@@ -39,7 +39,7 @@ class InCarePetResource extends JsonResource
             ],
             'booking' => [
                 'id' => $booking->id,
-                'status' => $booking->status->value,
+                'status' => $booking->status,
                 'activity' => ['id' => $booking->activity_id, 'name' => $booking->activity?->name],
                 'start_date' => $booking->start_date->toDateString(),
                 'end_date' => $booking->end_date->toDateString(),

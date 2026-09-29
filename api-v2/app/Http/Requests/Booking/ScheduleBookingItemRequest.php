@@ -20,12 +20,12 @@ class ScheduleBookingItemRequest extends FormRequest
 
     public function rules(): array
     {
-        /** @var Booking $booking */
+        /** @var Booking|null $booking */
         $booking = $this->route('booking');
 
         return [
             'starts_at' => ['required', 'date'],
-            'resource_id' => ['required', 'uuid', Rule::exists('resources', 'id')->where('organization_id', $booking->organization_id)],
+            'resource_id' => ['required', 'uuid', Rule::exists('resources', 'id')->where('organization_id', $booking?->organization_id)],
         ];
     }
 }

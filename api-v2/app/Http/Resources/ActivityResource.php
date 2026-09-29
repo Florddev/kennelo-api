@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Resources;
 
-use App\Enums\LocationModeEnum;
+use App\Enums\ActivityStatusEnum;
 use App\Enums\OrganizationPermissionEnum;
 use App\Models\Activity;
 use App\Services\MediaService;
@@ -36,7 +36,7 @@ class ActivityResource extends JsonResource
             'organization' => $this->whenLoaded('organization', fn (): array => [
                 'id' => $this->organization?->id,
                 'legal_name' => $this->organization?->legal_name,
-                'legal_form' => $this->organization?->legal_form->value,
+                'legal_form' => $this->organization?->legal_form,
             ]),
             'profession' => ProfessionResource::make($this->whenLoaded('profession')),
             'name' => $this->name,
@@ -54,9 +54,9 @@ class ActivityResource extends JsonResource
                 ]),
             'establishment_siret' => $this->establishment_siret,
             'timezone' => $this->timezone,
-            'locations' => array_map(fn (LocationModeEnum $location): string => $location->value, $this->locations()),
+            'locations' => $this->locations(),
             'service_radius_km' => $this->service_radius_km,
-            'cancellation_policy' => $this->cancellation_policy->value,
+            'cancellation_policy' => $this->cancellation_policy,
             'is_active' => $this->is_active,
             'animal_types' => AnimalTypeResource::collection($this->whenLoaded('animalTypes')),
             'opening_hours' => ActivityOpeningHourResource::collection($this->whenLoaded('openingHours')),
@@ -71,7 +71,7 @@ class ActivityResource extends JsonResource
                 'average' => (int) $attributes['rating_count'] > 0 ? round((float) $attributes['rating_average'], 1) : null,
                 'count' => (int) $attributes['rating_count'],
             ]),
-            'status' => $this->when($canSeePrivate, fn (): string => $this->status->value),
+            'status' => $this->when($canSeePrivate, fn (): ActivityStatusEnum => $this->status),
             'rejection_reason' => $this->when($canSeePrivate, fn (): ?string => $this->rejection_reason),
             'reviewed_at' => $this->when($canSeePrivate, fn (): ?string => $this->reviewed_at?->toISOString()),
             // Un justificatif obligatoire manque ou a expiré : l'activité reste hors de la recherche tant qu'il n'est pas remplacé.
@@ -80,10 +80,11 @@ class ActivityResource extends JsonResource
                 fn (): bool => (bool) $this->resource->getAttribute('has_missing_documents'),
             ),
             // Droits de la personne connectée sur cette activité, pour afficher ou masquer les actions.
-            'permissions' => $this->when($isTeamMember, fn (): array => array_map(
-                fn (OrganizationPermissionEnum $permission): string => $permission->value,
-                $organization === null || $user === null ? [] : $permissions->permissionsFor($user, $organization, $this->id),
-            )),
+            /** @var list<OrganizationPermissionEnum> */
+            'permissions' => $this->when(
+                $isTeamMember,
+                fn (): array => $organization === null || $user === null ? [] : $permissions->permissionsFor($user, $organization, $this->id),
+            ),
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),
         ];

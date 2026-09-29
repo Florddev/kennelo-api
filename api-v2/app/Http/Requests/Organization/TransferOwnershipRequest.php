@@ -18,7 +18,7 @@ class TransferOwnershipRequest extends FormRequest
 
     public function rules(): array
     {
-        /** @var Organization $organization */
+        /** @var Organization|null $organization */
         $organization = $this->route('organization');
 
         return [
@@ -26,9 +26,9 @@ class TransferOwnershipRequest extends FormRequest
                 'required',
                 'uuid',
                 Rule::exists('organization_members', 'id')
-                    ->where('organization_id', $organization->id)
+                    ->where('organization_id', $organization?->id)
                     ->where('status', OrganizationMemberStatusEnum::ACTIVE->value)
-                    ->whereNot('user_id', $organization->owner_id),
+                    ->whereNot('user_id', $organization?->owner_id),
             ],
         ];
     }

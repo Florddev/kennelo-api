@@ -16,8 +16,8 @@ class ServicePriceResource extends JsonResource
         return [
             'id' => $this->id,
             'animal_type_id' => $this->animal_type_id,
-            'size_class' => $this->size_class?->value,
-            'coat_type' => $this->coat_type?->value,
+            'size_class' => $this->size_class,
+            'coat_type' => $this->coat_type,
             'animal_breed_id' => $this->animal_breed_id,
             'price' => $this->price,
             'duration_minutes' => $this->duration_minutes,

@@ -22,13 +22,13 @@ class ShowAgendaRequest extends FormRequest
 
     public function rules(): array
     {
-        /** @var Organization $organization */
+        /** @var Organization|null $organization */
         $organization = $this->route('organization');
 
         return [
             'from' => ['required', 'date_format:Y-m-d'],
             'to' => ['required', 'date_format:Y-m-d', 'after_or_equal:from'],
-            'activity_id' => ['sometimes', 'uuid', Rule::exists('activities', 'id')->where('organization_id', $organization->id)->whereNull('deleted_at')],
+            'activity_id' => ['sometimes', 'uuid', Rule::exists('activities', 'id')->where('organization_id', $organization?->id)->whereNull('deleted_at')],
             'resource_ids' => ['sometimes', 'array', 'max:50'],
             'resource_ids.*' => ['distinct', 'uuid'],
         ];
