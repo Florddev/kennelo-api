@@ -25,8 +25,8 @@ it('authenticated user can list all animal breeds', function () {
     $this->withHeaders(asUser($user))
         ->getJson('/api/animal-breeds')
         ->assertOk()
-        ->assertJsonCount(2, 'data')
-        ->assertJsonStructure(['data' => [['id', 'animal_type_id', 'breed', 'label']]]);
+        ->assertJsonCount(2)
+        ->assertJsonStructure([['id', 'animal_type_id', 'breed', 'label']]);
 });
 
 it('filters breeds by animal_type_id', function () {
@@ -40,8 +40,8 @@ it('filters breeds by animal_type_id', function () {
     $this->withHeaders(asUser($user))
         ->getJson("/api/animal-breeds?animal_type_id={$dog->id}")
         ->assertOk()
-        ->assertJsonCount(1, 'data')
-        ->assertJsonPath('data.0.breed', 'labrador_retriever');
+        ->assertJsonCount(1)
+        ->assertJsonPath('0.breed', 'labrador_retriever');
 });
 
 it('rejects an invalid animal_type_id filter', function () {
@@ -63,8 +63,8 @@ it('orders breeds by their localized label', function () {
     $this->withHeaders(asUser($user))
         ->getJson('/api/animal-breeds')
         ->assertOk()
-        ->assertJsonPath('data.0.label', 'Bouledogue')
-        ->assertJsonPath('data.1.label', 'Caniche');
+        ->assertJsonPath('0.label', 'Bouledogue')
+        ->assertJsonPath('1.label', 'Caniche');
 });
 
 it('returns empty list when no breeds exist', function () {
@@ -73,7 +73,7 @@ it('returns empty list when no breeds exist', function () {
     $this->withHeaders(asUser($user))
         ->getJson('/api/animal-breeds')
         ->assertOk()
-        ->assertJsonCount(0, 'data');
+        ->assertJsonCount(0);
 });
 
 // ─── store ────────────────────────────────────────────────────────────────────
@@ -90,7 +90,7 @@ it('can create a pet with a breed matching its animal type', function () {
             'name' => 'Rex',
         ])
         ->assertCreated()
-        ->assertJsonPath('data.animal_breed_id', $breed->id);
+        ->assertJsonPath('animal_breed_id', $breed->id);
 });
 
 it('rejects creating a pet with a breed from another animal type', function () {
@@ -120,7 +120,7 @@ it('can update a pet with a breed matching its current animal type', function ()
     $this->withHeaders(asUser($user))
         ->putJson("/api/pets/{$pet->id}", ['animal_breed_id' => $breed->id])
         ->assertOk()
-        ->assertJsonPath('data.animal_breed_id', $breed->id);
+        ->assertJsonPath('animal_breed_id', $breed->id);
 });
 
 it('rejects updating a pet with a breed from another animal type', function () {

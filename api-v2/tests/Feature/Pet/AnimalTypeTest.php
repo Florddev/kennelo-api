@@ -14,7 +14,7 @@ it('returns all animal types without authentication', function () {
 
     $this->getJson('/api/animal-types')
         ->assertOk()
-        ->assertJsonCount(2, 'data');
+        ->assertJsonCount(2);
 });
 
 it('includes attribute definitions with each animal type', function () {
@@ -30,8 +30,8 @@ it('includes attribute definitions with each animal type', function () {
 
     $this->getJson('/api/animal-types')
         ->assertOk()
-        ->assertJsonPath('data.0.code', 'dog')
-        ->assertJsonStructure(['data' => [['id', 'code', 'name', 'category', 'attribute_definitions']]]);
+        ->assertJsonPath('0.code', 'dog')
+        ->assertJsonStructure([['id', 'code', 'name', 'category', 'attribute_definitions']]);
 });
 
 it('includes options for attributes with has_predefined_options', function () {
@@ -50,11 +50,11 @@ it('includes options for attributes with has_predefined_options', function () {
 
     $response = $this->getJson('/api/animal-types')->assertOk();
 
-    expect($response->json('data.0.attribute_definitions.0.options'))->toHaveCount(2);
+    expect($response->json('0.attribute_definitions.0.options'))->toHaveCount(2);
 });
 
 it('returns empty list when no animal types exist', function () {
     $this->getJson('/api/animal-types')
         ->assertOk()
-        ->assertJsonCount(0, 'data');
+        ->assertJsonCount(0);
 });

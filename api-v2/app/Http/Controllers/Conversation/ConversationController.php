@@ -38,7 +38,7 @@ class ConversationController extends Controller
      */
     public function unreadCount(Request $request): JsonResponse
     {
-        return response()->json(['data' => ['unread_count' => $this->conversations->unreadCount($request->user())]]);
+        return response()->json(['unread_count' => $this->conversations->unreadCount($request->user())]);
     }
 
     /**
@@ -60,6 +60,6 @@ class ConversationController extends Controller
     {
         $this->authorize('view', $conversation);
 
-        return response()->json(['data' => ['marked_count' => $this->conversations->markAsRead($conversation, $request->user())]]);
+        return response()->json(['marked_count' => $this->conversations->markAsRead($conversation, $request->user())]);
     }
 }

@@ -15,7 +15,7 @@ class SubscriptionResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'plan' => SubscriptionPlanResource::make($this->whenLoaded('plan')),
+            'plan' => SubscriptionPlanResource::make($this->plan),
             'status' => $this->status,
             'is_effective' => $this->isEffective(),
             'current_period_start' => $this->current_period_start?->toISOString(),

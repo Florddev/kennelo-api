@@ -38,7 +38,7 @@ it('owner can sync attributes on their pet', function () {
             ],
         ])
         ->assertOk()
-        ->assertJsonStructure(['data']);
+        ->assertJsonCount(1);
 
     expect(PetAttribute::where('pet_id', $pet->id)->count())->toBe(1);
 });

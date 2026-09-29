@@ -18,7 +18,7 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
 
 /**
- * @tags Activity schedule
+ * @tags Activities
  */
 class ActivityScheduleController extends Controller
 {

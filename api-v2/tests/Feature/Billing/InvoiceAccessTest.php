@@ -36,9 +36,9 @@ describe('client', function () {
         $this->withHeaders(asUser($booking->user))
             ->getJson("/api/invoices/{$company->id}")
             ->assertOk()
-            ->assertJsonPath('data.number', $company->number)
-            ->assertJsonPath('data.total_ttc', '60.00')
-            ->assertJsonPath('data.lines.0.total_ht', '50.00');
+            ->assertJsonPath('number', $company->number)
+            ->assertJsonPath('total_ttc', '60.00')
+            ->assertJsonPath('lines.0.total_ht', '50.00');
         $this->withHeaders(asUser($booking->user))->getJson("/api/invoices/{$fee->id}")->assertOk();
     });
 });

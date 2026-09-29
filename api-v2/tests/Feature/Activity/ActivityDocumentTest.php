@@ -44,9 +44,9 @@ describe('submission', function () {
                 'file' => UploadedFile::fake()->image('attestation.jpg'),
             ], ['Accept' => 'application/json'])
             ->assertCreated()
-            ->assertJsonPath('data.status', 'pending')
-            ->assertJsonPath('data.file.name', 'attestation.jpg')
-            ->assertJsonMissingPath('data.file.url');
+            ->assertJsonPath('status', 'pending')
+            ->assertJsonPath('file.name', 'attestation.jpg')
+            ->assertJsonMissingPath('file.url');
 
         $media = ActivityDocument::query()->sole()->getFirstMedia(ActivityDocument::COLLECTION_FILE);
 
@@ -124,7 +124,7 @@ describe('review by Kennelo', function () {
         $this->withHeaders(asUser(adminUser()))
             ->postJson("/api/admin/activities/{$activity->id}/approve")
             ->assertOk()
-            ->assertJsonPath('data.status', 'approved');
+            ->assertJsonPath('status', 'approved');
 
         Notification::assertSentTo($activity->organization->owner, AppNotification::class);
     });
@@ -139,7 +139,7 @@ describe('review by Kennelo', function () {
         $this->withHeaders(asUser(adminUser()))
             ->postJson("/api/admin/activity-documents/{$document->id}/approve")
             ->assertOk()
-            ->assertJsonPath('data.status', 'approved');
+            ->assertJsonPath('status', 'approved');
 
         Notification::assertSentTo([$activity->organization->owner, $manager], AppNotification::class);
         Notification::assertNotSentTo($accountant, AppNotification::class);
@@ -151,8 +151,8 @@ describe('review by Kennelo', function () {
         $this->withHeaders(asUser(adminUser()))
             ->postJson("/api/admin/activity-documents/{$document->id}/reject", ['reason' => 'Attestation illisible'])
             ->assertOk()
-            ->assertJsonPath('data.status', 'rejected')
-            ->assertJsonPath('data.rejection_reason', 'Attestation illisible');
+            ->assertJsonPath('status', 'rejected')
+            ->assertJsonPath('rejection_reason', 'Attestation illisible');
     });
 
     it('lists the documents waiting for review', function () {
@@ -231,12 +231,12 @@ describe('bookability', function () {
         $this->withHeaders(asUser($activity->organization->owner))
             ->getJson("/api/organizations/{$activity->organization_id}/activities")
             ->assertOk()
-            ->assertJsonPath('data.0.has_missing_documents', true);
+            ->assertJsonPath('0.has_missing_documents', true);
 
         $this->withHeaders(asUser($activity->organization->owner))
             ->getJson("/api/activities/{$activity->id}")
             ->assertOk()
-            ->assertJsonPath('data.has_missing_documents', true);
+            ->assertJsonPath('has_missing_documents', true);
     });
 
     it('hides the flag from the public', function () {
@@ -245,6 +245,6 @@ describe('bookability', function () {
 
         $this->getJson("/api/activities/{$activity->id}")
             ->assertOk()
-            ->assertJsonMissingPath('data.has_missing_documents');
+            ->assertJsonMissingPath('has_missing_documents');
     });
 });

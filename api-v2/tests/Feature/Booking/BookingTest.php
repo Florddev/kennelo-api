@@ -22,13 +22,13 @@ describe('quote', function () {
         $this->withHeaders(asUser($client))
             ->postJson('/api/bookings/quote', stayRequest($unitType, [dogOf($client, $unitType)]))
             ->assertOk()
-            ->assertJsonPath('data.nights', 2)
-            ->assertJsonPath('data.units.0.subtotal', '60.00')
-            ->assertJsonPath('data.items_amount', '60.00')
-            ->assertJsonPath('data.service_fee', '4.80')
-            ->assertJsonPath('data.total_price', '64.80')
-            ->assertJsonPath('data.cancellation_policy', 'moderate')
-            ->assertJsonMissingPath('data.platform_fee');
+            ->assertJsonPath('nights', 2)
+            ->assertJsonPath('units.0.subtotal', '60.00')
+            ->assertJsonPath('items_amount', '60.00')
+            ->assertJsonPath('service_fee', '4.80')
+            ->assertJsonPath('total_price', '64.80')
+            ->assertJsonPath('cancellation_policy', 'moderate')
+            ->assertJsonMissingPath('platform_fee');
     });
 
     it('charges the extra animals sharing a unit', function () {
@@ -41,7 +41,7 @@ describe('quote', function () {
                 'units' => [['unit_type_id' => $unitType->id, 'pet_ids' => [$pets[0]->id, $pets[1]->id]]],
             ]))
             ->assertOk()
-            ->assertJsonPath('data.units.0.subtotal', '80.00');
+            ->assertJsonPath('units.0.subtotal', '80.00');
     });
 
     it('adds the stay options at the price of the activity for each pet, an included one being free', function () {
@@ -57,10 +57,10 @@ describe('quote', function () {
                 ['service_id' => $walk->id, 'pet_id' => $dog->id],
             ]]))
             ->assertOk()
-            ->assertJsonPath('data.options.0.unit_price', '22.00')
-            ->assertJsonPath('data.options.0.subtotal', '44.00')
-            ->assertJsonPath('data.options.1.subtotal', '0.00')
-            ->assertJsonPath('data.items_amount', '104.00');
+            ->assertJsonPath('options.0.unit_price', '22.00')
+            ->assertJsonPath('options.0.subtotal', '44.00')
+            ->assertJsonPath('options.1.subtotal', '0.00')
+            ->assertJsonPath('items_amount', '104.00');
     });
 
     it('refuses a pet of another client and a pet placed twice', function () {
@@ -158,7 +158,7 @@ describe('quote', function () {
         $this->withHeaders(asUser($client))
             ->postJson('/api/bookings/quote', stayRequest($unitType, [$dog], ['location' => 'at_client', 'address_id' => $near->id]))
             ->assertOk()
-            ->assertJsonPath('data.location', 'at_client');
+            ->assertJsonPath('location', 'at_client');
 
         $this->postJson('/api/bookings/quote', stayRequest($unitType, [$dog], ['location' => 'at_client', 'address_id' => $far->id]))
             ->assertUnprocessable()
@@ -177,13 +177,13 @@ describe('store', function () {
         $id = $this->withHeaders(asUser($client))
             ->postJson('/api/bookings', stayRequest($unitType, [$dog], ['special_requests' => 'Il a peur des orages']))
             ->assertCreated()
-            ->assertJsonPath('data.status', 'pending')
-            ->assertJsonPath('data.payment_status', 'requires_capture')
-            ->assertJsonPath('data.total_price', '64.80')
-            ->assertJsonPath('data.units.0.pet_ids', [$dog->id])
-            ->assertJsonPath('data.payments.0.status', 'requires_capture')
-            ->assertJsonMissingPath('data.client_secret')
-            ->json('data.id');
+            ->assertJsonPath('status', 'pending')
+            ->assertJsonPath('payment_status', 'requires_capture')
+            ->assertJsonPath('total_price', '64.80')
+            ->assertJsonPath('units.0.pet_ids', [$dog->id])
+            ->assertJsonPath('payments.0.status', 'requires_capture')
+            ->assertJsonMissingPath('client_secret')
+            ->json('id');
 
         $booking = Booking::findOrFail($id);
 
@@ -208,8 +208,8 @@ describe('store', function () {
         $this->withHeaders(asUser($client))
             ->postJson('/api/bookings', stayRequest($unitType, [dogOf($client, $unitType)]))
             ->assertCreated()
-            ->assertJsonPath('data.payment_status', 'requires_action')
-            ->assertJsonPath('data.client_secret', 'pi_initial_secret');
+            ->assertJsonPath('payment_status', 'requires_action')
+            ->assertJsonPath('client_secret', 'pi_initial_secret');
 
         Notification::assertNothingSent();
     });
@@ -260,16 +260,16 @@ describe('store', function () {
         $id = $this->withHeaders(asUser($client))
             ->postJson('/api/bookings', stayRequest($unitType, [dogOf($client, $unitType)], ['location' => 'at_client', 'address_id' => $home->id]))
             ->assertCreated()
-            ->assertJsonPath('data.service_address.line1', '12 rue des Lilas')
-            ->json('data.id');
+            ->assertJsonPath('service_address.line1', '12 rue des Lilas')
+            ->json('id');
 
         expect(Booking::findOrFail($id)->service_address_id)->not->toBe($home->address_id);
 
         $this->withHeaders(asUser($unitType->activity->organization->owner))
             ->getJson("/api/activities/{$unitType->activity_id}/bookings/{$id}")
             ->assertOk()
-            ->assertJsonMissingPath('data.service_address.line1')
-            ->assertJsonPath('data.service_address.city', $home->address->city);
+            ->assertJsonMissingPath('service_address.line1')
+            ->assertJsonPath('service_address.city', $home->address->city);
     });
 
     it('sells the options to place in the agenda', function () {
@@ -282,9 +282,9 @@ describe('store', function () {
         $id = $this->withHeaders(asUser($client))
             ->postJson('/api/bookings', stayRequest($unitType, [$dog], ['options' => [['service_id' => $bath->id, 'pet_id' => $dog->id]]]))
             ->assertCreated()
-            ->assertJsonPath('data.items.0.status', 'to_schedule')
-            ->assertJsonPath('data.total_price', '86.40')
-            ->json('data.id');
+            ->assertJsonPath('items.0.status', 'to_schedule')
+            ->assertJsonPath('total_price', '86.40')
+            ->json('id');
 
         $item = Booking::findOrFail($id)->items()->sole();
 
@@ -311,13 +311,13 @@ describe('reading', function () {
         $this->withHeaders(asUser($booking->user))
             ->getJson("/api/bookings/{$booking->id}")
             ->assertOk()
-            ->assertJsonMissingPath('data.activity_amount');
+            ->assertJsonMissingPath('activity_amount');
 
         $this->withHeaders(asUser($booking->organization->owner))
             ->getJson("/api/bookings/{$booking->id}")
             ->assertOk()
-            ->assertJsonPath('data.activity_amount', '55.20')
-            ->assertJsonPath('data.client.id', $booking->user_id);
+            ->assertJsonPath('activity_amount', '55.20')
+            ->assertJsonPath('client.id', $booking->user_id);
     });
 
     it('hides a booking from a stranger', function () {

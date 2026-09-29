@@ -11,7 +11,7 @@ use App\Services\Admin\AdminActionService;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 /**
- * @tags Admin Audit
+ * @tags Audit
  */
 class AuditController extends Controller
 {

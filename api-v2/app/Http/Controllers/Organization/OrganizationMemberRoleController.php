@@ -12,7 +12,7 @@ use App\Models\OrganizationMember;
 use App\Services\Organization\TeamService;
 
 /**
- * @tags Organization team
+ * @tags Organizations
  */
 class OrganizationMemberRoleController extends Controller
 {

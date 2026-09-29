@@ -11,7 +11,7 @@ use App\Services\Setting\SettingService;
 use Illuminate\Http\JsonResponse;
 
 /**
- * @tags Admin Settings
+ * @tags Settings
  */
 class SettingController extends Controller
 {
@@ -23,7 +23,7 @@ class SettingController extends Controller
     {
         $this->authorize('viewAny', Setting::class);
 
-        return response()->json(['data' => $this->settings->grouped()]);
+        return response()->json($this->settings->grouped());
     }
 
     public function update(UpdateSettingsRequest $request): JsonResponse
@@ -32,6 +32,6 @@ class SettingController extends Controller
 
         $this->settings->update($request->validated('values', []));
 
-        return response()->json(['data' => $this->settings->grouped()]);
+        return response()->json($this->settings->grouped());
     }
 }

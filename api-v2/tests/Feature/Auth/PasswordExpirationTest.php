@@ -30,7 +30,7 @@ test('login with a recent password opens the session directly', function () {
 
     $this->postJson('/api/login', ['email' => $user->email, 'password' => 'password'])
         ->assertOk()
-        ->assertJsonPath('data.id', $user->id);
+        ->assertJsonPath('id', $user->id);
 
     $this->assertAuthenticatedAs($user, 'web');
 });
@@ -41,7 +41,7 @@ test('login with an expired password asks for a renewal instead of opening the s
     $this->postJson('/api/login', ['email' => $user->email, 'password' => 'password'])
         ->assertOk()
         ->assertJsonPath('password_expired', true)
-        ->assertJsonMissingPath('data');
+        ->assertJsonMissingPath('id');
 
     $this->assertGuest('web');
 });
@@ -57,7 +57,7 @@ test('password renewal opens the session and updates password_changed_at', funct
         'password_confirmation' => 'NewStr0ng!Passw0rd',
     ])
         ->assertOk()
-        ->assertJsonPath('data.id', $user->id);
+        ->assertJsonPath('id', $user->id);
 
     $this->assertAuthenticatedAs($user, 'web');
 

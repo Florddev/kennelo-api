@@ -20,10 +20,10 @@ it('creates a unit for species of the activity', function () {
             'animal_type_ids' => [$dog->id],
         ])
         ->assertCreated()
-        ->assertJsonPath('data.name', 'Chambre familiale')
-        ->assertJsonPath('data.max_animals_per_unit', 2)
-        ->assertJsonPath('data.is_active', true)
-        ->assertJsonPath('data.animal_types.0.id', $dog->id);
+        ->assertJsonPath('name', 'Chambre familiale')
+        ->assertJsonPath('max_animals_per_unit', 2)
+        ->assertJsonPath('is_active', true)
+        ->assertJsonPath('animal_types.0.id', $dog->id);
 });
 
 it('refuses a species the activity does not take in', function () {
@@ -51,7 +51,7 @@ it('shows the public only the active units', function () {
 
     $this->getJson("/api/activities/{$unitType->activity_id}/unit-types")
         ->assertOk()
-        ->assertJsonPath('data.*.name', ['Box']);
+        ->assertJsonPath('*.name', ['Box']);
 });
 
 it('shows the team every unit', function () {
@@ -60,7 +60,7 @@ it('shows the team every unit', function () {
 
     $this->withHeaders(asUser($unitType->activity->organization->owner))
         ->getJson("/api/activities/{$unitType->activity_id}/unit-types")
-        ->assertJsonCount(2, 'data');
+        ->assertJsonCount(2);
 });
 
 it('updates and deletes a unit of the activity only', function () {
@@ -71,7 +71,7 @@ it('updates and deletes a unit of the activity only', function () {
     $this->withHeaders(asUser($owner))
         ->patchJson("/api/activities/{$unitType->activity_id}/unit-types/{$unitType->id}", ['quantity' => 6])
         ->assertOk()
-        ->assertJsonPath('data.quantity', 6);
+        ->assertJsonPath('quantity', 6);
 
     $this->deleteJson("/api/activities/{$unitType->activity_id}/unit-types/{$other->id}")
         ->assertNotFound();

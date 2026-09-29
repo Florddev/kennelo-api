@@ -35,6 +35,6 @@ class BookingPaymentController extends Controller
             throw ValidationException::withMessages(['payment' => __('booking.nothing_to_confirm')]);
         }
 
-        return response()->json(['data' => ['client_secret' => $this->payments->clientSecret($payment)]]);
+        return response()->json(['client_secret' => $this->payments->clientSecret($payment)]);
     }
 }

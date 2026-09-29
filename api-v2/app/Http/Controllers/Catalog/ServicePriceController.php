@@ -12,7 +12,7 @@ use App\Models\Service;
 use App\Services\Catalog\CatalogService;
 
 /**
- * @tags Catalog
+ * @tags Services
  */
 class ServicePriceController extends Controller
 {

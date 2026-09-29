@@ -16,7 +16,7 @@ it('returns current authenticated user', function () {
     $this->withHeaders(asUser($user))
         ->getJson('/api/user')
         ->assertOk()
-        ->assertJsonPath('data.id', $user->id);
+        ->assertJsonPath('id', $user->id);
 });
 
 it('updates own profile', function () {
@@ -25,7 +25,7 @@ it('updates own profile', function () {
     $this->withHeaders(asUser($user))
         ->putJson('/api/user/profile', ['first_name' => 'Alice'])
         ->assertOk()
-        ->assertJsonPath('data.first_name', 'Alice');
+        ->assertJsonPath('first_name', 'Alice');
 });
 
 it('user can view own profile via show endpoint', function () {
@@ -106,7 +106,7 @@ it('changes email with correct password', function () {
             'password' => 'password',
         ])
         ->assertOk()
-        ->assertJsonPath('data.email', 'newemail@example.com');
+        ->assertJsonPath('email', 'newemail@example.com');
 });
 
 it('rejects email change with wrong password', function () {
@@ -190,7 +190,7 @@ it('denies the management area to a user who belongs to no organization', functi
     $this->withHeaders(asUser($user))
         ->getJson('/api/user')
         ->assertOk()
-        ->assertJsonPath('data.can_access_management', false);
+        ->assertJsonPath('can_access_management', false);
 });
 
 it('grants the management area to an active member of an organization', function () {
@@ -200,7 +200,7 @@ it('grants the management area to an active member of an organization', function
     $this->withHeaders(asUser($user))
         ->getJson('/api/user')
         ->assertOk()
-        ->assertJsonPath('data.can_access_management', true);
+        ->assertJsonPath('can_access_management', true);
 });
 
 it('authorizes the access-management ability only for active organization members', function () {
@@ -219,5 +219,5 @@ it('keeps the management area closed while an invitation is pending', function (
     $this->withHeaders(asUser($user))
         ->getJson('/api/user')
         ->assertOk()
-        ->assertJsonPath('data.can_access_management', false);
+        ->assertJsonPath('can_access_management', false);
 });

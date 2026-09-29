@@ -24,7 +24,7 @@ it('lists all subscription plans for an admin', function () {
     $this->withHeaders(asUser($admin))
         ->getJson('/api/admin/subscription-plans')
         ->assertOk()
-        ->assertJsonCount(3, 'data');
+        ->assertJsonCount(3);
 });
 
 it('updates the commission rate and limits of a plan', function () {
@@ -38,7 +38,7 @@ it('updates the commission rate and limits of a plan', function () {
             'is_active' => true,
         ])
         ->assertOk()
-        ->assertJsonPath('data.commission_rate', '0.0200');
+        ->assertJsonPath('commission_rate', '0.0200');
 
     $plan->refresh();
 

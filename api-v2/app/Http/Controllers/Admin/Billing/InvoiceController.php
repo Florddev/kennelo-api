@@ -12,7 +12,7 @@ use App\Services\Billing\InvoiceService;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 /**
- * @tags Admin Billing
+ * @tags Invoices
  */
 class InvoiceController extends Controller
 {

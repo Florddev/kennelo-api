@@ -14,7 +14,7 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
 
 /**
- * @tags Admin Professions
+ * @tags Professions
  */
 class ProfessionCategoryController extends Controller
 {

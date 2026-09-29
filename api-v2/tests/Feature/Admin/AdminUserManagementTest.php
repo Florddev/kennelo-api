@@ -50,7 +50,7 @@ it('admin can view any user detail', function () {
     $this->withHeaders(asUser(adminUser()))
         ->getJson("/api/admin/users/{$target->id}")
         ->assertOk()
-        ->assertJsonPath('data.id', $target->id);
+        ->assertJsonPath('id', $target->id);
 });
 
 // ─── Update ──────────────────────────────────────────────────────────────────────
@@ -61,7 +61,7 @@ it('admin can update any user profile', function () {
     $this->withHeaders(asUser(adminUser()))
         ->patchJson("/api/admin/users/{$target->id}", ['first_name' => 'Updated'])
         ->assertOk()
-        ->assertJsonPath('data.first_name', 'Updated');
+        ->assertJsonPath('first_name', 'Updated');
 });
 
 it('forbids non-admin from updating another user', function () {
@@ -122,7 +122,7 @@ it('admin can assign roles to a user', function () {
     $this->withHeaders(asUser(adminUser()))
         ->putJson("/api/admin/users/{$target->id}/roles", ['roles' => ['user']])
         ->assertOk()
-        ->assertJsonPath('data.roles.0', 'user');
+        ->assertJsonPath('roles.0', 'user');
 });
 
 it('admin can remove a role from a user', function () {

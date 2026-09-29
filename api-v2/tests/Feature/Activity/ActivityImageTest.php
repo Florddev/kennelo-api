@@ -32,7 +32,7 @@ it('adds photos to an activity', function () {
             'images' => [UploadedFile::fake()->image('salon.jpg'), UploadedFile::fake()->image('bac.png')],
         ], ['Accept' => 'application/json'])
         ->assertCreated()
-        ->assertJsonCount(2, 'data');
+        ->assertJsonCount(2);
 
     expect($activity->getMedia('images'))->toHaveCount(2);
 });
@@ -80,17 +80,17 @@ describe('after a downgrade', function () {
 
         $this->getJson("/api/activities/{$activity->id}")
             ->assertOk()
-            ->assertJsonCount(5, 'data.images')
-            ->assertJsonPath('data.images.4.order', 5);
+            ->assertJsonCount(5, 'images')
+            ->assertJsonPath('images.4.order', 5);
 
         $this->withHeaders(asUser($activity->organization->owner))
             ->getJson("/api/activities/{$activity->id}")
-            ->assertJsonCount(7, 'data.images');
+            ->assertJsonCount(7, 'images');
     });
 
     it('keeps every photo visible when the option is off', function () {
         $activity = activityWithSevenPhotos();
 
-        $this->getJson("/api/activities/{$activity->id}")->assertJsonCount(7, 'data.images');
+        $this->getJson("/api/activities/{$activity->id}")->assertJsonCount(7, 'images');
     });
 });

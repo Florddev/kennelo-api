@@ -36,11 +36,11 @@ it('returns the company whose SIREN matches exactly', function () {
     $this->withHeaders(asUser(User::factory()->create()))
         ->getJson('/api/organizations/company-lookup/123456789')
         ->assertOk()
-        ->assertJsonPath('data.siren', '123456789')
-        ->assertJsonPath('data.legal_name', 'PENSION DES LILAS')
-        ->assertJsonPath('data.is_active', true)
-        ->assertJsonPath('data.address.line1', '3 RUE DES LILAS')
-        ->assertJsonPath('data.address.latitude', 45.7597);
+        ->assertJsonPath('siren', '123456789')
+        ->assertJsonPath('legal_name', 'PENSION DES LILAS')
+        ->assertJsonPath('is_active', true)
+        ->assertJsonPath('address.line1', '3 RUE DES LILAS')
+        ->assertJsonPath('address.latitude', 45.7597);
 });
 
 it('returns 404 when no result has this SIREN', function () {

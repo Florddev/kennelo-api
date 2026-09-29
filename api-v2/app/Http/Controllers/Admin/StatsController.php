@@ -11,7 +11,7 @@ use Illuminate\Http\JsonResponse;
 /**
  * Indicateurs du back-office, recalculés au plus toutes les deux minutes.
  *
- * @tags Admin Stats
+ * @tags Stats
  */
 class StatsController extends Controller
 {
@@ -25,7 +25,7 @@ class StatsController extends Controller
      */
     public function overview(): JsonResponse
     {
-        return response()->json(['data' => $this->stats->overview()]);
+        return response()->json($this->stats->overview());
     }
 
     /**
@@ -36,7 +36,7 @@ class StatsController extends Controller
      */
     public function finance(): JsonResponse
     {
-        return response()->json(['data' => $this->stats->finance()]);
+        return response()->json($this->stats->finance());
     }
 
     /**
@@ -44,7 +44,7 @@ class StatsController extends Controller
      */
     public function bookings(): JsonResponse
     {
-        return response()->json(['data' => $this->stats->bookings()]);
+        return response()->json($this->stats->bookings());
     }
 
     /**
@@ -54,6 +54,6 @@ class StatsController extends Controller
      */
     public function community(): JsonResponse
     {
-        return response()->json(['data' => $this->stats->community()]);
+        return response()->json($this->stats->community());
     }
 }

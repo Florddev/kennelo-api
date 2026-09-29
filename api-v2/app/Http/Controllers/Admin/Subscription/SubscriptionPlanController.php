@@ -11,7 +11,7 @@ use App\Models\SubscriptionPlan;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 /**
- * @tags Admin Subscription Plans
+ * @tags Subscriptions
  */
 class SubscriptionPlanController extends Controller
 {

@@ -28,7 +28,7 @@ describe('show', function () {
         $this->withHeaders(asUser($organization->owner))
             ->getJson("/api/organizations/{$organization->id}/subscription")
             ->assertOk()
-            ->assertExactJson(['data' => null]);
+            ->assertContent('null');
     });
 
     it('returns the current subscription with its plan', function () {
@@ -38,8 +38,8 @@ describe('show', function () {
         $this->withHeaders(asUser($organization->owner))
             ->getJson("/api/organizations/{$organization->id}/subscription")
             ->assertOk()
-            ->assertJsonPath('data.plan.slug', 'pro')
-            ->assertJsonPath('data.is_effective', true);
+            ->assertJsonPath('plan.slug', 'pro')
+            ->assertJsonPath('is_effective', true);
     });
 
     it('forbids a member who cannot manage billing', function () {
@@ -62,7 +62,7 @@ describe('checkout', function () {
         $this->withHeaders(asUser($organization->owner))
             ->postJson("/api/organizations/{$organization->id}/subscription/checkout", ['plan_slug' => 'pro'])
             ->assertOk()
-            ->assertJsonPath('data.checkout_url', 'https://checkout.stripe.test/cs_1');
+            ->assertJsonPath('checkout_url', 'https://checkout.stripe.test/cs_1');
 
         expect($organization->fresh()->stripe_customer_id)->toBe('cus_org');
         $this->stripe()->assertSent('post', '/v1/checkout/sessions', fn (array $params): bool => $params['customer'] === 'cus_org'
@@ -100,8 +100,8 @@ describe('cancel', function () {
         $this->withHeaders(asUser($organization->owner))
             ->deleteJson("/api/organizations/{$organization->id}/subscription")
             ->assertOk()
-            ->assertJsonPath('data.is_effective', true)
-            ->assertJsonPath('data.ends_at', $subscription->current_period_end->toISOString());
+            ->assertJsonPath('is_effective', true)
+            ->assertJsonPath('ends_at', $subscription->current_period_end->toISOString());
 
         $this->stripe()->assertSent('post', "/v1/subscriptions/{$subscription->stripe_subscription_id}", fn (array $params): bool => $params['cancel_at_period_end'] === 'true');
     });
@@ -140,7 +140,7 @@ describe('invoices', function () {
         $this->withHeaders(asUser($organization->owner))
             ->getJson("/api/organizations/{$organization->id}/subscription/invoices")
             ->assertOk()
-            ->assertJsonPath('data.0.amount_paid', '59.00')
-            ->assertJsonPath('data.0.currency', 'EUR');
+            ->assertJsonPath('0.amount_paid', '59.00')
+            ->assertJsonPath('0.currency', 'EUR');
     });
 });

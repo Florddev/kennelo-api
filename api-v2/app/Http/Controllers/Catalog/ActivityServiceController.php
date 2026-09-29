@@ -18,7 +18,7 @@ use Illuminate\Http\Response;
 /**
  * Offre d'une activité : les prestations du catalogue de l'entreprise qu'elle vend.
  *
- * @tags Catalog
+ * @tags Services
  */
 class ActivityServiceController extends Controller
 {

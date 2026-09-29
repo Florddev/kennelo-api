@@ -15,7 +15,7 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 /**
  * Un métier ne se supprime pas : on le ferme (is_active) pour qu'aucune activité ne s'y crée plus.
  *
- * @tags Admin Professions
+ * @tags Professions
  */
 class ProfessionController extends Controller
 {

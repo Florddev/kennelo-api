@@ -48,14 +48,14 @@ describe('store', function () {
         $response = $this->withHeaders(asUser($organization->owner))
             ->postJson("/api/organizations/{$organization->id}/activities", activityPayload($profession))
             ->assertCreated()
-            ->assertJsonPath('data.status', 'pending')
-            ->assertJsonPath('data.timezone', 'Europe/Paris')
-            ->assertJsonPath('data.locations', ['at_pro'])
-            ->assertJsonPath('data.cancellation_policy', 'moderate')
-            ->assertJsonPath('data.animal_types.0.code', 'dog')
-            ->assertJsonPath('data.address.city', 'Lyon');
+            ->assertJsonPath('status', 'pending')
+            ->assertJsonPath('timezone', 'Europe/Paris')
+            ->assertJsonPath('locations', ['at_pro'])
+            ->assertJsonPath('cancellation_policy', 'moderate')
+            ->assertJsonPath('animal_types.0.code', 'dog')
+            ->assertJsonPath('address.city', 'Lyon');
 
-        $activity = Activity::query()->findOrFail($response->json('data.id'));
+        $activity = Activity::query()->findOrFail($response->json('id'));
 
         expect($activity->organization_id)->toBe($organization->id)
             ->and($activity->serves_at_pro)->toBeTrue()
@@ -95,7 +95,7 @@ describe('store', function () {
         $this->withHeaders(asUser($organization->owner))
             ->patchJson("/api/activities/{$paused->id}", ['is_active' => true])
             ->assertOk()
-            ->assertJsonPath('data.is_active', true);
+            ->assertJsonPath('is_active', true);
     });
 
     it('forbids the manager of another activity', function () {
@@ -200,9 +200,9 @@ describe('show', function () {
 
         $this->getJson("/api/activities/{$activity->id}")
             ->assertOk()
-            ->assertJsonPath('data.id', $activity->id)
-            ->assertJsonMissingPath('data.status')
-            ->assertJsonMissingPath('data.permissions');
+            ->assertJsonPath('id', $activity->id)
+            ->assertJsonMissingPath('status')
+            ->assertJsonMissingPath('permissions');
     });
 
     it('hides an activity that is not bookable yet', function (Closure $makeActivity) {
@@ -225,8 +225,8 @@ describe('show', function () {
         $this->withHeaders(asUser($employee))
             ->getJson("/api/activities/{$activity->id}")
             ->assertOk()
-            ->assertJsonPath('data.status', 'pending')
-            ->assertJsonPath('data.permissions', ['bookings.view', 'messages.reply']);
+            ->assertJsonPath('status', 'pending')
+            ->assertJsonPath('permissions', ['bookings.view', 'messages.reply']);
     });
 
     it('shows only the city of a professional who does not receive clients', function () {
@@ -234,8 +234,8 @@ describe('show', function () {
 
         $this->getJson("/api/activities/{$activity->id}")
             ->assertOk()
-            ->assertJsonMissingPath('data.address.line1')
-            ->assertJsonPath('data.address.city', $activity->address->city);
+            ->assertJsonMissingPath('address.line1')
+            ->assertJsonPath('address.city', $activity->address->city);
     });
 
     it('tells a client whether the activity is in their favorites', function () {
@@ -245,7 +245,7 @@ describe('show', function () {
 
         $this->withHeaders(asUser($client))
             ->getJson("/api/activities/{$activity->id}")
-            ->assertJsonPath('data.is_favorited', true);
+            ->assertJsonPath('is_favorited', true);
     });
 });
 
@@ -258,7 +258,7 @@ describe('index', function () {
         $this->withHeaders(asUser(memberOf($organization, OrganizationRoleEnum::ACCOUNTANT)))
             ->getJson("/api/organizations/{$organization->id}/activities")
             ->assertOk()
-            ->assertJsonCount(2, 'data');
+            ->assertJsonCount(2);
     });
 });
 
@@ -270,8 +270,8 @@ describe('update', function () {
         $this->withHeaders(asUser(memberOf($organization, OrganizationRoleEnum::ACTIVITY_MANAGER, $activity->id)))
             ->patchJson("/api/activities/{$activity->id}", ['name' => 'Salon rénové', 'is_active' => false])
             ->assertOk()
-            ->assertJsonPath('data.name', 'Salon rénové')
-            ->assertJsonPath('data.is_active', false);
+            ->assertJsonPath('name', 'Salon rénové')
+            ->assertJsonPath('is_active', false);
     });
 
     it('forbids the manager of another activity', function () {
@@ -303,8 +303,8 @@ describe('update', function () {
         $this->withHeaders(asUser($activity->organization->owner))
             ->patchJson("/api/activities/{$activity->id}", ['locations' => ['at_pro', 'at_client'], 'service_radius_km' => 25])
             ->assertOk()
-            ->assertJsonPath('data.locations', ['at_pro', 'at_client'])
-            ->assertJsonPath('data.service_radius_km', 25);
+            ->assertJsonPath('locations', ['at_pro', 'at_client'])
+            ->assertJsonPath('service_radius_km', 25);
     });
 
     it('returns 404 once the company is closed', function () {

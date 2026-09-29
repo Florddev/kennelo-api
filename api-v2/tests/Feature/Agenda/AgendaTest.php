@@ -63,11 +63,11 @@ describe('stay options', function () {
         $this->withHeaders(asUser($client))
             ->postJson('/api/bookings', stayRequest($unitType, [$dog], ['options' => [['service_id' => $bath->id, 'pet_id' => $dog->id, 'quantity' => 2]]]))
             ->assertCreated()
-            ->assertJsonCount(2, 'data.items')
-            ->assertJsonPath('data.items.0.quantity', 1)
-            ->assertJsonPath('data.items.0.subtotal', '20.00')
-            ->assertJsonPath('data.items.1.status', 'to_schedule')
-            ->assertJsonPath('data.items_amount', '100.00');
+            ->assertJsonCount(2, 'items')
+            ->assertJsonPath('items.0.quantity', 1)
+            ->assertJsonPath('items.0.subtotal', '20.00')
+            ->assertJsonPath('items.1.status', 'to_schedule')
+            ->assertJsonPath('items_amount', '100.00');
     });
 
     it('places a stay option in the agenda during the stay, then moves it', function () {
@@ -80,10 +80,10 @@ describe('stay options', function () {
         $this->withHeaders(asUser($activity->organization->owner))
             ->postJson($url, ['resource_id' => $lea->id, 'starts_at' => duringStay($item, 1, '15:00')])
             ->assertOk()
-            ->assertJsonPath('data.items.0.status', 'scheduled')
-            ->assertJsonPath('data.items.0.resource.name', 'Léa')
-            ->assertJsonPath('data.items.0.starts_at', CarbonImmutable::parse(duringStay($item, 1, '15:00'))->utc()->toISOString())
-            ->assertJsonPath('data.items.0.ends_at', CarbonImmutable::parse(duringStay($item, 1, '15:45'))->utc()->toISOString());
+            ->assertJsonPath('items.0.status', 'scheduled')
+            ->assertJsonPath('items.0.resource.name', 'Léa')
+            ->assertJsonPath('items.0.starts_at', CarbonImmutable::parse(duringStay($item, 1, '15:00'))->utc()->toISOString())
+            ->assertJsonPath('items.0.ends_at', CarbonImmutable::parse(duringStay($item, 1, '15:45'))->utc()->toISOString());
 
         // Le pro choisit l'heure : un bain le soir du départ, après la fermeture, reste possible.
         $this->postJson($url, ['resource_id' => $lea->id, 'starts_at' => duringStay($item, 2, '20:00')])
@@ -147,7 +147,7 @@ describe('stay options', function () {
 
         $this->deleteJson("/api/activities/{$activity->id}/bookings/{$item->booking_id}/items/{$item->id}")
             ->assertOk()
-            ->assertJsonPath('data.items.0.status', 'cancelled');
+            ->assertJsonPath('items.0.status', 'cancelled');
 
         expect(ResourceBooking::count())->toBe(0);
     });
@@ -165,14 +165,14 @@ describe('agenda', function () {
         $this->withHeaders(asUser($organization->owner))
             ->getJson("/api/organizations/{$organization->id}/agenda?from={$day}&to={$day}")
             ->assertOk()
-            ->assertJsonPath('data.timezone', 'Europe/Paris')
-            ->assertJsonPath('data.resources.0.name', 'Léa')
-            ->assertJsonCount(2, 'data.entries')
-            ->assertJsonPath('data.entries.0.kind', 'booking')
-            ->assertJsonPath('data.entries.0.booking.service.name', 'Toilettage')
-            ->assertJsonPath('data.entries.1.kind', 'absence')
-            ->assertJsonPath('data.entries.1.note', 'Dentiste')
-            ->assertJsonCount(0, 'data.to_schedule');
+            ->assertJsonPath('timezone', 'Europe/Paris')
+            ->assertJsonPath('resources.0.name', 'Léa')
+            ->assertJsonCount(2, 'entries')
+            ->assertJsonPath('entries.0.kind', 'booking')
+            ->assertJsonPath('entries.0.booking.service.name', 'Toilettage')
+            ->assertJsonPath('entries.1.kind', 'absence')
+            ->assertJsonPath('entries.1.note', 'Dentiste')
+            ->assertJsonCount(0, 'to_schedule');
     });
 
     it('lists the accepted stay options left to place during the period', function () {
@@ -186,13 +186,13 @@ describe('agenda', function () {
         $this->withHeaders(asUser($organization->owner))
             ->getJson("/api/organizations/{$organization->id}/agenda?from={$stay}&to={$stay}")
             ->assertOk()
-            ->assertJsonCount(1, 'data.to_schedule')
-            ->assertJsonPath('data.to_schedule.0.id', $option->id)
-            ->assertJsonPath('data.to_schedule.0.duration_minutes', 45);
+            ->assertJsonCount(1, 'to_schedule')
+            ->assertJsonPath('to_schedule.0.id', $option->id)
+            ->assertJsonPath('to_schedule.0.duration_minutes', 45);
 
         $this->getJson("/api/organizations/{$organization->id}/agenda?from={$before}&to={$before}")
             ->assertOk()
-            ->assertJsonCount(0, 'data.to_schedule');
+            ->assertJsonCount(0, 'to_schedule');
     });
 
     it('shows an activity team its own agenda, hiding the bookings of the other activities', function () {
@@ -211,10 +211,10 @@ describe('agenda', function () {
 
         $this->getJson("/api/organizations/{$organization->id}/agenda?from={$day}&to={$day}&activity_id={$salon['activity']->id}")
             ->assertOk()
-            ->assertJsonCount(2, 'data.entries')
-            ->assertJsonPath('data.entries.0.booking.activity_id', $salon['activity']->id)
-            ->assertJsonPath('data.entries.1.kind', 'booking')
-            ->assertJsonPath('data.entries.1.booking', null);
+            ->assertJsonCount(2, 'entries')
+            ->assertJsonPath('entries.0.booking.activity_id', $salon['activity']->id)
+            ->assertJsonPath('entries.1.kind', 'booking')
+            ->assertJsonPath('entries.1.booking', null);
 
         $this->getJson("/api/organizations/{$organization->id}/agenda?from={$day}&to={$day}&activity_id={$other->id}")
             ->assertForbidden();

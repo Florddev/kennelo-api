@@ -33,10 +33,10 @@ describe('giving a review', function () {
         $this->withHeaders(asUser($booking->user))
             ->postJson("/api/bookings/{$booking->id}/reviews", ['overall_rating' => 4.5, 'comment' => 'Rex est revenu ravi.', 'private_feedback' => 'Le portail ferme mal.'])
             ->assertCreated()
-            ->assertJsonPath('data.reviewer_type', 'user')
-            ->assertJsonPath('data.overall_rating', '4.5')
-            ->assertJsonPath('data.is_published', false)
-            ->assertJsonPath('data.activity.id', $booking->activity_id);
+            ->assertJsonPath('reviewer_type', 'user')
+            ->assertJsonPath('overall_rating', '4.5')
+            ->assertJsonPath('is_published', false)
+            ->assertJsonPath('activity.id', $booking->activity_id);
 
         $review = Review::query()->sole();
         expect($review->activity_id)->toBe($booking->activity_id);
@@ -48,15 +48,15 @@ describe('giving a review', function () {
 
         $this->postJson("/api/bookings/{$booking->id}/reviews", ['overall_rating' => 5, 'comment' => 'Client ponctuel.'])
             ->assertCreated()
-            ->assertJsonPath('data.reviewer_type', 'activity')
-            ->assertJsonPath('data.reviewer', null);
+            ->assertJsonPath('reviewer_type', 'activity')
+            ->assertJsonPath('reviewer', null);
 
         // Les deux sont donnés : les deux sont publiés.
         expect(Review::query()->where('is_published', true)->count())->toBe(2);
         $this->getJson("/api/reviews/{$review->id}")
             ->assertOk()
-            ->assertJsonPath('data.is_published', true)
-            ->assertJsonPath('data.private_feedback', 'Le portail ferme mal.');
+            ->assertJsonPath('is_published', true)
+            ->assertJsonPath('private_feedback', 'Le portail ferme mal.');
     });
 
     it('takes one review per side', function () {
@@ -122,7 +122,7 @@ describe('reading', function () {
         $this->withHeaders(asUser(memberOf($activity->organization, OrganizationRoleEnum::EMPLOYEE, $activity->id)))
             ->getJson("/api/activities/{$activity->id}/reviews")
             ->assertJsonPath('data.0.private_feedback', 'Un peu bruyant.');
-        $this->getJson("/api/activities/{$activity->id}")->assertJsonPath('data.rating', ['average' => 4.3, 'count' => 2]);
+        $this->getJson("/api/activities/{$activity->id}")->assertJsonPath('rating', ['average' => 4.3, 'count' => 2]);
     });
 
     it('shows the reviews a client gave and received', function () {

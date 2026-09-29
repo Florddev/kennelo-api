@@ -20,9 +20,9 @@ it('returns settings grouped by category with defaults', function () {
     $this->withHeaders(asUser($admin))
         ->getJson('/api/admin/settings')
         ->assertOk()
-        ->assertJsonPath('data.fees.user_service_fee_rate', '0.08')
-        ->assertJsonPath('data.booking.acceptance_window_hours', 72)
-        ->assertJsonPath('data.stripe.currency', 'eur');
+        ->assertJsonPath('fees.user_service_fee_rate', '0.08')
+        ->assertJsonPath('booking.acceptance_window_hours', 72)
+        ->assertJsonPath('stripe.currency', 'eur');
 });
 
 it('updates a setting and persists it', function () {
@@ -33,7 +33,7 @@ it('updates a setting and persists it', function () {
             'values' => ['user_service_fee_rate' => '0.12'],
         ])
         ->assertOk()
-        ->assertJsonPath('data.fees.user_service_fee_rate', '0.12');
+        ->assertJsonPath('fees.user_service_fee_rate', '0.12');
 
     expect(Setting::where('key', 'user_service_fee_rate')->value('value'))->toBe('0.12');
 });

@@ -31,7 +31,7 @@ test('new users can register with google', function () {
     $response = $this->post('/api/login/google', ['token' => 'google-access-token']);
 
     $response->assertOk()
-        ->assertJsonPath('data.email', 'ada@example.com');
+        ->assertJsonPath('email', 'ada@example.com');
 
     $this->assertAuthenticated('web');
 
@@ -73,7 +73,7 @@ test('returning google users can authenticate', function () {
     $response = $this->post('/api/login/google', ['token' => 'google-access-token']);
 
     $response->assertOk()
-        ->assertJsonPath('data.id', $user->id);
+        ->assertJsonPath('id', $user->id);
 
     expect(User::where('google_id', 'google-123')->count())->toBe(1);
 });

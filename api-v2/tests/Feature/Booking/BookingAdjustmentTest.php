@@ -49,10 +49,10 @@ describe('adding an option', function () {
         $this->withHeaders(asUser($booking->organization->owner))
             ->postJson("/api/activities/{$booking->activity_id}/bookings/{$booking->id}/items", ['service_id' => $bath->id, 'pet_id' => $dog->id])
             ->assertOk()
-            ->assertJsonPath('data.items.0.status', 'to_schedule')
-            ->assertJsonPath('data.payments.1.kind', 'supplement')
-            ->assertJsonPath('data.payments.1.amount', '21.60')
-            ->assertJsonPath('data.total_price', '86.40');
+            ->assertJsonPath('items.0.status', 'to_schedule')
+            ->assertJsonPath('payments.1.kind', 'supplement')
+            ->assertJsonPath('payments.1.amount', '21.60')
+            ->assertJsonPath('total_price', '86.40');
 
         $booking->refresh();
 
@@ -78,8 +78,8 @@ describe('adding an option', function () {
         $this->withHeaders(asUser($booking->organization->owner))
             ->postJson("/api/activities/{$booking->activity_id}/bookings/{$booking->id}/items", ['service_id' => $bath->id, 'pet_id' => $dog->id])
             ->assertOk()
-            ->assertJsonPath('data.payments.1.status', 'requires_action')
-            ->assertJsonPath('data.total_price', '64.80');
+            ->assertJsonPath('payments.1.status', 'requires_action')
+            ->assertJsonPath('total_price', '64.80');
 
         Notification::assertSentTo($booking->user, AppNotification::class);
         $payment = $booking->payments()->where('kind', PaymentKindEnum::SUPPLEMENT)->sole();
@@ -87,7 +87,7 @@ describe('adding an option', function () {
         $this->withHeaders(asUser($booking->user))
             ->postJson("/api/bookings/{$booking->id}/payments/{$payment->id}/confirm")
             ->assertOk()
-            ->assertJsonPath('data.client_secret', 'pi_supplement_secret');
+            ->assertJsonPath('client_secret', 'pi_supplement_secret');
     });
 
     it('adds nothing when the card is declined', function () {
@@ -142,9 +142,9 @@ describe('removing an option', function () {
         $this->withHeaders(asUser($booking->organization->owner))
             ->deleteJson("/api/activities/{$booking->activity_id}/bookings/{$booking->id}/items/{$bath->id}")
             ->assertOk()
-            ->assertJsonPath('data.items.0.status', 'cancelled')
-            ->assertJsonPath('data.payment_status', 'partially_refunded')
-            ->assertJsonPath('data.total_price', '64.80');
+            ->assertJsonPath('items.0.status', 'cancelled')
+            ->assertJsonPath('payment_status', 'partially_refunded')
+            ->assertJsonPath('total_price', '64.80');
 
         $refund = BookingRefund::sole();
         $booking->refresh();
@@ -179,7 +179,7 @@ describe('removing an option', function () {
         $this->withHeaders(asUser($booking->organization->owner))
             ->deleteJson("/api/activities/{$booking->activity_id}/bookings/{$booking->id}/items/{$item->id}")
             ->assertOk()
-            ->assertJsonPath('data.total_price', '64.80');
+            ->assertJsonPath('total_price', '64.80');
 
         expect($payment->fresh()->status)->toBe(PaymentStatusEnum::CANCELED)
             ->and(BookingRefund::count())->toBe(0);
@@ -196,9 +196,9 @@ it('keeps the financial journal of the booking for the team', function () {
     $this->withHeaders($headers)
         ->getJson("/api/activities/{$booking->activity_id}/bookings/{$booking->id}/operations")
         ->assertOk()
-        ->assertJsonPath('data.*.type', ['capture', 'status_change'])
-        ->assertJsonPath('data.0.amount', '64.80')
-        ->assertJsonPath('data.1.metadata', ['status' => 'confirmed']);
+        ->assertJsonPath('*.type', ['capture', 'status_change'])
+        ->assertJsonPath('0.amount', '64.80')
+        ->assertJsonPath('1.metadata', ['status' => 'confirmed']);
 });
 
 it('keeps a booked unit, and a booked pet', function () {

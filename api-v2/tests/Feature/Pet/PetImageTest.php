@@ -18,7 +18,7 @@ it('owner can upload an avatar for their pet', function () {
     $this->withHeaders(asUser($user))
         ->postJson("/api/pets/{$pet->id}/avatar", ['avatar' => $file])
         ->assertOk()
-        ->assertJsonPath('data.id', $pet->id);
+        ->assertJsonPath('id', $pet->id);
     expect($pet->fresh()->getFirstMedia(MediaService::COLLECTION_AVATAR))->not->toBeNull();
 });
 
@@ -79,7 +79,7 @@ it('owner can list images of their pet', function () {
     $pet = Pet::create(['user_id' => $user->id, 'animal_type_id' => $animalType->id, 'name' => 'Rex']);
     $pet->addMedia(UploadedFile::fake()->image('a.jpg', 300, 300))->toMediaCollection(MediaService::COLLECTION_IMAGES);
     $pet->addMedia(UploadedFile::fake()->image('b.jpg', 300, 300))->toMediaCollection(MediaService::COLLECTION_IMAGES);
-    $this->withHeaders(asUser($user))->getJson("/api/pets/{$pet->id}/images")->assertOk()->assertJsonCount(2, 'data');
+    $this->withHeaders(asUser($user))->getJson("/api/pets/{$pet->id}/images")->assertOk()->assertJsonCount(2);
 });
 
 it('owner can delete an image from their pet', function () {

@@ -21,7 +21,7 @@ describe('offer management', function () {
         $this->withHeaders(asUser($activity->organization->owner))
             ->putJson("/api/activities/{$activity->id}/services/{$service->id}", ['adjustment_percent' => -10])
             ->assertOk()
-            ->assertJsonPath('data.offer', [
+            ->assertJsonPath('offer', [
                 'offered_as' => 'standalone',
                 'adjustment_percent' => '-10.00',
                 'is_included' => false,
@@ -40,9 +40,9 @@ describe('offer management', function () {
         $this->withHeaders($headers)
             ->putJson("/api/activities/{$activity->id}/services/{$service->id}", ['offered_as' => 'stay_option', 'is_included' => true])
             ->assertOk()
-            ->assertJsonPath('data.offer.offered_as', 'stay_option')
-            ->assertJsonPath('data.offer.adjustment_percent', '0.00')
-            ->assertJsonPath('data.offer.is_included', true);
+            ->assertJsonPath('offer.offered_as', 'stay_option')
+            ->assertJsonPath('offer.adjustment_percent', '0.00')
+            ->assertJsonPath('offer.is_included', true);
 
         expect($activity->services()->count())->toBe(1);
     });
@@ -135,9 +135,9 @@ describe('services of an activity', function () {
 
         $this->getJson("/api/activities/{$activity->id}/services")
             ->assertOk()
-            ->assertJsonPath('data.*.name', ['Toilettage'])
-            ->assertJsonPath('data.0.prices.*.price', ['27.00', '40.50', '58.50'])
-            ->assertJsonMissingPath('data.0.pet_price');
+            ->assertJsonPath('*.name', ['Toilettage'])
+            ->assertJsonPath('0.prices.*.price', ['27.00', '40.50', '58.50'])
+            ->assertJsonMissingPath('0.pet_price');
     });
 
     it('shows the team every service it offers', function () {
@@ -146,7 +146,7 @@ describe('services of an activity', function () {
         $this->withHeaders(asUser($activity->organization->owner))
             ->getJson("/api/activities/{$activity->id}/services")
             ->assertOk()
-            ->assertJsonPath('data.*.name', ['Bain', 'Toilettage']);
+            ->assertJsonPath('*.name', ['Bain', 'Toilettage']);
     });
 
     it('gives the price and the duration for the pet of the client', function (Closure $makePet, ?array $expected) {
@@ -157,7 +157,7 @@ describe('services of an activity', function () {
         $this->withHeaders(asUser($client))
             ->getJson("/api/activities/{$activity->id}/services?pet_id={$pet->id}")
             ->assertOk()
-            ->assertJsonPath('data.0.pet_price', $expected);
+            ->assertJsonPath('0.pet_price', $expected);
     })->with([
         'poodle' => [
             fn (User $client, AnimalType $dog, AnimalBreed $poodle) => Pet::factory()->for($client)->for($dog)->create(['animal_breed_id' => $poodle->id]),

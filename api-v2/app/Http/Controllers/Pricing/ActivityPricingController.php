@@ -75,6 +75,6 @@ class ActivityPricingController extends Controller
     {
         $this->authorize('view', $activity);
 
-        return response()->json(['data' => $this->pricing->calendar($activity, $request->date('from'), $request->date('to'))]);
+        return response()->json($this->pricing->calendar($activity, $request->date('from'), $request->date('to')));
     }
 }

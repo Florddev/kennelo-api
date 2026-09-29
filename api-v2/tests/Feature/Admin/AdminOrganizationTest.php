@@ -31,7 +31,7 @@ it('approves a company, notifies its owner and logs the action', function () {
     $this->withHeaders(asUser($admin))
         ->postJson("/api/admin/organizations/{$organization->id}/approve")
         ->assertOk()
-        ->assertJsonPath('data.status', 'verified');
+        ->assertJsonPath('status', 'verified');
 
     $organization->refresh();
 
@@ -49,8 +49,8 @@ it('rejects a company with a reason', function () {
     $this->withHeaders(asUser(adminUser()))
         ->postJson("/api/admin/organizations/{$organization->id}/reject", ['reason' => 'SIREN radié'])
         ->assertOk()
-        ->assertJsonPath('data.status', 'rejected')
-        ->assertJsonPath('data.rejection_reason', 'SIREN radié');
+        ->assertJsonPath('status', 'rejected')
+        ->assertJsonPath('rejection_reason', 'SIREN radié');
 });
 
 it('requires a reason to reject or suspend a company', function (string $action) {
@@ -68,7 +68,7 @@ it('suspends a verified company', function () {
     $this->withHeaders(asUser(adminUser()))
         ->postJson("/api/admin/organizations/{$organization->id}/suspend", ['reason' => 'Fraude signalée'])
         ->assertOk()
-        ->assertJsonPath('data.status', 'suspended');
+        ->assertJsonPath('status', 'suspended');
 });
 
 it('stores the register data when checking the SIREN', function () {
@@ -84,8 +84,8 @@ it('stores the register data when checking the SIREN', function () {
     $this->withHeaders(asUser(adminUser()))
         ->postJson("/api/admin/organizations/{$organization->id}/verify-company")
         ->assertOk()
-        ->assertJsonPath('data.verification_data.legal_name', 'PENSION DES LILAS')
-        ->assertJsonPath('data.status', 'pending');
+        ->assertJsonPath('verification_data.legal_name', 'PENSION DES LILAS')
+        ->assertJsonPath('status', 'pending');
 });
 
 it('refuses to check an individual without SIREN', function () {

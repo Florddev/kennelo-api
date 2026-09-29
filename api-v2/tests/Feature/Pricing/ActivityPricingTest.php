@@ -16,15 +16,15 @@ describe('settings and grid', function () {
         $this->withHeaders(asUser($unitType->activity->organization->owner))
             ->getJson("/api/activities/{$unitType->activity_id}/pricing-periods")
             ->assertOk()
-            ->assertJsonCount(2, 'data')
-            ->assertJsonPath('data.0.setting.prices.0', [
+            ->assertJsonCount(2)
+            ->assertJsonPath('0.setting.prices.0', [
                 'unit_type_id' => $unitType->id,
                 'weekday' => null,
                 'price' => '30.00',
                 'extra_animal_price' => null,
             ])
-            ->assertJsonPath('data.1.id', $summer->id)
-            ->assertJsonPath('data.1.setting', null);
+            ->assertJsonPath('1.id', $summer->id)
+            ->assertJsonPath('1.setting', null);
     });
 
     it('configures a period for the activity', function () {
@@ -38,10 +38,10 @@ describe('settings and grid', function () {
                 'closed_weekdays' => [WeekDayEnum::SUNDAY->value, WeekDayEnum::MONDAY->value],
             ])
             ->assertOk()
-            ->assertJsonPath('data.is_active', true)
-            ->assertJsonPath('data.min_stay', 3)
-            ->assertJsonPath('data.price_modifier_percent', '15.00')
-            ->assertJsonPath('data.closed_weekdays', [WeekDayEnum::MONDAY->value, WeekDayEnum::SUNDAY->value]);
+            ->assertJsonPath('is_active', true)
+            ->assertJsonPath('min_stay', 3)
+            ->assertJsonPath('price_modifier_percent', '15.00')
+            ->assertJsonPath('closed_weekdays', [WeekDayEnum::MONDAY->value, WeekDayEnum::SUNDAY->value]);
     });
 
     it('replaces the grid of a period', function () {
@@ -54,8 +54,8 @@ describe('settings and grid', function () {
                 ['unit_type_id' => $unitType->id, 'weekday' => WeekDayEnum::SATURDAY->value, 'price' => '35.00'],
             ]])
             ->assertOk()
-            ->assertJsonCount(2, 'data.prices')
-            ->assertJsonPath('data.prices.0.price', '28.00');
+            ->assertJsonCount(2, 'prices')
+            ->assertJsonPath('prices.0.price', '28.00');
     });
 
     it('refuses a unit of another activity and a unit priced twice for the same day', function () {
@@ -106,11 +106,11 @@ describe('price calendar', function () {
 
         $this->getJson("/api/activities/{$activity->id}/price-calendar?from={$from->toDateString()}&to={$from->copy()->addDay()->toDateString()}")
             ->assertOk()
-            ->assertJsonCount(2, 'data')
-            ->assertJsonPath('data.0.is_open', true)
-            ->assertJsonPath('data.0.min_stay', 1)
-            ->assertJsonPath('data.0.units', [['unit_type_id' => $unitType->id, 'price' => '30.00', 'available' => 3]])
-            ->assertJsonPath('data.1.units', [['unit_type_id' => $unitType->id, 'price' => '33.00', 'available' => 3]]);
+            ->assertJsonCount(2)
+            ->assertJsonPath('0.is_open', true)
+            ->assertJsonPath('0.min_stay', 1)
+            ->assertJsonPath('0.units', [['unit_type_id' => $unitType->id, 'price' => '30.00', 'available' => 3]])
+            ->assertJsonPath('1.units', [['unit_type_id' => $unitType->id, 'price' => '33.00', 'available' => 3]]);
     });
 
     it('marks the days the activity is closed', function () {
@@ -120,7 +120,7 @@ describe('price calendar', function () {
 
         $this->getJson("/api/activities/{$activity->id}/price-calendar?from={$day->toDateString()}&to={$day->toDateString()}")
             ->assertOk()
-            ->assertJsonPath('data.0', ['date' => $day->toDateString(), 'is_open' => false, 'min_stay' => null, 'units' => []]);
+            ->assertJsonPath('0', ['date' => $day->toDateString(), 'is_open' => false, 'min_stay' => null, 'units' => []]);
     });
 
     it('stops at 93 days', function () {
@@ -156,10 +156,10 @@ describe('after a downgrade', function () {
 
         $url = "/api/activities/{$unitType->activity_id}/price-calendar?from={$day}&to={$day}";
 
-        $this->getJson($url)->assertJsonPath('data.0.units.0.price', '99.00');
+        $this->getJson($url)->assertJsonPath('0.units.0.price', '99.00');
 
         config(['plans.downgrade.soft_disable.periods' => true]);
 
-        $this->getJson($url)->assertJsonPath('data.0.units.0.price', '30.00');
+        $this->getJson($url)->assertJsonPath('0.units.0.price', '30.00');
     });
 });

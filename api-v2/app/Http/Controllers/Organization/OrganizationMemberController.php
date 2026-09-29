@@ -14,7 +14,7 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
 
 /**
- * @tags Organization team
+ * @tags Organizations
  */
 class OrganizationMemberController extends Controller
 {

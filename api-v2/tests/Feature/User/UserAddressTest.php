@@ -23,9 +23,9 @@ it('makes the first address the default one', function () {
     $this->withHeaders(asUser($client))
         ->postJson('/api/user/addresses', addressPayload('Domicile'))
         ->assertCreated()
-        ->assertJsonPath('data.label', 'Domicile')
-        ->assertJsonPath('data.is_default', true)
-        ->assertJsonPath('data.address.department', '69');
+        ->assertJsonPath('label', 'Domicile')
+        ->assertJsonPath('is_default', true)
+        ->assertJsonPath('address.department', '69');
 });
 
 it('moves the default to a new address', function () {
@@ -35,7 +35,7 @@ it('moves the default to a new address', function () {
     $this->withHeaders(asUser($client))
         ->postJson('/api/user/addresses', addressPayload('Chez mes parents', ['is_default' => true]))
         ->assertCreated()
-        ->assertJsonPath('data.is_default', true);
+        ->assertJsonPath('is_default', true);
 
     expect($home->fresh()->is_default)->toBeFalse();
 });
@@ -49,8 +49,8 @@ it('lists the addresses, the default one first', function () {
     $this->withHeaders(asUser($client))
         ->getJson('/api/user/addresses')
         ->assertOk()
-        ->assertJsonCount(2, 'data')
-        ->assertJsonPath('data.0.id', $default->id);
+        ->assertJsonCount(2)
+        ->assertJsonPath('0.id', $default->id);
 });
 
 it('updates an address and makes it the default one', function () {
@@ -61,9 +61,9 @@ it('updates an address and makes it the default one', function () {
     $this->withHeaders(asUser($client))
         ->patchJson("/api/user/addresses/{$work->id}", ['label' => 'Bureau', 'is_default' => true, 'address' => ['city' => 'Villeurbanne', 'line1' => '1 cours Émile Zola', 'postal_code' => '69100', 'country' => 'FR']])
         ->assertOk()
-        ->assertJsonPath('data.label', 'Bureau')
-        ->assertJsonPath('data.is_default', true)
-        ->assertJsonPath('data.address.city', 'Villeurbanne');
+        ->assertJsonPath('label', 'Bureau')
+        ->assertJsonPath('is_default', true)
+        ->assertJsonPath('address.city', 'Villeurbanne');
 
     expect($home->fresh()->is_default)->toBeFalse();
 });

@@ -61,7 +61,7 @@ test('login without 2FA opens the session directly', function () {
 
     $this->postJson('/api/login', ['email' => $user->email, 'password' => 'password'])
         ->assertOk()
-        ->assertJsonPath('data.id', $user->id);
+        ->assertJsonPath('id', $user->id);
 
     $this->assertAuthenticatedAs($user, 'web');
 });
@@ -85,7 +85,7 @@ test('challenge with a valid TOTP code opens the session', function () {
         'code' => currentOtp($secret),
     ])
         ->assertOk()
-        ->assertJsonPath('data.id', $user->id);
+        ->assertJsonPath('id', $user->id);
 
     $this->assertAuthenticatedAs($user, 'web');
 });
@@ -236,7 +236,7 @@ test('the user resource exposes two_factor_enabled for self', function () {
     $this->withHeaders(asUser($user))
         ->getJson('/api/user')
         ->assertOk()
-        ->assertJsonPath('data.two_factor_enabled', true);
+        ->assertJsonPath('two_factor_enabled', true);
 });
 
 test('the user resource exposes the remaining recovery codes count', function () {
@@ -246,7 +246,7 @@ test('the user resource exposes the remaining recovery codes count', function ()
     $this->withHeaders(asUser($user))
         ->getJson('/api/user')
         ->assertOk()
-        ->assertJsonPath('data.two_factor_recovery_codes_count', 2);
+        ->assertJsonPath('two_factor_recovery_codes_count', 2);
 });
 
 test('a challenge with remember registers the device and returns a remember token', function () {
@@ -276,7 +276,7 @@ test('a remembered device skips the challenge on login', function () {
         'remember_token' => $rememberToken,
     ])
         ->assertOk()
-        ->assertJsonPath('data.id', $user->id);
+        ->assertJsonPath('id', $user->id);
 
     $this->assertAuthenticatedAs($user, 'web');
 });
@@ -343,7 +343,7 @@ test('the user resource exposes has_password for a password account', function (
     $this->withHeaders(asUser($user))
         ->getJson('/api/user')
         ->assertOk()
-        ->assertJsonPath('data.has_password', true);
+        ->assertJsonPath('has_password', true);
 });
 
 test('the user resource reports no password for an oauth-only account', function () {
@@ -352,7 +352,7 @@ test('the user resource reports no password for an oauth-only account', function
     $this->withHeaders(asUser($user))
         ->getJson('/api/user')
         ->assertOk()
-        ->assertJsonPath('data.has_password', false);
+        ->assertJsonPath('has_password', false);
 });
 
 test('a password account must provide a password to enable 2FA', function () {

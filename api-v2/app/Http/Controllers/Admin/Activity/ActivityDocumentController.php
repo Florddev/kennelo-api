@@ -17,7 +17,7 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
- * @tags Admin Activities
+ * @tags Activities
  */
 class ActivityDocumentController extends Controller
 {

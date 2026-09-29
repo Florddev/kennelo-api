@@ -14,7 +14,7 @@ test('new users can register', function () {
     ]);
 
     $response->assertCreated()
-        ->assertJsonPath('data.email', 'test@example.com')
+        ->assertJsonPath('email', 'test@example.com')
         ->assertJsonMissingPath('access_token');
 
     $this->assertAuthenticated('web');

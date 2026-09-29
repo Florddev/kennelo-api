@@ -12,7 +12,7 @@ use App\Services\Activity\TravelFeeService;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 /**
- * @tags Activity travel fees
+ * @tags Activities
  */
 class ActivityTravelFeeController extends Controller
 {

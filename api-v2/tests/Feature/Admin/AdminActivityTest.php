@@ -28,7 +28,7 @@ it('approves an activity whose profession requires no document, and logs it', fu
     $this->withHeaders(asUser($admin))
         ->postJson("/api/admin/activities/{$activity->id}/approve")
         ->assertOk()
-        ->assertJsonPath('data.status', 'approved');
+        ->assertJsonPath('status', 'approved');
 
     $action = AdminAction::query()->where('action', AdminActionTypeEnum::APPROVE_ACTIVITY)->sole();
 
@@ -44,8 +44,8 @@ it('rejects or suspends an activity with a reason sent to its team', function (s
     $this->withHeaders(asUser(adminUser()))
         ->postJson("/api/admin/activities/{$activity->id}/{$action}", ['reason' => 'Photos trompeuses'])
         ->assertOk()
-        ->assertJsonPath('data.status', $status->value)
-        ->assertJsonPath('data.rejection_reason', 'Photos trompeuses');
+        ->assertJsonPath('status', $status->value)
+        ->assertJsonPath('rejection_reason', 'Photos trompeuses');
 
     Notification::assertSentTo($activity->organization->owner, AppNotification::class);
 })->with([

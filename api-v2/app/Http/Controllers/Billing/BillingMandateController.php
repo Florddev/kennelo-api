@@ -11,7 +11,7 @@ use App\Models\Organization;
 use App\Services\Organization\OrganizationService;
 
 /**
- * @tags Billing
+ * @tags Organizations
  */
 class BillingMandateController extends Controller
 {

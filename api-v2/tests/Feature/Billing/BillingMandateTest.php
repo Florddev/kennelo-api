@@ -25,7 +25,7 @@ it('lets the owner give the mandate, which makes the activities bookable', funct
     $this->withHeaders(asUser($organization->owner))
         ->postJson("/api/organizations/{$organization->id}/billing-mandate", ['accepted' => true])
         ->assertOk()
-        ->assertJsonPath('data.billing_mandate_accepted_at', fn (?string $date): bool => $date !== null);
+        ->assertJsonPath('billing_mandate_accepted_at', fn (?string $date): bool => $date !== null);
 
     expect($organization->fresh()->billing_mandate_accepted_by)->toBe($organization->owner_id)
         ->and(Activity::bookable()->whereKey($activity->id)->exists())->toBeTrue();
@@ -39,7 +39,7 @@ it('keeps the date of the first acceptance', function () {
     $this->withHeaders(asUser($organization->owner))
         ->postJson("/api/organizations/{$organization->id}/billing-mandate", ['accepted' => true])
         ->assertOk()
-        ->assertJsonPath('data.billing_mandate_accepted_at', $acceptedAt);
+        ->assertJsonPath('billing_mandate_accepted_at', $acceptedAt);
 });
 
 it('requires an explicit acceptance', function () {

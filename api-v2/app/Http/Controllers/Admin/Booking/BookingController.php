@@ -18,7 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 /**
- * @tags Admin Bookings
+ * @tags Bookings
  */
 class BookingController extends Controller
 {

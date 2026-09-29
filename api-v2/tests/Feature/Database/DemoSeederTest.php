@@ -16,7 +16,7 @@ it('seeds a demo where each screen has something to show', function () {
 
     expect(Activity::query()->bookable()->count())->toBe(3);
     $this->getJson('/api/explore/search')->assertOk()->assertJsonCount(3, 'data');
-    $this->getJson("/api/activities/{$pension->id}")->assertOk()->assertJsonPath('data.rating.count', 1);
+    $this->getJson("/api/activities/{$pension->id}")->assertOk()->assertJsonPath('rating.count', 1);
 
     $this->withHeaders(asUser($camille))->getJson('/api/bookings')->assertOk()->assertJsonCount(4, 'data');
     $this->getJson('/api/conversations')->assertOk()->assertJsonCount(1, 'data');
@@ -25,8 +25,8 @@ it('seeds a demo where each screen has something to show', function () {
     $this->withHeaders(asUser($pro))
         ->getJson("/api/organizations/{$organization->id}/in-care-pets")
         ->assertOk()
-        ->assertJsonPath('data.*.name', ['Mina']);
+        ->assertJsonPath('*.name', ['Mina']);
     $this->getJson("/api/organizations/{$organization->id}/dashboard")
         ->assertOk()
-        ->assertJsonPath('data.pending_requests', 1);
+        ->assertJsonPath('pending_requests', 1);
 });

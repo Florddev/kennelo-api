@@ -33,11 +33,11 @@ describe('sending', function () {
         $message = $this->withHeaders(asUser($conversation->user))
             ->postJson("/api/conversations/{$conversation->id}/messages", ['content' => 'Bonjour, Rex peut-il venir avec son panier ?'])
             ->assertCreated()
-            ->assertJsonPath('data.type', 'text')
-            ->assertJsonPath('data.sender_type', 'user')
-            ->assertJsonPath('data.sender.id', $conversation->user_id)
-            ->assertJsonPath('data.content', 'Bonjour, Rex peut-il venir avec son panier ?')
-            ->json('data');
+            ->assertJsonPath('type', 'text')
+            ->assertJsonPath('sender_type', 'user')
+            ->assertJsonPath('sender.id', $conversation->user_id)
+            ->assertJsonPath('content', 'Bonjour, Rex peut-il venir avec son panier ?')
+            ->json();
 
         expect($conversation->refresh()->last_message_at?->toISOString())->toBe($message['created_at']);
         Event::assertDispatched(MessageSent::class, fn (MessageSent $event): bool => $event->message->id === $message['id']);
@@ -53,7 +53,7 @@ describe('sending', function () {
         $this->withHeaders(asUser($owner))
             ->postJson("/api/conversations/{$conversation->id}/messages", ['content' => 'Bien sûr !'])
             ->assertCreated()
-            ->assertJsonPath('data.sender_type', 'activity');
+            ->assertJsonPath('sender_type', 'activity');
 
         Notification::assertSentTo($conversation->user, AppNotification::class);
         Notification::assertNotSentTo($owner, AppNotification::class);
@@ -67,8 +67,8 @@ describe('sending', function () {
         $this->withHeaders(asUser($conversation->user))
             ->postJson("/api/conversations/{$conversation->id}/messages", ['content' => 'À propos de ma réservation', 'booking_id' => $booking->id])
             ->assertCreated()
-            ->assertJsonPath('data.type', 'booking_reference')
-            ->assertJsonPath('data.booking_id', $booking->id);
+            ->assertJsonPath('type', 'booking_reference')
+            ->assertJsonPath('booking_id', $booking->id);
         $this->postJson("/api/conversations/{$conversation->id}/messages", ['content' => 'Et celle-ci ?', 'booking_id' => $other->id])
             ->assertUnprocessable()
             ->assertJsonValidationErrors('booking_id');
@@ -111,9 +111,9 @@ describe('attachments', function () {
                 ],
             ], ['Accept' => 'application/json'])
             ->assertCreated()
-            ->assertJsonPath('data.type', 'file')
-            ->assertJsonPath('data.files.*.file_name', ['vaccins.jpg', 'ordonnance.pdf'])
-            ->json('data');
+            ->assertJsonPath('type', 'file')
+            ->assertJsonPath('files.*.file_name', ['vaccins.jpg', 'ordonnance.pdf'])
+            ->json();
 
         $file = MessageFile::query()->where('file_name', 'vaccins.jpg')->sole();
         Storage::disk((string) config('conversations.attachments_disk'))->assertExists($file->file_path);

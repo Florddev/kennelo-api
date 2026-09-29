@@ -14,7 +14,7 @@ use App\Services\Review\ReviewReportService;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 /**
- * @tags Admin Reviews
+ * @tags Reviews
  */
 class ReviewReportController extends Controller
 {

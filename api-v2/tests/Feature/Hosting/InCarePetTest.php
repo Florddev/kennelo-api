@@ -39,12 +39,12 @@ it('lists the pets in care today, with their owner', function () {
     $this->withHeaders(asUser($activity->organization->owner))
         ->getJson("/api/organizations/{$activity->organization_id}/in-care-pets")
         ->assertOk()
-        ->assertJsonCount(1, 'data')
-        ->assertJsonPath('data.0.name', 'Rex')
-        ->assertJsonPath('data.0.microchip_number', '250269812345678')
-        ->assertJsonPath('data.0.owner.phone', '+33612345678')
-        ->assertJsonPath('data.0.booking.id', $stay->id)
-        ->assertJsonPath('data.0.booking.activity.name', $activity->name);
+        ->assertJsonCount(1)
+        ->assertJsonPath('0.name', 'Rex')
+        ->assertJsonPath('0.microchip_number', '250269812345678')
+        ->assertJsonPath('0.owner.phone', '+33612345678')
+        ->assertJsonPath('0.booking.id', $stay->id)
+        ->assertJsonPath('0.booking.activity.name', $activity->name);
 });
 
 it('finds a scanned pet only among the pets in care', function () {
@@ -56,9 +56,9 @@ it('finds a scanned pet only among the pets in care', function () {
     $this->withHeaders(asUser($activity->organization->owner));
     $url = "/api/organizations/{$activity->organization_id}/in-care-pets?microchip=";
 
-    $this->getJson($url.'250269800000001')->assertJsonPath('data.*.id', [$inCare->id]);
-    $this->getJson($url.'250269800000002')->assertJsonCount(0, 'data');
-    $this->getJson($url.'999')->assertJsonCount(0, 'data');
+    $this->getJson($url.'250269800000001')->assertJsonPath('*.id', [$inCare->id]);
+    $this->getJson($url.'250269800000002')->assertJsonCount(0);
+    $this->getJson($url.'999')->assertJsonCount(0);
 });
 
 it('shows each member the pets of the activities where they see the bookings', function () {
@@ -72,7 +72,7 @@ it('shows each member the pets of the activities where they see the bookings', f
     $this->withHeaders(asUser(memberOf($organization, OrganizationRoleEnum::EMPLOYEE, $kennel->id)))
         ->getJson("/api/organizations/{$organization->id}/in-care-pets")
         ->assertOk()
-        ->assertJsonPath('data.*.id', [$dog->id]);
+        ->assertJsonPath('*.id', [$dog->id]);
     $this->withHeaders(asUser(memberOf($organization, OrganizationRoleEnum::ACCOUNTANT)))
         ->getJson("/api/organizations/{$organization->id}/in-care-pets")
         ->assertForbidden();

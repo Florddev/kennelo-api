@@ -12,7 +12,7 @@ use App\Services\Hosting\InCarePetService;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 /**
- * @tags Hosting
+ * @tags Bookings
  */
 class InCarePetController extends Controller
 {

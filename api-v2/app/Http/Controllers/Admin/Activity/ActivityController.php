@@ -17,7 +17,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 /**
- * @tags Admin Activities
+ * @tags Activities
  */
 class ActivityController extends Controller
 {

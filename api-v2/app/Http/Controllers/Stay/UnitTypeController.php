@@ -18,7 +18,7 @@ use Illuminate\Http\Response;
 /**
  * Places d'un séjour : boxes, chambres, paddocks…
  *
- * @tags Stays
+ * @tags Unit types
  */
 class UnitTypeController extends Controller
 {

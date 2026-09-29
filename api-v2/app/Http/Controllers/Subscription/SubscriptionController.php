@@ -34,7 +34,9 @@ class SubscriptionController extends Controller
     /**
      * Show the organization's subscription
      *
-     * data vaut null tant que l'entreprise n'a jamais souscrit : elle est alors sur l'offre gratuite.
+     * La réponse vaut null tant que l'entreprise n'a jamais souscrit : elle est alors sur l'offre gratuite.
+     *
+     * @response SubscriptionResource|null
      */
     public function show(Organization $organization): SubscriptionResource|JsonResponse
     {
@@ -43,7 +45,7 @@ class SubscriptionController extends Controller
         $subscription = $organization->subscription?->load('plan');
 
         return $subscription === null
-            ? response()->json(['data' => null])
+            ? new JsonResponse('null', json: true)
             : new SubscriptionResource($subscription);
     }
 
@@ -58,9 +60,9 @@ class SubscriptionController extends Controller
 
         $plan = SubscriptionPlan::where('slug', $request->validated('plan_slug'))->firstOrFail();
 
-        return response()->json(['data' => [
+        return response()->json([
             'checkout_url' => $this->subscriptions->startCheckout($organization, $plan),
-        ]]);
+        ]);
     }
 
     /**

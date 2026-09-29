@@ -59,7 +59,7 @@ it('returns the unread notifications count', function () {
     $this->withHeaders(asUser($user))
         ->getJson('/api/notifications/unread-count')
         ->assertOk()
-        ->assertJsonPath('data.unread_count', 2);
+        ->assertJsonPath('unread_count', 2);
 });
 
 // ─── mark as read ─────────────────────────────────────────────────────────────
@@ -93,7 +93,7 @@ it('can mark all notifications as read', function () {
     $this->withHeaders(asUser($user))
         ->putJson('/api/notifications/read-all')
         ->assertOk()
-        ->assertJsonPath('data.marked_count', 3);
+        ->assertJsonPath('marked_count', 3);
 
     expect(Notification::where('user_id', $user->id)->whereNull('read_at')->count())->toBe(0);
 });
@@ -131,7 +131,7 @@ it('refreshes the unread count cache when a notification is deleted', function (
 
     $this->withHeaders(asUser($user))
         ->getJson('/api/notifications/unread-count')
-        ->assertJsonPath('data.unread_count', 1);
+        ->assertJsonPath('unread_count', 1);
 
     $this->withHeaders(asUser($user))
         ->deleteJson("/api/notifications/{$notification->id}")
@@ -139,7 +139,7 @@ it('refreshes the unread count cache when a notification is deleted', function (
 
     $this->withHeaders(asUser($user))
         ->getJson('/api/notifications/unread-count')
-        ->assertJsonPath('data.unread_count', 0);
+        ->assertJsonPath('unread_count', 0);
 });
 
 it('refreshes the unread count cache when a new notification is dispatched', function () {
@@ -147,13 +147,13 @@ it('refreshes the unread count cache when a new notification is dispatched', fun
 
     $this->withHeaders(asUser($user))
         ->getJson('/api/notifications/unread-count')
-        ->assertJsonPath('data.unread_count', 0);
+        ->assertJsonPath('unread_count', 0);
 
     app(NotificationService::class)->notify($user, NotificationTypeEnum::BOOKING_CONFIRMED, ['booking_id' => 'abc']);
 
     $this->withHeaders(asUser($user))
         ->getJson('/api/notifications/unread-count')
-        ->assertJsonPath('data.unread_count', 1);
+        ->assertJsonPath('unread_count', 1);
 });
 
 it('caches the unread count between calls without a mutation', function () {
@@ -162,19 +162,19 @@ it('caches the unread count between calls without a mutation', function () {
 
     $this->withHeaders(asUser($user))
         ->getJson('/api/notifications/unread-count')
-        ->assertJsonPath('data.unread_count', 2);
+        ->assertJsonPath('unread_count', 2);
 
     Notification::where('user_id', $user->id)->update(['read_at' => now()]);
 
     $this->withHeaders(asUser($user))
         ->getJson('/api/notifications/unread-count')
-        ->assertJsonPath('data.unread_count', 2);
+        ->assertJsonPath('unread_count', 2);
 
     Cache::forget("notifications:unread_count:{$user->id}");
 
     $this->withHeaders(asUser($user))
         ->getJson('/api/notifications/unread-count')
-        ->assertJsonPath('data.unread_count', 0);
+        ->assertJsonPath('unread_count', 0);
 });
 
 it('exposes the notification type and data payload', function () {

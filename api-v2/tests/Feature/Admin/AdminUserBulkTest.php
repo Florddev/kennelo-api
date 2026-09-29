@@ -16,7 +16,7 @@ it('admin can bulk deactivate users', function () {
             'status' => UserStatusEnum::INACTIVE->value,
         ])
         ->assertOk()
-        ->assertJsonPath('data.affected', 2);
+        ->assertJsonPath('affected', 2);
 
     expect(User::withInactive()->find($a->id)->status)->toBe(UserStatusEnum::INACTIVE);
 });
@@ -32,7 +32,7 @@ it('bulk status skips admins and the acting admin', function () {
             'status' => UserStatusEnum::INACTIVE->value,
         ])
         ->assertOk()
-        ->assertJsonPath('data.affected', 1);
+        ->assertJsonPath('affected', 1);
 
     expect(User::withInactive()->find($admin->id)->status)->toBe(UserStatusEnum::ACTIVE)
         ->and(User::withInactive()->find($otherAdmin->id)->status)->toBe(UserStatusEnum::ACTIVE);

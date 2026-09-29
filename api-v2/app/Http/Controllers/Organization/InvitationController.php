@@ -14,7 +14,7 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 /**
  * Invitations reçues par la personne connectée.
  *
- * @tags Organization team
+ * @tags Organizations
  */
 class InvitationController extends Controller
 {

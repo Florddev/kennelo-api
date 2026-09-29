@@ -14,14 +14,14 @@ it('creates the base period with the company', function () {
     $organization = $this->withHeaders(asUser($owner))
         ->postJson('/api/organizations', ['legal_name' => 'Les Pattes', 'legal_form' => 'individual'])
         ->assertCreated()
-        ->json('data.id');
+        ->json('id');
 
     $this->getJson("/api/organizations/{$organization}/pricing-periods")
         ->assertOk()
-        ->assertJsonCount(1, 'data')
-        ->assertJsonPath('data.0.is_base', true)
-        ->assertJsonPath('data.0.name', __('booking.base_period'))
-        ->assertJsonPath('data.0.start_date', null);
+        ->assertJsonCount(1)
+        ->assertJsonPath('0.is_base', true)
+        ->assertJsonPath('0.name', __('booking.base_period'))
+        ->assertJsonPath('0.start_date', null);
 });
 
 it('lists the base period first, then the others in their creation order', function () {
@@ -31,9 +31,9 @@ it('lists the base period first, then the others in their creation order', funct
 
     $this->withHeaders(asUser($organization->owner))
         ->getJson("/api/organizations/{$organization->id}/pricing-periods")
-        ->assertJsonPath('data.*.name', [__('booking.base_period'), 'Hiver', 'Été'])
-        ->assertJsonPath('data.1.id', $winter->id)
-        ->assertJsonPath('data.2.id', $summer->id);
+        ->assertJsonPath('*.name', [__('booking.base_period'), 'Hiver', 'Été'])
+        ->assertJsonPath('1.id', $winter->id)
+        ->assertJsonPath('2.id', $summer->id);
 });
 
 describe('store', function () {
@@ -49,8 +49,8 @@ describe('store', function () {
                 'color' => '#E4572E',
             ])
             ->assertCreated()
-            ->assertJsonPath('data.is_recurring', true)
-            ->assertJsonPath('data.end_date', '2026-01-05');
+            ->assertJsonPath('is_recurring', true)
+            ->assertJsonPath('end_date', '2026-01-05');
     });
 
     it('refuses a dated period that ends before it starts', function () {
@@ -111,7 +111,7 @@ describe('base period', function () {
         $this->withHeaders(asUser($organization->owner))
             ->patchJson("/api/organizations/{$organization->id}/pricing-periods/{$base->id}", ['name' => 'Toute l\'année'])
             ->assertOk()
-            ->assertJsonPath('data.name', 'Toute l\'année');
+            ->assertJsonPath('name', 'Toute l\'année');
     });
 
     it('cannot be deleted', function () {

@@ -118,15 +118,15 @@ describe('home page sections', function () {
         $withPosition = $this->getJson('/api/explore/activities?'.http_build_query(LYON))->assertOk();
         $withoutPosition = $this->getJson('/api/explore/activities')->assertOk();
 
-        expect($withPosition->json('data.*.id'))->toContain('nearby')
-            ->and($withPosition->json('data.0.activities'))->toHaveCount(3)
-            ->and($withoutPosition->json('data.*.id'))->not->toContain('nearby');
+        expect($withPosition->json('*.id'))->toContain('nearby')
+            ->and($withPosition->json('0.activities'))->toHaveCount(3)
+            ->and($withoutPosition->json('*.id'))->not->toContain('nearby');
     });
 
     it('omits a section with fewer than three activities', function () {
         Activity::factory()->bookable()->count(2)->create();
 
-        $this->getJson('/api/explore/activities')->assertOk()->assertJsonCount(0, 'data');
+        $this->getJson('/api/explore/activities')->assertOk()->assertJsonCount(0);
     });
 
     it('pages through a section', function () {

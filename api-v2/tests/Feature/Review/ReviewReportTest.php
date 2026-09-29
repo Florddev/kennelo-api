@@ -21,8 +21,8 @@ describe('reporting', function () {
         $this->withHeaders(asUser(User::factory()->create()))
             ->postJson("/api/reviews/{$review->id}/reports", ['reason' => 'offensive', 'description' => 'Insultes envers le personnel.'])
             ->assertCreated()
-            ->assertJsonPath('data.status', 'pending')
-            ->assertJsonPath('data.reason', 'offensive');
+            ->assertJsonPath('status', 'pending')
+            ->assertJsonPath('reason', 'offensive');
         $this->postJson("/api/reviews/{$review->id}/reports", ['reason' => 'spam'])
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['review' => __('reviews.errors.already_reported')]);
@@ -68,8 +68,8 @@ describe('moderation', function () {
         $this->withHeaders(asUser($admin))
             ->putJson("/api/admin/review-reports/{$first->id}", ['status' => 'removed'])
             ->assertOk()
-            ->assertJsonPath('data.status', 'removed')
-            ->assertJsonPath('data.review.is_published', false);
+            ->assertJsonPath('status', 'removed')
+            ->assertJsonPath('review.is_published', false);
         $this->putJson("/api/admin/review-reports/{$second->id}", ['status' => 'rejected'])
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['status' => __('reviews.errors.already_decided')]);

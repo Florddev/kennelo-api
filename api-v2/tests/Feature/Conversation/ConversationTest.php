@@ -24,10 +24,10 @@ describe('contacting an activity', function () {
         $first = $this->withHeaders(asUser($client))
             ->postJson("/api/activities/{$activity->id}/conversations")
             ->assertCreated()
-            ->assertJsonPath('data.client_id', $client->id)
-            ->assertJsonPath('data.activity.name', $activity->name)
-            ->assertJsonPath('data.unread_count', 0);
-        $this->postJson("/api/activities/{$activity->id}/conversations")->assertOk()->assertJsonPath('data.id', $first->json('data.id'));
+            ->assertJsonPath('client_id', $client->id)
+            ->assertJsonPath('activity.name', $activity->name)
+            ->assertJsonPath('unread_count', 0);
+        $this->postJson("/api/activities/{$activity->id}/conversations")->assertOk()->assertJsonPath('id', $first->json('id'));
 
         expect(Conversation::query()->count())->toBe(1);
 
@@ -107,14 +107,14 @@ describe('conversation of a booking', function () {
         $conversation = $this->withHeaders(asUser($booking->user))
             ->postJson("/api/bookings/{$booking->id}/conversation")
             ->assertCreated()
-            ->assertJsonPath('data.bookings.0.id', $booking->id)
-            ->assertJsonPath('data.bookings.0.is_active', true)
-            ->json('data.id');
+            ->assertJsonPath('bookings.0.id', $booking->id)
+            ->assertJsonPath('bookings.0.is_active', true)
+            ->json('id');
 
         $this->withHeaders(asUser(memberOf($booking->organization, OrganizationRoleEnum::EMPLOYEE, $booking->activity_id)))
             ->postJson("/api/bookings/{$booking->id}/conversation")
             ->assertOk()
-            ->assertJsonPath('data.id', $conversation);
+            ->assertJsonPath('id', $conversation);
 
         expect(BookingThread::query()->sole()->conversation_id)->toBe($conversation);
     });
@@ -136,10 +136,10 @@ describe('unread messages', function () {
         Message::factory()->for($conversation)->fromTeam($employee->id)->create();
         Message::factory()->for($conversation)->create(['sender_id' => null, 'sender_type' => MessageSenderTypeEnum::SYSTEM, 'message_type' => MessageTypeEnum::SYSTEM, 'content' => 'booking_created']);
 
-        $this->withHeaders(asUser($conversation->user))->getJson('/api/conversations/unread-count')->assertOk()->assertJsonPath('data.unread_count', 1);
-        $this->withHeaders(asUser($employee))->getJson('/api/conversations/unread-count')->assertJsonPath('data.unread_count', 2);
-        $this->withHeaders(asUser($activity->organization->owner))->getJson('/api/conversations/unread-count')->assertJsonPath('data.unread_count', 2);
-        $this->withHeaders(asUser(memberOf($activity->organization, OrganizationRoleEnum::ACCOUNTANT)))->getJson('/api/conversations/unread-count')->assertJsonPath('data.unread_count', 0);
+        $this->withHeaders(asUser($conversation->user))->getJson('/api/conversations/unread-count')->assertOk()->assertJsonPath('unread_count', 1);
+        $this->withHeaders(asUser($employee))->getJson('/api/conversations/unread-count')->assertJsonPath('unread_count', 2);
+        $this->withHeaders(asUser($activity->organization->owner))->getJson('/api/conversations/unread-count')->assertJsonPath('unread_count', 2);
+        $this->withHeaders(asUser(memberOf($activity->organization, OrganizationRoleEnum::ACCOUNTANT)))->getJson('/api/conversations/unread-count')->assertJsonPath('unread_count', 0);
     });
 
     it('marks the messages of the other side as read, for the reader only', function () {
@@ -150,11 +150,11 @@ describe('unread messages', function () {
         Message::factory()->for($conversation)->count(2)->create();
         $reply = Message::factory()->for($conversation)->fromTeam($owner->id)->create();
 
-        $this->withHeaders(asUser($owner))->putJson("/api/conversations/{$conversation->id}/read")->assertOk()->assertJsonPath('data.marked_count', 2);
-        $this->putJson("/api/conversations/{$conversation->id}/read")->assertJsonPath('data.marked_count', 0);
+        $this->withHeaders(asUser($owner))->putJson("/api/conversations/{$conversation->id}/read")->assertOk()->assertJsonPath('marked_count', 2);
+        $this->putJson("/api/conversations/{$conversation->id}/read")->assertJsonPath('marked_count', 0);
 
         Event::assertDispatched(MessagesRead::class, fn (MessagesRead $event): bool => $event->reader->is($owner) && $event->count === 2);
-        $this->withHeaders(asUser($employee))->getJson('/api/conversations/unread-count')->assertJsonPath('data.unread_count', 2);
+        $this->withHeaders(asUser($employee))->getJson('/api/conversations/unread-count')->assertJsonPath('unread_count', 2);
 
         // Le client voit ses messages lus ; la réponse de l'équipe ne l'est pas encore.
         $this->withHeaders(asUser($conversation->user))

@@ -23,13 +23,13 @@ describe('store', function () {
                 'address' => ['line1' => '3 rue des Lilas', 'postal_code' => '69003', 'city' => 'Lyon', 'country' => 'FR'],
             ])
             ->assertCreated()
-            ->assertJsonPath('data.legal_name', 'Pension des Lilas')
-            ->assertJsonPath('data.status', 'pending')
-            ->assertJsonPath('data.plan', 'free')
-            ->assertJsonPath('data.is_owner', true)
-            ->assertJsonPath('data.address.department', '69');
+            ->assertJsonPath('legal_name', 'Pension des Lilas')
+            ->assertJsonPath('status', 'pending')
+            ->assertJsonPath('plan', 'free')
+            ->assertJsonPath('is_owner', true)
+            ->assertJsonPath('address.department', '69');
 
-        $organization = Organization::findOrFail($response->json('data.id'));
+        $organization = Organization::findOrFail($response->json('id'));
 
         expect($organization->owner_id)->toBe($user->id)
             ->and($organization->members()->active()->whereBelongsTo($user)->exists())->toBeTrue()
@@ -45,8 +45,8 @@ describe('store', function () {
                 'vat_regime' => 'standard',
             ])
             ->assertCreated()
-            ->assertJsonPath('data.siren', null)
-            ->assertJsonPath('data.vat_regime', 'franchise');
+            ->assertJsonPath('siren', null)
+            ->assertJsonPath('vat_regime', 'franchise');
     });
 
     it('requires a SIREN for a company', function () {
@@ -103,8 +103,8 @@ describe('index', function () {
         $this->withHeaders(asUser($user))
             ->getJson('/api/organizations')
             ->assertOk()
-            ->assertJsonCount(2, 'data')
-            ->assertJsonPath('data.*.id', fn (array $ids): bool => collect($ids)->sort()->values()->all() === collect([$owned->id, $joined->id])->sort()->values()->all());
+            ->assertJsonCount(2)
+            ->assertJsonPath('*.id', fn (array $ids): bool => collect($ids)->sort()->values()->all() === collect([$owned->id, $joined->id])->sort()->values()->all());
     });
 });
 
@@ -116,8 +116,8 @@ describe('show', function () {
         $this->withHeaders(asUser($accountant))
             ->getJson("/api/organizations/{$organization->id}")
             ->assertOk()
-            ->assertJsonPath('data.is_owner', false)
-            ->assertJsonPath('data.permissions', ['finance.view']);
+            ->assertJsonPath('is_owner', false)
+            ->assertJsonPath('permissions', ['finance.view']);
     });
 
     it('returns 404 to someone outside the company', function () {
@@ -143,7 +143,7 @@ describe('update', function () {
         $this->withHeaders(asUser(memberOf($organization, OrganizationRoleEnum::MANAGER)))
             ->patchJson("/api/organizations/{$organization->id}", ['vat_number' => 'FR12123456789'])
             ->assertOk()
-            ->assertJsonPath('data.vat_number', 'FR12123456789');
+            ->assertJsonPath('vat_number', 'FR12123456789');
     });
 
     it('forbids a member without the permission', function () {
@@ -160,8 +160,8 @@ describe('update', function () {
         $this->withHeaders(asUser($organization->owner))
             ->patchJson("/api/organizations/{$organization->id}", ['legal_name' => 'Nouvelle raison sociale'])
             ->assertOk()
-            ->assertJsonPath('data.status', 'pending')
-            ->assertJsonPath('data.verified_at', null);
+            ->assertJsonPath('status', 'pending')
+            ->assertJsonPath('verified_at', null);
     });
 
     it('keeps a verified company verified when only its address changes', function () {
@@ -172,7 +172,7 @@ describe('update', function () {
                 'address' => ['line1' => '3 rue des Lilas', 'postal_code' => '69003', 'city' => 'Lyon', 'country' => 'FR'],
             ])
             ->assertOk()
-            ->assertJsonPath('data.status', 'verified');
+            ->assertJsonPath('status', 'verified');
     });
 
     it('clears the company identifiers when it becomes an individual', function () {
@@ -181,10 +181,10 @@ describe('update', function () {
         $this->withHeaders(asUser($organization->owner))
             ->patchJson("/api/organizations/{$organization->id}", ['legal_form' => 'individual'])
             ->assertOk()
-            ->assertJsonPath('data.siren', null)
-            ->assertJsonPath('data.siret', null)
-            ->assertJsonPath('data.vat_number', null)
-            ->assertJsonPath('data.vat_regime', 'franchise');
+            ->assertJsonPath('siren', null)
+            ->assertJsonPath('siret', null)
+            ->assertJsonPath('vat_number', null)
+            ->assertJsonPath('vat_regime', 'franchise');
     });
 
     it('requires a SIREN when an individual becomes a company', function () {
@@ -261,7 +261,7 @@ describe('transfer ownership', function () {
         $this->withHeaders(asUser($formerOwner))
             ->putJson("/api/organizations/{$organization->id}/owner", ['member_id' => $member->id])
             ->assertOk()
-            ->assertJsonPath('data.is_owner', false);
+            ->assertJsonPath('is_owner', false);
 
         $formerMembership = $organization->members()->whereBelongsTo($formerOwner)->firstOrFail();
 

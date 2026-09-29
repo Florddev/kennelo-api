@@ -17,7 +17,7 @@ use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
- * @tags Admin Users Bulk
+ * @tags Users
  */
 class BulkController extends Controller
 {
@@ -44,7 +44,7 @@ class BulkController extends Controller
             'affected' => $affected,
         ]);
 
-        return response()->json(['data' => ['affected' => $affected]]);
+        return response()->json(['affected' => $affected]);
     }
 
     public function roles(BulkRolesRequest $request): JsonResponse
@@ -65,7 +65,7 @@ class BulkController extends Controller
             'affected' => $affected,
         ]);
 
-        return response()->json(['data' => ['affected' => $affected]]);
+        return response()->json(['affected' => $affected]);
     }
 
     public function export(ListUsersRequest $request): StreamedResponse

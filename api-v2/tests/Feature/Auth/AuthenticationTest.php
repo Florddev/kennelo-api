@@ -31,8 +31,8 @@ test('users can authenticate using the login screen', function () {
     ]);
 
     $response->assertOk()
-        ->assertJsonPath('data.id', $user->id)
-        ->assertJsonPath('data.email', $user->email)
+        ->assertJsonPath('id', $user->id)
+        ->assertJsonPath('email', $user->email)
         ->assertJsonMissingPath('access_token');
 
     $this->assertAuthenticatedAs($user, 'web');
@@ -45,7 +45,7 @@ test('a signed-in user can sign in again, as another account, without being redi
     $this->withHeaders(asUser($current))
         ->postJson('/api/login', ['email' => $other->email, 'password' => 'password'])
         ->assertOk()
-        ->assertJsonPath('data.id', $other->id);
+        ->assertJsonPath('id', $other->id);
 
     $this->assertAuthenticatedAs($other, 'web');
 });

@@ -37,18 +37,18 @@ describe('management', function () {
                 ['up_to_km' => 10, 'fee' => '0'],
             ]])
             ->assertOk()
-            ->assertJsonPath('data', [
+            ->assertExactJson([
                 ['up_to_km' => 10, 'fee' => '0.00'],
                 ['up_to_km' => 20, 'fee' => '15.00'],
             ]);
 
         $this->getJson("/api/activities/{$activity->id}/travel-fees")
             ->assertOk()
-            ->assertJsonCount(2, 'data');
+            ->assertJsonCount(2);
 
         $this->getJson("/api/activities/{$activity->id}")
             ->assertOk()
-            ->assertJsonPath('data.travel_fees.1.fee', '15.00');
+            ->assertJsonPath('travel_fees.1.fee', '15.00');
     });
 
     it('refuses two tiers for the same distance or beyond the maximum radius', function () {
@@ -84,14 +84,14 @@ describe('quote', function () {
         $this->withHeaders(asUser($client))
             ->postJson('/api/bookings/quote', stayRequest($unitType, [$dog], ['location' => 'at_client', 'address_id' => homeOf($client, 45.7719, 4.8902)->id]))
             ->assertOk()
-            ->assertJsonPath('data.travel_fee', '5.00')
-            ->assertJsonPath('data.items_amount', '65.00')
-            ->assertJsonPath('data.service_fee', '5.20')
-            ->assertJsonPath('data.total_price', '70.20');
+            ->assertJsonPath('travel_fee', '5.00')
+            ->assertJsonPath('items_amount', '65.00')
+            ->assertJsonPath('service_fee', '5.20')
+            ->assertJsonPath('total_price', '70.20');
 
         $this->postJson('/api/bookings/quote', stayRequest($unitType, [$dog], ['location' => 'at_client', 'address_id' => homeOf($client, 45.8540, 4.8357)->id]))
             ->assertOk()
-            ->assertJsonPath('data.travel_fee', '12.00');
+            ->assertJsonPath('travel_fee', '12.00');
     });
 
     it('applies the last tier between it and the radius of the activity', function () {
@@ -101,7 +101,7 @@ describe('quote', function () {
         $this->withHeaders(asUser($client))
             ->postJson('/api/bookings/quote', stayRequest($unitType, [dogOf($client, $unitType)], ['location' => 'at_client', 'address_id' => homeOf($client, 45.9440, 4.8357)->id]))
             ->assertOk()
-            ->assertJsonPath('data.travel_fee', '12.00');
+            ->assertJsonPath('travel_fee', '12.00');
     });
 
     it('charges no travel at the place of the professional, nor without tiers', function () {
@@ -112,13 +112,13 @@ describe('quote', function () {
         $this->withHeaders(asUser($client))
             ->postJson('/api/bookings/quote', stayRequest($unitType, [$dog], ['location' => 'at_pro']))
             ->assertOk()
-            ->assertJsonPath('data.travel_fee', '0.00');
+            ->assertJsonPath('travel_fee', '0.00');
 
         $unitType->activity->travelFeeTiers()->delete();
 
         $this->postJson('/api/bookings/quote', stayRequest($unitType, [$dog], ['location' => 'at_client', 'address_id' => homeOf($client, 45.7719, 4.8902)->id]))
             ->assertOk()
-            ->assertJsonPath('data.travel_fee', '0.00');
+            ->assertJsonPath('travel_fee', '0.00');
     });
 
     it('freezes the travel fee on the booking', function () {
@@ -129,8 +129,8 @@ describe('quote', function () {
         $id = $this->withHeaders(asUser($client))
             ->postJson('/api/bookings', stayRequest($unitType, [dogOf($client, $unitType)], ['location' => 'at_client', 'address_id' => homeOf($client, 45.7719, 4.8902)->id]))
             ->assertCreated()
-            ->assertJsonPath('data.travel_fee', '5.00')
-            ->json('data.id');
+            ->assertJsonPath('travel_fee', '5.00')
+            ->json('id');
 
         $unitType->activity->travelFeeTiers()->update(['fee' => '9.00']);
 

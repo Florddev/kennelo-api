@@ -32,9 +32,7 @@ class NotificationController extends Controller
 
     public function unreadCount(Request $request): JsonResponse
     {
-        return response()->json([
-            'data' => ['unread_count' => $this->notificationService->unreadCount($request->user())],
-        ]);
+        return response()->json(['unread_count' => $this->notificationService->unreadCount($request->user())]);
     }
 
     public function markAsRead(Notification $notification): NotificationResource
@@ -46,9 +44,7 @@ class NotificationController extends Controller
 
     public function markAllAsRead(Request $request): JsonResponse
     {
-        return response()->json([
-            'data' => ['marked_count' => $this->notificationService->markAllAsRead($request->user())],
-        ]);
+        return response()->json(['marked_count' => $this->notificationService->markAllAsRead($request->user())]);
     }
 
     public function destroy(Notification $notification): Response

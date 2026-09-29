@@ -95,6 +95,32 @@ jobs:
 
       - run: php artisan openapi:export --check
 
+  openapi-breaking:
+    name: OpenAPI breaking changes
+    runs-on: ubuntu-latest
+    env:
+      BASE_REF: ${{ github.base_ref || github.event.repository.default_branch || 'main' }}
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Spec of the main branch
+        id: base
+        working-directory: .
+        run: |
+          if git fetch --depth=1 origin "$BASE_REF" && git show "origin/$BASE_REF:api-v2/openapi.json" > openapi-base.json; then
+            echo "found=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::No api-v2/openapi.json on $BASE_REF yet, nothing to compare."
+          fi
+
+      - if: steps.base.outputs.found == 'true'
+        uses: oasdiff/oasdiff-action/breaking@v0
+        with:
+          base: openapi-base.json
+          revision: api-v2/openapi.json
+          review: false
+
   tests-sqlite:
     name: Tests (SQLite)
     runs-on: ubuntu-latest

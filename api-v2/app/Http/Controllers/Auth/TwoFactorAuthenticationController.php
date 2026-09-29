@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
 /**
- * @tags Auth
+ * @tags Users
  */
 class TwoFactorAuthenticationController extends Controller
 {

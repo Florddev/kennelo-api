@@ -86,15 +86,15 @@ describe('booking', function () {
         $this->withHeaders(asUser($client))
             ->postJson('/api/bookings/quote', appointmentRequest($salon, $pets, '2026-10-06T10:00:00+02:00'))
             ->assertOk()
-            ->assertJsonPath('data.start_date', '2026-10-06')
-            ->assertJsonPath('data.appointment.resource.name', 'Léa')
-            ->assertJsonPath('data.appointment.starts_at', '2026-10-06T08:00:00.000000Z')
-            ->assertJsonPath('data.appointment.ends_at', '2026-10-06T10:00:00.000000Z')
-            ->assertJsonPath('data.appointment.lines.0.pet_id', $pets[0]->id)
-            ->assertJsonPath('data.appointment.lines.1.starts_at', '2026-10-06T09:00:00.000000Z')
-            ->assertJsonPath('data.items_amount', '80.00')
-            ->assertJsonPath('data.service_fee', '6.40')
-            ->assertJsonPath('data.total_price', '86.40');
+            ->assertJsonPath('start_date', '2026-10-06')
+            ->assertJsonPath('appointment.resource.name', 'Léa')
+            ->assertJsonPath('appointment.starts_at', '2026-10-06T08:00:00.000000Z')
+            ->assertJsonPath('appointment.ends_at', '2026-10-06T10:00:00.000000Z')
+            ->assertJsonPath('appointment.lines.0.pet_id', $pets[0]->id)
+            ->assertJsonPath('appointment.lines.1.starts_at', '2026-10-06T09:00:00.000000Z')
+            ->assertJsonPath('items_amount', '80.00')
+            ->assertJsonPath('service_fee', '6.40')
+            ->assertJsonPath('total_price', '86.40');
     });
 
     it('books an appointment, which holds the slot of the groomer', function () {
@@ -106,13 +106,13 @@ describe('booking', function () {
         $this->withHeaders(asUser($client))
             ->postJson('/api/bookings', appointmentRequest($salon, [$dog], '2026-10-06T10:00:00+02:00'))
             ->assertCreated()
-            ->assertJsonPath('data.status', 'pending')
-            ->assertJsonPath('data.activity.booking_mode', 'appointment')
-            ->assertJsonPath('data.starts_at', '2026-10-06T08:00:00.000000Z')
-            ->assertJsonPath('data.ends_at', '2026-10-06T09:00:00.000000Z')
-            ->assertJsonPath('data.items.0.status', 'scheduled')
-            ->assertJsonPath('data.items.0.resource.name', 'Léa')
-            ->assertJsonPath('data.pets.0.id', $dog->id);
+            ->assertJsonPath('status', 'pending')
+            ->assertJsonPath('activity.booking_mode', 'appointment')
+            ->assertJsonPath('starts_at', '2026-10-06T08:00:00.000000Z')
+            ->assertJsonPath('ends_at', '2026-10-06T09:00:00.000000Z')
+            ->assertJsonPath('items.0.status', 'scheduled')
+            ->assertJsonPath('items.0.resource.name', 'Léa')
+            ->assertJsonPath('pets.0.id', $dog->id);
 
         $entry = ResourceBooking::sole();
 
@@ -138,14 +138,14 @@ describe('booking', function () {
         $this->withHeaders(asUser($client))
             ->postJson('/api/bookings/quote', appointmentRequest($salon, [$dog], '2026-10-06T10:00:00+02:00'))
             ->assertOk()
-            ->assertJsonPath('data.appointment.resource.id', $max->id);
+            ->assertJsonPath('appointment.resource.id', $max->id);
 
         $this->postJson('/api/bookings/quote', appointmentRequest($salon, [$dog], '2026-10-06T10:00:00+02:00', ['resource_id' => $salon['resource']->id]))
             ->assertConflict();
 
         $this->postJson('/api/bookings/quote', appointmentRequest($salon, [$dog], '2026-10-06T11:00:00+02:00', ['resource_id' => $salon['resource']->id]))
             ->assertOk()
-            ->assertJsonPath('data.appointment.resource.id', $salon['resource']->id);
+            ->assertJsonPath('appointment.resource.id', $salon['resource']->id);
     });
 
     it('refuses a start off the grid, before the notice or outside the hours', function (string $startsAt) {
@@ -198,8 +198,8 @@ describe('cancellation', function () {
         $this->withHeaders(asUser($booking->user))
             ->postJson("/api/bookings/{$booking->id}/cancel")
             ->assertOk()
-            ->assertJsonPath('data.status', 'cancelled')
-            ->assertJsonPath('data.items.0.status', 'cancelled');
+            ->assertJsonPath('status', 'cancelled')
+            ->assertJsonPath('items.0.status', 'cancelled');
 
         expect(ResourceBooking::count())->toBe(0);
     });
@@ -214,7 +214,7 @@ describe('cancellation', function () {
         $this->withHeaders(asUser($booking->user))
             ->postJson("/api/bookings/{$booking->id}/cancel")
             ->assertOk()
-            ->assertJsonPath('data.refunded_amount', $refunded);
+            ->assertJsonPath('refunded_amount', $refunded);
 
         expect(ResourceBooking::count())->toBe(0);
     })->with([

@@ -14,7 +14,7 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
- * @tags Billing
+ * @tags Invoices
  */
 class InvoiceController extends Controller
 {

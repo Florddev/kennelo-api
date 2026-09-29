@@ -27,32 +27,32 @@ it('sums up the day, the requests, the occupancy, the rating and the revenue of 
     $response = $this->withHeaders(asUser($activity->organization->owner))
         ->getJson("/api/activities/{$activity->id}/dashboard")
         ->assertOk()
-        ->assertJsonPath('data.date', '2026-03-10')
-        ->assertJsonPath('data.today', ['arrivals' => 1, 'departures' => 1, 'appointments' => 0, 'pets_in_care' => 1])
-        ->assertJsonPath('data.pending_requests', 1)
-        ->assertJsonPath('data.upcoming.*.id', [$arriving->id])
-        ->assertJsonPath('data.occupancy.0.capacity', 2)
+        ->assertJsonPath('date', '2026-03-10')
+        ->assertJsonPath('today', ['arrivals' => 1, 'departures' => 1, 'appointments' => 0, 'pets_in_care' => 1])
+        ->assertJsonPath('pending_requests', 1)
+        ->assertJsonPath('upcoming.*.id', [$arriving->id])
+        ->assertJsonPath('occupancy.0.capacity', 2)
         // La nuit du 10 au 11 : seule la réservation qui arrive l'occupe ; l'autre part le matin.
-        ->assertJsonPath('data.occupancy.0.occupied', 1)
-        ->assertJsonPath('data.rating.average', 4)
-        ->assertJsonPath('data.revenue.current_month', '95.20')
-        ->assertJsonPath('data.revenue.previous_month', '100.00');
+        ->assertJsonPath('occupancy.0.occupied', 1)
+        ->assertJsonPath('rating.average', 4)
+        ->assertJsonPath('revenue.current_month', '95.20')
+        ->assertJsonPath('revenue.previous_month', '100.00');
 
-    expect($response->json('data.revenue.series'))->toHaveCount(6)
-        ->and($response->json('data.revenue.series.5'))->toBe(['month' => '2026-03', 'amount' => '95.20']);
+    expect($response->json('revenue.series'))->toHaveCount(6)
+        ->and($response->json('revenue.series.5'))->toBe(['month' => '2026-03', 'amount' => '95.20']);
 
     // Sans finance.view, pas de chiffre d'affaires.
     $this->withHeaders(asUser(memberOf($activity->organization, OrganizationRoleEnum::EMPLOYEE, $activity->id)))
         ->getJson("/api/activities/{$activity->id}/dashboard")
         ->assertOk()
-        ->assertJsonPath('data.revenue', null);
+        ->assertJsonPath('revenue', null);
 });
 
 it('keeps the dashboards to the team', function () {
     $activity = dogBoarding()->activity;
     $organization = $activity->organization;
 
-    $this->withHeaders(asUser($organization->owner))->getJson("/api/organizations/{$organization->id}/dashboard")->assertOk()->assertJsonPath('data.pending_requests', 0);
+    $this->withHeaders(asUser($organization->owner))->getJson("/api/organizations/{$organization->id}/dashboard")->assertOk()->assertJsonPath('pending_requests', 0);
     $this->withHeaders(asUser(memberOf($organization, OrganizationRoleEnum::EMPLOYEE, $activity->id)))->getJson("/api/organizations/{$organization->id}/dashboard")->assertForbidden();
     $this->withHeaders(asUser(memberOf($organization, OrganizationRoleEnum::ACCOUNTANT)))->getJson("/api/activities/{$activity->id}/dashboard")->assertForbidden();
     $this->withHeaders(asUser(User::factory()->create()))->getJson("/api/activities/{$activity->id}/dashboard")->assertNotFound();

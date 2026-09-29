@@ -24,6 +24,6 @@ class CompanyLookupController extends Controller
 
         abort_if($company === null, 404, __('organization.company_not_found'));
 
-        return response()->json(['data' => $company]);
+        return response()->json($company);
     }
 }

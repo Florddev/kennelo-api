@@ -32,11 +32,11 @@ class ExploreController extends Controller
     {
         $sections = $this->explore->sections($request->validated(), $request->user());
 
-        return response()->json(['data' => array_map(fn (array $section): array => [
+        return response()->json(array_map(fn (array $section): array => [
             'id' => $section['id'],
             'has_more' => $section['has_more'],
             'activities' => ActivityResource::collection($section['activities'])->resolve($request),
-        ], $sections)]);
+        ], $sections));
     }
 
     /**

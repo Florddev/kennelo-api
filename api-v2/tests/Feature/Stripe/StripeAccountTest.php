@@ -14,7 +14,7 @@ it('creates the Connect account of the company on first use and opens a session'
     $this->withHeaders(asUser($organization->owner))
         ->postJson("/api/organizations/{$organization->id}/stripe/account-session")
         ->assertOk()
-        ->assertJsonPath('data.client_secret', 'acs_secret');
+        ->assertJsonPath('client_secret', 'acs_secret');
 
     expect($organization->fresh()->stripe_account_id)->toBe('acct_org');
     $this->stripe()->assertSent('post', '/v1/accounts', fn (array $params): bool => $params['metadata']['organization_id'] === $organization->id);
@@ -46,8 +46,8 @@ it('refreshes the account status from Stripe', function () {
     $this->withHeaders(asUser($organization->owner))
         ->getJson("/api/organizations/{$organization->id}/stripe/status")
         ->assertOk()
-        ->assertJsonPath('data.stripe_charges_enabled', true)
-        ->assertJsonPath('data.stripe_onboarding_completed', true);
+        ->assertJsonPath('stripe_charges_enabled', true)
+        ->assertJsonPath('stripe_onboarding_completed', true);
 });
 
 it('forbids a member who cannot manage billing', function () {

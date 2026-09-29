@@ -86,17 +86,17 @@ describe('listing', function () {
         $this->withHeaders(asUser(adminUser()))
             ->getJson("/api/admin/bookings/{$booking->id}")
             ->assertOk()
-            ->assertJsonPath('data.client.email', $booking->user->email)
-            ->assertJsonPath('data.payout', null)
-            ->assertJsonPath('data.disputes.0.amount', '64.80')
-            ->assertJsonStructure(['data' => ['payments', 'refunds', 'operations']]);
+            ->assertJsonPath('client.email', $booking->user->email)
+            ->assertJsonPath('payout', null)
+            ->assertJsonPath('disputes.0.amount', '64.80')
+            ->assertJsonStructure(['payments', 'refunds', 'operations']);
 
         $this->withHeaders(asUser($booking->organization->owner))
             ->getJson("/api/activities/{$booking->activity_id}/bookings/{$booking->id}")
             ->assertOk()
-            ->assertJsonPath('data.disputes.0.status', DisputeStatusEnum::NEEDS_RESPONSE->value)
-            ->assertJsonMissingPath('data.client.email')
-            ->assertJsonMissingPath('data.operations');
+            ->assertJsonPath('disputes.0.status', DisputeStatusEnum::NEEDS_RESPONSE->value)
+            ->assertJsonMissingPath('client.email')
+            ->assertJsonMissingPath('operations');
     });
 
     it('forbids the booking routes to anyone but an admin', function () {
@@ -122,10 +122,10 @@ describe('cancellation by Kennelo', function () {
         $this->withHeaders(asUser($admin))
             ->postJson("/api/admin/bookings/{$booking->id}/cancel", ['reason' => 'Fraude au paiement'])
             ->assertOk()
-            ->assertJsonPath('data.status', BookingStatusEnum::CANCELLED->value)
-            ->assertJsonPath('data.cancelled_by_role', CancelledByRoleEnum::PLATFORM->value)
-            ->assertJsonPath('data.refunded_amount', '64.80')
-            ->assertJsonPath('data.refunds.0.reason', RefundReasonEnum::PLATFORM_CANCELLATION->value);
+            ->assertJsonPath('status', BookingStatusEnum::CANCELLED->value)
+            ->assertJsonPath('cancelled_by_role', CancelledByRoleEnum::PLATFORM->value)
+            ->assertJsonPath('refunded_amount', '64.80')
+            ->assertJsonPath('refunds.0.reason', RefundReasonEnum::PLATFORM_CANCELLATION->value);
 
         $booking->refresh();
         $action = AdminAction::query()->where('action', AdminActionTypeEnum::CANCEL_BOOKING)->sole();
@@ -147,8 +147,8 @@ describe('cancellation by Kennelo', function () {
         $this->withHeaders(asUser(adminUser()))
             ->postJson("/api/admin/bookings/{$booking->id}/cancel", ['refund' => 'policy', 'reason' => 'Annulation tardive'])
             ->assertOk()
-            ->assertJsonPath('data.payment_status', PaymentStatusEnum::PARTIALLY_REFUNDED->value)
-            ->assertJsonPath('data.refunded_amount', '30.00');
+            ->assertJsonPath('payment_status', PaymentStatusEnum::PARTIALLY_REFUNDED->value)
+            ->assertJsonPath('refunded_amount', '30.00');
 
         expect($booking->fresh()->activity_amount)->toBe('27.60');
     });
@@ -160,8 +160,8 @@ describe('cancellation by Kennelo', function () {
         $this->withHeaders(asUser(adminUser()))
             ->postJson("/api/admin/bookings/{$booking->id}/cancel", ['reason' => 'Annonce frauduleuse'])
             ->assertOk()
-            ->assertJsonPath('data.status', BookingStatusEnum::CANCELLED->value)
-            ->assertJsonPath('data.payment_status', PaymentStatusEnum::CANCELED->value);
+            ->assertJsonPath('status', BookingStatusEnum::CANCELLED->value)
+            ->assertJsonPath('payment_status', PaymentStatusEnum::CANCELED->value);
 
         $this->stripe()->assertNotSent('post', '/v1/refunds');
     });
@@ -195,9 +195,9 @@ describe('goodwill refund', function () {
         $this->withHeaders(asUser(adminUser()))
             ->postJson("/api/admin/bookings/{$booking->id}/refunds", ['amount' => 12, 'reason' => 'Promenade écourtée'])
             ->assertOk()
-            ->assertJsonPath('data.refunded_amount', '12.00')
-            ->assertJsonPath('data.payment_status', PaymentStatusEnum::PARTIALLY_REFUNDED->value)
-            ->assertJsonPath('data.refunds.0.reason', RefundReasonEnum::GOODWILL->value);
+            ->assertJsonPath('refunded_amount', '12.00')
+            ->assertJsonPath('payment_status', PaymentStatusEnum::PARTIALLY_REFUNDED->value)
+            ->assertJsonPath('refunds.0.reason', RefundReasonEnum::GOODWILL->value);
 
         $booking->refresh();
 
@@ -218,9 +218,9 @@ describe('goodwill refund', function () {
         $this->withHeaders(asUser(adminUser()))
             ->postJson("/api/admin/bookings/{$booking->id}/refunds", ['amount' => 0, 'service_fee' => true, 'reason' => 'Geste commercial'])
             ->assertOk()
-            ->assertJsonPath('data.refunded_amount', '4.80')
-            ->assertJsonPath('data.service_fee', '0.00')
-            ->assertJsonPath('data.refunds.0.service_fee', '4.80');
+            ->assertJsonPath('refunded_amount', '4.80')
+            ->assertJsonPath('service_fee', '0.00')
+            ->assertJsonPath('refunds.0.service_fee', '4.80');
 
         expect($booking->fresh()->activity_amount)->toBe('55.20');
     });

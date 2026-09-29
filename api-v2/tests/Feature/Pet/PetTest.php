@@ -65,8 +65,8 @@ it('owner can view their pet', function () {
     $this->withHeaders(asUser($user))
         ->getJson("/api/pets/{$pet->id}")
         ->assertOk()
-        ->assertJsonPath('data.id', $pet->id)
-        ->assertJsonPath('data.name', 'Rex');
+        ->assertJsonPath('id', $pet->id)
+        ->assertJsonPath('name', 'Rex');
 });
 
 it('other user cannot view someone else pet', function () {
@@ -100,8 +100,8 @@ it('authenticated user can create a pet', function () {
             'name' => 'Rex',
         ])
         ->assertCreated()
-        ->assertJsonPath('data.name', 'Rex')
-        ->assertJsonPath('data.user_id', $user->id);
+        ->assertJsonPath('name', 'Rex')
+        ->assertJsonPath('user_id', $user->id);
 });
 
 it('created pet is automatically associated to the authenticated user', function () {
@@ -112,7 +112,7 @@ it('created pet is automatically associated to the authenticated user', function
         ->postJson('/api/pets', ['animal_type_id' => $animalType->id, 'name' => 'Mimi'])
         ->assertCreated();
 
-    expect(Pet::find($response->json('data.id'))->user_id)->toBe($user->id);
+    expect(Pet::find($response->json('id'))->user_id)->toBe($user->id);
 });
 
 it('creating a pet requires a name', function () {
@@ -149,7 +149,7 @@ it('owner can update their pet', function () {
     $this->withHeaders(asUser($user))
         ->putJson("/api/pets/{$pet->id}", ['name' => 'Max'])
         ->assertOk()
-        ->assertJsonPath('data.name', 'Max');
+        ->assertJsonPath('name', 'Max');
 });
 
 it('other user cannot update someone else pet', function () {

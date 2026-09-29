@@ -43,7 +43,7 @@ test('a valid magic link authenticates the user', function () {
 
     $this->getJson(magicLinkUrlFor($user))
         ->assertOk()
-        ->assertJsonPath('data.id', $user->id);
+        ->assertJsonPath('id', $user->id);
 
     $this->assertAuthenticatedAs($user, 'web');
 });

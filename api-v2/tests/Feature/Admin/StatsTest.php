@@ -18,11 +18,11 @@ it('gives the admins an overview of the platform', function () {
     $this->withHeaders(asUser(adminUser()))
         ->getJson('/api/admin/stats/overview')
         ->assertOk()
-        ->assertJsonPath('data.activities.bookable', 2)
-        ->assertJsonPath('data.activities.by_status.approved', 2)
-        ->assertJsonPath('data.organizations.by_status.verified', 2)
-        ->assertJsonPath('data.bookings', ['total' => 1, 'pending' => 1])
-        ->assertJsonPath('data.pending_review_reports', 0);
+        ->assertJsonPath('activities.bookable', 2)
+        ->assertJsonPath('activities.by_status.approved', 2)
+        ->assertJsonPath('organizations.by_status.verified', 2)
+        ->assertJsonPath('bookings', ['total' => 1, 'pending' => 1])
+        ->assertJsonPath('pending_review_reports', 0);
 });
 
 it('sums up the money of the paid bookings', function () {
@@ -34,13 +34,13 @@ it('sums up the money of the paid bookings', function () {
     $this->withHeaders(asUser(adminUser()))
         ->getJson('/api/admin/stats/finance')
         ->assertOk()
-        ->assertJsonPath('data.paid_bookings', 3)
-        ->assertJsonPath('data.gmv', '164.40')
-        ->assertJsonPath('data.kennelo_revenue', '28.80')
-        ->assertJsonPath('data.net_to_pros', '165.60')
-        ->assertJsonPath('data.refunds', '30.00')
-        ->assertJsonPath('data.average_basket', '54.80')
-        ->assertJsonPath('data.gmv_by_month.current', 164.4);
+        ->assertJsonPath('paid_bookings', 3)
+        ->assertJsonPath('gmv', '164.40')
+        ->assertJsonPath('kennelo_revenue', '28.80')
+        ->assertJsonPath('net_to_pros', '165.60')
+        ->assertJsonPath('refunds', '30.00')
+        ->assertJsonPath('average_basket', '54.80')
+        ->assertJsonPath('gmv_by_month.current', 164.4);
 });
 
 it('counts the bookings by status', function () {
@@ -51,11 +51,11 @@ it('counts the bookings by status', function () {
     $this->withHeaders(asUser(adminUser()))
         ->getJson('/api/admin/stats/bookings')
         ->assertOk()
-        ->assertJsonPath('data.total', 3)
-        ->assertJsonPath('data.by_status.rejected', 1)
-        ->assertJsonPath('data.cancellation_rate', 33.3)
-        ->assertJsonPath('data.average_stay_nights', 2)
-        ->assertJsonPath('data.by_month.current', 3);
+        ->assertJsonPath('total', 3)
+        ->assertJsonPath('by_status.rejected', 1)
+        ->assertJsonPath('cancellation_rate', 33.3)
+        ->assertJsonPath('average_stay_nights', 2)
+        ->assertJsonPath('by_month.current', 3);
 });
 
 it('measures the community', function () {
@@ -65,11 +65,11 @@ it('measures the community', function () {
     $this->withHeaders(asUser(adminUser()))
         ->getJson('/api/admin/stats/community')
         ->assertOk()
-        ->assertJsonPath('data.reviews.average', 5)
-        ->assertJsonPath('data.reviews.response_rate', 0)
-        ->assertJsonPath('data.messages_last_30_days', 1)
-        ->assertJsonPath('data.active_conversations', 1)
-        ->assertJsonPath('data.professionals', 2);
+        ->assertJsonPath('reviews.average', 5)
+        ->assertJsonPath('reviews.response_rate', 0)
+        ->assertJsonPath('messages_last_30_days', 1)
+        ->assertJsonPath('active_conversations', 1)
+        ->assertJsonPath('professionals', 2);
 });
 
 it('keeps the stats to the admins', function () {

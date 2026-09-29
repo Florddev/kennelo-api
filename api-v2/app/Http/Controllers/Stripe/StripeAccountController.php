@@ -13,7 +13,7 @@ use Illuminate\Http\JsonResponse;
 /**
  * Compte Stripe Connect de l'entreprise, qui reçoit les versements des réservations.
  *
- * @tags Stripe
+ * @tags Organizations
  */
 class StripeAccountController extends Controller
 {
@@ -30,9 +30,9 @@ class StripeAccountController extends Controller
     {
         $this->authorize('manageBilling', $organization);
 
-        return response()->json(['data' => [
+        return response()->json([
             'client_secret' => $this->connect->createAccountSession($organization),
-        ]]);
+        ]);
     }
 
     /**

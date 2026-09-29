@@ -24,14 +24,14 @@ describe('resources', function () {
                 'organization_member_id' => $member->id,
             ])
             ->assertCreated()
-            ->assertJsonPath('data.type', 'staff')
-            ->assertJsonPath('data.is_active', true)
-            ->assertJsonPath('data.member.user_id', $member->user_id);
+            ->assertJsonPath('type', 'staff')
+            ->assertJsonPath('is_active', true)
+            ->assertJsonPath('member.user_id', $member->user_id);
 
         $this->postJson("/api/organizations/{$organization->id}/resources", ['type' => 'equipment', 'name' => 'Table 1'])
             ->assertCreated();
 
-        $members = collect($this->getJson("/api/organizations/{$organization->id}/members")->assertOk()->json('data'));
+        $members = collect($this->getJson("/api/organizations/{$organization->id}/members")->assertOk()->json());
 
         expect($members->firstWhere('id', $member->id)['resource_id'])->toBe(AgendaResource::query()->where('organization_member_id', $member->id)->value('id'))
             ->and($members->firstWhere('user.id', $organization->owner_id)['resource_id'])->toBeNull();
@@ -65,7 +65,7 @@ describe('resources', function () {
         $this->withHeaders(asUser($employee))
             ->getJson("/api/organizations/{$organization->id}/resources")
             ->assertOk()
-            ->assertJsonCount(1, 'data');
+            ->assertJsonCount(1);
 
         $this->patchJson("/api/organizations/{$organization->id}/resources/{$resource->id}", ['name' => 'X'])->assertForbidden();
 
@@ -91,7 +91,7 @@ describe('resources', function () {
 
         $this->patchJson("/api/organizations/{$organization->id}/resources/{$salon['resource']->id}", ['is_active' => false])
             ->assertOk()
-            ->assertJsonPath('data.is_active', false);
+            ->assertJsonPath('is_active', false);
 
         expect(AgendaResource::find($table->id))->toBeNull()
             ->and(ResourceBooking::count())->toBe(1);
@@ -112,8 +112,8 @@ describe('schedules', function () {
                 ['weekday' => WeekDayEnum::MONDAY->value, 'start_time' => '14:00', 'end_time' => '18:00'],
             ]])
             ->assertOk()
-            ->assertJsonCount(3, 'data.schedules')
-            ->assertJsonPath('data.schedules.0.start_time', '09:00');
+            ->assertJsonCount(3, 'schedules')
+            ->assertJsonPath('schedules.0.start_time', '09:00');
 
         expect($lea->schedules()->where('activity_id', $activity->id)->count())->toBe(2)
             ->and($lea->schedules()->where('activity_id', $other->id)->count())->toBe(1);
@@ -141,7 +141,7 @@ describe('schedules', function () {
         $this->withHeaders(asUser($manager))
             ->putJson("/api/activities/{$activity->id}/resources/{$salon['resource']->id}/schedules", ['schedules' => []])
             ->assertOk()
-            ->assertJsonCount(0, 'data.schedules');
+            ->assertJsonCount(0, 'schedules');
 
         $this->putJson("/api/activities/{$other->id}/resources/{$salon['resource']->id}/schedules", ['schedules' => []])
             ->assertForbidden();
@@ -198,9 +198,9 @@ describe('absences', function () {
         $this->withHeaders(asUser($lea->member->user))
             ->postJson("/api/organizations/{$lea->organization_id}/resources/{$lea->id}/absences", $body)
             ->assertCreated()
-            ->assertJsonPath('data.kind', 'absence')
-            ->assertJsonPath('data.starts_at', '2026-12-23T23:00:00.000000Z')
-            ->assertJsonPath('data.note', 'Noël');
+            ->assertJsonPath('kind', 'absence')
+            ->assertJsonPath('starts_at', '2026-12-23T23:00:00.000000Z')
+            ->assertJsonPath('note', 'Noël');
 
         $this->postJson("/api/organizations/{$lea->organization_id}/resources/{$table->id}/absences", [...$body, 'kind' => 'block'])
             ->assertForbidden();
@@ -215,7 +215,7 @@ describe('absences', function () {
         $this->withHeaders(asUser($lea->organization->owner))
             ->postJson("/api/organizations/{$lea->organization_id}/resources/{$table->id}/absences", [...$body, 'kind' => 'block'])
             ->assertCreated()
-            ->assertJsonPath('data.kind', 'block');
+            ->assertJsonPath('kind', 'block');
     });
 
     it('refuses an absence over an appointment or another absence', function () {

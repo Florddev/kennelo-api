@@ -16,7 +16,7 @@ it('lets the team respond once to a published review of a client', function () {
     $this->withHeaders(asUser($manager))
         ->postJson("/api/reviews/{$review->id}/response", ['response' => 'Merci, à bientôt Rex !'])
         ->assertCreated()
-        ->assertJsonPath('data.response.response', 'Merci, à bientôt Rex !');
+        ->assertJsonPath('response.response', 'Merci, à bientôt Rex !');
     $this->postJson("/api/reviews/{$review->id}/response", ['response' => 'Encore merci.'])
         ->assertUnprocessable()
         ->assertJsonValidationErrors(['response' => __('reviews.errors.already_answered')]);

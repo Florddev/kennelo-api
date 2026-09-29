@@ -21,12 +21,12 @@ class PaymentMethodController extends Controller
 
     public function setupIntent(Request $request): JsonResponse
     {
-        return response()->json(['data' => $this->service->createSetupIntent($request->user())]);
+        return response()->json($this->service->createSetupIntent($request->user()));
     }
 
     public function setupCheckoutSession(Request $request): JsonResponse
     {
-        return response()->json(['data' => $this->service->createSetupCheckoutSession($request->user())]);
+        return response()->json($this->service->createSetupCheckoutSession($request->user()));
     }
 
     public function index(Request $request): AnonymousResourceCollection

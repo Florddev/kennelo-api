@@ -36,9 +36,9 @@ describe('index', function () {
         $this->withHeaders(asUser($organization->owner))
             ->getJson("/api/organizations/{$organization->id}/members")
             ->assertOk()
-            ->assertJsonCount(3, 'data')
-            ->assertJsonPath('data.0.is_owner', true)
-            ->assertJsonPath('data.1.roles.0.role', 'accountant');
+            ->assertJsonCount(3)
+            ->assertJsonPath('0.is_owner', true)
+            ->assertJsonPath('1.roles.0.role', 'accountant');
     });
 
     it('returns 404 to someone outside the company', function () {
@@ -59,8 +59,8 @@ describe('invite', function () {
         $this->withHeaders(asUser($organization->owner))
             ->postJson("/api/organizations/{$organization->id}/members", ['email' => 'lea@example.com'])
             ->assertCreated()
-            ->assertJsonPath('data.status', 'pending')
-            ->assertJsonPath('data.user.id', $invitee->id);
+            ->assertJsonPath('status', 'pending')
+            ->assertJsonPath('user.id', $invitee->id);
 
         Notification::assertSentTo($invitee, AppNotification::class);
     });
@@ -72,8 +72,8 @@ describe('invite', function () {
         $this->withHeaders(asUser($organization->owner))
             ->postJson("/api/organizations/{$organization->id}/members", ['email' => $declined->user->email])
             ->assertOk()
-            ->assertJsonPath('data.id', $declined->id)
-            ->assertJsonPath('data.status', 'pending');
+            ->assertJsonPath('id', $declined->id)
+            ->assertJsonPath('status', 'pending');
     });
 
     it('rejects an email without a Kennelo account', function () {
@@ -147,9 +147,9 @@ describe('invitations', function () {
         $this->withHeaders(asUser($user))
             ->getJson('/api/user/invitations')
             ->assertOk()
-            ->assertJsonCount(1, 'data')
-            ->assertJsonPath('data.0.id', $invitation->id)
-            ->assertJsonPath('data.0.organization.legal_name', $invitation->organization->legal_name);
+            ->assertJsonCount(1)
+            ->assertJsonPath('0.id', $invitation->id)
+            ->assertJsonPath('0.organization.legal_name', $invitation->organization->legal_name);
     });
 
     it('accepts an invitation, which opens the management area and notifies the owner', function () {
@@ -159,7 +159,7 @@ describe('invitations', function () {
         $this->withHeaders(asUser($invitation->user))
             ->postJson("/api/user/invitations/{$invitation->id}/accept")
             ->assertOk()
-            ->assertJsonPath('data.status', 'active');
+            ->assertJsonPath('status', 'active');
 
         expect($invitation->user->canAccessManagement())->toBeTrue();
         Notification::assertSentTo($invitation->organization->owner, AppNotification::class);
@@ -171,7 +171,7 @@ describe('invitations', function () {
         $this->withHeaders(asUser($invitation->user))
             ->postJson("/api/user/invitations/{$invitation->id}/decline")
             ->assertOk()
-            ->assertJsonPath('data.status', 'declined');
+            ->assertJsonPath('status', 'declined');
 
         expect($invitation->user->canAccessManagement())->toBeFalse();
     });
@@ -219,7 +219,7 @@ describe('roles', function () {
                 ['role' => 'employee', 'activity_id' => $activityId],
             ]])
             ->assertOk()
-            ->assertJsonCount(2, 'data.roles');
+            ->assertJsonCount(2, 'roles');
 
         expect($member->roles()->pluck('role')->all())
             ->toEqualCanonicalizing([OrganizationRoleEnum::ACCOUNTANT, OrganizationRoleEnum::EMPLOYEE]);
@@ -232,7 +232,7 @@ describe('roles', function () {
         $this->withHeaders(asUser($organization->owner))
             ->putJson("/api/organizations/{$organization->id}/members/{$member->id}/roles", ['roles' => []])
             ->assertOk()
-            ->assertJsonCount(0, 'data.roles');
+            ->assertJsonCount(0, 'roles');
 
         expect($member->fresh())->not->toBeNull();
     });

@@ -12,7 +12,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
- * @tags Dashboard
+ * @tags Dashboards
  */
 class DashboardController extends Controller
 {
@@ -29,7 +29,7 @@ class DashboardController extends Controller
 
         $withRevenue = $activity->organization !== null && $request->user()->can('viewFinance', $activity->organization);
 
-        return response()->json(['data' => $this->dashboards->forActivity($activity, $withRevenue)]);
+        return response()->json($this->dashboards->forActivity($activity, $withRevenue));
     }
 
     /**
@@ -42,6 +42,6 @@ class DashboardController extends Controller
     {
         $this->authorize('viewDashboard', $organization);
 
-        return response()->json(['data' => $this->dashboards->forOrganization($organization, $request->user()->can('viewFinance', $organization))]);
+        return response()->json($this->dashboards->forOrganization($organization, $request->user()->can('viewFinance', $organization)));
     }
 }

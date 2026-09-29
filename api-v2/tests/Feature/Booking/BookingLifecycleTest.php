@@ -22,9 +22,9 @@ describe('answer of the team', function () {
         $this->withHeaders(asUser($booking->organization->owner))
             ->postJson("/api/activities/{$booking->activity_id}/bookings/{$booking->id}/confirm")
             ->assertOk()
-            ->assertJsonPath('data.status', 'confirmed')
-            ->assertJsonPath('data.payment_status', 'succeeded')
-            ->assertJsonPath('data.payments.0.status', 'succeeded');
+            ->assertJsonPath('status', 'confirmed')
+            ->assertJsonPath('payment_status', 'succeeded')
+            ->assertJsonPath('payments.0.status', 'succeeded');
 
         expect($booking->payments()->sole()->stripe_charge_id)->toBe('ch_initial')
             ->and($booking->operations()->pluck('type')->all())->toBe([FinancialOperationTypeEnum::CAPTURE, FinancialOperationTypeEnum::STATUS_CHANGE]);
@@ -52,8 +52,8 @@ describe('answer of the team', function () {
         $this->withHeaders(asUser($booking->organization->owner))
             ->postJson("/api/activities/{$booking->activity_id}/bookings/{$booking->id}/reject")
             ->assertOk()
-            ->assertJsonPath('data.status', 'rejected')
-            ->assertJsonPath('data.payment_status', 'canceled');
+            ->assertJsonPath('status', 'rejected')
+            ->assertJsonPath('payment_status', 'canceled');
 
         Notification::assertSentTo($booking->user, AppNotification::class);
     });

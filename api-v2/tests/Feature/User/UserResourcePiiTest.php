@@ -16,13 +16,13 @@ function renderUserResource(User $target, ?User $viewer): array
         auth()->setUser($viewer);
     }
 
-    /** @var array{data: array<string, mixed>} $decoded */
+    /** @var array<string, mixed> $decoded */
     $decoded = json_decode(
         (new UserResource($target))->response($request)->getContent(),
         true,
     );
 
-    return $decoded['data'];
+    return $decoded;
 }
 
 it('exposes email and phone to the user themselves', function () {

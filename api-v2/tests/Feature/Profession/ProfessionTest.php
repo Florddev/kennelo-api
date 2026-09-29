@@ -21,12 +21,12 @@ describe('public catalog', function () {
 
         $this->getJson('/api/professions')
             ->assertOk()
-            ->assertJsonCount(2, 'data')
-            ->assertJsonPath('data.0.code', 'accommodation')
-            ->assertJsonPath('data.0.professions.*.code', ['boarding'])
-            ->assertJsonPath('data.0.professions.0.booking_mode', 'stay')
-            ->assertJsonPath('data.1.professions.0.locations', ['at_pro', 'at_client'])
-            ->assertJsonPath('data.1.professions.0.animal_types.0.code', 'dog');
+            ->assertJsonCount(2)
+            ->assertJsonPath('0.code', 'accommodation')
+            ->assertJsonPath('0.professions.*.code', ['boarding'])
+            ->assertJsonPath('0.professions.0.booking_mode', 'stay')
+            ->assertJsonPath('1.professions.0.locations', ['at_pro', 'at_client'])
+            ->assertJsonPath('1.professions.0.animal_types.0.code', 'dog');
     });
 });
 
@@ -48,8 +48,8 @@ describe('back-office', function () {
                 'documents' => [['type' => 'rc_pro_insurance', 'validity_months' => 12]],
             ])
             ->assertCreated()
-            ->assertJsonPath('data.locations', ['at_pro', 'remote'])
-            ->assertJsonPath('data.document_requirements.0', ['type' => 'rc_pro_insurance', 'is_required' => true, 'validity_months' => 12]);
+            ->assertJsonPath('locations', ['at_pro', 'remote'])
+            ->assertJsonPath('document_requirements.0', ['type' => 'rc_pro_insurance', 'is_required' => true, 'validity_months' => 12]);
 
         $profession = Profession::query()->where('code', 'dog_training')->sole();
 
@@ -88,8 +88,8 @@ describe('back-office', function () {
                 'documents' => [['type' => 'acaced', 'is_required' => false]],
             ])
             ->assertOk()
-            ->assertJsonCount(1, 'data.document_requirements')
-            ->assertJsonPath('data.document_requirements.0.type', 'acaced');
+            ->assertJsonCount(1, 'document_requirements')
+            ->assertJsonPath('document_requirements.0.type', 'acaced');
     });
 
     it('keeps the booking mode and the places its activities use', function (array $payload, string $field) {

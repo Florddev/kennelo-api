@@ -31,9 +31,9 @@ describe('by the client', function () {
         $this->withHeaders(asUser($booking->user))
             ->postJson("/api/bookings/{$booking->id}/cancel")
             ->assertOk()
-            ->assertJsonPath('data.status', 'cancelled')
-            ->assertJsonPath('data.cancelled_by_role', 'client')
-            ->assertJsonPath('data.payment_status', 'canceled');
+            ->assertJsonPath('status', 'cancelled')
+            ->assertJsonPath('cancelled_by_role', 'client')
+            ->assertJsonPath('payment_status', 'canceled');
 
         $this->stripe()->assertNotSent('post', '/v1/refunds');
         Notification::assertSentTo($booking->organization->owner, AppNotification::class);
@@ -46,9 +46,9 @@ describe('by the client', function () {
         $this->withHeaders(asUser($booking->user))
             ->postJson("/api/bookings/{$booking->id}/cancel")
             ->assertOk()
-            ->assertJsonPath('data.payment_status', 'refunded')
-            ->assertJsonPath('data.refunded_amount', '64.80')
-            ->assertJsonPath('data.total_price', '0.00');
+            ->assertJsonPath('payment_status', 'refunded')
+            ->assertJsonPath('refunded_amount', '64.80')
+            ->assertJsonPath('total_price', '0.00');
 
         $refund = BookingRefund::sole();
 
@@ -65,8 +65,8 @@ describe('by the client', function () {
         $this->withHeaders(asUser($booking->user))
             ->postJson("/api/bookings/{$booking->id}/cancel")
             ->assertOk()
-            ->assertJsonPath('data.payment_status', 'partially_refunded')
-            ->assertJsonPath('data.refunded_amount', '30.00');
+            ->assertJsonPath('payment_status', 'partially_refunded')
+            ->assertJsonPath('refunded_amount', '30.00');
 
         $booking->refresh();
 
@@ -83,8 +83,8 @@ describe('by the client', function () {
         $this->withHeaders(asUser($booking->user))
             ->postJson("/api/bookings/{$booking->id}/cancel")
             ->assertOk()
-            ->assertJsonPath('data.status', 'cancelled')
-            ->assertJsonPath('data.payment_status', 'succeeded');
+            ->assertJsonPath('status', 'cancelled')
+            ->assertJsonPath('payment_status', 'succeeded');
 
         $this->stripe()->assertNotSent('post', '/v1/refunds');
         expect($booking->fresh()->activity_amount)->toBe('55.20');
@@ -119,8 +119,8 @@ describe('by the professional', function () {
         $this->withHeaders(asUser($booking->organization->owner))
             ->postJson("/api/activities/{$booking->activity_id}/bookings/{$booking->id}/cancel")
             ->assertOk()
-            ->assertJsonPath('data.cancelled_by_role', CancelledByRoleEnum::PRO->value)
-            ->assertJsonPath('data.refunded_amount', '64.80');
+            ->assertJsonPath('cancelled_by_role', CancelledByRoleEnum::PRO->value)
+            ->assertJsonPath('refunded_amount', '64.80');
 
         expect(BookingRefund::sole()->reason)->toBe(RefundReasonEnum::PRO_CANCELLATION)
             ->and($booking->fresh()->payment_status)->toBe(PaymentStatusEnum::REFUNDED);

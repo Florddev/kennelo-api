@@ -15,10 +15,10 @@ describe('services', function () {
         $this->withHeaders(asUser(memberOf($organization, OrganizationRoleEnum::MANAGER)))
             ->postJson("/api/organizations/{$organization->id}/services", ['name' => 'Toilettage complet', 'requires_scheduling' => true])
             ->assertCreated()
-            ->assertJsonPath('data.name', 'Toilettage complet')
-            ->assertJsonPath('data.is_package', false)
-            ->assertJsonPath('data.is_active', true)
-            ->assertJsonPath('data.prices', []);
+            ->assertJsonPath('name', 'Toilettage complet')
+            ->assertJsonPath('is_package', false)
+            ->assertJsonPath('is_active', true)
+            ->assertJsonPath('prices', []);
     });
 
     it('lets the team read the catalog but not change it without the permission', function () {
@@ -29,7 +29,7 @@ describe('services', function () {
         $this->withHeaders(asUser($accountant))
             ->getJson("/api/organizations/{$organization->id}/services")
             ->assertOk()
-            ->assertJsonCount(1, 'data');
+            ->assertJsonCount(1);
 
         $this->withHeaders(asUser($accountant))
             ->postJson("/api/organizations/{$organization->id}/services", ['name' => 'Bain'])
@@ -90,8 +90,8 @@ describe('price grid', function () {
                 ['animal_type_id' => $dog->id, 'animal_breed_id' => $poodle->id, 'price' => '65.00', 'duration_minutes' => 90],
             ]])
             ->assertOk()
-            ->assertJsonCount(3, 'data.prices')
-            ->assertJsonPath('data.prices.1.price', '55.50');
+            ->assertJsonCount(3, 'prices')
+            ->assertJsonPath('prices.1.price', '55.50');
 
         expect($service->prices()->count())->toBe(3);
     });
@@ -146,7 +146,7 @@ describe('packages', function () {
         $this->withHeaders(asUser($organization->owner))
             ->putJson("/api/organizations/{$organization->id}/services/{$package->id}/package-items", ['service_ids' => [$bath->id, $cut->id]])
             ->assertOk()
-            ->assertJsonCount(2, 'data.package_items');
+            ->assertJsonCount(2, 'package_items');
     });
 
     it('only contains simple services of the same company', function (Closure $makeItem) {
