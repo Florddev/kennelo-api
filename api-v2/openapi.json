@@ -2603,6 +2603,7 @@
         "/register": {
             "post": {
                 "operationId": "register",
+                "description": "Avec device_name, renvoie { user, token } au lieu d'ouvrir une session.",
                 "summary": "Register",
                 "tags": [
                     "Auth"
@@ -2649,6 +2650,13 @@
                                             null
                                         ]
                                     },
+                                    "device_name": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "maxLength": 255
+                                    },
                                     "password_confirmation": {
                                         "type": "string"
                                     }
@@ -2670,7 +2678,26 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/UserResourceWithRoles"
+                                    "anyOf": [
+                                        {
+                                            "$ref": "#/components/schemas/UserResourceWithRoles"
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "user": {
+                                                    "$ref": "#/components/schemas/UserResourceWithRoles"
+                                                },
+                                                "token": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "user",
+                                                "token"
+                                            ]
+                                        }
+                                    ]
                                 }
                             }
                         }
@@ -2685,6 +2712,7 @@
         "/login": {
             "post": {
                 "operationId": "login",
+                "description": "Sans device_name, ouvre la session et renvoie l'utilisateur. Avec device_name (applications mobiles), renvoie\n{ user, token } sans session : le token s'envoie ensuite dans l'en-tête Authorization: Bearer. S'il reste une\nétape, la réponse vaut { two_factor: true } ou { password_expired: true } : en mode token, son pending_token\ns'envoie avec device_name à l'étape suivante.",
                 "summary": "Login",
                 "tags": [
                     "Auth"
@@ -2712,12 +2740,34 @@
                                         {
                                             "type": "object",
                                             "properties": {
-                                                "password_expired": {
-                                                    "type": "boolean"
+                                                "user": {
+                                                    "$ref": "#/components/schemas/UserResourceWithRoles"
+                                                },
+                                                "token": {
+                                                    "type": "string"
                                                 }
                                             },
                                             "required": [
-                                                "password_expired"
+                                                "user",
+                                                "token"
+                                            ]
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "password_expired": {
+                                                    "type": "boolean"
+                                                },
+                                                "pending_token": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "password_expired",
+                                                "pending_token"
                                             ]
                                         },
                                         {
@@ -2725,10 +2775,17 @@
                                             "properties": {
                                                 "two_factor": {
                                                     "type": "boolean"
+                                                },
+                                                "pending_token": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
                                                 }
                                             },
                                             "required": [
-                                                "two_factor"
+                                                "two_factor",
+                                                "pending_token"
                                             ]
                                         }
                                     ]
@@ -2746,6 +2803,7 @@
         "/login/google": {
             "post": {
                 "operationId": "login.google",
+                "description": "Avec device_name, renvoie { user, token } au lieu d'ouvrir une session, comme la connexion par mot de passe.",
                 "summary": "Login or register with Google",
                 "tags": [
                     "Auth"
@@ -2773,12 +2831,34 @@
                                         {
                                             "type": "object",
                                             "properties": {
-                                                "password_expired": {
-                                                    "type": "boolean"
+                                                "user": {
+                                                    "$ref": "#/components/schemas/UserResourceWithRoles"
+                                                },
+                                                "token": {
+                                                    "type": "string"
                                                 }
                                             },
                                             "required": [
-                                                "password_expired"
+                                                "user",
+                                                "token"
+                                            ]
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "password_expired": {
+                                                    "type": "boolean"
+                                                },
+                                                "pending_token": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "password_expired",
+                                                "pending_token"
                                             ]
                                         },
                                         {
@@ -2786,10 +2866,17 @@
                                             "properties": {
                                                 "two_factor": {
                                                     "type": "boolean"
+                                                },
+                                                "pending_token": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
                                                 }
                                             },
                                             "required": [
-                                                "two_factor"
+                                                "two_factor",
+                                                "pending_token"
                                             ]
                                         }
                                     ]
@@ -2851,6 +2938,7 @@
         "/login/two-factor-challenge": {
             "post": {
                 "operationId": "login.two-factor",
+                "description": "En mode token, device_name et le pending_token reçu remplacent la session. Même réponse que la connexion :\nl'utilisateur, { user, token } ou { password_expired: true }.",
                 "summary": "Two-factor challenge",
                 "tags": [
                     "Auth"
@@ -2877,12 +2965,34 @@
                                         {
                                             "type": "object",
                                             "properties": {
-                                                "password_expired": {
-                                                    "type": "boolean"
+                                                "user": {
+                                                    "$ref": "#/components/schemas/UserResourceWithRoles"
+                                                },
+                                                "token": {
+                                                    "type": "string"
                                                 }
                                             },
                                             "required": [
-                                                "password_expired"
+                                                "user",
+                                                "token"
+                                            ]
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "password_expired": {
+                                                    "type": "boolean"
+                                                },
+                                                "pending_token": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "password_expired",
+                                                "pending_token"
                                             ]
                                         }
                                     ]
@@ -3037,6 +3147,7 @@
         "/password/renew": {
             "post": {
                 "operationId": "password.renew",
+                "description": "En mode token, device_name et le pending_token reçu remplacent la session, et la réponse vaut { user, token }.",
                 "summary": "Renew an expired password",
                 "tags": [
                     "Auth"
@@ -3057,7 +3168,26 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/UserResourceWithRoles"
+                                    "anyOf": [
+                                        {
+                                            "$ref": "#/components/schemas/UserResourceWithRoles"
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "user": {
+                                                    "$ref": "#/components/schemas/UserResourceWithRoles"
+                                                },
+                                                "token": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "user",
+                                                "token"
+                                            ]
+                                        }
+                                    ]
                                 }
                             }
                         }
@@ -3147,6 +3277,7 @@
         "/magic-link/verify/{id}": {
             "get": {
                 "operationId": "magic-link.verify",
+                "description": "Avec device_name, ajouté aux paramètres du lien sans en changer la signature, renvoie { user, token } au lieu\nd'ouvrir une session, comme la connexion par mot de passe.",
                 "summary": "Verify a magic link",
                 "tags": [
                     "Auth"
@@ -3158,6 +3289,17 @@
                         "required": true,
                         "schema": {
                             "type": "string"
+                        }
+                    },
+                    {
+                        "name": "device_name",
+                        "in": "query",
+                        "schema": {
+                            "type": [
+                                "string",
+                                "null"
+                            ],
+                            "maxLength": 255
                         }
                     }
                 ],
@@ -3174,12 +3316,34 @@
                                         {
                                             "type": "object",
                                             "properties": {
-                                                "password_expired": {
-                                                    "type": "boolean"
+                                                "user": {
+                                                    "$ref": "#/components/schemas/UserResourceWithRoles"
+                                                },
+                                                "token": {
+                                                    "type": "string"
                                                 }
                                             },
                                             "required": [
-                                                "password_expired"
+                                                "user",
+                                                "token"
+                                            ]
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "password_expired": {
+                                                    "type": "boolean"
+                                                },
+                                                "pending_token": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "password_expired",
+                                                "pending_token"
                                             ]
                                         },
                                         {
@@ -3187,10 +3351,17 @@
                                             "properties": {
                                                 "two_factor": {
                                                     "type": "boolean"
+                                                },
+                                                "pending_token": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
                                                 }
                                             },
                                             "required": [
-                                                "two_factor"
+                                                "two_factor",
+                                                "pending_token"
                                             ]
                                         }
                                     ]
@@ -3219,6 +3390,9 @@
                                 }
                             }
                         }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
                     }
                 },
                 "security": []
@@ -3363,103 +3537,8 @@
         "/logout": {
             "post": {
                 "operationId": "logout",
+                "description": "Révoque le token de la requête (applications mobiles), sinon ferme la session.",
                 "summary": "Logout",
-                "tags": [
-                    "Auth"
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No content"
-                    },
-                    "401": {
-                        "$ref": "#/components/responses/AuthenticationException"
-                    }
-                }
-            }
-        },
-        "/auth/token": {
-            "post": {
-                "operationId": "auth.token.store",
-                "description": "Connexion des applications mobiles, sans session : le token s'envoie ensuite dans l'en-tête Authorization: Bearer.\nSans code alors que la double authentification est active, la réponse vaut { two_factor: true } ; avec un mot de\npasse expiré et sans new_password, { password_expired: true }. On renvoie alors les mêmes identifiants avec le code\n(code ou recovery_code) et, si besoin, new_password et new_password_confirmation.",
-                "summary": "Issue a personal access token",
-                "tags": [
-                    "Auth"
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/StoreTokenRequest"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "token": {
-                                            "type": "string"
-                                        },
-                                        "user": {
-                                            "$ref": "#/components/schemas/UserResourceWithRoles"
-                                        }
-                                    },
-                                    "required": [
-                                        "token",
-                                        "user"
-                                    ]
-                                }
-                            }
-                        }
-                    },
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "anyOf": [
-                                        {
-                                            "type": "object",
-                                            "properties": {
-                                                "password_expired": {
-                                                    "type": "boolean"
-                                                }
-                                            },
-                                            "required": [
-                                                "password_expired"
-                                            ]
-                                        },
-                                        {
-                                            "type": "object",
-                                            "properties": {
-                                                "two_factor": {
-                                                    "type": "boolean"
-                                                }
-                                            },
-                                            "required": [
-                                                "two_factor"
-                                            ]
-                                        }
-                                    ]
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "$ref": "#/components/responses/ValidationException"
-                    }
-                },
-                "security": []
-            },
-            "delete": {
-                "operationId": "auth.token.destroy",
-                "summary": "Revoke the current token",
                 "tags": [
                     "Auth"
                 ],
@@ -15280,7 +15359,7 @@
             },
             "token": {
                 "type": "http",
-                "description": "Token personnel des applications mobiles : POST /api/auth/token, puis l'en-tête Authorization: Bearer <token>. DELETE /api/auth/token le révoque.",
+                "description": "Token personnel des applications mobiles : les routes de connexion appelées avec un device_name renvoient { user, token } au lieu d'ouvrir une session, puis le token s'envoie dans l'en-tête Authorization: Bearer <token>. POST /api/logout le révoque.",
                 "scheme": "bearer"
             }
         },
@@ -19239,6 +19318,13 @@
                             "ar",
                             null
                         ]
+                    },
+                    "device_name": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 255
                     }
                 },
                 "required": [
@@ -19865,6 +19951,13 @@
                             "boolean",
                             "null"
                         ]
+                    },
+                    "device_name": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 255
                     }
                 },
                 "required": [
@@ -22458,6 +22551,19 @@
                     "password": {
                         "type": "string"
                     },
+                    "device_name": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 255
+                    },
+                    "pending_token": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
                     "password_confirmation": {
                         "type": "string"
                     }
@@ -24702,52 +24808,6 @@
                 ],
                 "title": "StoreServiceRequest"
             },
-            "StoreTokenRequest": {
-                "type": "object",
-                "properties": {
-                    "email": {
-                        "type": "string",
-                        "format": "email"
-                    },
-                    "password": {
-                        "type": "string"
-                    },
-                    "device_name": {
-                        "type": "string",
-                        "maxLength": 255
-                    },
-                    "code": {
-                        "type": [
-                            "string",
-                            "null"
-                        ]
-                    },
-                    "recovery_code": {
-                        "type": [
-                            "string",
-                            "null"
-                        ]
-                    },
-                    "new_password": {
-                        "type": [
-                            "string",
-                            "null"
-                        ]
-                    },
-                    "new_password_confirmation": {
-                        "type": [
-                            "string",
-                            "null"
-                        ]
-                    }
-                },
-                "required": [
-                    "email",
-                    "password",
-                    "device_name"
-                ],
-                "title": "StoreTokenRequest"
-            },
             "StoreUnavailabilityRequest": {
                 "type": "object",
                 "description": "Absence d'une personne ou blocage d'un équipement ou d'un espace, sur une plage qui n'est pas encore passée.\nLes instants sont en ISO 8601, avec leur fuseau.",
@@ -25126,6 +25186,19 @@
                     "remember": {
                         "type": [
                             "boolean",
+                            "null"
+                        ]
+                    },
+                    "device_name": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 255
+                    },
+                    "pending_token": {
+                        "type": [
+                            "string",
                             "null"
                         ]
                     }

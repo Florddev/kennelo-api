@@ -28,6 +28,8 @@ class TwoFactorChallengeRequest extends FormRequest
             'code' => ['required_without:recovery_code', 'nullable', 'string'],
             'recovery_code' => ['required_without:code', 'nullable', 'string'],
             'remember' => ['nullable', 'boolean'],
+            'device_name' => ['nullable', 'string', 'max:255'],
+            'pending_token' => ['required_with:device_name', 'nullable', 'string'],
         ];
     }
 }

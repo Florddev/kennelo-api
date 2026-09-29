@@ -9,7 +9,6 @@ use App\Http\Controllers\Auth\MagicLinkController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordRenewalController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
-use App\Http\Controllers\Auth\PersonalAccessTokenController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
@@ -51,7 +50,7 @@ Route::post('/magic-link', [MagicLinkController::class, 'store'])
 
 Route::get('/magic-link/verify/{id}', [MagicLinkController::class, 'verify'])
     ->whereUuid('id')
-    ->middleware(['signed', 'throttle:6,1'])
+    ->middleware(['signed:device_name', 'throttle:6,1'])
     ->name('magic-link.verify');
 
 Route::get('/verify-email/{id}/{hash}', VerifyEmailController::class)
@@ -66,11 +65,3 @@ Route::post('/email/verification-notification', [EmailVerificationNotificationCo
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
     ->middleware('auth:sanctum')
     ->name('logout');
-
-Route::post('/auth/token', [PersonalAccessTokenController::class, 'store'])
-    ->middleware('throttle:6,1')
-    ->name('auth.token.store');
-
-Route::delete('/auth/token', [PersonalAccessTokenController::class, 'destroy'])
-    ->middleware('auth:sanctum')
-    ->name('auth.token.destroy');

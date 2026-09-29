@@ -24,6 +24,8 @@ class RegisteredUserController extends Controller
     /**
      * Register
      *
+     * Avec device_name, renvoie { user, token } au lieu d'ouvrir une session.
+     *
      * @unauthenticated
      *
      * @throws ValidationException
@@ -37,6 +39,7 @@ class RegisteredUserController extends Controller
             'phone' => ['nullable', 'string', 'max:20'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'locale' => ['nullable', 'string', 'in:'.config('app.available_locales', 'en')],
+            'device_name' => ['nullable', 'string', 'max:255'],
         ]);
 
         $user = User::create([

@@ -13,6 +13,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class UserService
 {
@@ -83,6 +84,15 @@ class UserService
             'password' => $data['password'],
             'password_changed_at' => now(),
         ])->save();
+
+        $currentToken = $user->currentAccessToken();
+        $otherTokens = $user->tokens();
+
+        if ($currentToken instanceof PersonalAccessToken) {
+            $otherTokens->whereKeyNot($currentToken->getKey());
+        }
+
+        $otherTokens->delete();
     }
 
     public function renewExpiredPassword(User $user, string $password): void
@@ -91,6 +101,8 @@ class UserService
             'password' => $password,
             'password_changed_at' => now(),
         ])->save();
+
+        $user->tokens()->delete();
     }
 
     public function changeEmail(User $user, array $data): User

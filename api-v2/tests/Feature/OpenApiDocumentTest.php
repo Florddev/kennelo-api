@@ -79,12 +79,33 @@ it('types the platform roles with their enum', function () {
 });
 
 it('accepts the session of the web apps or the token of the mobile apps', function () {
-    $operations = documentedOperations();
-
     expect(openApiDocument()['security'])->toBe([['session' => []], ['token' => []]])
-        ->and($operations['POST /auth/token']['operationId'])->toBe('auth.token.store')
-        ->and($operations['POST /auth/token']['security'])->toBe([])
-        ->and($operations['DELETE /auth/token']['operationId'])->toBe('auth.token.destroy');
+        ->and(documentedOperations()->keys())->not->toContain('POST /auth/token');
+});
+
+it('documents the session and the token forms of every sign-in', function () {
+    $operations = documentedOperations();
+    $schemas = openApiDocument()['components']['schemas'];
+    $tokenForm = [
+        'type' => 'object',
+        'properties' => ['user' => ['$ref' => '#/components/schemas/UserResourceWithRoles'], 'token' => ['type' => 'string']],
+        'required' => ['user', 'token'],
+    ];
+
+    foreach (['POST /login', 'POST /login/google', 'POST /login/two-factor-challenge', 'GET /magic-link/verify/{id}', 'POST /password/renew', 'POST /register'] as $operation) {
+        expect(successSchema($operation)['anyOf'])->toContain(['$ref' => '#/components/schemas/UserResourceWithRoles'], $tokenForm);
+    }
+
+    expect(successSchema('POST /login')['anyOf'])->toContain([
+        'type' => 'object',
+        'properties' => ['two_factor' => ['type' => 'boolean'], 'pending_token' => ['type' => ['string', 'null']]],
+        'required' => ['two_factor', 'pending_token'],
+    ])
+        ->and($schemas['LoginRequest']['properties'])->toHaveKey('device_name')
+        ->and($schemas['GoogleAuthRequest']['properties'])->toHaveKey('device_name')
+        ->and($schemas['TwoFactorChallengeRequest']['properties'])->toHaveKeys(['device_name', 'pending_token'])
+        ->and($schemas['RenewPasswordRequest']['properties'])->toHaveKeys(['device_name', 'pending_token'])
+        ->and(collect($operations['GET /magic-link/verify/{id}']['parameters'])->pluck('name'))->toContain('device_name');
 });
 
 it('marks the operations open without a session', function () {

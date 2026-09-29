@@ -62,7 +62,7 @@ class OpenApiServiceProvider extends ServiceProvider
                 $openApi->secure(
                     SecurityScheme::http('bearer')
                         ->as('token')
-                        ->setDescription('Token personnel des applications mobiles : POST /api/auth/token, puis l\'en-tête Authorization: Bearer <token>. DELETE /api/auth/token le révoque.'),
+                        ->setDescription('Token personnel des applications mobiles : les routes de connexion appelées avec un device_name renvoient { user, token } au lieu d\'ouvrir une session, puis le token s\'envoie dans l\'en-tête Authorization: Bearer <token>. POST /api/logout le révoque.'),
                 );
             })
             ->withDocumentTransformers(LoadedRelationSchemas::class);

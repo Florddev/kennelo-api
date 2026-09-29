@@ -27,6 +27,11 @@ class AuthenticatedSessionController extends Controller
     /**
      * Login
      *
+     * Sans device_name, ouvre la session et renvoie l'utilisateur. Avec device_name (applications mobiles), renvoie
+     * { user, token } sans session : le token s'envoie ensuite dans l'en-tête Authorization: Bearer. S'il reste une
+     * étape, la réponse vaut { two_factor: true } ou { password_expired: true } : en mode token, son pending_token
+     * s'envoie avec device_name à l'étape suivante.
+     *
      * @unauthenticated
      */
     public function store(LoginRequest $request): JsonResponse
@@ -38,6 +43,9 @@ class AuthenticatedSessionController extends Controller
 
     /**
      * Two-factor challenge
+     *
+     * En mode token, device_name et le pending_token reçu remplacent la session. Même réponse que la connexion :
+     * l'utilisateur, { user, token } ou { password_expired: true }.
      *
      * @unauthenticated
      */
@@ -72,6 +80,8 @@ class AuthenticatedSessionController extends Controller
 
     /**
      * Logout
+     *
+     * Révoque le token de la requête (applications mobiles), sinon ferme la session.
      */
     public function destroy(Request $request): Response
     {

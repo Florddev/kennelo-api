@@ -115,6 +115,20 @@ test('google login returns a challenge when the user has 2FA enabled', function 
     $this->assertGuest('web');
 });
 
+test('google login with a device name returns a token instead of opening a session', function () {
+    $user = User::factory()->create(['email' => 'ada@example.com', 'google_id' => 'google-123']);
+
+    fakeGoogleUser('google-123', 'ada@example.com');
+
+    $this->withoutHeader('Referer')
+        ->postJson('/api/login/google', ['token' => 'google-access-token', 'device_name' => 'Pixel de Ada'])
+        ->assertOk()
+        ->assertJsonPath('user.id', $user->id)
+        ->assertJsonStructure(['token']);
+
+    expect($user->tokens()->sole()->name)->toBe('Pixel de Ada');
+});
+
 test('google login imports the google profile picture into media', function () {
     Storage::fake('public');
     Queue::fake();

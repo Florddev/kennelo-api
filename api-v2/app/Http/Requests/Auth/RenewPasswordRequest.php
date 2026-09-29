@@ -22,6 +22,8 @@ class RenewPasswordRequest extends FormRequest
     {
         return [
             'password' => ['required', 'string', 'confirmed', Password::defaults()],
+            'device_name' => ['nullable', 'string', 'max:255'],
+            'pending_token' => ['required_with:device_name', 'nullable', 'string'],
         ];
     }
 }

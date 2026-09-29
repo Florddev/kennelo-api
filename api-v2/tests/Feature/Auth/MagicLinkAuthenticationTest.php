@@ -48,6 +48,18 @@ test('a valid magic link authenticates the user', function () {
     $this->assertAuthenticatedAs($user, 'web');
 });
 
+test('a magic link followed with a device name returns a token, the signature unchanged', function () {
+    $user = User::factory()->create();
+
+    $this->withoutHeader('Referer')
+        ->getJson(magicLinkUrlFor($user).'&device_name='.rawurlencode('iPhone de Léa'))
+        ->assertOk()
+        ->assertJsonPath('user.id', $user->id)
+        ->assertJsonStructure(['token']);
+
+    expect($user->tokens()->sole()->name)->toBe('iPhone de Léa');
+});
+
 test('a magic link cannot be used twice', function () {
     $user = User::factory()->create();
     $url = magicLinkUrlFor($user);

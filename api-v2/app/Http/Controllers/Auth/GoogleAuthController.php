@@ -28,6 +28,8 @@ class GoogleAuthController extends Controller
     /**
      * Login or register with Google
      *
+     * Avec device_name, renvoie { user, token } au lieu d'ouvrir une session, comme la connexion par mot de passe.
+     *
      * @unauthenticated
      */
     public function store(GoogleAuthRequest $request): JsonResponse

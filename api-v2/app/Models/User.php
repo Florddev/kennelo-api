@@ -18,6 +18,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Laravel\Sanctum\HasApiTokens;
+use Laravel\Sanctum\PersonalAccessToken;
+use Laravel\Sanctum\TransientToken;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -78,6 +80,11 @@ class User extends Authenticatable implements HasLocalePreference, HasMedia, Mus
     public function isBanned(): bool
     {
         return $this->status === UserStatusEnum::BANNED;
+    }
+
+    public function currentAccessToken(): PersonalAccessToken|TransientToken|null
+    {
+        return $this->accessToken;
     }
 
     /**

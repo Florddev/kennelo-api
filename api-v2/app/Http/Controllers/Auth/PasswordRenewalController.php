@@ -23,6 +23,8 @@ class PasswordRenewalController extends Controller
     /**
      * Renew an expired password
      *
+     * En mode token, device_name et le pending_token reçu remplacent la session, et la réponse vaut { user, token }.
+     *
      * @unauthenticated
      */
     public function store(RenewPasswordRequest $request): JsonResponse

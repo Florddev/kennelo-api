@@ -42,10 +42,17 @@ class MagicLinkController extends Controller
     /**
      * Verify a magic link
      *
+     * Avec device_name, ajouté aux paramètres du lien sans en changer la signature, renvoie { user, token } au lieu
+     * d'ouvrir une session, comme la connexion par mot de passe.
+     *
      * @unauthenticated
      */
     public function verify(string $id, Request $request): JsonResponse
     {
+        $request->validate([
+            'device_name' => ['nullable', 'string', 'max:255'],
+        ]);
+
         $user = User::findOrFail($id);
 
         $used = $this->magicLinkService->markAsUsed(

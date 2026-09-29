@@ -27,6 +27,7 @@ class GoogleAuthRequest extends FormRequest
         return [
             'token' => ['required', 'string'],
             'locale' => ['nullable', 'string', 'in:'.config('app.available_locales', 'en')],
+            'device_name' => ['nullable', 'string', 'max:255'],
         ];
     }
 }
