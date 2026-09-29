@@ -87,6 +87,9 @@
     "security": [
         {
             "session": []
+        },
+        {
+            "token": []
         }
     ],
     "paths": {
@@ -354,6 +357,14 @@
                         "schema": {
                             "type": "string",
                             "maxLength": 100
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
                         }
                     }
                 ],
@@ -732,6 +743,14 @@
                         "schema": {
                             "type": "string",
                             "format": "uuid"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
                         }
                     }
                 ],
@@ -2422,6 +2441,14 @@
                             "type": "string",
                             "format": "uuid"
                         }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
                     }
                 ],
                 "responses": {
@@ -2875,28 +2902,6 @@
                                             "description": "Error overview.",
                                             "examples": [
                                                 "No sign-in is waiting for a verification code. Please sign in again."
-                                            ]
-                                        }
-                                    },
-                                    "required": [
-                                        "message"
-                                    ]
-                                }
-                            }
-                        }
-                    },
-                    "429": {
-                        "description": "An error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "description": "Error overview.",
-                                            "examples": [
-                                                "Too many attempts. Please try again later."
                                             ]
                                         }
                                     },
@@ -3372,6 +3377,102 @@
                 }
             }
         },
+        "/auth/token": {
+            "post": {
+                "operationId": "auth.token.store",
+                "description": "Connexion des applications mobiles, sans session : le token s'envoie ensuite dans l'en-tête Authorization: Bearer.\nSans code alors que la double authentification est active, la réponse vaut { two_factor: true } ; avec un mot de\npasse expiré et sans new_password, { password_expired: true }. On renvoie alors les mêmes identifiants avec le code\n(code ou recovery_code) et, si besoin, new_password et new_password_confirmation.",
+                "summary": "Issue a personal access token",
+                "tags": [
+                    "Auth"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StoreTokenRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "token": {
+                                            "type": "string"
+                                        },
+                                        "user": {
+                                            "$ref": "#/components/schemas/UserResourceWithRoles"
+                                        }
+                                    },
+                                    "required": [
+                                        "token",
+                                        "user"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "anyOf": [
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "password_expired": {
+                                                    "type": "boolean"
+                                                }
+                                            },
+                                            "required": [
+                                                "password_expired"
+                                            ]
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "two_factor": {
+                                                    "type": "boolean"
+                                                }
+                                            },
+                                            "required": [
+                                                "two_factor"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                },
+                "security": []
+            },
+            "delete": {
+                "operationId": "auth.token.destroy",
+                "summary": "Revoke the current token",
+                "tags": [
+                    "Auth"
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
         "/admin/bookings": {
             "get": {
                 "operationId": "admin.bookings.index",
@@ -3442,6 +3543,14 @@
                         "schema": {
                             "type": "string",
                             "format": "date"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
                         }
                     }
                 ],
@@ -3801,6 +3910,14 @@
                             "type": "integer",
                             "minimum": 1,
                             "maximum": 100
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
                         }
                     }
                 ],
@@ -4601,6 +4718,14 @@
                             "minimum": 1,
                             "maximum": 100
                         }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
                     }
                 ],
                 "responses": {
@@ -4926,6 +5051,14 @@
                             "minimum": 1,
                             "maximum": 100
                         }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
                     }
                 ],
                 "responses": {
@@ -5140,6 +5273,14 @@
                             "type": "integer",
                             "minimum": 1,
                             "maximum": 100
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
                         }
                     }
                 ],
@@ -5453,6 +5594,14 @@
                             "type": "integer",
                             "minimum": 1,
                             "maximum": 100
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
                         }
                     }
                 ],
@@ -6417,20 +6566,105 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Array of `ActivityResource`",
+                        "description": "Paginated set of `ActivityResource`",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/ActivityResourceWithOrganizationProfessionAddressAnimalTypesImages"
-                                    }
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/ActivityResourceWithOrganizationProfessionAddressAnimalTypesImages"
+                                            }
+                                        },
+                                        "links": {
+                                            "type": "object",
+                                            "properties": {
+                                                "first": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "last": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "prev": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "next": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "first",
+                                                "last",
+                                                "prev",
+                                                "next"
+                                            ]
+                                        },
+                                        "meta": {
+                                            "type": "object",
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "minimum": 1
+                                                },
+                                                "from": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "minimum": 1
+                                                },
+                                                "path": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ],
+                                                    "description": "Base path for paginator generated URLs."
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "description": "Number of items shown per page.",
+                                                    "minimum": 0
+                                                },
+                                                "to": {
+                                                    "type": [
+                                                        "integer",
+                                                        "null"
+                                                    ],
+                                                    "description": "Number of the last item in the slice.",
+                                                    "minimum": 1
+                                                }
+                                            },
+                                            "required": [
+                                                "current_page",
+                                                "from",
+                                                "path",
+                                                "per_page",
+                                                "to"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "links",
+                                        "meta"
+                                    ]
                                 }
                             }
                         }
-                    },
-                    "404": {
-                        "$ref": "#/components/responses/ModelNotFoundException"
                     },
                     "422": {
                         "$ref": "#/components/responses/ValidationException"
@@ -6695,6 +6929,14 @@
                             "type": "integer",
                             "minimum": 1,
                             "maximum": 100
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
                         }
                     }
                 ],
@@ -6976,6 +7218,14 @@
                             "type": "string",
                             "maxLength": 30
                         }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
                     }
                 ],
                 "responses": {
@@ -7191,6 +7441,14 @@
                                 "received"
                             ]
                         }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
                     }
                 ],
                 "responses": {
@@ -7387,6 +7645,14 @@
                             "type": "integer",
                             "minimum": 1,
                             "maximum": 100
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
                         }
                     }
                 ],
@@ -7658,6 +7924,14 @@
                         "in": "query",
                         "schema": {
                             "type": "boolean"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
                         }
                     }
                 ],
@@ -7976,6 +8250,14 @@
                         "schema": {
                             "type": "string",
                             "maxLength": 100
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
                         }
                     }
                 ],
@@ -9402,6 +9684,16 @@
                 "operationId": "pets.index",
                 "tags": [
                     "Pets"
+                ],
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -10849,6 +11141,14 @@
                             "minimum": 1,
                             "maximum": 100
                         }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
                     }
                 ],
                 "responses": {
@@ -11052,6 +11352,14 @@
                             "type": "integer",
                             "minimum": 1,
                             "maximum": 100
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
                         }
                     }
                 ],
@@ -11345,6 +11653,14 @@
                             "minimum": 1,
                             "maximum": 100
                         }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
+                        }
                     }
                 ],
                 "responses": {
@@ -11521,6 +11837,14 @@
                             "type": "integer",
                             "minimum": 1,
                             "maximum": 100
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
                         }
                     }
                 ],
@@ -11734,6 +12058,14 @@
                             "type": "integer",
                             "minimum": 1,
                             "maximum": 100
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
                         }
                     }
                 ],
@@ -13581,8 +13913,7 @@
                         "name": "role",
                         "in": "query",
                         "schema": {
-                            "type": "string",
-                            "maxLength": 50
+                            "$ref": "#/components/schemas/RoleEnum"
                         }
                     },
                     {
@@ -13767,8 +14098,7 @@
                         "name": "role",
                         "in": "query",
                         "schema": {
-                            "type": "string",
-                            "maxLength": 50
+                            "$ref": "#/components/schemas/RoleEnum"
                         }
                     },
                     {
@@ -13793,6 +14123,14 @@
                                 "asc",
                                 "desc"
                             ]
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "minimum": 1
                         }
                     }
                 ],
@@ -14201,8 +14539,9 @@
                         "name": "role",
                         "in": "path",
                         "required": true,
+                        "description": "The role ID",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/components/schemas/RoleEnum"
                         }
                     }
                 ],
@@ -14938,6 +15277,11 @@
                 "description": "Session Sanctum : GET /sanctum/csrf-cookie, puis POST /api/login. Les requêtes qui modifient renvoient le cookie XSRF-TOKEN dans l'en-tête X-XSRF-TOKEN.",
                 "in": "cookie",
                 "name": "kennelo-session"
+            },
+            "token": {
+                "type": "http",
+                "description": "Token personnel des applications mobiles : POST /api/auth/token, puis l'en-tête Authorization: Bearer <token>. DELETE /api/auth/token le révoque.",
+                "scheme": "bearer"
             }
         },
         "schemas": {
@@ -16728,7 +17072,7 @@
                     "roles": {
                         "type": "array",
                         "items": {
-                            "type": "string"
+                            "$ref": "#/components/schemas/RoleEnum"
                         },
                         "minItems": 1
                     }
@@ -18319,7 +18663,7 @@
                     "roles": {
                         "type": "array",
                         "items": {
-                            "type": "string"
+                            "$ref": "#/components/schemas/RoleEnum"
                         },
                         "minItems": 1
                     }
@@ -23119,6 +23463,14 @@
                 ],
                 "title": "ReviewerTypeEnum"
             },
+            "RoleEnum": {
+                "type": "string",
+                "enum": [
+                    "admin",
+                    "user"
+                ],
+                "title": "RoleEnum"
+            },
             "ScheduleBookingItemRequest": {
                 "type": "object",
                 "description": "L'heure de l'option (ISO 8601, avec son fuseau) et la ressource de l'entreprise qui la réalise.",
@@ -24349,6 +24701,52 @@
                     "name"
                 ],
                 "title": "StoreServiceRequest"
+            },
+            "StoreTokenRequest": {
+                "type": "object",
+                "properties": {
+                    "email": {
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "password": {
+                        "type": "string"
+                    },
+                    "device_name": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "code": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "recovery_code": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "new_password": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "new_password_confirmation": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                },
+                "required": [
+                    "email",
+                    "password",
+                    "device_name"
+                ],
+                "title": "StoreTokenRequest"
             },
             "StoreUnavailabilityRequest": {
                 "type": "object",
@@ -25938,7 +26336,10 @@
                         ]
                     },
                     "roles": {
-                        "type": "object"
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/RoleEnum"
+                        }
                     },
                     "stripe_customer_id": {
                         "type": [
@@ -26055,7 +26456,10 @@
                         ]
                     },
                     "roles": {
-                        "type": "object"
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/RoleEnum"
+                        }
                     },
                     "stripe_customer_id": {
                         "type": [
@@ -26157,8 +26561,8 @@
                     }
                 }
             },
-            "ModelNotFoundException": {
-                "description": "Not found",
+            "AuthorizationException": {
+                "description": "Authorization error",
                 "content": {
                     "application/json": {
                         "schema": {
@@ -26176,8 +26580,8 @@
                     }
                 }
             },
-            "AuthorizationException": {
-                "description": "Authorization error",
+            "ModelNotFoundException": {
+                "description": "Not found",
                 "content": {
                     "application/json": {
                         "schema": {

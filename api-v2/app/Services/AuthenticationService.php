@@ -6,9 +6,12 @@ namespace App\Services;
 
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Services\User\UserService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
+use Laravel\Sanctum\PersonalAccessToken;
 
 /**
  * Fin de connexion commune à tous les modes (mot de passe, Google, lien magique, inscription) :
@@ -25,6 +28,7 @@ class AuthenticationService
     public function __construct(
         private readonly TwoFactorService $twoFactorService,
         private readonly PasswordExpirationService $passwordExpirationService,
+        private readonly UserService $userService,
     ) {}
 
     public function proceed(Request $request, User $user, bool $remember = false, bool $trustRememberedDevice = true): JsonResponse
@@ -61,8 +65,48 @@ class AuthenticationService
             ->setStatusCode($status);
     }
 
+    /**
+     * @param  array{device_name: string, code?: string|null, recovery_code?: string|null, new_password?: string|null}  $data
+     */
+    public function issueToken(User $user, array $data): JsonResponse
+    {
+        $twoFactor = $user->two_factor_confirmed_at !== null;
+        $expired = $this->passwordExpirationService->isExpired($user);
+
+        if ($twoFactor && blank($data['code'] ?? null) && blank($data['recovery_code'] ?? null)) {
+            return response()->json(['two_factor' => true]);
+        }
+
+        if ($expired && blank($data['new_password'] ?? null)) {
+            return response()->json(['password_expired' => true]);
+        }
+
+        if ($twoFactor && ! $this->twoFactorService->attemptChallenge($user, $data['code'] ?? null, $data['recovery_code'] ?? null)) {
+            throw ValidationException::withMessages(['code' => __('two_factor.invalid_code')]);
+        }
+
+        if ($expired) {
+            $this->userService->renewExpiredPassword($user, (string) $data['new_password']);
+        }
+
+        Auth::setUser($user);
+
+        return response()->json([
+            'token' => $user->createToken($data['device_name'])->plainTextToken,
+            'user' => new UserResource($user->load('roles')),
+        ], 201);
+    }
+
     public function logout(Request $request): void
     {
+        $token = $request->user()?->currentAccessToken();
+
+        if ($token instanceof PersonalAccessToken) {
+            $token->delete();
+
+            return;
+        }
+
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();

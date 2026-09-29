@@ -9,6 +9,7 @@ use App\Http\Controllers\Auth\MagicLinkController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordRenewalController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
+use App\Http\Controllers\Auth\PersonalAccessTokenController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
@@ -65,3 +66,11 @@ Route::post('/email/verification-notification', [EmailVerificationNotificationCo
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
     ->middleware('auth:sanctum')
     ->name('logout');
+
+Route::post('/auth/token', [PersonalAccessTokenController::class, 'store'])
+    ->middleware('throttle:6,1')
+    ->name('auth.token.store');
+
+Route::delete('/auth/token', [PersonalAccessTokenController::class, 'destroy'])
+    ->middleware('auth:sanctum')
+    ->name('auth.token.destroy');

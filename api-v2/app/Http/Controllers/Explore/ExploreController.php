@@ -44,11 +44,7 @@ class ExploreController extends Controller
      */
     public function section(ExploreRequest $request, string $section): AnonymousResourceCollection
     {
-        $activities = $this->explore->section($section, $request->validated(), $request->user());
-
-        abort_if($activities === null, 404);
-
-        return ActivityResource::collection($activities);
+        return ActivityResource::collection($this->explore->section($section, $request->validated(), $request->user()));
     }
 
     /**

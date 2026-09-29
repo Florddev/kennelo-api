@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\User;
 
+use App\Enums\RoleEnum;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class AssignRolesRequest extends FormRequest
 {
@@ -17,7 +19,7 @@ class AssignRolesRequest extends FormRequest
     {
         return [
             'roles' => ['required', 'array', 'min:1'],
-            'roles.*' => ['required', 'string', 'exists:roles,name'],
+            'roles.*' => ['required', Rule::enum(RoleEnum::class), 'exists:roles,name'],
         ];
     }
 }

@@ -5,11 +5,16 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\User;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use PragmaRX\Google2FAQRCode\Google2FA;
 
 class TwoFactorService
 {
+    private const int CHALLENGE_ATTEMPTS = 5;
+
+    private const int CHALLENGE_DECAY_SECONDS = 300;
+
     public function __construct(private readonly Google2FA $google2fa) {}
 
     public function generateSecret(): string
@@ -40,6 +45,32 @@ class TwoFactorService
             ->map(fn () => (string) str(Str::random(5).'-'.Str::random(5))->upper())
             ->values()
             ->all();
+    }
+
+    public function attemptChallenge(User $user, ?string $code, ?string $recoveryCode): bool
+    {
+        $throttleKey = $this->challengeThrottleKey($user);
+
+        abort_if(RateLimiter::tooManyAttempts($throttleKey, self::CHALLENGE_ATTEMPTS), 429, __('login.too_many_attempts'));
+
+        $code = trim((string) $code);
+
+        $verified = $code !== ''
+            ? $this->verify((string) $user->two_factor_secret, $code)
+            : $this->consumeRecoveryCode($user, str((string) $recoveryCode)->trim()->upper()->toString());
+
+        if ($verified) {
+            RateLimiter::clear($throttleKey);
+        } else {
+            RateLimiter::hit($throttleKey, self::CHALLENGE_DECAY_SECONDS);
+        }
+
+        return $verified;
+    }
+
+    public function challengeIsLocked(User $user): bool
+    {
+        return RateLimiter::tooManyAttempts($this->challengeThrottleKey($user), self::CHALLENGE_ATTEMPTS);
     }
 
     public function consumeRecoveryCode(User $user, string $code): bool
@@ -85,5 +116,10 @@ class TwoFactorService
             ->where('token_hash', hash('sha256', $token))
             ->where('expires_at', '>', now())
             ->exists();
+    }
+
+    private function challengeThrottleKey(User $user): string
+    {
+        return 'two-factor|'.$user->id;
     }
 }

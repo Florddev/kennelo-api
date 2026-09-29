@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Resources;
 
+use App\Enums\RoleEnum;
 use App\Enums\UserStatusEnum;
 use App\Models\User;
 use App\Services\MediaService;
@@ -41,7 +42,8 @@ class UserResource extends JsonResource
             'ban_reason' => $this->when($isAdmin, fn () => $this->ban_reason),
             'banned_at' => $this->when($isAdmin, fn () => $this->banned_at?->toISOString()),
             'banned_until' => $this->when($isAdmin, fn () => $this->banned_until?->toISOString()),
-            'roles' => $this->whenLoaded('roles', fn () => $this->getRoleNames()),
+            /** @var list<RoleEnum> */
+            'roles' => $this->whenLoaded('roles', fn (): array => $this->getRoleNames()->map(fn (string $role): RoleEnum => RoleEnum::from($role))->values()->all()),
             'stripe_customer_id' => $isSelf ? $this->stripe_customer_id : null,
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),

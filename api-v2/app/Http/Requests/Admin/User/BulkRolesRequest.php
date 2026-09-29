@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Admin\User;
 
+use App\Enums\RoleEnum;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class BulkRolesRequest extends FormRequest
 {
@@ -20,7 +22,7 @@ class BulkRolesRequest extends FormRequest
             'user_ids.*' => ['uuid', 'exists:users,id'],
             'action' => ['required', 'in:assign,remove'],
             'roles' => ['required', 'array', 'min:1'],
-            'roles.*' => ['string', 'exists:roles,name'],
+            'roles.*' => [Rule::enum(RoleEnum::class), 'exists:roles,name'],
         ];
     }
 }

@@ -4,26 +4,8 @@ declare(strict_types=1);
 
 use App\Models\User;
 use App\Services\PasswordExpirationService;
-use App\Services\TwoFactorService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use PragmaRX\Google2FAQRCode\Google2FA;
-
-function enableTwoFactorFor(User $user): string
-{
-    $secret = app(TwoFactorService::class)->generateSecret();
-    $user->two_factor_secret = $secret;
-    $user->two_factor_recovery_codes = ['AAAAA-BBBBB'];
-    $user->two_factor_confirmed_at = now();
-    $user->save();
-
-    return $secret;
-}
-
-function currentOtpFor(string $secret): string
-{
-    return app(Google2FA::class)->getCurrentOtp($secret);
-}
 
 test('login with a recent password opens the session directly', function () {
     $user = User::factory()->create(['password_changed_at' => now()]);

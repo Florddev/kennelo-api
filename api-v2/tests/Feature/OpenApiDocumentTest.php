@@ -28,7 +28,7 @@ function documentedOperations(): Collection
 function successSchema(string $operation): array
 {
     return collect(documentedOperations()[$operation]['responses'])
-        ->first(fn (array $response, string $status): bool => str_starts_with($status, '2'))['content']['application/json']['schema'];
+        ->first(fn (array $response, string $status): bool => str_starts_with($status, '2'))['content']['application/json']['schema'] ?? [];
 }
 
 it('names every operation once, under one of the declared domain tags', function () {
@@ -65,6 +65,26 @@ it('declares the relations an endpoint loads in concrete schemas', function () {
         ->and($schemas['UserResourceWithRoles']['required'])->toContain('roles')
         ->and($schemas['UserResource']['required'])->not->toContain('roles')
         ->and(successSchema('GET /user'))->toBe(['$ref' => '#/components/schemas/UserResourceWithRoles']);
+});
+
+it('documents the page parameter on every paginated list', function () {
+    $paginated = documentedOperations()->filter(fn (array $operation, string $key): bool => isset(successSchema($key)['properties']['meta']['properties']['current_page']));
+
+    expect($paginated->keys())->toContain('GET /admin/users', 'GET /explore/activities/sections/{section}')
+        ->and($paginated->reject(fn (array $operation): bool => collect($operation['parameters'] ?? [])->contains(fn (array $parameter): bool => $parameter['in'] === 'query' && $parameter['name'] === 'page')))->toBeEmpty();
+});
+
+it('types the platform roles with their enum', function () {
+    expect(openApiDocument()['components']['schemas']['UserResource']['properties']['roles'])->toBe(['type' => 'array', 'items' => ['$ref' => '#/components/schemas/RoleEnum']]);
+});
+
+it('accepts the session of the web apps or the token of the mobile apps', function () {
+    $operations = documentedOperations();
+
+    expect(openApiDocument()['security'])->toBe([['session' => []], ['token' => []]])
+        ->and($operations['POST /auth/token']['operationId'])->toBe('auth.token.store')
+        ->and($operations['POST /auth/token']['security'])->toBe([])
+        ->and($operations['DELETE /auth/token']['operationId'])->toBe('auth.token.destroy');
 });
 
 it('marks the operations open without a session', function () {

@@ -10,9 +10,9 @@ use App\Models\Activity;
 use App\Models\AnimalType;
 use App\Models\User;
 use Carbon\CarbonImmutable;
-use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\Paginator;
 
 /**
  * Recherche d'activités réservables pour les clients : sections de la page d'accueil et recherche par filtres.
@@ -80,13 +80,18 @@ class ExploreService
     }
 
     /**
-     * Une page d'une section, ou null si la section n'a pas de sens sans position (« près de chez vous »).
+     * Une page d'une section, introuvable si la section n'a pas de sens sans position (« près de chez vous »).
      *
      * @param  array{lat?: float|string|null, lng?: float|string|null}  $position
+     * @return Paginator<int, Activity>
      */
-    public function section(string $section, array $position, ?User $user): ?Paginator
+    public function section(string $section, array $position, ?User $user): Paginator
     {
-        return $this->sectionQuery($section, $position, $user)?->simplePaginate(self::PER_PAGE);
+        $query = $this->sectionQuery($section, $position, $user);
+
+        abort_if($query === null, 404);
+
+        return $query->simplePaginate(self::PER_PAGE);
     }
 
     /**
@@ -136,6 +141,7 @@ class ExploreService
 
     /**
      * @param  array{lat?: float|string|null, lng?: float|string|null}  $position
+     * @return Builder<Activity>|null
      */
     private function sectionQuery(string $section, array $position, ?User $user): ?Builder
     {

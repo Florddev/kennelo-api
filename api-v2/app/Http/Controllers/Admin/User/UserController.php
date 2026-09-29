@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Admin\User;
 
 use App\Enums\AdminActionTypeEnum;
+use App\Enums\RoleEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\User\BanRequest;
 use App\Http\Requests\User\AdminUpdateUserRequest;
@@ -82,12 +83,12 @@ class UserController extends Controller
         return new UserResource($updated);
     }
 
-    public function removeRole(Request $request, User $user, string $role): UserResource
+    public function removeRole(Request $request, User $user, RoleEnum $role): UserResource
     {
         $this->authorize('assignRoles', $user);
 
-        $updated = $this->userService->removeRole($user, $role);
-        $this->actions->log($request->user(), $user, AdminActionTypeEnum::REMOVE_ROLE, ['role' => $role]);
+        $updated = $this->userService->removeRole($user, $role->value);
+        $this->actions->log($request->user(), $user, AdminActionTypeEnum::REMOVE_ROLE, ['role' => $role->value]);
 
         return new UserResource($updated);
     }

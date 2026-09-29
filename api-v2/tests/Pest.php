@@ -21,12 +21,14 @@ use App\Models\ServicePrice;
 use App\Models\User;
 use App\Services\Billing\CommissionStatementService;
 use App\Services\Billing\InvoiceService;
+use App\Services\TwoFactorService;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Testing\TestResponse;
+use PragmaRX\Google2FAQRCode\Google2FA;
 use Tests\ConcurrencyTestCase;
 use Tests\Support\FakeStripe;
 use Tests\TestCase;
@@ -63,6 +65,22 @@ function asUser(User $user): array
     test()->actingAs($user->refresh());
 
     return [];
+}
+
+function enableTwoFactorFor(User $user): string
+{
+    $secret = app(TwoFactorService::class)->generateSecret();
+    $user->two_factor_secret = $secret;
+    $user->two_factor_recovery_codes = ['AAAAA-BBBBB'];
+    $user->two_factor_confirmed_at = now();
+    $user->save();
+
+    return $secret;
+}
+
+function currentOtpFor(string $secret): string
+{
+    return app(Google2FA::class)->getCurrentOtp($secret);
 }
 
 function requiresPostgres(): void

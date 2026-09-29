@@ -9,9 +9,14 @@ use App\Support\OpenApi\LoadedRelationSchemas;
 use Dedoc\Scramble\Scramble;
 use Dedoc\Scramble\Support\Generator\OpenApi;
 use Dedoc\Scramble\Support\Generator\Operation;
+use Dedoc\Scramble\Support\Generator\Parameter;
+use Dedoc\Scramble\Support\Generator\Response;
+use Dedoc\Scramble\Support\Generator\Schema;
 use Dedoc\Scramble\Support\Generator\SecurityScheme;
 use Dedoc\Scramble\Support\Generator\Server;
 use Dedoc\Scramble\Support\Generator\Tag;
+use Dedoc\Scramble\Support\Generator\Types\IntegerType;
+use Dedoc\Scramble\Support\Generator\Types\ObjectType;
 use Dedoc\Scramble\Support\RouteInfo;
 use Illuminate\Routing\Route;
 use Illuminate\Support\ServiceProvider;
@@ -38,6 +43,10 @@ class OpenApiServiceProvider extends ServiceProvider
                 $operation->setTags([self::tag($operation, $routeInfo->route)]);
                 $operation->setOperationId(self::operationId($routeInfo->route));
 
+                if (self::isPaginated($operation) && ! collect($operation->parameters)->contains(fn (Parameter $parameter): bool => $parameter->in === 'query' && $parameter->name === 'page')) {
+                    $operation->addParameters([Parameter::make('page', 'query')->setSchema(Schema::fromType((new IntegerType)->setMin(1)))]);
+                }
+
                 if (! in_array('auth:sanctum', $routeInfo->route->gatherMiddleware(), true)) {
                     $operation->security = [];
                 }
@@ -49,6 +58,11 @@ class OpenApiServiceProvider extends ServiceProvider
                     SecurityScheme::apiKey('cookie', 'kennelo-session')
                         ->as('session')
                         ->setDescription('Session Sanctum : GET /sanctum/csrf-cookie, puis POST /api/login. Les requêtes qui modifient renvoient le cookie XSRF-TOKEN dans l\'en-tête X-XSRF-TOKEN.'),
+                );
+                $openApi->secure(
+                    SecurityScheme::http('bearer')
+                        ->as('token')
+                        ->setDescription('Token personnel des applications mobiles : POST /api/auth/token, puis l\'en-tête Authorization: Bearer <token>. DELETE /api/auth/token le révoque.'),
                 );
             })
             ->withDocumentTransformers(LoadedRelationSchemas::class);
@@ -63,6 +77,18 @@ class OpenApiServiceProvider extends ServiceProvider
         }
 
         return $tag;
+    }
+
+    private static function isPaginated(Operation $operation): bool
+    {
+        return collect($operation->responses ?? [])->contains(function (mixed $response): bool {
+            $schema = $response instanceof Response ? ($response->content['application/json'] ?? null) : null;
+
+            return $schema instanceof Schema
+                && $schema->type instanceof ObjectType
+                && $schema->type->hasProperty('links')
+                && $schema->type->hasProperty('meta');
+        });
     }
 
     private static function operationId(Route $route): string
